@@ -424,62 +424,6 @@
   height: 58%;
 }
 
-/* Right Column: vertical glass service panel on far right */
-.mtf-hero-right-zone {
-  position: relative;
-  min-height: 440px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-/* 5 Services Frosted Glass Card on far right */
-.mtf-hero-services-panel {
-  position: relative;
-  background: rgba(8, 47, 105, 0.55);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 22px;
-  padding: 22px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 20px 45px rgba(0, 20, 60, 0.35);
-  width: 210px;
-  z-index: 6;
-}
-
-.mtf-service-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  color: #ffffff;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.22;
-  transition: all 0.2s ease;
-}
-
-.mtf-service-row:hover {
-  transform: translateX(3px);
-  color: #cfe9ff;
-}
-
-.mtf-service-circle-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
 .mtf-service-pill {
   display: flex;
   align-items: center;
@@ -1474,20 +1418,6 @@
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  .mtf-hero-right-zone {
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    margin-top: 10px;
-  }
-  .mtf-hero-services-panel {
-    position: static;
-    width: 100%;
-    max-width: 320px;
-    margin: 0 auto;
-  }
   .mtf-hero-visual {
     justify-content: center;
   }
@@ -1634,42 +1564,6 @@
           </div>
         </div>
 
-        <!-- Right Zone: vertical 5-service glass card on far right -->
-        <div class="mtf-hero-right-zone">
-          <!-- Vertical 5-Service Glass Panel on far right -->
-          <div class="mtf-hero-services-panel">
-            <div class="mtf-service-row">
-              <span class="mtf-service-circle-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
-              </span>
-              <span>Tyre Fitting</span>
-            </div>
-            <div class="mtf-service-row">
-              <span class="mtf-service-circle-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
-              </span>
-              <span>Balancing</span>
-            </div>
-            <div class="mtf-service-row">
-              <span class="mtf-service-circle-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-              </span>
-              <span>Puncture Repair</span>
-            </div>
-            <div class="mtf-service-row">
-              <span class="mtf-service-circle-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-              </span>
-              <span>Tyre Replacement</span>
-            </div>
-            <div class="mtf-service-row">
-              <span class="mtf-service-circle-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-              </span>
-              <span>On-Site Support</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -2129,10 +2023,6 @@
           <span class="mtf-badge-pill">ANSWERS & CLARITY</span>
           <h2 class="mtf-h2" style="margin-bottom: 0;">Mobile tyre fitting FAQs</h2>
         </div>
-        <a href="/#faq" class="mtf-view-all-link">
-          <span>View all FAQs</span>
-          <span>&rarr;</span>
-        </a>
       </div>
 
       <div class="mtf-faq-layout">
@@ -2301,7 +2191,6 @@ document.addEventListener('DOMContentLoaded', function () {
     gsap.from('.mtf-hero-desc', { opacity: 0, y: 20, duration: 0.8, delay: 0.2, ease: 'power3.out' });
     gsap.from('.mtf-hero-actions', { opacity: 0, y: 15, duration: 0.7, delay: 0.3, ease: 'power3.out' });
     gsap.from('.mtf-hero-trust .mtf-trust-pill', { opacity: 0, y: 12, duration: 0.5, delay: 0.4, stagger: 0.08, ease: 'power2.out' });
-    gsap.from('.mtf-hero-services-panel', { opacity: 0, x: 20, duration: 0.7, delay: 0.25, ease: 'power2.out', clearProps: 'all' });
 
     // Stagger reveals when in view
     if (typeof ScrollTrigger !== 'undefined') {
