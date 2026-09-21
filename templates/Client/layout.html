@@ -545,6 +545,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-MNN5FHT2');</script>
 <!-- End Google Tag Manager -->
 {% block extra_head %}{% endblock %}
+{% if page_og_tags or page_twitter_tags or page_schema_json %}
+<!-- Per-page SEO meta (managed via VisionAdmin → SEO Manager) -->
+{% if page_og_tags %}
+{% if page_og_tags.og_type %}<meta property="og:type" content="{{ page_og_tags.og_type }}">{% endif %}
+{% if page_og_tags.og_title %}<meta property="og:title" content="{{ page_og_tags.og_title }}">{% endif %}
+{% if page_og_tags.og_description %}<meta property="og:description" content="{{ page_og_tags.og_description }}">{% endif %}
+{% if page_og_tags.og_url %}<meta property="og:url" content="{{ page_og_tags.og_url }}">{% endif %}
+{% if page_og_tags.og_image %}<meta property="og:image" content="{{ page_og_tags.og_image }}">{% endif %}
+{% if page_og_tags.og_image_width %}<meta property="og:image:width" content="{{ page_og_tags.og_image_width }}">{% endif %}
+{% if page_og_tags.og_image_height %}<meta property="og:image:height" content="{{ page_og_tags.og_image_height }}">{% endif %}
+{% if page_og_tags.og_image_alt %}<meta property="og:image:alt" content="{{ page_og_tags.og_image_alt }}">{% endif %}
+{% if page_og_tags.og_locale %}<meta property="og:locale" content="{{ page_og_tags.og_locale }}">{% endif %}
+{% endif %}
+{% if page_twitter_tags %}
+{% if page_twitter_tags.twitter_card %}<meta name="twitter:card" content="{{ page_twitter_tags.twitter_card }}">{% endif %}
+{% if page_twitter_tags.twitter_title %}<meta name="twitter:title" content="{{ page_twitter_tags.twitter_title }}">{% endif %}
+{% if page_twitter_tags.twitter_description %}<meta name="twitter:description" content="{{ page_twitter_tags.twitter_description }}">{% endif %}
+{% if page_twitter_tags.twitter_image %}<meta name="twitter:image" content="{{ page_twitter_tags.twitter_image }}">{% endif %}
+{% endif %}
+{% if page_schema_json %}
+<script type="application/ld+json">{{ page_schema_json | safe }}</script>
+{% endif %}
+{% endif %}
+
 </head>
 <body x-data="{ mobileNavOpen: false, noticeModalOpen: false }" :class="{ 'overflow-hidden': mobileNavOpen }" @keydown.escape.window="mobileNavOpen = false; noticeModalOpen = false;">
 <!-- Google Tag Manager (noscript) -->

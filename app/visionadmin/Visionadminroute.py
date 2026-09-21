@@ -287,6 +287,136 @@ def register_visionadmin_routes(app):
     def visionadmin_pages():
         return render_template('visionadmin/pages.html', page='pages')
 
+    # ── SEO MANAGER ──────────────────────────────────────────────────────────
+    @app.route('/visionadmin/seo', methods=['GET'])
+    @app.route('/visonadmin/seo', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_seo_manager():
+        return render_template('visionadmin/seo_manager.html', page='seo')
+
+    @app.route('/visionadmin/api/seo/pages', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_api_seo_pages():
+        """Return all pages with their SEO status flags."""
+        import json as _json
+        import db as _db
+        conn = _db.get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """SELECT slug, title, og_tags, schema_json
+                       FROM pages
+                       WHERE deleted_at IS NULL AND is_active = 1
+                       ORDER BY id"""
+                )
+                rows = cur.fetchall()
+            pages = []
+            for r in rows:
+                raw_title = r.get('title') or r[1] if isinstance(r, dict) else r[1]
+                title_data = _json.loads(raw_title) if isinstance(raw_title, str) else raw_title
+                title = (title_data.get('en') or next(iter(title_data.values()), '')) if isinstance(title_data, dict) else str(title_data)
+
+                og_raw = r.get('og_tags') if isinstance(r, dict) else r[2]
+                og_data = _json.loads(og_raw) if isinstance(og_raw, str) else (og_raw or {})
+
+                schema_raw = r.get('schema_json') if isinstance(r, dict) else r[3]
+
+                has_og = bool(og_data and any(v for v in og_data.values() if v))
+                has_twitter = bool(og_data and any(k.startswith('twitter_') and v for k, v in og_data.items()))
+                has_schema = bool(schema_raw and str(schema_raw).strip())
+
+                pages.append({
+                    'slug': r.get('slug') if isinstance(r, dict) else r[0],
+                    'title': title,
+                    'has_og': has_og,
+                    'has_twitter': has_twitter,
+                    'has_schema': has_schema,
+                })
+            return jsonify({'pages': pages})
+        finally:
+            conn.close()
+
+    @app.route('/visionadmin/api/seo/<slug>', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_api_seo_get(slug):
+        """Return OG tags and schema for a single page."""
+        import json as _json
+        import db as _db
+        conn = _db.get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    'SELECT og_tags, schema_json FROM pages WHERE slug = %s AND deleted_at IS NULL',
+                    (slug,)
+                )
+                row = cur.fetchone()
+            if not row:
+                return jsonify({'error': 'Page not found'}), 404
+
+            og_raw = row.get('og_tags') if isinstance(row, dict) else row[0]
+            og_data = _json.loads(og_raw) if isinstance(og_raw, str) else (og_raw or {})
+
+            schema_raw = row.get('schema_json') if isinstance(row, dict) else row[1]
+
+            # Split og_data into OG and Twitter groups
+            og_tags = {k: v for k, v in og_data.items() if not k.startswith('twitter_')}
+            twitter_tags = {k: v for k, v in og_data.items() if k.startswith('twitter_')}
+
+            return jsonify({
+                'slug': slug,
+                'og_tags': og_tags,
+                'twitter_tags': twitter_tags,
+                'schema_json': schema_raw or '',
+            })
+        finally:
+            conn.close()
+
+    @app.route('/visionadmin/api/seo/<slug>', methods=['PUT'])
+    @login_required_visionadmin
+    def visionadmin_api_seo_put(slug):
+        """Save OG tags and schema for a page."""
+        import json as _json
+        import db as _db
+        data = request.get_json(silent=True) or {}
+
+        og_tags = data.get('og_tags') or {}
+        twitter_tags = data.get('twitter_tags') or {}
+        schema_raw = data.get('schema_json') or None
+
+        # Validate schema JSON if provided
+        if schema_raw and schema_raw.strip():
+            try:
+                _json.loads(schema_raw)
+            except ValueError as e:
+                return jsonify({'success': False, 'error': f'Invalid JSON-LD: {e}'}), 400
+        else:
+            schema_raw = None
+
+        # Merge og + twitter into one JSON blob stored in og_tags column
+        merged = {}
+        merged.update({k: v for k, v in og_tags.items() if v is not None})
+        merged.update({k: v for k, v in twitter_tags.items() if v is not None})
+
+        conn = _db.get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    'SELECT id FROM pages WHERE slug = %s AND deleted_at IS NULL', (slug,)
+                )
+                if not cur.fetchone():
+                    return jsonify({'success': False, 'error': 'Page not found'}), 404
+
+                cur.execute(
+                    'UPDATE pages SET og_tags = %s, schema_json = %s, updated_at = NOW() WHERE slug = %s',
+                    (_json.dumps(merged), schema_raw, slug)
+                )
+            conn.commit()
+            return jsonify({'success': True, 'message': 'SEO tags saved successfully.'})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+        finally:
+            conn.close()
+
     @app.route('/visionadmin/blogs', methods=['GET'])
     @app.route('/visonadmin/blogs', methods=['GET'])
     @app.route('/admin/blogs', methods=['GET'])
