@@ -106,6 +106,58 @@ def inject_i18n():
     )
 
 
+@app.context_processor
+def inject_page_seo():
+    """Injects per-page OG tags and Schema.org JSON-LD into client templates from the pages table."""
+    import json as _json
+
+    # Only run for public client routes (not admin, API, or static)
+    path = request.path
+    if path.startswith(('/visionadmin', '/visonadmin', '/admin', '/tcsadmin', '/api/', '/static/')):
+        return {}
+
+    # Derive slug from path (strip leading slash and any trailing slash)
+    slug = path.strip('/')
+    if not slug:
+        slug = 'home'
+
+    try:
+        conn = db.get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    'SELECT og_tags, schema_json FROM pages WHERE slug = %s AND deleted_at IS NULL AND is_active = 1',
+                    (slug,)
+                )
+                row = cur.fetchone()
+        finally:
+            conn.close()
+
+        if not row:
+            return {}
+
+        og_raw = row.get('og_tags') if isinstance(row, dict) else row[0]
+        schema_raw = row.get('schema_json') if isinstance(row, dict) else row[1]
+
+        og_data = {}
+        if og_raw:
+            try:
+                og_data = _json.loads(og_raw) if isinstance(og_raw, str) else (og_raw or {})
+            except Exception:
+                og_data = {}
+
+        og_tags = {k: v for k, v in og_data.items() if not k.startswith('twitter_') and v}
+        twitter_tags = {k: v for k, v in og_data.items() if k.startswith('twitter_') and v}
+
+        return dict(
+            page_og_tags=og_tags,
+            page_twitter_tags=twitter_tags,
+            page_schema_json=schema_raw or '',
+        )
+    except Exception:
+        return {}
+
+
 @app.after_request
 def add_performance_headers(response):
     """Adds caching headers for static assets, enables keep-alive, and injects API version headers."""
