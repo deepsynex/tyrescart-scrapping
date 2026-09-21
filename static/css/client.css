@@ -5865,7 +5865,7 @@ details summary span:last-child {
 
 .tv-section-block {
   position: relative;
-  padding: clamp(52px, 6.5vw, 84px) 0;
+  padding: clamp(20px, 2.5vw, 28px) 0;
 }
 
 .tv-section-head {
@@ -6605,6 +6605,7 @@ details summary span:last-child {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 
