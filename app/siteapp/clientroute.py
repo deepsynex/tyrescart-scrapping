@@ -484,12 +484,15 @@ def _format_product_for_client(p, locale='en'):
 
     offer_upper = offer_banner.upper()
     if 'BUY 2 GET 2' in offer_upper:
+        p_dict['effective_price'] = round(unit_p * 0.50, 2)
         p_dict['set_of_4_price'] = round(unit_p * 2, 2)
         p_dict['set_of_8_price'] = round(unit_p * 4, 2)
     elif 'BUY 3 GET 1' in offer_upper:
+        p_dict['effective_price'] = round(unit_p * 0.75, 2)
         p_dict['set_of_4_price'] = round(unit_p * 3, 2)
         p_dict['set_of_8_price'] = round(unit_p * 6, 2)
     else:
+        p_dict['effective_price'] = unit_p
         p_dict['set_of_4_price'] = round(unit_p * 4, 2)
         p_dict['set_of_8_price'] = round(unit_p * 8, 2)
 
@@ -884,7 +887,7 @@ def _fetch_catalog_products(args, locale='en'):
                     clauses['search'][1].extend([s_term, s_term, s_term])
 
             # Build combined WHERE clause for the primary catalog query
-            all_where = ["p.deleted_at IS NULL", "p.status = 'active'"]
+            all_where = ["p.deleted_at IS NULL", "p.status = 'active'", "p.website_id = 1"]
             all_params = []
             for k, (c_list, p_list) in clauses.items():
                 all_where.extend(c_list)
@@ -902,17 +905,9 @@ def _fetch_catalog_products(args, locale='en'):
             total_count = c_row['total'] if c_row else 0
 
             # Sorting (Default: price-asc Low to High per user requirement)
-            sort_by = args.get('sort') or args.get('sort_by') or 'price-asc'
-            if sort_by == 'price-asc':
-                order_sql = "ORDER BY p.price ASC, p.id ASC"
-            elif sort_by == 'price-desc':
+            sort_by = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
+            if sort_by in ('price-desc', 'price_desc', 'high-to-low', 'price_high_to_low'):
                 order_sql = "ORDER BY p.price DESC, p.id ASC"
-            elif sort_by == 'newest':
-                order_sql = "ORDER BY p.id DESC"
-            elif sort_by == 'rating':
-                order_sql = "ORDER BY p.sort_order ASC, p.id ASC"
-            elif sort_by == 'popular':
-                order_sql = "ORDER BY p.sort_order ASC, p.id ASC"
             else:
                 order_sql = "ORDER BY p.price ASC, p.id ASC"
 
@@ -947,7 +942,7 @@ def _fetch_catalog_products(args, locale='en'):
 
             # Dynamic Facets Calculation (disjunctive multi-select counts)
             def get_where_except(exclude_key):
-                w = ["p.deleted_at IS NULL", "p.status = 'active'"]
+                w = ["p.deleted_at IS NULL", "p.status = 'active'", "p.website_id = 1"]
                 pm = []
                 for k, (c_list, p_list) in clauses.items():
                     if k == exclude_key:
@@ -1637,16 +1632,19 @@ def _render_product_detail(slug_or_id, locale=None):
             pattern_name = p_row.get('tire_pattern') or 'Energy XM2 Plus'
             price_f = float(p_row.get('price') or 121.0)
 
-            # Short desc and full description
+            # Short desc and full description faithfully from DB
             short_desc = ""
             if p_row.get('short_desc'):
                 try:
                     sd = json.loads(p_row['short_desc']) if isinstance(p_row['short_desc'], str) else p_row['short_desc']
-                    short_desc = sd.get(locale) or sd.get('en') or str(p_row['short_desc'])
+                    if isinstance(sd, dict):
+                        short_desc = sd.get(locale) or sd.get('en') or next(iter(sd.values()), '')
+                    else:
+                        short_desc = str(sd)
                 except Exception:
                     short_desc = str(p_row['short_desc'])
-            if not short_desc or short_desc.strip() in ('{}', 'None', ''):
-                short_desc = f"The {brand_name} {pattern_name} is designed for a safer and smoother drive with outstanding wet braking, long-lasting performance and excellent fuel efficiency. Ideal for everyday driving."
+            if not short_desc or str(short_desc).strip() in ('{}', 'None', ''):
+                short_desc = raw_attrs.get('short_description') or ''
 
             desc = ""
             if p_row.get('description'):
@@ -1658,10 +1656,52 @@ def _render_product_detail(slug_or_id, locale=None):
                         desc = str(d)
                 except Exception:
                     desc = str(p_row['description'])
-            if not desc or desc.strip() in ('{}', 'None', ''):
-                desc = raw_attrs.get('description') or raw_attrs.get('short_description') or ''
-            if not desc or desc.strip() in ('{}', 'None', ''):
+
+            if not desc or str(desc).strip() in ('{}', 'None', ''):
+                desc = raw_attrs.get('description') or ''
+            if not desc or str(desc).strip() in ('{}', 'None', ''):
                 desc = short_desc
+            if not desc or str(desc).strip() in ('{}', 'None', ''):
+                if p_row.get('meta_desc'):
+                    try:
+                        md = json.loads(p_row['meta_desc']) if isinstance(p_row['meta_desc'], str) else p_row['meta_desc']
+                        if isinstance(md, dict):
+                            desc = md.get(locale) or md.get('en') or next(iter(md.values()), '')
+                        else:
+                            desc = str(md)
+                    except Exception:
+                        desc = str(p_row['meta_desc'])
+            if not desc or str(desc).strip() in ('{}', 'None', ''):
+                desc = raw_attrs.get('meta_description') or ''
+            if not desc or str(desc).strip() in ('{}', 'None', ''):
+                desc = f"The {brand_name} {pattern_name} is designed for a safer and smoother drive with outstanding wet braking, long-lasting performance and excellent fuel efficiency. Ideal for everyday driving."
+
+            # Parse meta_desc and meta_title for SEO
+            meta_desc_val = ""
+            if p_row.get('meta_desc'):
+                try:
+                    md = json.loads(p_row['meta_desc']) if isinstance(p_row['meta_desc'], str) else p_row['meta_desc']
+                    if isinstance(md, dict):
+                        meta_desc_val = md.get(locale) or md.get('en') or next(iter(md.values()), '')
+                    else:
+                        meta_desc_val = str(md)
+                except Exception:
+                    meta_desc_val = str(p_row['meta_desc'])
+            if not meta_desc_val:
+                meta_desc_val = raw_attrs.get('meta_description') or f"{p_row.get('display_name') or (brand_name + ' ' + size_label)} in stock with free delivery, warranty and mobile fitting across UAE."
+
+            meta_title_val = ""
+            if p_row.get('meta_title'):
+                try:
+                    mt = json.loads(p_row['meta_title']) if isinstance(p_row['meta_title'], str) else p_row['meta_title']
+                    if isinstance(mt, dict):
+                        meta_title_val = mt.get(locale) or mt.get('en') or next(iter(mt.values()), '')
+                    else:
+                        meta_title_val = str(mt)
+                except Exception:
+                    meta_title_val = str(p_row['meta_title'])
+            if not meta_title_val:
+                meta_title_val = raw_attrs.get('meta_title') or f"{p_row.get('display_name') or (brand_name + ' ' + size_label)} | Buy Online at TyresVision UAE"
 
             # Image
             img_path = p_row.get('image_path') or '/static/uploads/products/michelin_energy_xm2_wheel.jpg'
@@ -1718,6 +1758,8 @@ def _render_product_detail(slug_or_id, locale=None):
                 'in_stock': p_row.get('stock_status') == 'in_stock',
                 'short_desc': short_desc,
                 'description': desc,
+                'meta_description': meta_desc_val,
+                'meta_title': meta_title_val,
                 'width': width_val if 'mm' in str(width_val) else f"{width_val} mm",
                 'profile': profile_val,
                 'rim_size': rim_val,
@@ -1735,7 +1777,6 @@ def _render_product_detail(slug_or_id, locale=None):
             # Related products: SAME SIZE, DIFFERENT BRANDS (per requirement)
             target_size = size_label.strip() if size_label else f"{width_val}/{profile_val} {rim_val}"
             current_brand_id = p_row.get('brand_id')
-
             cur.execute("""
                 SELECT p.*, b.name as brand_name, b.slug as brand_slug, b.logo as brand_logo
                 FROM products p
@@ -1744,7 +1785,7 @@ def _render_product_detail(slug_or_id, locale=None):
                   AND p.id != %s
                   AND p.tire_size_label = %s
                   AND (p.brand_id != %s OR %s IS NULL)
-                ORDER BY p.price ASC
+                ORDER BY p.price ASC, p.id ASC
             """, [p_row['id'], target_size, current_brand_id, current_brand_id])
             same_size_rows = cur.fetchall()
 
@@ -1773,7 +1814,7 @@ def _render_product_detail(slug_or_id, locale=None):
                       AND p.id != %s
                       AND p.tire_size_label LIKE %s
                       AND (p.brand_id != %s OR %s IS NULL)
-                    ORDER BY p.price ASC
+                    ORDER BY p.price ASC, p.id ASC
                 """, [p_row['id'], f"%{rim_val}%", current_brand_id, current_brand_id])
                 for r in cur.fetchall():
                     b_key = (r.get('brand_name') or '').lower().strip()
@@ -1792,7 +1833,7 @@ def _render_product_detail(slug_or_id, locale=None):
                     WHERE p.deleted_at IS NULL AND p.status = 'active'
                       AND p.id != %s
                       AND (p.brand_id != %s OR %s IS NULL)
-                    ORDER BY p.price ASC
+                    ORDER BY p.price ASC, p.id ASC
                     LIMIT 20
                 """, [p_row['id'], current_brand_id, current_brand_id])
                 for r in cur.fetchall():

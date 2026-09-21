@@ -1,8 +1,8 @@
 {% extends 'Client/layout.html' %}
 
-{% block title %}{{ product.title }} | Buy Online at TyresVision UAE{% endblock %}
+{% block title %}{% if product.meta_title %}{{ product.meta_title }}{% else %}{{ product.title }} | Buy Online at TyresVision UAE{% endif %}{% endblock %}
 
-{% block meta_description %}{{ product.title }} {{ product.pattern_name }} in stock with free delivery, warranty and mobile fitting across UAE. Buy single tyre, set of 2 or set of 4 at best prices.{% endblock %}
+{% block meta_description %}{% if product.meta_description %}{{ product.meta_description }}{% else %}{{ product.title }} {{ product.pattern_name }} in stock with free delivery, warranty and mobile fitting across UAE. Buy single tyre, set of 2 or set of 4 at best prices.{% endif %}{% endblock %}
 
 {% block canonical_url %}https://www.tyresvision.com/{{ product.slug }}{% endblock %}
 
@@ -1040,6 +1040,15 @@
   border-radius: 2px;
 }
 
+/* Accordion base (Desktop: hidden) */
+.tv-ref-accordion-header {
+  display: none;
+}
+
+.tv-ref-accordion-group {
+  margin-bottom: 0;
+}
+
 /* Tab Pane Wrapper */
 .tv-ref-tab-content-wrap {
   background: #ffffff;
@@ -1686,9 +1695,28 @@
   .tv-ref-showcase-body {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 20px;
+  }
+  .tv-ref-tyre-visual-col {
+    margin-bottom: 4px;
   }
   .tv-ref-features-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 24px;
+    width: 100%;
+    max-width: 520px;
+    margin: 8px auto 0 auto;
+    text-align: left;
+  }
+  .tv-ref-feature-item {
+    display: flex;
     align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+  .tv-ref-feat-text {
+    text-align: left;
   }
   .tv-ref-specs-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1708,9 +1736,155 @@
   .tv-ref-fitment-grid {
     grid-template-columns: 1fr;
   }
+
+  /* 1. Remove horizontal scroll on tabs & convert to Accordion */
+  .tv-ref-tabs-nav {
+    display: none !important;
+  }
+  .tv-ref-tabs-section {
+    padding: 16px 0 32px 0;
+  }
+  .tv-ref-tab-content-wrap {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tv-ref-accordion-group {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s ease;
+  }
+  .tv-ref-accordion-group.is-open {
+    border-color: #93c5fd;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+  }
+  .tv-ref-accordion-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 18px;
+    background: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: background 0.2s ease;
+  }
+  .tv-ref-accordion-header:hover {
+    background: #f8fafc;
+  }
+  .tv-ref-accordion-header.active {
+    background: #f0f7ff;
+    border-bottom: 1px solid #dbeafe;
+  }
+  .tv-ref-accordion-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+  .tv-ref-accordion-header.active .tv-ref-accordion-title {
+    color: #0066ff;
+  }
+  .tv-ref-accordion-chevron {
+    color: #64748b;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+  }
+  .tv-ref-accordion-header.active .tv-ref-accordion-chevron {
+    transform: rotate(180deg);
+    color: #0066ff;
+  }
+  .tv-ref-pane {
+    padding: 20px 16px;
+  }
+
+  /* 2. Specifications Table: 100% width, NON-SCROLLABLE on mobile */
+  .tv-specs-table-wrap {
+    overflow-x: hidden !important;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    width: 100% !important;
+  }
+  .tv-specs-table {
+    display: block;
+    width: 100% !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tv-specs-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .tv-specs-table tr {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .tv-specs-table tr:last-child {
+    border-bottom: none;
+  }
+  .tv-specs-table th,
+  .tv-specs-table td {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    font-size: 13px;
+    border: none;
+  }
+  .tv-specs-table th {
+    width: 42% !important;
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .tv-specs-table td {
+    width: 58% !important;
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    border-bottom: 1px solid #f1f5f9;
+    word-break: break-word;
+  }
+  .tv-specs-table tr th:nth-of-type(2),
+  .tv-specs-table tr td:nth-of-type(2) {
+    border-bottom: none;
+  }
 }
 
 @media (max-width: 480px) {
+  .tv-ref-features-col {
+    gap: 14px 12px;
+    padding: 0 6px;
+  }
+  .tv-ref-feature-item {
+    gap: 10px;
+  }
+  .tv-ref-feat-icon-box {
+    width: 38px;
+    height: 38px;
+  }
+  .tv-ref-feat-text strong {
+    font-size: 13px;
+  }
+  .tv-ref-feat-text span {
+    font-size: 11px;
+  }
   .tv-ref-showcase-actions {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2123,159 +2297,199 @@
         {% endif %}
       </div>
 
-      <!-- Tab Panes -->
+      <!-- Tab Panes / Accordion Wrapper -->
       <div class="tv-ref-tab-content-wrap">
         
-        <!-- PANE 1: Product Details (Exact 2-column layout as in image) -->
-        <div id="tab-details" class="tv-ref-pane active">
-          <div class="tv-ref-details-grid">
-            <!-- Left: About This Tyre -->
-            <div class="tv-ref-details-left">
-              <h3 class="tv-ref-details-heading">About This Tyre</h3>
-              <div class="tv-ref-details-p" style="white-space: pre-line;">
-                {% if product.description %}
-                  {{ product.description|safe }}
-                {% else %}
-                  {{ product.title }}
-                {% endif %}
+        <!-- SECTION 1: Product Details -->
+        <div class="tv-ref-accordion-group is-open" data-tab-id="tab-details">
+          <button type="button" class="tv-ref-accordion-header active" onclick="toggleRefAccordion('tab-details', this)" aria-expanded="true">
+            <span class="tv-ref-accordion-title">Product Details</span>
+            <svg class="tv-ref-accordion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="tab-details" class="tv-ref-pane active">
+            <div class="tv-ref-details-grid">
+              <!-- Left: About This Tyre -->
+              <div class="tv-ref-details-left">
+                <h3 class="tv-ref-details-heading">About This Tyre</h3>
+                <div class="tv-ref-details-p" style="white-space: pre-line;">
+                  {% if product.description %}
+                    {{ product.description|safe }}
+                  {% else %}
+                    {{ product.title }}
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Right: Why Choose Brand? -->
+              <div class="tv-ref-details-right">
+                <div class="tv-ref-why-brand-head">
+                  {% if product.brand_logo %}
+                  <img src="{{ product.brand_logo }}" alt="{{ product.brand_name }}" class="tv-ref-why-logo">
+                  {% else %}
+                  <span class="tv-ref-why-logo-text">{{ product.brand_name|upper }}.</span>
+                  {% endif %}
+                </div>
+                <h4 class="tv-ref-why-title">Why Choose {{ product.brand_name }}?</h4>
+                
+                <div class="tv-ref-why-list">
+                  <div class="tv-ref-why-item">
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+                    <span>Global Brand with Trusted Quality</span>
+                  </div>
+                  <div class="tv-ref-why-item">
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                    <span>Excellent Value for Money</span>
+                  </div>
+                  <div class="tv-ref-why-item">
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div>
+                    <span>Engineered for Real Driving Conditions</span>
+                  </div>
+                  <div class="tv-ref-why-item">
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+                    <span>Wide Range of Sizes</span>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Right: Why Choose Brand? -->
-            <div class="tv-ref-details-right">
-              <div class="tv-ref-why-brand-head">
-                {% if product.brand_logo %}
-                <img src="{{ product.brand_logo }}" alt="{{ product.brand_name }}" class="tv-ref-why-logo">
-                {% else %}
-                <span class="tv-ref-why-logo-text">{{ product.brand_name|upper }}.</span>
-                {% endif %}
+        <!-- SECTION 2: Specifications (Old Style Table) -->
+        <div class="tv-ref-accordion-group" data-tab-id="tab-specs">
+          <button type="button" class="tv-ref-accordion-header" onclick="toggleRefAccordion('tab-specs', this)" aria-expanded="false">
+            <span class="tv-ref-accordion-title">Specifications</span>
+            <svg class="tv-ref-accordion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="tab-specs" class="tv-ref-pane" style="display:none;">
+            <div class="tv-ref-prod-specs-wrap">
+              <h3 class="tv-ref-prod-specs-title">Product Specifications</h3>
+
+              <div class="tv-specs-table-wrap">
+                <table class="tv-specs-table">
+                  <tbody>
+                    <tr><th>Brand</th><td>{{ product.brand_name }}</td><th>Pattern</th><td>{{ product.pattern_name }}</td></tr>
+                    <tr><th>Tyre Size</th><td>{{ product.tire_size_label }}</td><th>Load &amp; Speed Rating</th><td>{{ product.load_speed }}</td></tr>
+                    <tr><th>Width</th><td>{{ product.width }}{% if 'mm' not in (product.width|string)|lower %} mm{% endif %}</td><th>Aspect Ratio / Profile</th><td>{{ product.profile }}</td></tr>
+                    <tr><th>Rim Diameter</th><td>{{ product.rim_size }}</td><th>Vehicle Type</th><td>{{ product.type or 'Passenger Car / SUV' }}</td></tr>
+                    <tr><th>Country of Origin</th><td>{{ product.country }}</td><th>Manufacturing Year</th><td>{{ product.year }}</td></tr>
+                    <tr><th>Season</th><td>{{ product.season or 'All Season' }}</td><th>Run Flat Technology</th><td>{{ product.run_flat or 'No' }}</td></tr>
+                    <tr><th>Warranty Period</th><td>{{ product.warranty }}{% if 'warranty' not in (product.warranty|string)|lower %} Warranty{% endif %}</td><th>Stock Availability</th><td>{{ 'In Stock (Immediate Dispatch)' if product.in_stock else 'On Demand' }}</td></tr>
+                    <tr><th>SKU</th><td>{{ product.sku or ('TCKL-' ~ product.id) }}</td><th>Fitting</th><td>Free Mobile or Centre Fitting</td></tr>
+                  </tbody>
+                </table>
               </div>
-              <h4 class="tv-ref-why-title">Why Choose {{ product.brand_name }}?</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Review Insert Form Only -->
+        <div class="tv-ref-accordion-group" data-tab-id="tab-reviews">
+          <button type="button" class="tv-ref-accordion-header" onclick="toggleRefAccordion('tab-reviews', this)" aria-expanded="false">
+            <span class="tv-ref-accordion-title">Write a Review</span>
+            <svg class="tv-ref-accordion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="tab-reviews" class="tv-ref-pane" style="display:none;">
+            <div class="tv-ref-review-insert-card">
+              <h4 class="tv-ref-form-title">Write Your Review for {{ product.title }}</h4>
+              <p class="tv-ref-form-sub">Share your feedback to help other drivers make the right tyre choice.</p>
               
-              <div class="tv-ref-why-list">
-                <div class="tv-ref-why-item">
-                  <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
-                  <span>Global Brand with Trusted Quality</span>
+              <form id="pdp-review-form" onsubmit="submitReview(event)">
+                <div class="tv-ref-form-stars-select">
+                  <label>Overall Rating</label>
+                  <div class="tv-ref-interactive-stars" id="interactive-star-row">
+                    <span class="star-item active" data-val="1" onclick="setFormRating(1)">★</span>
+                    <span class="star-item active" data-val="2" onclick="setFormRating(2)">★</span>
+                    <span class="star-item active" data-val="3" onclick="setFormRating(3)">★</span>
+                    <span class="star-item active" data-val="4" onclick="setFormRating(4)">★</span>
+                    <span class="star-item active" data-val="5" onclick="setFormRating(5)">★</span>
+                  </div>
+                  <input type="hidden" id="form-rating-val" value="5">
                 </div>
-                <div class="tv-ref-why-item">
-                  <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-                  <span>Excellent Value for Money</span>
-                </div>
-                <div class="tv-ref-why-item">
-                  <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div>
-                  <span>Engineered for Real Driving Conditions</span>
-                </div>
-                <div class="tv-ref-why-item">
-                  <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-                  <span>Wide Range of Sizes</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- PANE 2: Specifications (Old Style Table) -->
-        <div id="tab-specs" class="tv-ref-pane" style="display:none;">
-          <div class="tv-ref-prod-specs-wrap">
-            <h3 class="tv-ref-prod-specs-title">Product Specifications</h3>
-
-            <div class="tv-specs-table-wrap">
-              <table class="tv-specs-table">
-                <tbody>
-                  <tr><th>Brand</th><td>{{ product.brand_name }}</td><th>Pattern</th><td>{{ product.pattern_name }}</td></tr>
-                  <tr><th>Tyre Size</th><td>{{ product.tire_size_label }}</td><th>Load &amp; Speed Rating</th><td>{{ product.load_speed }}</td></tr>
-                  <tr><th>Width</th><td>{{ product.width }}{% if 'mm' not in (product.width|string)|lower %} mm{% endif %}</td><th>Aspect Ratio / Profile</th><td>{{ product.profile }}</td></tr>
-                  <tr><th>Rim Diameter</th><td>{{ product.rim_size }}</td><th>Vehicle Type</th><td>{{ product.type or 'Passenger Car / SUV' }}</td></tr>
-                  <tr><th>Country of Origin</th><td>{{ product.country }}</td><th>Manufacturing Year</th><td>{{ product.year }}</td></tr>
-                  <tr><th>Season</th><td>{{ product.season or 'All Season' }}</td><th>Run Flat Technology</th><td>{{ product.run_flat or 'No' }}</td></tr>
-                  <tr><th>Warranty Period</th><td>{{ product.warranty }}{% if 'warranty' not in (product.warranty|string)|lower %} Warranty{% endif %}</td><th>Stock Availability</th><td>{{ 'In Stock (Immediate Dispatch)' if product.in_stock else 'On Demand' }}</td></tr>
-                  <tr><th>SKU</th><td>{{ product.sku or ('TCKL-' ~ product.id) }}</td><th>Fitting</th><td>Free Mobile or Centre Fitting</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- PANE 3: Review Insert Form Only (Per user request: Only review insert, do not show reviews anywhere on page) -->
-        <div id="tab-reviews" class="tv-ref-pane" style="display:none;">
-          <div class="tv-ref-review-insert-card">
-            <h4 class="tv-ref-form-title">Write Your Review for {{ product.title }}</h4>
-            <p class="tv-ref-form-sub">Share your feedback to help other drivers make the right tyre choice.</p>
-            
-            <form id="pdp-review-form" onsubmit="submitReview(event)">
-              <div class="tv-ref-form-stars-select">
-                <label>Overall Rating</label>
-                <div class="tv-ref-interactive-stars" id="interactive-star-row">
-                  <span class="star-item active" data-val="1" onclick="setFormRating(1)">★</span>
-                  <span class="star-item active" data-val="2" onclick="setFormRating(2)">★</span>
-                  <span class="star-item active" data-val="3" onclick="setFormRating(3)">★</span>
-                  <span class="star-item active" data-val="4" onclick="setFormRating(4)">★</span>
-                  <span class="star-item active" data-val="5" onclick="setFormRating(5)">★</span>
+                <div class="tv-ref-form-row-2">
+                  <div class="tv-ref-form-field">
+                    <label for="rev-name">Full Name *</label>
+                    <input type="text" id="rev-name" required placeholder="e.g. Tariq Al-Mansoor">
+                  </div>
+                  <div class="tv-ref-form-field">
+                    <label for="rev-email">Email Address *</label>
+                    <input type="email" id="rev-email" required placeholder="e.g. tariq@example.com">
+                  </div>
                 </div>
-                <input type="hidden" id="form-rating-val" value="5">
-              </div>
 
-              <div class="tv-ref-form-row-2">
                 <div class="tv-ref-form-field">
-                  <label for="rev-name">Full Name *</label>
-                  <input type="text" id="rev-name" required placeholder="e.g. Tariq Al-Mansoor">
+                  <label for="rev-title">Review Headline *</label>
+                  <input type="text" id="rev-title" required placeholder="e.g. Excellent grip and noticeably quiet on highway">
                 </div>
+
                 <div class="tv-ref-form-field">
-                  <label for="rev-email">Email Address *</label>
-                  <input type="email" id="rev-email" required placeholder="e.g. tariq@example.com">
+                  <label for="rev-comment">Your Review *</label>
+                  <textarea id="rev-comment" rows="5" required placeholder="Describe your driving experience, road noise, handling in wet/dry conditions..."></textarea>
                 </div>
-              </div>
 
-              <div class="tv-ref-form-field">
-                <label for="rev-title">Review Headline *</label>
-                <input type="text" id="rev-title" required placeholder="e.g. Excellent grip and noticeably quiet on highway">
-              </div>
+                <div class="tv-ref-form-actions">
+                  <button type="submit" class="tv-ref-btn-submit-rev">Submit Review</button>
+                </div>
+              </form>
 
-              <div class="tv-ref-form-field">
-                <label for="rev-comment">Your Review *</label>
-                <textarea id="rev-comment" rows="5" required placeholder="Describe your driving experience, road noise, handling in wet/dry conditions..."></textarea>
+              <div id="review-success-msg" class="tv-ref-alert-success" style="display:none;">
+                ✔ Thank you for your review! Your review has been submitted successfully.
               </div>
-
-              <div class="tv-ref-form-actions">
-                <button type="submit" class="tv-ref-btn-submit-rev">Submit Review</button>
-              </div>
-            </form>
-
-            <div id="review-success-msg" class="tv-ref-alert-success" style="display:none;">
-              ✔ Thank you for your review! Your review has been submitted successfully.
             </div>
           </div>
         </div>
 
-        <!-- PANE 4: Fitment Guide -->
-        <div id="tab-fitment" class="tv-ref-pane" style="display:none;">
-          <h3 class="tv-ref-tab-heading">Vehicle Fitment &amp; Compatibility Guide</h3>
-          <p class="tv-ref-tab-sub">This tyre size <strong>{{ product.tire_size_label }}</strong> is original equipment and compatible with the following popular vehicles:</p>
-          <div class="tv-ref-fitment-grid">
-            <div class="tv-ref-fit-item"><strong>Toyota</strong> Yaris, Corolla, Passo</div>
-            <div class="tv-ref-fit-item"><strong>Nissan</strong> Sunny, Micra, Note</div>
-            <div class="tv-ref-fit-item"><strong>Hyundai</strong> Accent, i10, i20</div>
-            <div class="tv-ref-fit-item"><strong>Kia</strong> Picanto, Rio, Pegas</div>
-            <div class="tv-ref-fit-item"><strong>Honda</strong> City, Civic, Jazz</div>
-            <div class="tv-ref-fit-item"><strong>Suzuki</strong> Swift, Dzire, Celerio</div>
-          </div>
-          <div class="tv-ref-fit-note">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>Always verify your vehicle manufacturer's door jamb placard or current tyre sidewall marking before ordering.</span>
+        <!-- SECTION 4: Fitment Guide -->
+        <div class="tv-ref-accordion-group" data-tab-id="tab-fitment">
+          <button type="button" class="tv-ref-accordion-header" onclick="toggleRefAccordion('tab-fitment', this)" aria-expanded="false">
+            <span class="tv-ref-accordion-title">Fitment Guide</span>
+            <svg class="tv-ref-accordion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="tab-fitment" class="tv-ref-pane" style="display:none;">
+            <h3 class="tv-ref-tab-heading">Vehicle Fitment &amp; Compatibility Guide</h3>
+            <p class="tv-ref-tab-sub">This tyre size <strong>{{ product.tire_size_label }}</strong> is original equipment and compatible with the following popular vehicles:</p>
+            <div class="tv-ref-fitment-grid">
+              <div class="tv-ref-fit-item"><strong>Toyota</strong> Yaris, Corolla, Passo</div>
+              <div class="tv-ref-fit-item"><strong>Nissan</strong> Sunny, Micra, Note</div>
+              <div class="tv-ref-fit-item"><strong>Hyundai</strong> Accent, i10, i20</div>
+              <div class="tv-ref-fit-item"><strong>Kia</strong> Picanto, Rio, Pegas</div>
+              <div class="tv-ref-fit-item"><strong>Honda</strong> City, Civic, Jazz</div>
+              <div class="tv-ref-fit-item"><strong>Suzuki</strong> Swift, Dzire, Celerio</div>
+            </div>
+            <div class="tv-ref-fit-note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>Always verify your vehicle manufacturer's door jamb placard or current tyre sidewall marking before ordering.</span>
+            </div>
           </div>
         </div>
 
-        <!-- PANE 5: FAQs (Conditionally shown per user request!) -->
+        <!-- SECTION 5: FAQs (Conditionally shown per user request!) -->
         {% if product.faqs and product.faqs|length > 0 %}
-        <div id="tab-faqs" class="tv-ref-pane" style="display:none;">
-          <h3 class="tv-ref-tab-heading">Frequently Asked Questions</h3>
-          <div class="tv-ref-faqs-list">
-            {% for faq in product.faqs %}
-            <details class="tv-ref-faq-item">
-              <summary class="tv-ref-faq-q">{{ faq.question or faq.q }}</summary>
-              <div class="tv-ref-faq-a">{{ faq.answer or faq.a }}</div>
-            </details>
-            {% endfor %}
+        <div class="tv-ref-accordion-group" data-tab-id="tab-faqs">
+          <button type="button" class="tv-ref-accordion-header" onclick="toggleRefAccordion('tab-faqs', this)" aria-expanded="false">
+            <span class="tv-ref-accordion-title">FAQs</span>
+            <svg class="tv-ref-accordion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="tab-faqs" class="tv-ref-pane" style="display:none;">
+            <h3 class="tv-ref-tab-heading">Frequently Asked Questions</h3>
+            <div class="tv-ref-faqs-list">
+              {% for faq in product.faqs %}
+              <details class="tv-ref-faq-item">
+                <summary class="tv-ref-faq-q">{{ faq.question or faq.q }}</summary>
+                <div class="tv-ref-faq-a">{{ faq.answer or faq.a }}</div>
+              </details>
+              {% endfor %}
+            </div>
           </div>
         </div>
         {% endif %}
@@ -2511,10 +2725,28 @@ function switchRefTab(tabId, btn) {
   var tabBtns = document.querySelectorAll('.tv-ref-tab-btn');
   tabBtns.forEach(function(b) { b.classList.remove('active'); });
 
+  var accordionHeaders = document.querySelectorAll('.tv-ref-accordion-header');
+  accordionHeaders.forEach(function(h) {
+    h.classList.remove('active');
+    h.setAttribute('aria-expanded', 'false');
+  });
+
+  var accordionGroups = document.querySelectorAll('.tv-ref-accordion-group');
+  accordionGroups.forEach(function(g) { g.classList.remove('is-open'); });
+
   var targetPane = document.getElementById(tabId);
   if (targetPane) {
     targetPane.style.display = 'block';
     targetPane.classList.add('active');
+    var group = targetPane.closest('.tv-ref-accordion-group');
+    if (group) {
+      group.classList.add('is-open');
+      var header = group.querySelector('.tv-ref-accordion-header');
+      if (header) {
+        header.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
+      }
+    }
   }
 
   if (btn) {
@@ -2524,10 +2756,70 @@ function switchRefTab(tabId, btn) {
     if (matchingBtn) matchingBtn.classList.add('active');
   }
 
-  // Smooth scroll to tabs section if called from link
+  // Smooth scroll to tabs section or target group if called from link
   if (!btn) {
-    var tabsSec = document.querySelector('.tv-ref-tabs-section');
-    if (tabsSec) tabsSec.scrollIntoView({ behavior: 'smooth' });
+    var targetGroup = targetPane ? targetPane.closest('.tv-ref-accordion-group') : null;
+    if (window.innerWidth <= 768 && targetGroup) {
+      targetGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      var tabsSec = document.querySelector('.tv-ref-tabs-section');
+      if (tabsSec) tabsSec.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+}
+
+// Mobile Accordion Toggle (Open & Close)
+function toggleRefAccordion(tabId, headerBtn) {
+  var pane = document.getElementById(tabId);
+  if (!pane) return;
+  var group = headerBtn ? headerBtn.closest('.tv-ref-accordion-group') : pane.closest('.tv-ref-accordion-group');
+  var isOpen = group ? group.classList.contains('is-open') : (pane.classList.contains('active') && pane.style.display !== 'none');
+
+  if (isOpen) {
+    // Close this accordion item
+    pane.style.display = 'none';
+    pane.classList.remove('active');
+    if (headerBtn) {
+      headerBtn.classList.remove('active');
+      headerBtn.setAttribute('aria-expanded', 'false');
+    }
+    if (group) group.classList.remove('is-open');
+  } else {
+    // Accordion behavior: close other open items first
+    var allPanes = document.querySelectorAll('.tv-ref-pane');
+    allPanes.forEach(function(p) { p.style.display = 'none'; p.classList.remove('active'); });
+
+    var allHeaders = document.querySelectorAll('.tv-ref-accordion-header');
+    allHeaders.forEach(function(h) {
+      h.classList.remove('active');
+      h.setAttribute('aria-expanded', 'false');
+    });
+
+    var allGroups = document.querySelectorAll('.tv-ref-accordion-group');
+    allGroups.forEach(function(g) { g.classList.remove('is-open'); });
+
+    // Open target accordion item
+    pane.style.display = 'block';
+    pane.classList.add('active');
+    if (headerBtn) {
+      headerBtn.classList.add('active');
+      headerBtn.setAttribute('aria-expanded', 'true');
+    }
+    if (group) group.classList.add('is-open');
+
+    // Also sync desktop tab button if present
+    var matchingTabBtn = document.querySelector('.tv-ref-tab-btn[data-tab="' + tabId + '"]');
+    if (matchingTabBtn) {
+      document.querySelectorAll('.tv-ref-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      matchingTabBtn.classList.add('active');
+    }
+
+    // Scroll header into view smoothly if needed
+    if (headerBtn) {
+      setTimeout(function() {
+        headerBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
   }
 }
 

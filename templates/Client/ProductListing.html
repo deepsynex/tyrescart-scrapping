@@ -338,9 +338,6 @@
             <select id="sort-select" class="tv-sort-select-hidden" style="display: none;" onchange="sortProducts(this.value)">
               <option value="price-asc" {% if active_sort == 'price-asc' or not active_sort %}selected{% endif %}>Price: Low to High</option>
               <option value="price-desc" {% if active_sort == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
-              <option value="popular" {% if active_sort == 'popular' %}selected{% endif %}>Most Popular</option>
-              <option value="rating" {% if active_sort == 'rating' %}selected{% endif %}>Customer Rating</option>
-              <option value="newest" {% if active_sort == 'newest' %}selected{% endif %}>Newest Arrivals</option>
             </select>
 
             <!-- Custom Animated Antigravity Sort Dropdown -->
@@ -351,11 +348,7 @@
                   <path d="M17 4v16m0 0 4-4m-4 4-4-4"/>
                 </svg>
                 <span class="tv-sort-trigger-text" id="tv-sort-trigger-text">
-                  {% if active_sort == 'price-desc' %}Price: High to Low
-                  {% elif active_sort == 'popular' %}Most Popular
-                  {% elif active_sort == 'rating' %}Customer Rating
-                  {% elif active_sort == 'newest' %}Newest Arrivals
-                  {% else %}Price: Low to High{% endif %}
+                  {% if active_sort == 'price-desc' %}Price: High to Low{% else %}Price: Low to High{% endif %}
                 </span>
                 <span class="tv-sort-trigger-divider" aria-hidden="true"></span>
                 <svg class="tv-sort-trigger-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -387,46 +380,6 @@
                     <polyline points="6 8 12 14 18 8"></polyline>
                   </svg>
                   <span class="tv-sort-item-label">Price: High to Low</span>
-                  <span class="tv-sort-check-badge" aria-hidden="true">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </span>
-                </div>
-
-                <div class="tv-sort-item {% if active_sort == 'popular' %}is-active{% endif %}" data-value="popular" role="option" tabindex="0">
-                  <span class="tv-sort-indicator-bar" aria-hidden="true"></span>
-                  <svg class="tv-sort-item-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/>
-                  </svg>
-                  <span class="tv-sort-item-label">Most Popular</span>
-                  <span class="tv-sort-check-badge" aria-hidden="true">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </span>
-                </div>
-
-                <div class="tv-sort-item {% if active_sort == 'rating' %}is-active{% endif %}" data-value="rating" role="option" tabindex="0">
-                  <span class="tv-sort-indicator-bar" aria-hidden="true"></span>
-                  <svg class="tv-sort-item-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                  <span class="tv-sort-item-label">Customer Rating</span>
-                  <span class="tv-sort-check-badge" aria-hidden="true">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </span>
-                </div>
-
-                <div class="tv-sort-item {% if active_sort == 'newest' %}is-active{% endif %}" data-value="newest" role="option" tabindex="0">
-                  <span class="tv-sort-indicator-bar" aria-hidden="true"></span>
-                  <svg class="tv-sort-item-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                  <span class="tv-sort-item-label">Newest Arrivals</span>
                   <span class="tv-sort-check-badge" aria-hidden="true">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="20 6 9 17 4 12"></polyline>
