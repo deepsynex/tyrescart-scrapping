@@ -1799,7 +1799,7 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const params = new URLSearchParams();
   params.set('page', page);
   params.set('per_page', perPage);
-  if (sortVal && sortVal !== 'price-asc') params.set('sort', sortVal);
+  params.set('sort', sortVal || 'price-asc');
 
   selectedBrands.forEach(b => params.append('brand', b));
   selectedPatterns.forEach(p => params.append('pattern', p));
@@ -2052,10 +2052,7 @@ function initCustomSortDropdown() {
 
   const sortLabels = {
     'price-asc': 'Price: Low to High',
-    'price-desc': 'Price: High to Low',
-    'popular': 'Most Popular',
-    'rating': 'Customer Rating',
-    'newest': 'Newest Arrivals'
+    'price-desc': 'Price: High to Low'
   };
 
   function openDropdown() {

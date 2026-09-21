@@ -5208,75 +5208,111 @@ details summary span:last-child {
   .dtr-child-row.is-open {
     display: table-row !important;
   }
-  .price-table-card {
-    border-radius: 16px;
-    margin: 0 -4px;
-    overflow: hidden;
+  .price-table-card,
+  div:has(> .price-table-scroll),
+  div:has(> .tv-ev-table),
+  div:has(> .tv-4x4-table) {
+    border-radius: 16px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
   .price-table-scroll {
-    overflow-x: visible !important;
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .price-table,
   .tv-4x4-table,
   .tv-ev-table {
     min-width: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     table-layout: auto !important;
     border-collapse: collapse !important;
+    box-sizing: border-box !important;
   }
   .price-table thead th,
   .tv-4x4-table thead th,
   .tv-ev-table thead th {
-    padding: 12px 14px !important;
-    font-size: 0.82rem !important;
+    padding: 10px 8px !important;
+    font-size: 0.78rem !important;
+    box-sizing: border-box !important;
   }
   .price-table tbody td,
   .tv-4x4-table tbody td,
   .tv-ev-table tbody td {
-    padding: 12px 14px !important;
-    font-size: 0.88rem !important;
+    padding: 10px 8px !important;
+    font-size: 0.84rem !important;
+    box-sizing: border-box !important;
   }
   .price-table thead th:first-child,
-  .price-table tbody td:first-child,
+  .price-table tbody tr:not(.dtr-child-row) > td:first-child,
   .tv-4x4-table thead th:first-child,
-  .tv-4x4-table tbody td:first-child,
+  .tv-4x4-table tbody tr:not(.dtr-child-row) > td:first-child,
   .tv-ev-table thead th:first-child,
-  .tv-ev-table tbody td:first-child {
-    width: 100% !important;
+  .tv-ev-table tbody tr:not(.dtr-child-row) > td:first-child {
+    width: auto !important;
+    max-width: none !important;
     text-align: left !important;
+    box-sizing: border-box !important;
   }
   .price-table thead th:last-child,
-  .price-table tbody td:last-child,
+  .price-table tbody tr:not(.dtr-child-row) > td:last-child,
   .tv-4x4-table thead th:last-child,
-  .tv-4x4-table tbody td:last-child,
+  .tv-4x4-table tbody tr:not(.dtr-child-row) > td:last-child,
   .tv-ev-table thead th:last-child,
-  .tv-ev-table tbody td:last-child {
+  .tv-ev-table tbody tr:not(.dtr-child-row) > td:last-child {
     text-align: right !important;
     width: 1% !important;
+    max-width: none !important;
     white-space: nowrap !important;
+    padding-right: 6px !important;
+    box-sizing: border-box !important;
   }
   .tv-ev-btn-quote {
-    padding: 6px 14px !important;
-    font-size: 0.80rem !important;
-    gap: 4px !important;
+    padding: 5px 8px !important;
+    font-size: 0.74rem !important;
+    gap: 3px !important;
     white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .tv-4x4-table .get-quote-link,
   .price-table .get-quote-link {
-    font-size: 0.86rem !important;
+    font-size: 0.76rem !important;
     white-space: nowrap !important;
+    padding: 4px 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
   }
   .dtr-parent-row {
     cursor: pointer !important;
     -webkit-tap-highlight-color: transparent;
   }
   .dtr-cell-content {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    max-width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .dtr-cell-content > *:not(.dtr-control-btn) {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.82rem !important;
   }
   .dtr-control-btn {
     width: 22px;
@@ -5301,28 +5337,36 @@ details summary span:last-child {
     background: #0F172A !important;
   }
   .dtr-child-td {
-    padding: 0 12px 14px 12px !important;
+    padding: 6px 10px 14px 10px !important;
     border-bottom: 1px solid var(--border, #E2E8F0) !important;
     background-color: #F8FAFC !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .dtr-child-details {
     background: #FFFFFF;
     border: 1px solid var(--border, #E2E8F0);
-    border-radius: 14px;
-    padding: 12px 14px;
+    border-radius: 12px;
+    padding: 10px 12px;
     box-shadow: 0 4px 14px rgba(14, 17, 8, 0.04);
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .dtr-detail-item {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: flex-start;
-    font-size: 0.86rem;
-    padding-bottom: 8px;
+    gap: 3px;
+    font-size: 0.84rem;
+    padding-bottom: 7px;
     border-bottom: 1px solid #F1F5F9;
-    gap: 10px;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .dtr-detail-item:last-of-type {
     border-bottom: none;
@@ -5334,19 +5378,25 @@ details summary span:last-child {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.82rem;
-    flex-shrink: 0;
+    font-size: 0.78rem;
+    width: 100%;
+    box-sizing: border-box !important;
   }
   .dtr-detail-title svg {
     color: #2563FF;
     flex-shrink: 0;
   }
   .dtr-detail-value {
-    font-weight: 700;
+    font-weight: 600;
     color: #0F172A;
-    text-align: right;
-    font-size: 0.88rem;
+    text-align: left !important;
+    font-size: 0.86rem;
+    line-height: 1.4;
     word-break: break-word;
+    overflow-wrap: anywhere;
+    width: 100%;
+    padding-left: 20px;
+    box-sizing: border-box !important;
   }
   .td-size {
     width: auto !important;
@@ -5900,6 +5950,25 @@ details summary span:last-child {
   margin-bottom: 24px;
 }
 
+.tv-page-hero .hero-grid:not(:has(.tv-hero-quote-box)),
+.hero-grid:has(> .tv-hero-left:only-child) {
+  grid-template-columns: 1fr;
+}
+
+.tv-page-hero .hero-badges {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tv-page-hero .hero-badges::-webkit-scrollbar {
+  display: none;
+}
+
 .tv-page-hero .hero-badges .pill {
   background: rgba(37, 99, 255, 0.15);
   border: 1px solid rgba(56, 189, 248, 0.28);
@@ -5911,6 +5980,8 @@ details summary span:last-child {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tv-page-hero .hero-badges .pill svg {
@@ -6026,6 +6097,45 @@ details summary span:last-child {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.05);
+}
+
+/* Dark Pricing Section Theme (Matched to design reference) */
+.tv-dark-pricing-section,
+.price-section.tv-dark-pricing-section {
+  background-color: #0B1F3F !important;
+  background-image: none !important;
+}
+
+.tv-dark-pricing-section .price-table thead th,
+.price-section.tv-dark-pricing-section .price-table thead th,
+.price-table.tv-dark-theme-table thead th {
+  background: #E7F0FB !important;
+  color: #0B1F3A !important;
+  border-bottom: 1px solid #D6E4F0 !important;
+}
+
+.tv-dark-pricing-section .price-table tbody tr,
+.price-table.tv-dark-theme-table tbody tr {
+  background-color: #FFFFFF !important;
+}
+
+.tv-dark-pricing-section .price-table tbody tr:hover,
+.price-table.tv-dark-theme-table tbody tr:hover {
+  background-color: #F8FAFC !important;
+}
+
+.tv-dark-pricing-section .price-table tbody tr:nth-child(even),
+.price-table.tv-dark-theme-table tbody tr:nth-child(even) {
+  background-color: #FFFFFF !important;
+}
+
+.tv-dark-pricing-section .tv-pricing-badge-pill {
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.tv-dark-pricing-section .tv-pricing-badge-pill:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
 }
 
 .price-table th {
@@ -12697,4 +12807,40 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
     padding: 1px 4px;
   }
 }
+
+/* ===== Local Driving Realities Section ===== */
+.tv-realities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+@media (max-width: 860px) {
+  .tv-realities-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+.tv-driver-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+.tv-driver-pill:hover {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #2563FF;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 255, 0.12);
+}
+
 

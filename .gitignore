@@ -70,3 +70,5 @@ seed_product_attribute_values.sql
 static/uploads/brands.zip
 SCALING_AND_SEARCH_RECOMMENDATION.md
 API_COLLECTION.md
+testcase.md
+update_tyre_brands.sql
