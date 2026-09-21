@@ -920,19 +920,14 @@ window.initTvPageComponents = function() {
         }
     });
 
-    // 4. Antigravity 3D Tilt on Terrain Cards
+    // 4. Lift effect on Terrain Cards
     var terrainCards = document.querySelectorAll('.tv-terrain-card');
     terrainCards.forEach(function(card) {
-        card.addEventListener('mousemove', function(e) {
-            var rect = card.getBoundingClientRect();
-            var x = e.clientX - rect.left - rect.width / 2;
-            var y = e.clientY - rect.top - rect.height / 2;
-            var rotX = (-y / (rect.height / 2)) * 6;
-            var rotY = (x / (rect.width / 2)) * 6;
-            card.style.transform = 'perspective(1000px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) translateY(-6px)';
+        card.addEventListener('mouseenter', function() {
+            card.style.transform = 'translateY(-6px)';
         });
         card.addEventListener('mouseleave', function() {
-            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+            card.style.transform = '';
         });
     });
 
