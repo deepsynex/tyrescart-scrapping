@@ -5964,16 +5964,9 @@ details summary span:last-child {
 
 .tv-page-hero .hero-badges {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.tv-page-hero .hero-badges::-webkit-scrollbar {
-  display: none;
 }
 
 .tv-page-hero .hero-badges .pill {
