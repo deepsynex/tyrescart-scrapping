@@ -591,10 +591,10 @@ header {
 /* ---------------- HERO ---------------- */
 .hero {
   background-color: #a855f7;
-  background-image: url('/static/assets/images/hero-gradient.png');
+  background-image: url('/static/assets/images/hero-gradient.png?v=2');
   background-image: image-set(
-    url('/static/assets/images/hero-gradient.webp') type('image/webp'),
-    url('/static/assets/images/hero-gradient.png') type('image/png')
+    url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
+    url('/static/assets/images/hero-gradient.png?v=2') type('image/png')
   );
   background-repeat: no-repeat;
   background-position: center center;
@@ -1814,10 +1814,10 @@ details .body a:hover {
 /* ---------------- FINAL CTA ---------------- */
 .final {
   background-color: #a855f7;
-  background-image: url('/static/assets/images/hero-gradient.png');
+  background-image: url('/static/assets/images/hero-gradient.png?v=2');
   background-image: image-set(
-    url('/static/assets/images/hero-gradient.webp') type('image/webp'),
-    url('/static/assets/images/hero-gradient.png') type('image/png')
+    url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
+    url('/static/assets/images/hero-gradient.png?v=2') type('image/png')
   );
   background-repeat: no-repeat;
   background-position: center center;
@@ -2354,10 +2354,10 @@ footer .tagline {
 /* Brand Hero Banner */
 .blog-hero-banner {
   background-color: #a855f7;
-  background-image: url('/static/assets/images/hero-gradient.png');
+  background-image: url('/static/assets/images/hero-gradient.png?v=2');
   background-image: image-set(
-    url('/static/assets/images/hero-gradient.webp') type('image/webp'),
-    url('/static/assets/images/hero-gradient.png') type('image/png')
+    url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
+    url('/static/assets/images/hero-gradient.png?v=2') type('image/png')
   );
   background-repeat: no-repeat;
   background-position: center center;
@@ -4216,10 +4216,10 @@ footer .tagline {
 /* 4. Statistics Band */
 .about-stats-band {
   background-color: #a855f7;
-  background-image: url('/static/assets/images/hero-gradient.png');
+  background-image: url('/static/assets/images/hero-gradient.png?v=2');
   background-image: image-set(
-    url('/static/assets/images/hero-gradient.webp') type('image/webp'),
-    url('/static/assets/images/hero-gradient.png') type('image/png')
+    url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
+    url('/static/assets/images/hero-gradient.png?v=2') type('image/png')
   );
   background-repeat: no-repeat;
   background-position: center center;
