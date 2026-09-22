@@ -7,32 +7,34 @@
 <meta name="description" content="{% block meta_description %}Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.{% endblock %}">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="author" content="TyresVision">
-<meta name="theme-color" content="#2563FF">
+<meta name="theme-color" content="#a855f7">
 <link rel="canonical" href="{% block canonical_url %}https://www.tyresvision.com/{% endblock %}">
 <link rel="alternate" hreflang="en-ae" href="https://www.tyresvision.com/">
 <link rel="alternate" hreflang="x-default" href="https://www.tyresvision.com/">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%232563FF'/%3E%3Ccircle cx='20' cy='20' r='11' fill='none' stroke='%2338BDF8' stroke-width='4.5'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23A855F7'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%23a855f7'/%3E%3Ccircle cx='20' cy='20' r='11' fill='none' stroke='%239333ea' stroke-width='4.5'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23faf5ff'/%3E%3C/svg%3E">
 <link rel="icon" type="image/webp" href="/static/assets/images/favicon-color.webp">
 <link rel="shortcut icon" href="/static/assets/images/favicon-color.webp" type="image/webp">
 <link rel="apple-touch-icon" href="/static/assets/images/apple-touch-icon.png">
 
-<!-- Open Graph -->
-<meta property="og:type" content="website">
+<!-- Open Graph (page_og_tags, from VisionAdmin SEO Manager, takes priority over the sitewide default) -->
+<meta property="og:type" content="{{ page_og_tags.og_type if page_og_tags and page_og_tags.og_type else 'website' }}">
 <meta property="og:site_name" content="TyresVision">
-<meta property="og:locale" content="en_AE">
-<meta property="og:url" content="https://www.tyresvision.com/">
-<meta property="og:title" content="Buy Tyres Online in Dubai & Abu Dhabi | TyresVision">
-<meta property="og:description" content="Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.">
+<meta property="og:locale" content="{{ page_og_tags.og_locale if page_og_tags and page_og_tags.og_locale else 'en_AE' }}">
+<meta property="og:url" content="{{ page_og_tags.og_url if page_og_tags and page_og_tags.og_url else 'https://www.tyresvision.com/' }}">
+<meta property="og:title" content="{{ page_og_tags.og_title if page_og_tags and page_og_tags.og_title else 'Buy Tyres Online in Dubai & Abu Dhabi | TyresVision' }}">
+<meta property="og:description" content="{{ page_og_tags.og_description if page_og_tags and page_og_tags.og_description else 'Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.' }}">
 <meta property="og:image" content="https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TyresVision — buy tyres online, fitted locally across the UAE">
+<meta property="og:image:secure_url" content="https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png">
+<meta property="og:image:width" content="{{ page_og_tags.og_image_width if page_og_tags and page_og_tags.og_image_width else 1731 }}">
+<meta property="og:image:height" content="{{ page_og_tags.og_image_height if page_og_tags and page_og_tags.og_image_height else 909 }}">
+<meta property="og:image:alt" content="{{ page_og_tags.og_image_alt if page_og_tags and page_og_tags.og_image_alt else 'TyresVision — buy tyres online, fitted locally across the UAE' }}">
 
 <!-- Twitter / X -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Buy Tyres Online in Dubai & Abu Dhabi | TyresVision">
-<meta name="twitter:description" content="Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.">
+<meta name="twitter:card" content="{{ page_twitter_tags.twitter_card if page_twitter_tags and page_twitter_tags.twitter_card else 'summary_large_image' }}">
+<meta name="twitter:title" content="{{ page_twitter_tags.twitter_title if page_twitter_tags and page_twitter_tags.twitter_title else 'Buy Tyres Online in Dubai & Abu Dhabi | TyresVision' }}">
+<meta name="twitter:description" content="{{ page_twitter_tags.twitter_description if page_twitter_tags and page_twitter_tags.twitter_description else 'Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.' }}">
 <meta name="twitter:image" content="https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png">
+<meta name="twitter:image:alt" content="{{ page_twitter_tags.twitter_image_alt if page_twitter_tags and page_twitter_tags.twitter_image_alt else 'TyresVision — buy tyres online, fitted locally across the UAE' }}">
 
 <!-- Structured data: business entity & knowledge graph (Schema.org) -->
 <script type="application/ld+json">

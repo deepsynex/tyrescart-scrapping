@@ -9,11 +9,11 @@
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
     <div>
       <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
-        <a href="/visionadmin/brands" class="hover:text-[#1D4ED8] transition">Catalog</a>
+        <a href="/visionadmin/brands" class="hover:text-[#7e22ce] transition">Catalog</a>
         <span>/</span>
-        <a href="/visionadmin/brands" class="hover:text-[#1D4ED8] transition">Brands</a>
+        <a href="/visionadmin/brands" class="hover:text-[#7e22ce] transition">Brands</a>
         <span>/</span>
-        <span class="text-[#1D4ED8] font-bold" x-text="form.id ? 'Edit: ' + form.name : 'New Brand'"></span>
+        <span class="text-[#7e22ce] font-bold" x-text="form.id ? 'Edit: ' + form.name : 'New Brand'"></span>
       </div>
       <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1" x-text="form.id ? ('Edit Brand: ' + form.name) : 'Create New Tyre Brand'"></h1>
       <p class="text-xs text-slate-500 font-medium mt-0.5" x-text="form.id ? ('Slug: ' + form.slug + ' • Origin: ' + (form.country || 'N/A') + ' • Status: ' + form.status.toUpperCase()) : 'Configure brand identity, logo, origin country, and SEO metadata.'"></p>
@@ -59,7 +59,7 @@
         type="button" 
         @click="saveBrand(true)" 
         :disabled="saving"
-        class="px-6 py-2.5 rounded-2xl bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
+        class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
       >
         <span x-text="saving ? 'Saving...' : 'Save Brand'"></span>
       </button>
@@ -70,7 +70,7 @@
   <template x-if="loading">
     <div class="bg-white p-12 rounded-3xl border border-[#E8EDE4] text-center text-slate-400">
       <div class="inline-flex items-center gap-3">
-        <svg class="animate-spin h-5 w-5 text-[#1D4ED8]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+        <svg class="animate-spin h-5 w-5 text-[#7e22ce]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         <span class="font-bold text-sm">Loading brand details...</span>
       </div>
     </div>
@@ -83,8 +83,8 @@
       <!-- Left Column: Core Brand Identity -->
       <div class="space-y-5">
         <div class="flex items-center gap-2 pb-2 border-b border-[#E8EDE4]">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#2563FF]"></span>
-          <h3 class="text-xs font-black uppercase tracking-wider text-[#1D4ED8]">Brand Details &amp; Identity</h3>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#a855f7]"></span>
+          <h3 class="text-xs font-black uppercase tracking-wider text-[#7e22ce]">Brand Details &amp; Identity</h3>
         </div>
 
         <div>
@@ -95,7 +95,7 @@
             @input="if (!form.id) form.slug = slugify(form.name)"
             required 
             placeholder="e.g. Michelin, Hankook, Pirelli, Bridgestone"
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           />
         </div>
 
@@ -106,7 +106,7 @@
             x-model="form.slug" 
             required 
             placeholder="e.g. michelin"
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           />
         </div>
 
@@ -116,7 +116,7 @@
             type="text" 
             x-model="form.country" 
             placeholder="e.g. France, Japan, Italy, Germany, USA, South Korea"
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           />
         </div>
 
@@ -137,13 +137,13 @@
                 type="file" 
                 accept="image/*" 
                 @change="uploadLogo($event)" 
-                class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#EFF6FF] file:text-[#1D4ED8] hover:file:bg-blue-100 cursor-pointer"
+                class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#faf5ff] file:text-[#7e22ce] hover:file:bg-blue-100 cursor-pointer"
               />
               <input 
                 type="text" 
                 x-model="form.logo" 
                 placeholder="Or enter logo image URL directly" 
-                class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-[#2563FF]"
+                class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-[#a855f7]"
               />
             </div>
           </div>
@@ -155,7 +155,7 @@
             <input 
               type="number" 
               x-model="form.sort_order" 
-              class="w-full px-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF]"
+              class="w-full px-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
             />
           </div>
 
@@ -163,7 +163,7 @@
             <label class="block text-xs font-bold text-slate-700 mb-1.5">Status</label>
             <select 
               x-model="form.status" 
-              class="w-full px-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF]"
+              class="w-full px-4 py-2.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -176,7 +176,7 @@
             type="checkbox" 
             id="brand_is_featured" 
             x-model="form.is_featured" 
-            class="w-4 h-4 rounded text-[#1D4ED8] focus:ring-[#2563FF] border-slate-300 cursor-pointer"
+            class="w-4 h-4 rounded text-[#7e22ce] focus:ring-[#a855f7] border-slate-300 cursor-pointer"
           />
           <label for="brand_is_featured" class="text-xs font-bold text-slate-700 cursor-pointer">Featured Brand (Highlight on homepage &amp; brand strips)</label>
         </div>
@@ -185,8 +185,8 @@
       <!-- Right Column: Content & SEO -->
       <div class="space-y-5">
         <div class="flex items-center gap-2 pb-2 border-b border-[#E8EDE4]">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#2563FF]"></span>
-          <h3 class="text-xs font-black uppercase tracking-wider text-[#1D4ED8]">Content &amp; Search Engine Optimization</h3>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#a855f7]"></span>
+          <h3 class="text-xs font-black uppercase tracking-wider text-[#7e22ce]">Content &amp; Search Engine Optimization</h3>
         </div>
 
         <div>
@@ -195,7 +195,7 @@
             rows="6" 
             x-model="form.description_en" 
             placeholder="Detailed overview of the manufacturer, technological legacy, warranty standard, and product tiers..." 
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           ></textarea>
         </div>
 
@@ -205,7 +205,7 @@
             type="text" 
             x-model="form.meta_title_en" 
             placeholder="e.g. Buy Michelin Tyres in UAE | Best Prices Online" 
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           />
         </div>
 
@@ -215,7 +215,7 @@
             rows="4" 
             x-model="form.meta_desc_en" 
             placeholder="Search engine snippet description for this brand page..." 
-            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           ></textarea>
         </div>
       </div>
@@ -242,7 +242,7 @@
         <button 
           type="submit" 
           :disabled="saving" 
-          class="px-6 py-2.5 rounded-2xl bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs font-bold shadow-xs transition cursor-pointer disabled:opacity-50"
+          class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs font-bold shadow-xs transition cursor-pointer disabled:opacity-50"
         >
           <span x-show="!saving" x-text="form.id ? 'Save Changes' : 'Create Brand'"></span>
           <span x-show="saving">Saving...</span>

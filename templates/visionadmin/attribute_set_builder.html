@@ -9,18 +9,18 @@
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-[#E8EDE4] shadow-xs">
     <div class="space-y-1">
       <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
-        <a href="/visionadmin/attributes" class="hover:text-[#1D4ED8] transition">Catalog</a>
+        <a href="/visionadmin/attributes" class="hover:text-[#7e22ce] transition">Catalog</a>
         <span>/</span>
-        <a href="/visionadmin/attributes?tab=sets" class="hover:text-[#1D4ED8] transition">Attribute Sets</a>
+        <a href="/visionadmin/attributes?tab=sets" class="hover:text-[#7e22ce] transition">Attribute Sets</a>
         <span>/</span>
         <span class="text-[#0E1108] font-bold truncate max-w-[200px]" x-text="schema ? schema.name : 'Set #' + setId"></span>
         <span>/</span>
-        <span class="text-[#1D4ED8] font-bold">Schema Builder</span>
+        <span class="text-[#7e22ce] font-bold">Schema Builder</span>
       </div>
 
       <div class="flex flex-wrap items-center gap-3 pt-1">
         <h1 class="text-2xl sm:text-3xl font-black text-[#0E1108] tracking-tight" x-text="schema ? ('Edit Attribute Set: ' + schema.name) : 'Attribute Set Schema Builder'"></h1>
-        <span class="px-2.5 py-1 rounded-full bg-[#EFF6FF] text-[#1D4ED8] text-xs font-black uppercase tracking-wider">Drag &amp; Drop Builder</span>
+        <span class="px-2.5 py-1 rounded-full bg-[#faf5ff] text-[#7e22ce] text-xs font-black uppercase tracking-wider">Drag &amp; Drop Builder</span>
       </div>
       <p class="text-xs text-slate-500 font-medium">Reorganize schema groups, drag attributes between groups or from unassigned pool. Required attributes are locked.</p>
     </div>
@@ -69,7 +69,7 @@
         type="button" 
         @click="saveSchema(true)" 
         :disabled="isSaving"
-        class="px-6 py-2.5 rounded-2xl bg-[#2563FF] hover:bg-[#1D4ED8] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 active:scale-95 cursor-pointer"
+        class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 active:scale-95 cursor-pointer"
       >
         <span x-text="isSaving ? 'Saving...' : 'Save Attribute Set'"></span>
       </button>
@@ -78,7 +78,7 @@
 
   <!-- Loading State -->
   <div x-show="isLoading" class="p-16 text-center text-slate-400 font-semibold bg-white rounded-3xl border border-slate-200 shadow-xs">
-    <div class="inline-block w-8 h-8 border-3 border-[#2563FF] border-t-transparent rounded-full animate-spin mb-3"></div>
+    <div class="inline-block w-8 h-8 border-3 border-[#a855f7] border-t-transparent rounded-full animate-spin mb-3"></div>
     <p class="text-xs">Loading attribute schema groups and attributes…</p>
   </div>
 
@@ -100,7 +100,7 @@
             x-model="schema.name" 
             required 
             placeholder="e.g. Wheels, Tyres, Batteries"
-            class="w-full px-3.5 py-2.5 text-xs font-bold border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:border-[#2563FF] focus:ring-2 focus:ring-[#2563FF]/15"
+            class="w-full px-3.5 py-2.5 text-xs font-bold border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:border-[#a855f7] focus:ring-2 focus:ring-[#a855f7]/15"
           />
           <p class="text-[11px] text-slate-400 mt-1.5 font-medium">For internal use</p>
         </div>
@@ -123,7 +123,7 @@
 
           <div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Assigned Attributes</span>
-            <span class="text-xs font-bold text-[#1D4ED8] mt-0.5 block" x-text="getTotalAssignedCount() + ' Attributes'"></span>
+            <span class="text-xs font-bold text-[#7e22ce] mt-0.5 block" x-text="getTotalAssignedCount() + ' Attributes'"></span>
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@
             <p class="text-[11px] text-slate-500 font-medium italic">Double click on a group to rename it.</p>
             <template x-if="schema && schema.groups && schema.groups.length > 1">
               <div class="flex items-center gap-1.5 text-[11px]">
-                <button type="button" @click="expandAllGroups()" class="text-[#2563FF] hover:underline font-semibold cursor-pointer">Expand All</button>
+                <button type="button" @click="expandAllGroups()" class="text-[#a855f7] hover:underline font-semibold cursor-pointer">Expand All</button>
                 <span class="text-slate-300">|</span>
                 <button type="button" @click="collapseAllGroups()" class="text-slate-500 hover:text-slate-800 hover:underline font-semibold cursor-pointer">Collapse All</button>
               </div>
@@ -183,10 +183,10 @@
             <div 
               class="rounded-2xl transition duration-150 p-2 border relative"
               :class="[
-                selectedGroupId === group.id ? 'border-[#2563FF]/50 bg-blue-50/20' : 'border-slate-100 hover:border-slate-200',
-                isDragOverGroupBefore(group.id) ? 'border-t-2 !border-t-[#2563FF] bg-blue-50/30' : '',
-                isDragOverGroupAfter(group.id) ? 'border-b-2 !border-b-[#2563FF] bg-blue-50/30' : '',
-                draggedAttr && dragOverGroupId === group.id ? 'ring-2 ring-[#2563FF] bg-blue-50/30 border-[#2563FF]' : ''
+                selectedGroupId === group.id ? 'border-[#a855f7]/50 bg-blue-50/20' : 'border-slate-100 hover:border-slate-200',
+                isDragOverGroupBefore(group.id) ? 'border-t-2 !border-t-[#a855f7] bg-blue-50/30' : '',
+                isDragOverGroupAfter(group.id) ? 'border-b-2 !border-b-[#a855f7] bg-blue-50/30' : '',
+                draggedAttr && dragOverGroupId === group.id ? 'ring-2 ring-[#a855f7] bg-blue-50/30 border-[#a855f7]' : ''
               ]"
               @dragover="onDragOverGroup($event, group.id, gIdx)"
               @dragleave="onDragLeaveGroup($event, group.id)"
@@ -198,7 +198,7 @@
                 @dragstart="onDragStartGroup($event, group, gIdx)"
                 @dragend="onDragEndGroup()"
                 class="flex items-center justify-between p-2 rounded-xl text-xs font-bold transition cursor-pointer select-none group/gh"
-                :class="selectedGroupId === group.id ? 'bg-[#EFF6FF] text-[#1D4ED8]' : 'text-slate-800 hover:bg-slate-50'"
+                :class="selectedGroupId === group.id ? 'bg-[#faf5ff] text-[#7e22ce]' : 'text-slate-800 hover:bg-slate-50'"
                 @click="selectedGroupId = group.id"
                 @dblclick="startRenameGroup(group)"
               >
@@ -227,7 +227,7 @@
                       @keydown.enter="saveRenameGroup(group)" 
                       @keydown.escape="cancelRenameGroup()"
                       @blur="saveRenameGroup(group)"
-                      class="px-2 py-0.5 text-xs font-bold border border-[#2563FF] rounded bg-white text-slate-900 focus:outline-none ring-1 ring-[#2563FF]"
+                      class="px-2 py-0.5 text-xs font-bold border border-[#a855f7] rounded bg-white text-slate-900 focus:outline-none ring-1 ring-[#a855f7]"
                       autofocus
                     />
                   </template>
@@ -258,7 +258,7 @@
                   </template>
                   <span 
                     class="px-2 py-0.5 rounded-md text-[10px] font-black"
-                    :class="selectedGroupId === group.id ? 'bg-blue-100 text-[#1D4ED8]' : 'bg-slate-100 text-slate-500'"
+                    :class="selectedGroupId === group.id ? 'bg-blue-100 text-[#7e22ce]' : 'bg-slate-100 text-slate-500'"
                     x-text="(group.attributes ? group.attributes.length : 0)"
                   ></span>
                 </div>
@@ -283,8 +283,8 @@
                     class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 border transition cursor-grab active:cursor-grabbing group/attr select-none shadow-2xs relative"
                     :class="[
                       draggedAttr && draggedAttr.id === attr.id ? 'opacity-30 border-dashed border-blue-400' : 'border-slate-100 hover:border-slate-200',
-                      isDragOverAttrBefore(attr.id) ? 'border-t-2 !border-t-[#2563FF] bg-blue-50/20' : '',
-                      isDragOverAttrAfter(attr.id) ? 'border-b-2 !border-b-[#2563FF] bg-blue-50/20' : ''
+                      isDragOverAttrBefore(attr.id) ? 'border-t-2 !border-t-[#a855f7] bg-blue-50/20' : '',
+                      isDragOverAttrAfter(attr.id) ? 'border-b-2 !border-b-[#a855f7] bg-blue-50/20' : ''
                     ]"
                   >
                     <div class="flex items-center gap-1.5 min-w-0">
@@ -371,7 +371,7 @@
             type="text" 
             x-model="unassignedSearch" 
             placeholder="Filter attributes by name or code..."
-            class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#2563FF]"
+            class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
           />
         </div>
 
@@ -396,7 +396,7 @@
               draggable="true"
               @dragstart="onDragStartAttr($event, attr, null)"
               @dragend="onDragEndAttr()"
-              class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-[#2563FF]/50 transition cursor-grab active:cursor-grabbing select-none group/u shadow-2xs"
+              class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-[#a855f7]/50 transition cursor-grab active:cursor-grabbing select-none group/u shadow-2xs"
             >
               <div class="flex items-center gap-2 min-w-0">
                 <span class="text-slate-400 text-xs select-none">📄</span>
@@ -417,7 +417,7 @@
                   type="button" 
                   @click="quickAssignToSelectedGroup(attr)"
                   :disabled="!selectedGroupId"
-                  class="w-5 h-5 rounded-md bg-[#EFF6FF] text-[#1D4ED8] hover:bg-blue-100 flex items-center justify-center transition cursor-pointer text-xs font-bold opacity-0 group-hover/u:opacity-100"
+                  class="w-5 h-5 rounded-md bg-[#faf5ff] text-[#7e22ce] hover:bg-blue-100 flex items-center justify-center transition cursor-pointer text-xs font-bold opacity-0 group-hover/u:opacity-100"
                   title="Assign to selected group"
                 >
                   +

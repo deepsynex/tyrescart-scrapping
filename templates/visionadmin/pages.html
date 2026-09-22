@@ -15,7 +15,7 @@
   <!-- Hero Banner Card (Matches Image Exactly) -->
   <div class="relative bg-white rounded-3xl p-6 sm:p-8 border border-[#E8EDE4] shadow-[0_4px_20px_-2px_rgba(14,17,8,0.03)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 overflow-hidden">
     <!-- Ambient Background Accent Graphics -->
-    <div class="absolute -right-8 -top-8 w-64 h-64 bg-[#EFF6FF]/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -right-8 -top-8 w-64 h-64 bg-[#faf5ff]/50 rounded-full blur-3xl pointer-events-none"></div>
 
     <div class="space-y-2 max-w-xl relative z-10">
       <h1 class="text-2xl sm:text-3xl font-black text-[#0E1108] tracking-tight">Pages &amp; Policies</h1>
@@ -26,7 +26,7 @@
     <div class="hidden xl:flex items-center justify-center shrink-0 w-44 h-24 relative z-10 pointer-events-none">
       <svg class="w-full h-full" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Ambient Glow -->
-        <circle cx="80" cy="50" r="40" fill="#EFF6FF" filter="blur(8px)" />
+        <circle cx="80" cy="50" r="40" fill="#faf5ff" filter="blur(8px)" />
         
         <!-- Back Leaf -->
         <path d="M25 65 C20 40, 45 25, 60 30 C55 50, 40 65, 25 65 Z" fill="#9CD877" opacity="0.6"/>
@@ -38,8 +38,8 @@
         <line x1="56" y1="52" x2="85" y2="46" stroke="#A8C49E" stroke-width="2" stroke-linecap="round"/>
 
         <!-- Document 2 (Front) -->
-        <rect x="62" y="10" width="55" height="72" rx="8" fill="#FFFFFF" stroke="#DBEAFE" stroke-width="1.5" filter="drop-shadow(0 4px 12px rgba(37, 99, 255,0.12))"/>
-        <line x1="72" y1="26" x2="105" y2="26" stroke="#2563FF" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="62" y="10" width="55" height="72" rx="8" fill="#FFFFFF" stroke="#e9d5ff" stroke-width="1.5" filter="drop-shadow(0 4px 12px rgba(168, 85, 247,0.12))"/>
+        <line x1="72" y1="26" x2="105" y2="26" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
         <line x1="72" y1="36" x2="105" y2="36" stroke="#E2EADE" stroke-width="2" stroke-linecap="round"/>
         <line x1="72" y1="44" x2="100" y2="44" stroke="#E2EADE" stroke-width="2" stroke-linecap="round"/>
         <line x1="72" y1="52" x2="105" y2="52" stroke="#E2EADE" stroke-width="2" stroke-linecap="round"/>
@@ -47,20 +47,20 @@
 
         <!-- Green Shield Badge -->
         <g transform="translate(108, 12)">
-          <path d="M14 0 C22 0, 28 4, 28 12 C28 22, 14 28, 14 28 C14 28, 0 22, 0 12 C0 4, 6 0, 14 0 Z" fill="#2563FF" stroke="#FFFFFF" stroke-width="2" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.15))"/>
+          <path d="M14 0 C22 0, 28 4, 28 12 C28 22, 14 28, 14 28 C14 28, 0 22, 0 12 C0 4, 6 0, 14 0 Z" fill="#a855f7" stroke="#FFFFFF" stroke-width="2" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.15))"/>
           <path d="M8 12 L12 16 L20 8" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </g>
 
         <!-- Front Floating Leaf -->
-        <path d="M120 65 C135 48, 155 55, 150 72 C135 78, 122 72, 120 65 Z" fill="#2563FF" opacity="0.8"/>
-        <path d="M15 75 C10 60, 25 50, 35 55 C32 68, 22 76, 15 75 Z" fill="#2563FF" opacity="0.7"/>
+        <path d="M120 65 C135 48, 155 55, 150 72 C135 78, 122 72, 120 65 Z" fill="#a855f7" opacity="0.8"/>
+        <path d="M15 75 C10 60, 25 50, 35 55 C32 68, 22 76, 15 75 Z" fill="#a855f7" opacity="0.7"/>
       </svg>
     </div>
 
     <!-- Right Actions -->
     <div class="flex items-center gap-3 shrink-0 relative z-10 w-full lg:w-auto justify-start lg:justify-end">
       <!-- Primary Action Button (Brand Green) -->
-      <button type="button" id="btn-create-page" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#2563FF]/20 hover:shadow-lg transition-all duration-200 cursor-pointer">
+      <button type="button" id="btn-create-page" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#a855f7]/20 hover:shadow-lg transition-all duration-200 cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>Create New Page</span>
       </button>
@@ -73,7 +73,7 @@
     <!-- 1. Total Pages Card -->
     <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
-        <div class="w-10 h-10 rounded-2xl bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-[#faf5ff] text-[#7e22ce] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>
         <div>
@@ -84,7 +84,7 @@
       <div class="flex items-end justify-between mt-3 pt-2">
         <span class="text-[11px] text-slate-400 font-medium">All time</span>
         <!-- Sparkline Curve SVG -->
-        <svg class="w-20 h-6 text-[#2563FF]" viewBox="0 0 80 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-20 h-6 text-[#a855f7]" viewBox="0 0 80 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M0 20 C 20 18, 30 22, 45 12 C 55 5, 65 14, 80 2" />
         </svg>
       </div>
@@ -93,7 +93,7 @@
     <!-- 2. Active (Live) Card -->
     <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
-        <div class="w-10 h-10 rounded-2xl bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-[#faf5ff] text-[#7e22ce] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
         <div>
@@ -104,7 +104,7 @@
       <div class="flex items-end justify-between mt-3 pt-2">
         <span class="text-[11px] text-slate-400 font-medium">Currently published</span>
         <!-- Sparkline Curve SVG -->
-        <svg class="w-20 h-6 text-[#2563FF]" viewBox="0 0 80 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-20 h-6 text-[#a855f7]" viewBox="0 0 80 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M0 22 C 25 20, 35 15, 50 18 C 65 20, 70 8, 80 4" />
         </svg>
       </div>
@@ -157,7 +157,7 @@
     
     <!-- Status Filter Pills -->
     <div class="flex items-center gap-1.5 p-1 bg-white border border-[#E8EDE4] rounded-2xl shadow-2xs w-full md:w-auto text-xs font-bold">
-      <button type="button" class="tab-filter px-4 py-2 rounded-xl bg-[#EFF6FF] text-[#1D4ED8] transition cursor-pointer" data-status="all">All Pages</button>
+      <button type="button" class="tab-filter px-4 py-2 rounded-xl bg-[#faf5ff] text-[#7e22ce] transition cursor-pointer" data-status="all">All Pages</button>
       <button type="button" class="tab-filter px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition cursor-pointer" data-status="active">Active</button>
       <button type="button" class="tab-filter px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition cursor-pointer" data-status="inactive">Inactive</button>
       <button type="button" class="tab-filter px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition cursor-pointer" data-status="trash">Trash</button>
@@ -170,7 +170,7 @@
           type="text" 
           id="pages-search-input" 
           placeholder="Search by title, content, or slug..." 
-          class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E8EDE4] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#2563FF] focus:border-[#2563FF] bg-white transition placeholder:text-slate-400 shadow-2xs" 
+          class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#E8EDE4] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#a855f7] focus:border-[#a855f7] bg-white transition placeholder:text-slate-400 shadow-2xs" 
         />
         <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
@@ -199,7 +199,7 @@
         <tbody id="pages-table-body" class="divide-y divide-[#F1F5F0] text-slate-700">
           <tr>
             <td colspan="5" class="py-14 text-center text-slate-400">
-              <div class="inline-block animate-spin w-7 h-7 border-2 border-[#2563FF] border-t-transparent rounded-full mb-3"></div>
+              <div class="inline-block animate-spin w-7 h-7 border-2 border-[#a855f7] border-t-transparent rounded-full mb-3"></div>
               <p class="font-bold text-xs">Loading studio pages…</p>
             </td>
           </tr>
@@ -279,7 +279,7 @@
             <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-6 border border-slate-800 space-y-4 shadow-lg">
               <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                  <span class="w-9 h-9 rounded-2xl bg-[#2563FF]/20 text-emerald-400 flex items-center justify-center text-base font-black border border-emerald-500/30">🦸</span>
+                  <span class="w-9 h-9 rounded-2xl bg-[#a855f7]/20 text-emerald-400 flex items-center justify-center text-base font-black border border-emerald-500/30">🦸</span>
                   <div>
                     <h3 class="text-sm font-black text-white tracking-tight">Page Hero Banner (Dark Showroom Header)</h3>
                     <p class="text-[11px] text-slate-400">The top hero showroom banner with headline, intro description, and image.</p>

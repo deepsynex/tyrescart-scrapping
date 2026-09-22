@@ -5904,8 +5904,8 @@ details summary span:last-child {
 
 /* Page Hero Banner - Brand Blue with Official Banner Image */
 .tv-page-hero {
-  background-color: #a855f7;
-  background-image: linear-gradient(135deg, rgba(17, 7, 27, 0.48) 0%, rgba(42, 13, 68, 0.22) 50%, rgba(13, 5, 20, 0.58) 100%),
+  background-color: #300259;
+  background-image: linear-gradient(135deg, rgba(44, 0, 84, 0.82) 0%, rgba(66, 1, 125, 0.62) 35%, rgba(66, 1, 125, 0.38) 60%, rgba(66, 1, 125, 0.16) 100%),
                     var(--tv-hero-custom-bg, url('/static/uploads/pages/banner_1788954653_64dd43ed.png'));
   background-repeat: no-repeat;
   background-position: center center;
@@ -6198,6 +6198,190 @@ details summary span:last-child {
   color: #C4B5DE !important;
 }
 
+/* Dark Pricing Section: compact header row (left copy + right badge chips)
+   replacing the centered heading + 4-card icon grid, to match the reference
+   layout (eyebrow/h2/lead on the left, small text-only chips on the right). */
+#tv-page-content-root .tv-price-header-row,
+.tv-price-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  text-align: left;
+  max-width: none;
+  margin: 0 0 28px 0;
+}
+
+#tv-page-content-root .tv-price-header-row .tv-section-head,
+.tv-price-header-row .tv-section-head {
+  text-align: left;
+  margin: 0;
+  max-width: 620px;
+}
+
+#tv-page-content-root .tv-price-badge-row,
+.tv-price-badge-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+#tv-page-content-root .tv-price-badge-chip,
+.tv-price-badge-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #FFFFFF;
+  font-size: 0.86rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#tv-page-content-root .tv-price-badge-chip:hover,
+.tv-price-badge-chip:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: #c084fc;
+}
+
+@media (max-width: 760px) {
+  #tv-page-content-root .tv-price-badge-row,
+  .tv-price-badge-row {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  #tv-page-content-root .tv-price-badge-chip,
+  .tv-price-badge-chip {
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* Tighter table rows to match the reference density */
+#tv-page-content-root .tv-dark-pricing-section .price-table td,
+.tv-dark-pricing-section .price-table td {
+  padding: 11px 20px !important;
+}
+
+#tv-page-content-root .tv-price-footnote,
+.tv-price-footnote {
+  color: #B9A6D9;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin-top: 18px;
+}
+
+/* "What driving in <city> does to your tyres" section: left-aligned header
+   above a two-column grid (driving-realities card + popular-tyres card with
+   vehicle chips), matching the reference layout. */
+#tv-page-content-root .tv-drive-header.tv-section-head,
+.tv-drive-header.tv-section-head {
+  text-align: left;
+  margin: 0 0 28px 0;
+  max-width: 720px;
+}
+
+#tv-page-content-root .tv-drive-header.tv-section-head .lead,
+.tv-drive-header.tv-section-head .lead {
+  margin-inline: 0;
+}
+
+#tv-page-content-root .tv-drive-grid,
+.tv-drive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 860px) {
+  #tv-page-content-root .tv-drive-grid,
+  .tv-drive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+#tv-page-content-root .tv-drive-info-card,
+.tv-drive-info-card {
+  background: #F1F5F9;
+  border-radius: 18px;
+  padding: 32px;
+}
+
+#tv-page-content-root .tv-drive-vehicle-card,
+.tv-drive-vehicle-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+#tv-page-content-root .tv-drive-vehicle-card h3,
+.tv-drive-vehicle-card h3 {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 10px 0;
+}
+
+#tv-page-content-root .tv-drive-vehicle-lead,
+.tv-drive-vehicle-lead {
+  color: #64748B;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+#tv-page-content-root .tv-vehicle-chip-row,
+.tv-vehicle-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#tv-page-content-root .tv-vehicle-chip,
+.tv-vehicle-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#tv-page-content-root .tv-vehicle-chip:hover,
+.tv-vehicle-chip:hover {
+  background: #E9D5FF;
+  border-color: #C084FC;
+}
+
+#tv-page-content-root .tv-drive-vehicle-footer,
+.tv-drive-vehicle-footer {
+  border-top: 1px solid #E2E8F0;
+  padding-top: 16px;
+  margin-top: auto;
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+#tv-page-content-root .tv-drive-vehicle-footer a,
+.tv-drive-vehicle-footer a {
+  color: #9725FF;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .price-table th {
   background: #F8FAFC;
   color: #0F172A;
@@ -6299,8 +6483,8 @@ details summary span:last-child {
 /* 1. 4x4 Hero Section */
 .tv-4x4-hero {
   position: relative;
-  background-color: #6E0FC4;
-  background-image: url('/static/assets/images/4x4/hero_banner_clean.jpg?v=2');
+  background-color: #22083A;
+  background-image: linear-gradient(90deg, rgba(34, 8, 58, 0.92) 0%, rgba(34, 8, 58, 0.75) 25%, rgba(110, 15, 196, 0.4) 50%, rgba(110, 15, 196, 0.15) 72%, transparent 100%), url('/static/assets/images/4x4/hero_banner_clean.jpg?v=2');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;

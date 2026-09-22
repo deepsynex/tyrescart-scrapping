@@ -43,7 +43,7 @@
     <div class="p-4 rounded-2xl bg-white border border-[#E8EDE4] shadow-xs flex items-center justify-between">
       <div>
         <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Create / Insertions</span>
-        <h3 class="text-2xl font-black text-[#2563FF] mt-0.5" x-text="logs.filter(l => l.action.includes('create')).length">0</h3>
+        <h3 class="text-2xl font-black text-[#a855f7] mt-0.5" x-text="logs.filter(l => l.action.includes('create')).length">0</h3>
       </div>
       <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -68,7 +68,7 @@
         type="text" 
         x-model="searchQuery" 
         placeholder="Filter by action, entity, user..." 
-        class="w-full pl-9 pr-4 py-2 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+        class="w-full pl-9 pr-4 py-2 text-xs font-semibold rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#7e22ce]"
       />
       <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </div>
@@ -132,7 +132,7 @@
                 <button 
                   type="button" 
                   @click="openDiffModal(log)" 
-                  class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 hover:bg-[#EFF6FF] hover:text-[#1D4ED8] text-slate-700 transition cursor-pointer"
+                  class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 hover:bg-[#faf5ff] hover:text-[#7e22ce] text-slate-700 transition cursor-pointer"
                 >
                   Inspect Diff
                 </button>
@@ -173,7 +173,7 @@
             </div>
             <div>
               <span class="text-[10px] text-slate-400 font-bold block uppercase">Action</span>
-              <span class="font-bold text-[#1D4ED8]" x-text="selectedLog.action"></span>
+              <span class="font-bold text-[#7e22ce]" x-text="selectedLog.action"></span>
             </div>
             <div>
               <span class="text-[10px] text-slate-400 font-bold block uppercase">Timestamp</span>
@@ -188,7 +188,7 @@
               <pre class="p-3 bg-rose-50/50 border border-rose-100 rounded-xl font-mono text-[11px] text-rose-900 max-h-56 overflow-auto" x-text="formatJson(selectedLog.old_values)"></pre>
             </div>
             <div>
-              <span class="text-[11px] font-black text-[#2563FF] block mb-1">🟢 Applied State (After)</span>
+              <span class="text-[11px] font-black text-[#a855f7] block mb-1">🟢 Applied State (After)</span>
               <pre class="p-3 bg-blue-50/50 border border-blue-100 rounded-xl font-mono text-[11px] text-emerald-900 max-h-56 overflow-auto" x-text="formatJson(selectedLog.new_values)"></pre>
             </div>
           </div>

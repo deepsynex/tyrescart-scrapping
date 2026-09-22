@@ -14,11 +14,11 @@
 
   <!-- Hero Banner -->
   <div class="relative bg-white rounded-3xl p-6 sm:p-8 border border-[#E8EDE4] shadow-[0_4px_20px_-2px_rgba(14,17,8,0.03)] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 overflow-hidden">
-    <div class="absolute -right-8 -top-8 w-64 h-64 bg-[#EFF6FF]/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -right-8 -top-8 w-64 h-64 bg-[#faf5ff]/50 rounded-full blur-3xl pointer-events-none"></div>
     <div class="space-y-2 max-w-2xl relative z-10">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5 text-[#2563FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <div class="w-10 h-10 rounded-2xl bg-[#faf5ff] flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-[#a855f7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         </div>
         <h1 class="text-2xl sm:text-3xl font-black text-[#0E1108] tracking-tight">SEO Manager</h1>
       </div>
@@ -28,7 +28,7 @@
     <!-- Stats -->
     <div class="flex gap-4 shrink-0 relative z-10">
       <div class="text-center">
-        <div class="text-2xl font-black text-[#2563FF]" x-text="pages.length"></div>
+        <div class="text-2xl font-black text-[#a855f7]" x-text="pages.length"></div>
         <div class="text-xs font-semibold text-slate-500 mt-0.5">Total Pages</div>
       </div>
       <div class="w-px bg-slate-100"></div>
@@ -50,7 +50,7 @@
     <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
       <h2 class="text-sm font-extrabold text-[#0E1108]">All Pages</h2>
       <input x-model="search" type="text" placeholder="Search pages…"
-        class="text-xs border border-slate-200 rounded-xl px-3 py-1.5 w-52 focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition">
+        class="text-xs border border-slate-200 rounded-xl px-3 py-1.5 w-52 focus:outline-none focus:ring-2 focus:ring-[#a855f7]/20 focus:border-[#a855f7] transition">
     </div>
 
     <div class="overflow-x-auto">
@@ -104,7 +104,7 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <button @click="openEditor(p.slug)"
-                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2563FF] hover:bg-[#1D4ED8] text-white text-xs font-bold transition-all shadow-sm shadow-[#2563FF]/20">
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs font-bold transition-all shadow-sm shadow-[#a855f7]/20">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Edit SEO
                 </button>
@@ -157,17 +157,17 @@
       <!-- Tabs -->
       <div class="flex border-b border-slate-100 px-6 shrink-0 bg-white">
         <button @click="activeTab='og'"
-          :class="activeTab==='og' ? 'border-b-2 border-[#2563FF] text-[#2563FF] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+          :class="activeTab==='og' ? 'border-b-2 border-[#a855f7] text-[#a855f7] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
           class="py-3 px-1 mr-6 text-xs transition-colors">
           Open Graph
         </button>
         <button @click="activeTab='twitter'"
-          :class="activeTab==='twitter' ? 'border-b-2 border-[#2563FF] text-[#2563FF] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+          :class="activeTab==='twitter' ? 'border-b-2 border-[#a855f7] text-[#a855f7] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
           class="py-3 px-1 mr-6 text-xs transition-colors">
           Twitter / X
         </button>
         <button @click="activeTab='schema'"
-          :class="activeTab==='schema' ? 'border-b-2 border-[#2563FF] text-[#2563FF] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+          :class="activeTab==='schema' ? 'border-b-2 border-[#a855f7] text-[#a855f7] font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
           class="py-3 px-1 mr-6 text-xs transition-colors">
           Schema.org JSON-LD
         </button>
@@ -178,12 +178,12 @@
 
         <!-- Loading state -->
         <div x-show="loadingEditor" class="flex items-center justify-center py-16">
-          <svg class="w-6 h-6 animate-spin text-[#2563FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg class="w-6 h-6 animate-spin text-[#a855f7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
         </div>
 
         <!-- ---- OPEN GRAPH TAB ---- -->
         <div x-show="!loadingEditor && activeTab==='og'" class="space-y-4">
-          <div class="bg-[#EFF6FF] rounded-2xl px-4 py-3 text-xs text-[#1D4ED8] font-medium leading-relaxed">
+          <div class="bg-[#faf5ff] rounded-2xl px-4 py-3 text-xs text-[#7e22ce] font-medium leading-relaxed">
             <strong>Open Graph</strong> controls how this page appears when shared on Facebook, LinkedIn, WhatsApp, and other social platforms.
           </div>
           <div class="grid grid-cols-1 gap-4">
@@ -193,7 +193,7 @@
                 <p class="text-[10px] text-slate-400 mb-1.5" x-text="field.hint" x-show="field.hint"></p>
                 <input x-model="og[field.key]" type="text"
                   :placeholder="field.placeholder"
-                  class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition font-medium text-slate-700 placeholder:text-slate-300">
+                  class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#a855f7]/20 focus:border-[#a855f7] transition font-medium text-slate-700 placeholder:text-slate-300">
               </div>
             </template>
           </div>
@@ -223,14 +223,14 @@
                 <label class="block text-xs font-bold text-slate-600 mb-1" x-text="field.label"></label>
                 <input x-model="twitter[field.key]" type="text"
                   :placeholder="field.placeholder"
-                  class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563FF]/20 focus:border-[#2563FF] transition font-medium text-slate-700 placeholder:text-slate-300">
+                  class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#a855f7]/20 focus:border-[#a855f7] transition font-medium text-slate-700 placeholder:text-slate-300">
               </div>
             </template>
           </div>
 
           <!-- Copy from OG shortcut -->
           <button @click="copyFromOG()"
-            class="inline-flex items-center gap-2 text-xs font-bold text-[#2563FF] hover:text-[#1D4ED8] transition px-3 py-1.5 rounded-xl bg-[#EFF6FF] hover:bg-blue-100">
+            class="inline-flex items-center gap-2 text-xs font-bold text-[#a855f7] hover:text-[#7e22ce] transition px-3 py-1.5 rounded-xl bg-[#faf5ff] hover:bg-blue-100">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy title, description & image from OG Tags
           </button>
@@ -279,7 +279,7 @@
             Cancel
           </button>
           <button @click="save()" :disabled="saving"
-            class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#2563FF] hover:bg-[#1D4ED8] disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-extrabold shadow-sm shadow-[#2563FF]/20 transition">
+            class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-extrabold shadow-sm shadow-[#a855f7]/20 transition">
             <svg x-show="saving" class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <svg x-show="!saving" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
             <span x-text="saving ? 'Saving…' : 'Save Changes'"></span>
