@@ -192,7 +192,7 @@ def _render_blog_detail(slug, locale):
     distinct_cats = Blog.distinct_categories()
     categories = []
     for cat in distinct_cats:
-        count = len([b for b in all_published if (b.category_name or '').strip() == cat.strip()])
+        count = len([b for b in all_published if (b.get_category_name(locale) or '').strip() == cat.strip()])
         categories.append({
             'name': cat,
             'slug': Blog.slugify(cat),
