@@ -125,15 +125,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- GSAP & ScrollTrigger for Antigravity Motion -->
+<!-- GSAP & ScrollTrigger for scroll-based motion -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
 <style>
 /* ==========================================================================
-   ANTIGRAVITY DESIGN EXPERT STYLES: MOBILE TYRE FITTING REDESIGN
-   Exact fidelity to reference layout with spatial depth, weightlessness,
-   glassmorphism, clean micro-interactions & fluid responsiveness
+   MOBILE TYRE FITTING PAGE STYLES
    ========================================================================== */
 
 :root {
@@ -2183,7 +2181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // 2. Safe Antigravity Motion Animations (never hides elements if ScrollTrigger fails)
+  // 2. Safe scroll-triggered animations (never hides elements if ScrollTrigger fails)
   if (typeof gsap !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Hero Entrance
     gsap.from('.mtf-hero-badge', { opacity: 0, y: 15, duration: 0.6, ease: 'power2.out' });

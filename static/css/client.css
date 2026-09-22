@@ -62,7 +62,7 @@
   --gradient-azure: linear-gradient(135deg, #9333ea 0%, #c084fc 100%);
   --gradient-footer: #000000;
 
-  /* Antigravity Spatial Depths & Shadows */
+  /* Spatial Depths & Shadows */
   --shadow-flat: 0 1px 3px rgba(15, 23, 42, 0.05);
   --shadow-card: 0 4px 20px -2px rgba(168, 85, 247, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
   --shadow-float: 0 16px 36px -4px rgba(168, 85, 247, 0.18), 0 4px 12px rgba(15, 23, 42, 0.06);
@@ -1041,7 +1041,7 @@ header {
 }
 
 /* ============================================================
-   TYRE PRICES MATRIX & VALUE CARDS (Antigravity Spatial Design)
+   TYRE PRICES MATRIX & VALUE CARDS
    ============================================================ */
 .price-section {
   background: 
@@ -1160,7 +1160,7 @@ header {
   min-width: 720px;
 }
 
-/* Table Header — Antigravity Monochromatic #0F172A with Cerulean Accents */
+/* Table Header — Monochromatic #0F172A with Cerulean Accents */
 .price-table thead th {
   background: #9333ea !important;
   color: #FFFFFF;
@@ -3832,8 +3832,8 @@ footer .tagline {
 }
 
 /* ============================================================
-   TYRESVISION ABOUT US PAGE — EXACT DESIGN SYSTEM
-   Spatial Depth, Antigravity Glassmorphism & Brand.md Tokens
+   TYRESVISION ABOUT US PAGE — DESIGN SYSTEM
+   Spatial Depth & Glassmorphism
    ============================================================ */
 
 /* 1. Dark Hero Section */
@@ -6475,9 +6475,9 @@ details summary span:last-child {
 }
 
 /* ==========================================================================
-   ANTIGRAVITY DESIGN EXPERT — 4X4 & OFF-ROAD TYRES PAGE
-   Replicating reference design: Clean Hero SUV Banner, 3-Terrain Cards (2-col), 
-   4x4 Model Table, 3-Card Desert Knowledge Split, and Clean Twilight CTA.
+   4X4 & OFF-ROAD TYRES PAGE
+   Clean Hero SUV Banner, 3-Terrain Cards (2-col), 4x4 Model Table,
+   3-Card Desert Knowledge Split, and Clean Twilight CTA.
    ========================================================================== */
 
 /* 1. 4x4 Hero Section */
@@ -7117,7 +7117,7 @@ details summary span:last-child {
 }
 
 /* =============================================================================
-   EV & HYBRID TYRES DESIGN EXPERT SYSTEM (ANTIGRAVITY)
+   EV & HYBRID TYRES PAGE STYLES
    ============================================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
@@ -7513,8 +7513,7 @@ details summary span:last-child {
 
 
 /* =============================================================================
-   ANTIGRAVITY DESIGN EXPERT: PRODUCT LISTING / CAR TYRES CATALOG
-   Matching exact design reference: ChatGPT Image Sep 14, 2026, 02_44_06 PM.png
+   PRODUCT LISTING / CAR TYRES CATALOG
    ============================================================================= */
 
 :root {
@@ -9699,7 +9698,7 @@ body.tv-modal-active {
 }
 
 /* ============================================================
-   TYREVISION UAE — QUICK VIEW MODAL (Exact match to ChatGPT Image Sep 16, 2026, 05_17_09 PM.png)
+   TYREVISION UAE — QUICK VIEW MODAL
    Full Width Bottom Drawer Mode (Same open style as Fitted Price Modal)
    ============================================================ */
 .tv-qv-modal-overlay {
@@ -11239,7 +11238,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 }
 
 /* ==========================================================================
-   LEFT: PRODUCT SHOWCASE STAGE (Antigravity Spatial 3D Perspective)
+   LEFT: PRODUCT SHOWCASE STAGE (Spatial 3D Perspective)
    ========================================================================== */
 .tv-pdp-showcase-card {
   max-width: 480px;

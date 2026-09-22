@@ -876,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (isHard) {
-      // Trigger Antigravity Glassmorphism Hard Delete Modal
+      // Trigger Glassmorphism Hard Delete Modal
       window.vaConfirmHardDelete({
         title: 'Delete Article Permanently',
         message: `Are you sure you want to permanently purge article "${title}"? All multilingual translations, media links, and database records will be erased forever.`,

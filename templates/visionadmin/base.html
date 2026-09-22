@@ -688,7 +688,7 @@
     </footer>
   </div>
 
-  <!-- Antigravity Light Glassmorphism Hard Delete Confirmation Modal -->
+  <!-- Light Glassmorphism Hard Delete Confirmation Modal -->
   <div id="va-hard-delete-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 ease-out" aria-hidden="true" role="dialog" aria-modal="true">
     <!-- Light Frosted Glass Backdrop Blur (No dark tint) -->
     <div id="va-hard-delete-backdrop" class="fixed inset-0 bg-slate-900/25 backdrop-blur-md transition-opacity duration-300"></div>
@@ -1037,7 +1037,7 @@
       }, 3500);
     };
 
-    // Antigravity Glassmorphism Hard Delete Confirmation Modal System
+    // Glassmorphism Hard Delete Confirmation Modal System
     window.vaConfirmHardDelete = function(options = {}) {
       const {
         title = 'Permanent Deletion',
@@ -1146,7 +1146,7 @@
       confirmBtn.addEventListener('click', handleConfirm);
       document.addEventListener('keydown', handleKeydown);
 
-      // Smooth Antigravity floating entrance & focus input
+      // Smooth floating entrance & focus input
       modal.classList.remove('opacity-0', 'pointer-events-none');
       setTimeout(() => {
         card.classList.remove('scale-95');
@@ -1155,7 +1155,7 @@
       }, 100);
     };
   </script>
-  <!-- Antigravity Luminous Back to Top Button -->
+  <!-- Luminous Back to Top Button -->
   <button 
     type="button" 
     id="btn-back-to-top" 
