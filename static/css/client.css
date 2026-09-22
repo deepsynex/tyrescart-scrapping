@@ -5202,7 +5202,13 @@ details summary span:last-child {
   .dtr-control-btn {
     display: inline-flex !important;
   }
-  .dtr-child-row {
+  /* Alpine's x-show toggles this row via inline style (price_table section on
+     the homepage); a stylesheet default of display:none here would win over
+     Alpine's inline removal of that override once expanded, since a plain
+     (non-!important) inline style loses to nothing but this rule was itself
+     unconditional. Only the legacy vanilla-JS-driven tables (which add the
+     .is-open class instead) need the collapsed-by-default state below. */
+  .dtr-child-row:not([x-show]) {
     display: none;
   }
   .dtr-child-row.is-open {
