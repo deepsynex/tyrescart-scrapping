@@ -6138,6 +6138,66 @@ details summary span:last-child {
   border-color: rgba(192, 132, 252, 0.3) !important;
 }
 
+/* Dark Pricing Section: light-on-dark section head + guarantee pills.
+   Prefixed with #tv-page-content-root to out-specificity the per-page
+   embedded "design-consistency" <style> block, which also targets these
+   same elements by that same ID and would otherwise win the cascade. */
+#tv-page-content-root .tv-dark-pricing-section .tv-section-head .eyebrow,
+.tv-dark-pricing-section .tv-section-head .eyebrow {
+  color: #c084fc !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .tv-section-head h2,
+.tv-dark-pricing-section .tv-section-head h2 {
+  color: #FFFFFF !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .tv-section-head .lead,
+.tv-dark-pricing-section .tv-section-head .lead {
+  color: #D8C7F0 !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .tv-section-head .lead a,
+.tv-dark-pricing-section .tv-section-head .lead a {
+  color: #E9D5FF !important;
+  font-weight: 700;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .price-guarantee-card,
+.tv-dark-pricing-section .price-guarantee-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: none !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .price-guarantee-card:hover,
+.tv-dark-pricing-section .price-guarantee-card:hover {
+  border-color: #c084fc !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .pg-icon,
+.tv-dark-pricing-section .pg-icon {
+  background: rgba(192, 132, 252, 0.18) !important;
+  color: #E9D5FF !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .price-guarantee-card:hover .pg-icon,
+.tv-dark-pricing-section .price-guarantee-card:hover .pg-icon {
+  background: #c084fc !important;
+  color: #2A0B47 !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .pg-title,
+.tv-dark-pricing-section .pg-title {
+  color: #FFFFFF !important;
+}
+
+#tv-page-content-root .tv-dark-pricing-section .pg-sub,
+.tv-dark-pricing-section .pg-sub {
+  color: #C4B5DE !important;
+}
+
 .price-table th {
   background: #F8FAFC;
   color: #0F172A;
