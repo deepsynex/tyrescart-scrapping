@@ -69,7 +69,8 @@ def home():
     """Client storefront home landing page with dynamic locale support."""
     locale = _get_locale()
     sections = _get_home_sections(locale)
-    resp = make_response(render_template('Client/Home.html', sections=sections, locale=locale))
+    page = Page.find_by_slug('home')
+    resp = make_response(render_template('Client/Home.html', sections=sections, locale=locale, page=page, slug='home'))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
 
@@ -85,7 +86,8 @@ def home_locale(lang_code):
         return render_template('Client/AboutUs.html', page=page_match, slug=code, locale=code)
     session['site_locale'] = code
     sections = _get_home_sections(code)
-    resp = make_response(render_template('Client/Home.html', sections=sections, locale=code))
+    home_page = Page.find_by_slug('home')
+    resp = make_response(render_template('Client/Home.html', sections=sections, locale=code, page=home_page, slug='home'))
     resp.set_cookie('site_locale', code, max_age=31536000, path='/')
     return resp
 

@@ -18,6 +18,7 @@ from datetime import timedelta
 
 from flask import Flask, jsonify, render_template, request, session, send_from_directory, g, redirect
 
+import db
 from scraperapp.tcsadmin import register_tcsadmin_routes
 from visionadmin import register_visionadmin_routes
 from siteapp import site_bp

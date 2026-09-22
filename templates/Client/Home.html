@@ -1,5 +1,15 @@
 {% extends 'Client/layout.html' %}
 
+{% set _raw_seo_title = (page.get_seo_title(locale) if page else '') %}
+{% set page_title = _raw_seo_title or 'Buy Tyres Online in Dubai & Abu Dhabi | TyresVision' %}
+{% set page_desc = (page.get_meta_desc(locale) if page else '') or 'Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block meta_description %}{{ page_desc }}{% endblock %}
+
+{% block canonical_url %}https://www.tyresvision.com/{% endblock %}
+
 {% block content %}
 <span id="top"></span>
 
