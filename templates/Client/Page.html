@@ -13,6 +13,10 @@
 {% block canonical_url %}https://www.tyresvision.com/{{ slug or (page.slug if page else '') }}{% endblock %}
 
 {% block extra_head %}
+<!-- Stylesheet for the dynamic CMS pages (replaces the <style> blocks and
+     style="" attributes these pages used to carry in their markup) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/page.css') }}?v={{ range(10000, 99999) | random }}">
+
 <!-- GSAP & ScrollTrigger for scroll-based motion -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
