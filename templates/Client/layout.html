@@ -7,14 +7,16 @@
 <meta name="description" content="{% block meta_description %}Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.{% endblock %}">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="author" content="TyresVision">
-<meta name="theme-color" content="#a855f7">
+<meta name="theme-color" content="#4B237B">
 <link rel="canonical" href="{% block canonical_url %}https://www.tyresvision.com/{% endblock %}">
 <link rel="alternate" hreflang="en-ae" href="https://www.tyresvision.com/">
 <link rel="alternate" hreflang="x-default" href="https://www.tyresvision.com/">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%23a855f7'/%3E%3Ccircle cx='20' cy='20' r='11' fill='none' stroke='%239333ea' stroke-width='4.5'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23faf5ff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%234B237B'/%3E%3Ccircle cx='20' cy='20' r='11' fill='none' stroke='%239f7dde' stroke-width='4.5'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23f7f4fd'/%3E%3C/svg%3E">
 <link rel="icon" type="image/webp" href="/static/assets/images/favicon-color.webp">
 <link rel="shortcut icon" href="/static/assets/images/favicon-color.webp" type="image/webp">
 <link rel="apple-touch-icon" href="/static/assets/images/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#4B237B">
 
 <!-- Open Graph (page_og_tags, from VisionAdmin SEO Manager, takes priority over the sitewide default) -->
 <meta property="og:type" content="{{ page_og_tags.og_type if page_og_tags and page_og_tags.og_type else 'website' }}">
@@ -818,5 +820,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="{{ url_for('static', filename='js/client.js') }}?v={{ range(10000, 99999) | random }}"></script>
 
 {% block extra_scripts %}{% endblock %}
+
+<!-- PWA Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+        .then(function(reg) {
+          // ServiceWorker registered
+        })
+        .catch(function(err) {
+          console.warn('[PWA] ServiceWorker registration failed:', err);
+        });
+    });
+  }
+</script>
 </body>
 </html>

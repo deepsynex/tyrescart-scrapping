@@ -10,9 +10,9 @@
     <!-- Scope & Breadcrumb Bar -->
     <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 text-xs">
       <div class="flex items-center gap-2 font-semibold text-slate-500">
-        <a href="/visionadmin/categories" class="hover:text-[#a855f7] transition">Catalog</a>
+        <a href="/visionadmin/categories" class="hover:text-[#4B237B] transition">Catalog</a>
         <span>/</span>
-        <a href="/visionadmin/categories" class="hover:text-[#a855f7] transition">Categories</a>
+        <a href="/visionadmin/categories" class="hover:text-[#4B237B] transition">Categories</a>
         <span>/</span>
         <span class="text-slate-900 font-bold" x-text="form.id ? (form.name_en + ' (ID: ' + form.id + ')') : 'New Category'"></span>
       </div>
@@ -53,9 +53,9 @@
         <button 
           type="button" 
           @click="csvModalOpen = true"
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#d8b4fe] bg-[#faf5ff] hover:bg-[#e9d5ff] text-[#7e22ce] font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs active:scale-95"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#c0a8ed] bg-[#f7f4fd] hover:bg-[#daccf5] text-[#2b1247] font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs active:scale-95"
         >
-          <svg class="w-4 h-4 text-[#a855f7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <svg class="w-4 h-4 text-[#4B237B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           <span>Import CSV</span>
         </button>
 
@@ -81,7 +81,7 @@
           type="button" 
           @click="saveCategory(false)" 
           :disabled="saving"
-          class="px-5 py-2 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95 inline-flex items-center gap-1.5"
+          class="px-5 py-2 rounded-xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95 inline-flex items-center gap-1.5"
         >
           <svg x-show="saving" class="animate-spin h-3.5 w-3.5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
           <span x-text="saving ? 'Saving...' : 'Save Category'"></span>
@@ -94,7 +94,7 @@
   <template x-if="loading">
     <div class="bg-white p-12 rounded-3xl border border-[#E8EDE4] text-center text-slate-400 shadow-xs">
       <div class="inline-flex items-center gap-3">
-        <svg class="animate-spin h-6 w-6 text-[#a855f7]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+        <svg class="animate-spin h-6 w-6 text-[#4B237B]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         <span class="font-bold text-sm text-slate-600">Loading category information and product catalog...</span>
       </div>
     </div>
@@ -138,7 +138,7 @@
             type="text" 
             x-model="treeSearch" 
             placeholder="Filter categories..." 
-            class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+            class="w-full px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
           />
         </div>
 
@@ -264,7 +264,7 @@
                 x-model="form.name_en" 
                 @input="if (!form.id) form.slug = slugify(form.name_en)"
                 required 
-                class="w-full max-w-2xl px-3 py-2 text-xs font-medium border border-[#adadad] rounded bg-white text-slate-800 focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7]"
+                class="w-full max-w-2xl px-3 py-2 text-xs font-medium border border-[#adadad] rounded bg-white text-slate-800 focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B]"
               />
             </div>
           </div>
@@ -337,8 +337,8 @@
             @click="accordion.content = !accordion.content"
             class="w-full flex items-center justify-between py-3.5 hover:bg-slate-50 transition cursor-pointer text-left group select-none"
           >
-            <span class="text-xs font-bold text-slate-800 group-hover:text-[#a855f7]">Content</span>
-            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#a855f7] group-hover:text-[#a855f7] transition shrink-0">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#4B237B]">Content</span>
+            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#4B237B] group-hover:text-[#4B237B] transition shrink-0">
               <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="accordion.content ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </span>
           </button>
@@ -373,14 +373,14 @@
                       type="file" 
                       accept="image/*" 
                       @change="uploadImage($event)" 
-                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#faf5ff] file:text-[#7e22ce] hover:file:bg-blue-100 cursor-pointer"
+                      class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#f7f4fd] file:text-[#2b1247] hover:file:bg-blue-100 cursor-pointer"
                     />
                   </div>
                   <input 
                     type="text" 
                     x-model="form.image" 
                     placeholder="Or paste external image URL directly..." 
-                    class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-[#a855f7]"
+                    class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-[#4B237B]"
                   />
                 </div>
               </div>
@@ -393,7 +393,7 @@
                 rows="4" 
                 x-model="form.description_en" 
                 placeholder="Detailed description of tyres and products under this category..." 
-                class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+                class="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
               ></textarea>
             </div>
           </div>
@@ -406,8 +406,8 @@
             @click="accordion.display = !accordion.display"
             class="w-full flex items-center justify-between py-3.5 hover:bg-slate-50 transition cursor-pointer text-left group select-none"
           >
-            <span class="text-xs font-bold text-slate-800 group-hover:text-[#a855f7]">Display Settings</span>
-            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#a855f7] group-hover:text-[#a855f7] transition shrink-0">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#4B237B]">Display Settings</span>
+            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#4B237B] group-hover:text-[#4B237B] transition shrink-0">
               <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="accordion.display ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </span>
           </button>
@@ -417,7 +417,7 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Parent Category</label>
                 <select 
                   x-model="form.parent_id" 
-                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-[#a855f7]"
+                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-[#4B237B]"
                 >
                   <option value="">None (Top-Level Category)</option>
                   <template x-for="p in parentOptions" :key="p.id">
@@ -431,7 +431,7 @@
                 <input 
                   type="number" 
                   x-model="form.sort_order" 
-                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
                 />
               </div>
 
@@ -439,7 +439,7 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Display Mode</label>
                 <select 
                   x-model="form.display_mode" 
-                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-[#a855f7]"
+                  class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:border-[#4B237B]"
                 >
                   <option value="PRODUCTS">Products Only</option>
                   <option value="PAGE">Static Block Only</option>
@@ -476,8 +476,8 @@
             @click="accordion.seo = !accordion.seo"
             class="w-full flex items-center justify-between py-3.5 hover:bg-slate-50 transition cursor-pointer text-left group select-none"
           >
-            <span class="text-xs font-bold text-slate-800 group-hover:text-[#a855f7]">Search Engine Optimization</span>
-            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#a855f7] group-hover:text-[#a855f7] transition shrink-0">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#4B237B]">Search Engine Optimization</span>
+            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#4B237B] group-hover:text-[#4B237B] transition shrink-0">
               <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="accordion.seo ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </span>
           </button>
@@ -491,7 +491,7 @@
                   x-model="form.slug" 
                   required 
                   placeholder="e.g. passenger-car-tyres"
-                  class="w-full pl-7 pr-3 py-2 text-xs font-mono border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+                  class="w-full pl-7 pr-3 py-2 text-xs font-mono border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
                 />
               </div>
             </div>
@@ -502,7 +502,7 @@
                 type="text" 
                 x-model="form.meta_title_en" 
                 placeholder="e.g. Buy Passenger Car Tyres in UAE" 
-                class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+                class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
               />
             </div>
 
@@ -512,7 +512,7 @@
                 rows="3" 
                 x-model="form.meta_desc_en" 
                 placeholder="Search engine snippet preview for this category..." 
-                class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7]"
+                class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B]"
               ></textarea>
             </div>
           </div>
@@ -529,10 +529,10 @@
               <svg class="w-4 h-4 text-[#eb5202] shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19.5 7.05c-.38-.72-1.02-1.28-1.78-1.55l-1.32-.48c-.28-.1-.48-.35-.5-.65-.05-.8-.32-2.12-.9-3.07-.6-1-1.52-1.3-2.15-1.3-.8 0-1.4.5-1.6.8-.2-.3-.8-.8-1.6-.8-.63 0-1.55.3-2.15 1.3-.58.95-.85 2.27-.9 3.07-.02.3-.22.55-.5.65l-1.32.48c-.76.27-1.4.83-1.78 1.55C2.5 8.2 2 10.1 2 12.2c0 2.8 1.1 5.3 3 7.1 1.8 1.8 4.3 2.7 7 2.7s5.2-.9 7-2.7c1.9-1.8 3-4.3 3-7.1 0-2.1-.5-4-1.5-5.15z"/>
               </svg>
-              <span class="text-xs font-bold text-slate-800 group-hover:text-[#a855f7]">Products in Category</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#a855f7] border border-blue-100" x-text="assignedCount + ' Assigned'"></span>
+              <span class="text-xs font-bold text-slate-800 group-hover:text-[#4B237B]">Products in Category</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#4B237B] border border-blue-100" x-text="assignedCount + ' Assigned'"></span>
             </div>
-            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#a855f7] group-hover:text-[#a855f7] transition shrink-0">
+            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-500 group-hover:border-[#4B237B] group-hover:text-[#4B237B] transition shrink-0">
               <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="accordion.products ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </span>
           </button>
@@ -559,7 +559,7 @@
                   @input.debounce.300ms="loadProducts(1)"
                   @keydown.enter="loadProducts(1)"
                   placeholder="Search by SKU, Product Name, Brand, or Tyre Size..." 
-                  class="w-full pl-4 pr-10 py-2.5 text-xs font-medium border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#a855f7]"
+                  class="w-full pl-4 pr-10 py-2.5 text-xs font-medium border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
                 />
                 <button 
                   type="button" 
@@ -574,7 +574,7 @@
                 <select 
                   x-model="productAssignedFilter" 
                   @change="loadProducts(1)"
-                  class="py-2.5 px-3 text-xs font-bold border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#a855f7]"
+                  class="py-2.5 px-3 text-xs font-bold border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
                 >
                   <option value="1">Assigned Products (Category-Wise)</option>
                   <option value="all">All Products (Assign More)</option>
@@ -585,7 +585,7 @@
                 <select 
                   x-model="productStockFilter" 
                   @change="loadProducts(1)"
-                  class="py-2.5 px-3 text-xs font-bold border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#a855f7]"
+                  class="py-2.5 px-3 text-xs font-bold border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
                 >
                   <option value="">All Stock</option>
                   <option value="in_stock">In Stock</option>
@@ -595,7 +595,7 @@
                 <button 
                   type="button" 
                   @click="loadProducts(1)" 
-                  class="px-4 py-2.5 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  class="px-4 py-2.5 rounded-xl bg-[#4B237B] hover:bg-[#2b1247] text-white text-xs font-bold shadow-xs transition cursor-pointer"
                 >
                   Filter
                 </button>
@@ -635,7 +635,7 @@
                       <tr>
                         <td colspan="8" class="py-12 text-center text-slate-400 font-semibold">
                           <div class="inline-flex items-center gap-2">
-                            <svg class="animate-spin h-5 w-5 text-[#a855f7]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                            <svg class="animate-spin h-5 w-5 text-[#4B237B]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                             <span>Loading category products...</span>
                           </div>
                         </td>
@@ -661,7 +661,7 @@
                             type="checkbox" 
                             :checked="isProductAssigned(prod)" 
                             @change="toggleProductAssignment(prod)"
-                            class="w-4 h-4 text-[#a855f7] rounded border-slate-300 focus:ring-[#a855f7] cursor-pointer"
+                            class="w-4 h-4 text-[#4B237B] rounded border-slate-300 focus:ring-[#4B237B] cursor-pointer"
                           />
                         </td>
 
@@ -701,7 +701,7 @@
                             type="number" 
                             :value="getProductPosition(prod)" 
                             @input="updateProductPosition(prod, $event.target.value)"
-                            class="w-20 px-2.5 py-1 text-center font-bold text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7]"
+                            class="w-20 px-2.5 py-1 text-center font-bold text-xs border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B]"
                           />
                         </td>
                       </tr>
@@ -754,7 +754,7 @@
 
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
                 <template x-for="prod in assignedPreviewProducts" :key="prod.id">
-                  <div class="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex flex-col justify-between space-y-2 hover:border-[#a855f7]/60 transition group">
+                  <div class="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex flex-col justify-between space-y-2 hover:border-[#4B237B]/60 transition group">
                     <div class="relative w-full aspect-4/3 rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center overflow-hidden">
                       <img :src="prod.thumbnail" :alt="prod.display_name" class="w-full h-full object-contain group-hover:scale-105 transition duration-200" />
                       <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-50 text-emerald-600 border border-emerald-200">In Stock</span>
@@ -762,7 +762,7 @@
                     </div>
 
                     <div class="space-y-0.5">
-                      <div class="text-[10px] font-black text-[#7e22ce] uppercase tracking-wider" x-text="prod.brand_name"></div>
+                      <div class="text-[10px] font-black text-[#2b1247] uppercase tracking-wider" x-text="prod.brand_name"></div>
                       <div class="text-xs font-bold text-slate-800 line-clamp-1" x-text="prod.name_localized || prod.display_name"></div>
                       <div class="text-[11px] text-slate-500 font-medium" x-text="prod.tire_size_label || prod.sku"></div>
                     </div>
@@ -792,8 +792,8 @@
   <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-[#a855f7]"></span>
-        <h2 class="text-xs font-black uppercase tracking-wider text-[#7e22ce]">Supporting Information</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-[#4B237B]"></span>
+        <h2 class="text-xs font-black uppercase tracking-wider text-[#2b1247]">Supporting Information</h2>
       </div>
       <span class="text-[11px] font-bold text-slate-400">System Records &amp; Timestamps</span>
     </div>
@@ -817,7 +817,7 @@
       <div class="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80">
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Store Front URL</span>
         <template x-if="form.slug">
-          <a :href="'/category/' + form.slug" target="_blank" class="font-mono text-xs text-[#a855f7] hover:underline font-bold mt-0.5 block truncate" x-text="'/' + form.slug"></a>
+          <a :href="'/category/' + form.slug" target="_blank" class="font-mono text-xs text-[#4B237B] hover:underline font-bold mt-0.5 block truncate" x-text="'/' + form.slug"></a>
         </template>
         <template x-if="!form.slug">
           <span class="text-slate-400 mt-0.5 block">—</span>
@@ -853,7 +853,7 @@
         type="button" 
         @click="saveCategory(false)" 
         :disabled="saving"
-        class="px-6 py-2.5 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs font-bold shadow-xs transition cursor-pointer disabled:opacity-50 active:scale-95 inline-flex items-center gap-1.5"
+        class="px-6 py-2.5 rounded-xl bg-[#4B237B] hover:bg-[#2b1247] text-white text-xs font-bold shadow-xs transition cursor-pointer disabled:opacity-50 active:scale-95 inline-flex items-center gap-1.5"
       >
         <svg x-show="saving" class="animate-spin h-3.5 w-3.5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         <span x-show="!saving" x-text="form.id ? 'Save Category' : 'Save Category'"></span>
@@ -877,7 +877,7 @@
   >
     <div class="p-6 border-b border-slate-100 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-[#faf5ff] flex items-center justify-center text-[#7e22ce]">
+        <div class="w-10 h-10 rounded-2xl bg-[#f7f4fd] flex items-center justify-center text-[#2b1247]">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
         <div>
@@ -889,14 +889,14 @@
     </div>
 
     <div class="p-6 space-y-5">
-      <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#faf5ff]/60 border border-[#d8b4fe]">
+      <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#f7f4fd]/60 border border-[#c0a8ed]">
         <div>
-          <span class="text-xs font-bold text-[#7e22ce] block">Need a template?</span>
+          <span class="text-xs font-bold text-[#2b1247] block">Need a template?</span>
           <span class="text-[11px] text-slate-600">Download the pre-formatted CSV template with Magento category paths.</span>
         </div>
         <a 
           href="/visionadmin/api/categories/sample-csv" 
-          class="px-3 py-1.5 rounded-lg bg-[#a855f7] text-white text-xs font-bold hover:bg-[#7e22ce] transition inline-flex items-center gap-1.5"
+          class="px-3 py-1.5 rounded-lg bg-[#4B237B] text-white text-xs font-bold hover:bg-[#2b1247] transition inline-flex items-center gap-1.5"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download</span>
@@ -979,7 +979,7 @@
         type="button" 
         :disabled="!selectedCsvFile || csvUploading" 
         @click="submitCsvUpload()" 
-        class="px-6 py-2.5 rounded-xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
+        class="px-6 py-2.5 rounded-xl bg-[#4B237B] hover:bg-[#2b1247] text-white text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
       >
         <svg x-show="csvUploading" class="animate-spin h-3.5 w-3.5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         <span x-text="csvUploading ? 'Importing...' : 'Upload & Import'"></span>
@@ -1586,7 +1586,7 @@ function visionCategoryFormApp(initialMode, initialCatId) {
       }
       const toast = document.createElement('div');
       toast.className = `fixed bottom-5 right-5 z-[99999] px-5 py-3 rounded-2xl text-xs font-bold text-white shadow-xl transition-all duration-300 transform translate-y-0 ${
-        type === 'error' ? 'bg-rose-600' : 'bg-[#0E1108] border border-[#a855f7]/40 text-[#a855f7]'
+        type === 'error' ? 'bg-rose-600' : 'bg-[#0E1108] border border-[#4B237B]/40 text-[#4B237B]'
       }`;
       toast.textContent = message;
       document.body.appendChild(toast);

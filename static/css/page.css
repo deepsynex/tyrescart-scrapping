@@ -75,7 +75,7 @@
   gap:6px;
   padding:5px 14px;
   border-radius:9999px;
-  background:#e0f2fe;
+  background:#d8b4fe5c;
   color:#6902C7;
   font-size:0.76rem;
   font-weight:800;
@@ -145,7 +145,7 @@
   width:26px;
   height:26px;
   border-radius:50%;
-  background:#f0f7fe;
+  background:#6b00cc29;
   color:#6902C7;
   display:flex;
   align-items:center;
@@ -170,7 +170,7 @@
   line-height:1.65;
 }
 .mtf-faq-help-box {
-  background:#f0f7fe;
+  background:#6b00cc29;
   border:1px solid #EDDBFE;
   border-radius:18px;
   padding:32px 24px;
@@ -243,7 +243,7 @@
   transition:all 0.25s ease;
 }
 .btn-faq-call:hover {
-  background:#f8fafc;
+  background:#0000000d;
   border-color:#94a3b8;
   transform:translateY(-2px);
 }
@@ -254,7 +254,7 @@
   font-size:0.94rem;
   line-height:1.65;
   padding:18px 24px;
-  background:#f8fafc;
+  background:#0000000d;
   border-radius:14px;
   border:1px solid #e2e8f0;
 }
@@ -552,7 +552,7 @@
   position: relative;
 }
 .page-mobile-tyre-fitting .mtf-section-light {
-  background: #f0f7fe;
+  background: #6b00cc29;
 }
 .page-mobile-tyre-fitting .mtf-badge-pill {
   display: inline-flex;
@@ -728,7 +728,7 @@
   will-change: transform;
 }
 .page-mobile-tyre-fitting .btn-hero-call:hover {
-  background: #f8fafc;
+  background: #0000000d;
   transform: translateY(-2px);
   box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.25);
 }
@@ -1114,7 +1114,7 @@
   border-bottom: none;
 }
 .page-mobile-tyre-fitting .mtf-check-row:hover {
-  background: #f8fafc;
+  background: #0000000d;
 }
 .page-mobile-tyre-fitting .mtf-status-icon {
   width: 30px;
@@ -1345,7 +1345,7 @@
   color: #5603A1;
 }
 .page-mobile-tyre-fitting .mtf-not-sure-card {
-  background: #f0f7fe;
+  background: #6b00cc29;
   border: 1px solid #e9d5ff;
   border-radius: 18px;
   padding: 28px 24px;
@@ -1416,7 +1416,7 @@
   transition: all 0.25s ease;
 }
 .page-mobile-tyre-fitting .btn-not-sure-call:hover {
-  background: #f8fafc;
+  background: #0000000d;
   border-color: #94a3b8;
   transform: translateY(-2px);
 }
@@ -1487,7 +1487,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #f0f7fe;
+  background: #6b00cc29;
   color: #6902C7;
   display: flex;
   align-items: center;
@@ -1515,7 +1515,7 @@
   line-height: 1.65;
 }
 .page-mobile-tyre-fitting .mtf-faq-help-box {
-  background: #f0f7fe;
+  background: #6b00cc29;
   border: 1px solid #e9d5ff;
   border-radius: 18px;
   padding: 32px 24px;
@@ -1588,7 +1588,7 @@
   transition: all 0.25s ease;
 }
 .page-mobile-tyre-fitting .btn-faq-call:hover {
-  background: #f8fafc;
+  background: #0000000d;
   border-color: #94a3b8;
   transform: translateY(-2px);
 }
@@ -1599,7 +1599,7 @@
   font-size: 0.94rem;
   line-height: 1.65;
   padding: 18px 24px;
-  background: #f8fafc;
+  background: #0000000d;
   border-radius: 14px;
   border: 1px solid #e2e8f0;
 }
@@ -1707,7 +1707,7 @@
   white-space: nowrap;
 }
 #tv-page-content-root .tvi-012e5c09.tvi-012e5c09, .page-mobile-tyre-fitting .tvi-012e5c09.tvi-012e5c09.tvi-012e5c09.tvi-012e5c09.tvi-012e5c09 {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 16px;
   padding: 28px;
@@ -1787,7 +1787,7 @@
   padding-top: 20px;
 }
 #tv-page-content-root .tvi-13b89d20.tvi-13b89d20, .page-mobile-tyre-fitting .tvi-13b89d20.tvi-13b89d20.tvi-13b89d20.tvi-13b89d20.tvi-13b89d20 {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 20px 24px;
@@ -1900,7 +1900,7 @@
   margin: 0;
 }
 #tv-page-content-root .tvi-287c2cdb.tvi-287c2cdb, .page-mobile-tyre-fitting .tvi-287c2cdb.tvi-287c2cdb.tvi-287c2cdb.tvi-287c2cdb.tvi-287c2cdb {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 18px;
   padding: 28px;
@@ -2123,7 +2123,7 @@
   color: #9725FF;
 }
 #tv-page-content-root .tvi-5c679c15.tvi-5c679c15, .page-mobile-tyre-fitting .tvi-5c679c15.tvi-5c679c15.tvi-5c679c15.tvi-5c679c15.tvi-5c679c15 {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 24px;
   padding: clamp(20px, 4vw, 40px);
@@ -2469,7 +2469,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 #tv-page-content-root .tvi-9b896910.tvi-9b896910, .page-mobile-tyre-fitting .tvi-9b896910.tvi-9b896910.tvi-9b896910.tvi-9b896910.tvi-9b896910 {
-  background: #F8FAFC;
+  background: #0000000d;
 }
 #tv-page-content-root .tvi-9cad8efc.tvi-9cad8efc, .page-mobile-tyre-fitting .tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc {
   width: 48px;
@@ -2612,7 +2612,7 @@
   margin: 0;
 }
 #tv-page-content-root .tvi-ba6eb18f.tvi-ba6eb18f, .page-mobile-tyre-fitting .tvi-ba6eb18f.tvi-ba6eb18f.tvi-ba6eb18f.tvi-ba6eb18f.tvi-ba6eb18f {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
   padding: 12px 6px;
@@ -2655,13 +2655,14 @@
   max-width: 860px;
 }
 #tv-page-content-root .tvi-c1d4e221.tvi-c1d4e221, .page-mobile-tyre-fitting .tvi-c1d4e221.tvi-c1d4e221.tvi-c1d4e221.tvi-c1d4e221.tvi-c1d4e221 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: #0F172A;
   margin: 0 0 12px 0;
-  min-height: 56px;
+  min-height: 0;
   display: flex;
   align-items: flex-start;
+  white-space: normal;
 }
 #tv-page-content-root .tvi-c1eda3c0.tvi-c1eda3c0, .page-mobile-tyre-fitting .tvi-c1eda3c0.tvi-c1eda3c0.tvi-c1eda3c0.tvi-c1eda3c0.tvi-c1eda3c0 {
   color: #9725FF;
@@ -2748,7 +2749,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #E0F2FE;
+  background: #d8b4fe5c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2781,7 +2782,7 @@
   margin-bottom: 16px;
 }
 #tv-page-content-root .tvi-de541c30.tvi-de541c30, .page-mobile-tyre-fitting .tvi-de541c30.tvi-de541c30.tvi-de541c30.tvi-de541c30.tvi-de541c30 {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 20px 24px;
@@ -2804,7 +2805,7 @@
   margin-bottom: 4px;
 }
 #tv-page-content-root .tvi-e1e409ca.tvi-e1e409ca, .page-mobile-tyre-fitting .tvi-e1e409ca.tvi-e1e409ca.tvi-e1e409ca.tvi-e1e409ca.tvi-e1e409ca {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 14px;
   padding: 22px;
@@ -2875,7 +2876,7 @@
   flex: 1;
 }
 #tv-page-content-root .tvi-efd92b09.tvi-efd92b09, .page-mobile-tyre-fitting .tvi-efd92b09.tvi-efd92b09.tvi-efd92b09.tvi-efd92b09.tvi-efd92b09 {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 18px;
   padding: 32px;
@@ -2883,7 +2884,7 @@
   text-align: justify;
 }
 #tv-page-content-root .tvi-f0fb64be.tvi-f0fb64be, .page-mobile-tyre-fitting .tvi-f0fb64be.tvi-f0fb64be.tvi-f0fb64be.tvi-f0fb64be.tvi-f0fb64be {
-  background: #F8FAFC;
+  background: #0000000d;
   padding: clamp(54px, 7vw, 84px) 0;
 }
 #tv-page-content-root .tvi-f6c0cc5e.tvi-f6c0cc5e, .page-mobile-tyre-fitting .tvi-f6c0cc5e.tvi-f6c0cc5e.tvi-f6c0cc5e.tvi-f6c0cc5e.tvi-f6c0cc5e {
@@ -2896,7 +2897,7 @@
   color: #fff;
 }
 #tv-page-content-root .tvi-f99b5cbf.tvi-f99b5cbf, .page-mobile-tyre-fitting .tvi-f99b5cbf.tvi-f99b5cbf.tvi-f99b5cbf.tvi-f99b5cbf.tvi-f99b5cbf {
-  background: #F8FAFC;
+  background: #0000000d;
   border: 1px solid #E2E8F0;
   border-radius: 18px;
   padding: 32px;
@@ -2953,4 +2954,15 @@
 #tv-page-content-root .tvi-ff563c81.tvi-ff563c81, .page-mobile-tyre-fitting .tvi-ff563c81.tvi-ff563c81.tvi-ff563c81.tvi-ff563c81.tvi-ff563c81 {
   background: #ffffff;
   padding: clamp(54px, 7vw, 84px) 0;
+}
+
+/* Active FAQ Item styling */
+#tv-page-content-root .faq-item.active,
+#tv-page-content-root details.faq-item[open],
+#tv-page-content-root .tv-faq-item.active,
+#tv-page-content-root details.tv-faq-item[open] {
+  border-color: var(--primary, #4B237B) !important;
+  box-shadow: 0 10px 25px -5px rgba(75, 35, 123, 0.12), 0 4px 10px -2px rgba(75, 35, 123, 0.05) !important;
+  background: #f7f4fd !important;
+  transform: none !important;
 }

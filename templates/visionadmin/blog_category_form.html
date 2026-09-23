@@ -12,13 +12,13 @@
     
     <!-- Left: Page Title / Breadcrumbs -->
     <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
-      <a href="/visionadmin/blogs" class="hover:text-[#a855f7] transition">Blogs</a>
+      <a href="/visionadmin/blogs" class="hover:text-[#4B237B] transition">Blogs</a>
       <span>/</span>
-      <a href="/visionadmin/blog-categories" class="hover:text-[#a855f7] transition">Categories</a>
+      <a href="/visionadmin/blog-categories" class="hover:text-[#4B237B] transition">Categories</a>
       <span>/</span>
       <span class="text-[#303030] font-bold" x-text="form.id ? ('Edit: ' + (form.name[currentScope] || form.name['en'] || form.slug || 'Category')) : 'New Category'"></span>
-      <span class="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#a855f7] border border-blue-200" title="Scope controlled by top header switcher">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
+      <span class="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#4B237B] border border-blue-200" title="Scope controlled by top header switcher">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>
         <span>Scope:</span>
         <span x-text="scopeDisplayName || currentScope.toUpperCase()"></span>
       </span>
@@ -53,12 +53,12 @@
         <span x-text="isSaving ? 'Saving...' : 'Save & Continue Edit'"></span>
       </button>
 
-      <!-- Magento Save Button in Brand Blue (#a855f7) -->
+      <!-- Magento Save Button in Brand Blue (#4B237B) -->
       <button 
         type="button" 
         @click="saveCategory(true)" 
         :disabled="isSaving"
-        class="px-6 py-2 rounded bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-sm disabled:opacity-50 active:scale-95 flex items-center gap-1.5"
+        class="px-6 py-2 rounded bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-sm disabled:opacity-50 active:scale-95 flex items-center gap-1.5"
       >
         <svg x-show="isSaving" class="w-3.5 h-3.5 animate-spin text-white" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
         <span x-text="isSaving ? 'Saving...' : 'Save'"></span>
@@ -79,22 +79,22 @@
         <button 
           type="button" 
           @click="activeTab = 'general'" 
-          :class="activeTab === 'general' ? 'border-l-4 border-[#a855f7] bg-white font-bold text-[#303030]' : 'border-l-4 border-transparent text-[#555555] hover:bg-[#F9FAFB] font-medium'"
+          :class="activeTab === 'general' ? 'border-l-4 border-[#4B237B] bg-white font-bold text-[#303030]' : 'border-l-4 border-transparent text-[#555555] hover:bg-[#F9FAFB] font-medium'"
           class="w-full text-left px-4 py-3.5 text-xs transition flex items-center justify-between cursor-pointer"
         >
           <span>General</span>
-          <svg class="w-3.5 h-3.5" :class="activeTab === 'general' ? 'text-[#a855f7]' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="w-3.5 h-3.5" :class="activeTab === 'general' ? 'text-[#4B237B]' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </button>
 
         <!-- Tab 2: Meta Information -->
         <button 
           type="button" 
           @click="activeTab = 'meta'" 
-          :class="activeTab === 'meta' ? 'border-l-4 border-[#a855f7] bg-white font-bold text-[#303030]' : 'border-l-4 border-transparent text-[#555555] hover:bg-[#F9FAFB] font-medium'"
+          :class="activeTab === 'meta' ? 'border-l-4 border-[#4B237B] bg-white font-bold text-[#303030]' : 'border-l-4 border-transparent text-[#555555] hover:bg-[#F9FAFB] font-medium'"
           class="w-full text-left px-4 py-3.5 text-xs transition flex items-center justify-between cursor-pointer"
         >
           <span>Meta Information</span>
-          <svg class="w-3.5 h-3.5" :class="activeTab === 'meta' ? 'text-[#a855f7]' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="w-3.5 h-3.5" :class="activeTab === 'meta' ? 'text-[#4B237B]' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       </nav>
     </div>
@@ -112,7 +112,7 @@
           <h2 class="text-sm font-bold text-[#303030] tracking-wide">General</h2>
           <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
             <span>Store View Scope:</span>
-            <span class="font-bold text-[#a855f7] uppercase" x-text="scopeDisplayName || currentScope.toUpperCase()"></span>
+            <span class="font-bold text-[#4B237B] uppercase" x-text="scopeDisplayName || currentScope.toUpperCase()"></span>
           </div>
         </div>
 
@@ -133,7 +133,7 @@
                   @input="onTitleInput()"
                   placeholder="Enter category title..." 
                   dir="ltr"
-                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
                 />
                 <span class="text-[10px] font-mono text-slate-400 select-none whitespace-nowrap">[STORE VIEW]</span>
               </div>
@@ -155,7 +155,7 @@
                   type="text" 
                   x-model="form.slug" 
                   placeholder="e.g. battery" 
-                  class="w-full max-w-xl px-3 py-2 text-xs font-mono font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                  class="w-full max-w-xl px-3 py-2 text-xs font-mono font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
                 />
                 <span class="text-[10px] font-mono text-slate-400 select-none whitespace-nowrap">[GLOBAL]</span>
               </div>
@@ -169,7 +169,7 @@
             <div class="sm:col-span-3 flex items-center gap-2">
               <select 
                 x-model="form.status" 
-                class="w-36 px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition cursor-pointer"
+                class="w-36 px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition cursor-pointer"
               >
                 <option value="enabled">Enable</option>
                 <option value="disabled">Disable</option>
@@ -185,7 +185,7 @@
               <input 
                 type="number" 
                 x-model.number="form.sort_order" 
-                class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
               />
               <span class="text-[10px] font-mono text-slate-400 select-none whitespace-nowrap">[GLOBAL]</span>
             </div>
@@ -204,7 +204,7 @@
           <h2 class="text-sm font-bold text-[#303030] tracking-wide">Meta Information</h2>
           <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
             <span>Store View Scope:</span>
-            <span class="font-bold text-[#a855f7] uppercase" x-text="scopeDisplayName || currentScope.toUpperCase()"></span>
+            <span class="font-bold text-[#4B237B] uppercase" x-text="scopeDisplayName || currentScope.toUpperCase()"></span>
           </div>
         </div>
 
@@ -221,7 +221,7 @@
                   x-model="form.meta_title[currentScope]" 
                   placeholder="Page title for search engines..." 
                   dir="ltr"
-                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
                 />
                 <span class="text-[10px] font-mono text-slate-400 select-none whitespace-nowrap">[STORE VIEW]</span>
               </div>
@@ -238,7 +238,7 @@
                   x-model="form.meta_keywords[currentScope]" 
                   placeholder="e.g. tyres, battery maintenance, Dubai car parts..." 
                   dir="ltr"
-                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
                 ></textarea>
                 <span class="text-[10px] font-mono text-slate-400 select-none pt-2 whitespace-nowrap">[STORE VIEW]</span>
               </div>
@@ -255,7 +255,7 @@
                   x-model="form.meta_description[currentScope]" 
                   placeholder="Search engine summary text..." 
                   dir="ltr"
-                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] transition"
+                  class="w-full max-w-xl px-3 py-2 text-xs font-medium border border-[#D1D5DB] rounded bg-white text-left focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition"
                 ></textarea>
                 <span class="text-[10px] font-mono text-slate-400 select-none pt-2 whitespace-nowrap">[STORE VIEW]</span>
               </div>

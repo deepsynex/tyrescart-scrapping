@@ -1,0 +1,25 @@
+{
+  "name": "TyresVision UAE - Buy Tyres Online",
+  "short_name": "TyresVision",
+  "description": "Buy tyres online across Dubai, Abu Dhabi & UAE with mobile van fitting to your door.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#160627",
+  "theme_color": "#4B237B",
+  "lang": "en-AE",
+  "icons": [
+    {
+      "src": "/static/assets/images/favicon-color.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/assets/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,17 +1,17 @@
 /* visionadmin.css - VisionAdmin Executive Content Studio Design System */
 :root {
   /* ── Purple brand scale (50–950) ───────────────────────────── */
-  --brand-50:  #faf5ff;
-  --brand-100: #f3e8ff;
-  --brand-200: #e9d5ff;
-  --brand-300: #d8b4fe;
-  --brand-400: #c084fc;
-  --brand-500: #a855f7;   /* primary */
-  --brand-600: #9333ea;   /* primary-dark (hover) */
-  --brand-700: #7e22ce;   /* deep */
-  --brand-800: #6b21a8;
-  --brand-900: #581c87;
-  --brand-950: #3b0764;
+  --brand-50:  #f7f4fd;
+  --brand-100: #ede5fa;
+  --brand-200: #daccf5;
+  --brand-300: #c0a8ed;
+  --brand-400: #9f7dde;
+  --brand-500: #4B237B;   /* primary */
+  --brand-600: #3a1960;   /* primary-dark (hover) */
+  --brand-700: #2b1247;   /* deep */
+  --brand-800: #3a1960;
+  --brand-900: #2b1247;
+  --brand-950: #1c0b30;
 
   /* ── Semantic aliases (used by components) ──────────────────── */
   --green:              var(--brand-500);
@@ -41,9 +41,9 @@
   --brand-radius-sm:    12px;
   --brand-radius:       18px;
   --brand-radius-lg:    24px;
-  --brand-shadow-sm:    0 1px 3px rgba(168, 85, 247, 0.06);
-  --brand-shadow:       0 10px 30px -10px rgba(168, 85, 247, 0.08), 0 0 0 1px rgba(232, 237, 228, 0.8);
-  --brand-shadow-hover: 0 18px 40px -12px rgba(168, 85, 247, 0.18), 0 0 0 1px rgba(168, 85, 247, 0.3);
+  --brand-shadow-sm:    0 1px 3px rgba(75, 35, 123, 0.06);
+  --brand-shadow:       0 10px 30px -10px rgba(75, 35, 123, 0.08), 0 0 0 1px rgba(232, 237, 228, 0.8);
+  --brand-shadow-hover: 0 18px 40px -12px rgba(75, 35, 123, 0.18), 0 0 0 1px rgba(75, 35, 123, 0.3);
 }
 
 body {
@@ -65,9 +65,9 @@ body {
 
 /* Status Badges */
 .va-badge-published {
-  background-color: #faf5ff;
+  background-color: #f7f4fd;
   color: var(--brand-green-deep);
-  border: 1px solid #d8b4fe;
+  border: 1px solid #c0a8ed;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -116,7 +116,7 @@ body {
 .btn-brand-green:hover {
   background-color: var(--brand-green-deep);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px -4px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 20px -4px rgba(75, 35, 123, 0.35);
 }
 
 .btn-brand-white {
@@ -150,14 +150,14 @@ body {
 
 .va-btn-pill:hover {
   border-color: #CBD5E1;
-  background-color: #F8FAFC;
+  background-color: #0000000d;
   transform: translateY(-1px);
 }
 
 .va-btn-pill-blue,
 .va-btn-pill-green {
   color: var(--brand-green-deep);
-  border-color: #d8b4fe;
+  border-color: #c0a8ed;
   background: #FFFFFF;
 }
 
@@ -233,7 +233,7 @@ body {
 .va-search-input:focus {
   outline: none;
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.12), 0 4px 14px rgba(168, 85, 247, 0.08);
+  box-shadow: 0 0 0 3px rgba(75, 35, 123, 0.12), 0 4px 14px rgba(75, 35, 123, 0.08);
   background-color: #FFFFFF;
 }
 
@@ -360,8 +360,8 @@ body {
 
 .dataTables_wrapper .dataTables_filter input:focus,
 .dataTables_wrapper .dataTables_length select:focus {
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: #4B237B;
+  box-shadow: 0 0 0 3px rgba(75, 35, 123, 0.15);
 }
 
 table.dataTable {
@@ -401,16 +401,16 @@ table.dataTable tbody td {
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-  background: #faf5ff !important;
-  color: #7e22ce !important;
-  border-color: #d8b4fe !important;
+  background: #f7f4fd !important;
+  color: #2b1247 !important;
+  border-color: #c0a8ed !important;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-  background: #a855f7 !important;
+  background: #4B237B !important;
   color: #FFFFFF !important;
-  border-color: #a855f7 !important;
-  box-shadow: 0 2px 6px rgba(168, 85, 247, 0.25);
+  border-color: #4B237B !important;
+  box-shadow: 0 2px 6px rgba(75, 35, 123, 0.25);
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
@@ -430,7 +430,7 @@ select:not(.no-va-select):not(.hidden) {
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: #FFFFFF !important;
-  border: 1.5px solid #a855f7 !important;
+  border: 1.5px solid #4B237B !important;
   border-radius: 9999px !important;
   padding: 0.5rem 2.5rem 0.5rem 2.25rem !important;
   font-family: inherit !important;
@@ -442,7 +442,7 @@ select:not(.no-va-select):not(.hidden) {
   outline: none !important;
   transition: all 0.2s ease !important;
   background-image: 
-    radial-gradient(circle 3.5px, #a855f7 100%, transparent 100%),
+    radial-gradient(circle 3.5px, #4B237B 100%, transparent 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231D4ED8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat, no-repeat !important;
   background-position: left 0.85rem center, right 0.85rem center !important;
@@ -450,18 +450,18 @@ select:not(.no-va-select):not(.hidden) {
 }
 
 select:not(.no-va-select):not(.hidden):hover {
-  border-color: #7e22ce !important;
+  border-color: #2b1247 !important;
   background-color: #F8FAF7 !important;
 }
 
 select:not(.no-va-select):not(.hidden):focus {
-  border-color: #7e22ce !important;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
+  border-color: #2b1247 !important;
+  box-shadow: 0 0 0 3px rgba(75, 35, 123, 0.2) !important;
 }
 
 /* Custom Dropdown Trigger */
 .va-custom-dropdown-trigger {
-  border: 1.5px solid #a855f7 !important;
+  border: 1.5px solid #4B237B !important;
   border-radius: 9999px !important;
   padding: 0.55rem 0.875rem 0.55rem 1rem !important;
   background-color: #FFFFFF;
@@ -472,13 +472,13 @@ select:not(.no-va-select):not(.hidden):focus {
 }
 
 .va-custom-dropdown-trigger:hover {
-  border-color: #7e22ce !important;
+  border-color: #2b1247 !important;
   background-color: #F8FAF7;
 }
 
 .va-custom-dropdown-trigger[aria-expanded="true"] {
-  border-color: #7e22ce !important;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+  border-color: #2b1247 !important;
+  box-shadow: 0 0 0 3px rgba(75, 35, 123, 0.2);
 }
 
 /* Custom Dropdown Floating Menu */

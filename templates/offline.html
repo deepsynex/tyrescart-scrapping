@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Internet Connection | TyresVision</title>
+  
+  <style>
+    /* ==========================================================================
+       TYRESVISION OFFLINE EXPERIENCE — SELF-CONTAINED ANTIGRAVITY SURFACE
+       100% independent of CDNs, external fonts, or API calls for true offline support.
+       ========================================================================== */
+    
+    :root {
+      --brand-primary: #4B237B;
+      --brand-glow: #9333ea;
+      --brand-accent: #c084fc;
+      --brand-tint: #f7f4fd;
+      --bg-dark: #160627;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.82);
+      --glass-bg: rgba(24, 7, 40, 0.72);
+      --glass-border: rgba(192, 132, 252, 0.28);
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(147, 51, 234, 0.18) 0%, transparent 60%),
+        linear-gradient(90deg, rgba(16, 4, 28, 0.92) 0%, rgba(22, 6, 39, 0.85) 45%, rgba(22, 6, 39, 0.5) 75%, transparent 100%),
+        url('/static/assets/images/offline-bg.png');
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: clamp(24px, 5vw, 64px);
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle ambient neon pulse in background */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(75, 35, 123, 0) 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main Container */
+    .tv-offline-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 580px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: clamp(28px, 5vw, 44px);
+      box-shadow: 
+        0 24px 60px -12px rgba(10, 2, 18, 0.8),
+        0 0 40px rgba(147, 51, 234, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      animation: tvCardFloat 4s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes tvCardFloat {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-6px); }
+    }
+
+    /* Top Status Pill (Online/Offline status listener) */
+    .tv-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .tv-status-badge.online {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+    }
+
+    .tv-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 10px #ef4444;
+      animation: tvPulseDot 2s ease-in-out infinite;
+    }
+
+    .tv-status-badge.online .tv-status-dot {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    @keyframes tvPulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Header & Icon */
+    .tv-offline-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .tv-offline-icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(75, 35, 123, 0.5) 100%);
+      border: 1px solid rgba(192, 132, 252, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e9d5ff;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(75, 35, 123, 0.4);
+    }
+
+    .tv-offline-brand {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #d8b4fe;
+    }
+
+    /* Headline & Subtitle */
+    .tv-offline-title {
+      font-size: clamp(1.8rem, 3.8vw, 2.5rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .tv-offline-desc {
+      font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    /* Action Buttons */
+    .tv-offline-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .tv-btn-retry {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #7e22ce 0%, #4B237B 60%, #3a1960 100%);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 13px 28px;
+      border-radius: 12px;
+      border: 1px solid rgba(216, 180, 254, 0.4);
+      box-shadow: 0 8px 24px -4px rgba(126, 34, 206, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tv-btn-retry:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #9333ea 0%, #582490 60%, #431a70 100%);
+      box-shadow: 0 14px 32px -4px rgba(147, 51, 234, 0.75), 0 0 24px rgba(192, 132, 252, 0.45);
+    }
+
+    .tv-btn-retry.loading svg {
+      animation: tvSpin 0.9s linear infinite;
+    }
+
+    @keyframes tvSpin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .tv-btn-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 13px 24px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tv-btn-home:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #ffffff;
+      box-shadow: 0 8px 20px rgba(126, 34, 206, 0.3);
+    }
+
+    /* Offline Tips List */
+    .tv-offline-tips {
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      padding-top: 20px;
+      margin-bottom: 24px;
+    }
+
+    .tv-tips-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #c0a8ed;
+      margin-bottom: 12px;
+    }
+
+    .tv-tips-list {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .tv-tip-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+    }
+
+    .tv-tip-item svg {
+      color: #c084fc;
+      flex-shrink: 0;
+    }
+
+    /* Offline Emergency Contact Strip */
+    .tv-offline-contact {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tv-contact-text {
+      font-size: 0.84rem;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .tv-contact-phone {
+      font-weight: 800;
+      color: #e9d5ff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease;
+    }
+
+    .tv-contact-phone:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 640px) {
+      body {
+        background-position: 70% center;
+        padding: 20px;
+        align-items: center;
+      }
+      .tv-offline-card {
+        padding: 28px 20px;
+      }
+      .tv-offline-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .tv-btn-retry,
+      .tv-btn-home {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="tv-offline-card" role="main" aria-live="polite">
+    
+    <!-- Status Pill (Updates automatically when connection is restored) -->
+    <div class="tv-status-badge" id="networkStatusBadge">
+      <span class="tv-status-dot"></span>
+      <span id="networkStatusText">Offline Mode</span>
+    </div>
+
+    <!-- Header / Brand -->
+    <div class="tv-offline-header">
+      <div class="tv-offline-icon-box" aria-hidden="true">
+        <!-- Wi-Fi Disconnected SVG -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="1" y1="1" x2="23" y2="23"/>
+          <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/>
+          <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/>
+          <path d="M10.71 5.05A16 16 0 0 1 22.58 9"/>
+          <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+          <line x1="12" y1="20" x2="12.01" y2="20"/>
+        </svg>
+      </div>
+      <div class="tv-offline-brand">TYRESVISION UAE</div>
+    </div>
+
+    <!-- Title & Description -->
+    <h1 class="tv-offline-title">No Internet Connection</h1>
+    <p class="tv-offline-desc">
+      It seems you have lost your connection to the internet. Please check your network or Wi-Fi settings. We will automatically reload once you are back online.
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="tv-offline-actions">
+      <button type="button" class="tv-btn-retry" id="retryButton" onclick="checkAndReload()">
+        <!-- Refresh Spinner Icon -->
+        <svg id="retryIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="23 4 23 10 17 10"/>
+          <polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        <span id="retryButtonText">Try Again</span>
+      </button>
+
+      <a href="/" class="tv-btn-home">
+        <!-- Home Icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Homepage</span>
+      </a>
+    </div>
+
+    <!-- Quick Diagnostic Tips -->
+    <div class="tv-offline-tips">
+      <div class="tv-tips-title">Quick Troubleshooting</div>
+      <ul class="tv-tips-list">
+        <li class="tv-tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Check if your Wi-Fi or mobile cellular data is turned on.</span>
+        </li>
+        <li class="tv-tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Toggle Airplane Mode off and on to reset your connection.</span>
+        </li>
+        <li class="tv-tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Restart your router or modem if browsing from home/office.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Urgent Telephone Support -->
+    <div class="tv-offline-contact">
+      <span class="tv-contact-text">Need immediate roadside tyre fitting?</span>
+      <a href="tel:+971505069575" class="tv-contact-phone">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>+971 50 506 9575</span>
+      </a>
+    </div>
+
+  </main>
+
+  <script>
+    // Live Network Status Detection
+    function updateOnlineStatus() {
+      const badge = document.getElementById('networkStatusBadge');
+      const text = document.getElementById('networkStatusText');
+      if (navigator.onLine) {
+        badge.classList.add('online');
+        text.textContent = 'Connection Restored! Reloading...';
+        setTimeout(function() {
+          window.location.reload();
+        }, 800);
+      } else {
+        badge.classList.remove('online');
+        text.textContent = 'Offline Mode';
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // Manual Reconnect Function
+    function checkAndReload() {
+      const btn = document.getElementById('retryButton');
+      const btnText = document.getElementById('retryButtonText');
+      btn.classList.add('loading');
+      btnText.textContent = 'Checking...';
+
+      // Test connectivity with a lightweight ping
+      fetch('/favicon.ico?ping=' + Date.now(), { method: 'HEAD', cache: 'no-store' })
+        .then(function() {
+          btnText.textContent = 'Connected! Loading...';
+          window.location.reload();
+        })
+        .catch(function() {
+          setTimeout(function() {
+            btn.classList.remove('loading');
+            btnText.textContent = 'Still Offline. Retry';
+          }, 800);
+        });
+    }
+  </script>
+</body>
+</html>

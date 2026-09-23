@@ -81,7 +81,7 @@
         type="button" 
         @click="saveRule()" 
         :disabled="saving"
-        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer disabled:opacity-50 active:scale-95"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer disabled:opacity-50 active:scale-95"
       >
         <svg x-show="saving" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
         <span x-text="saving ? 'Saving...' : 'Save Cart Price Rule'"></span>
@@ -94,7 +94,7 @@
     <button 
       type="button" 
       @click="activeTab = 'info'" 
-      :class="activeTab === 'info' ? 'bg-[#a855f7] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
+      :class="activeTab === 'info' ? 'bg-[#4B237B] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
       class="px-4 py-2 rounded-xl text-xs transition cursor-pointer whitespace-nowrap flex items-center gap-2"
     >
       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -104,7 +104,7 @@
     <button 
       type="button" 
       @click="activeTab = 'conditions'" 
-      :class="activeTab === 'conditions' ? 'bg-[#a855f7] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
+      :class="activeTab === 'conditions' ? 'bg-[#4B237B] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
       class="px-4 py-2 rounded-xl text-xs transition cursor-pointer whitespace-nowrap flex items-center gap-2"
     >
       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9l3 3-3 3"/></svg>
@@ -114,7 +114,7 @@
     <button 
       type="button" 
       @click="activeTab = 'actions'" 
-      :class="activeTab === 'actions' ? 'bg-[#a855f7] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
+      :class="activeTab === 'actions' ? 'bg-[#4B237B] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
       class="px-4 py-2 rounded-xl text-xs transition cursor-pointer whitespace-nowrap flex items-center gap-2"
     >
       <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -125,7 +125,7 @@
       <button 
         type="button" 
         @click="activeTab = 'coupons'; loadCoupons()" 
-        :class="activeTab === 'coupons' ? 'bg-[#a855f7] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
+        :class="activeTab === 'coupons' ? 'bg-[#4B237B] text-white font-black shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-bold'"
         class="px-4 py-2 rounded-xl text-xs transition cursor-pointer whitespace-nowrap flex items-center gap-2"
       >
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -153,7 +153,7 @@
               x-model="form.name" 
               required
               placeholder="e.g. Buy 3 Get 1 Free on MatraX Romero Tyres" 
-              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <p class="text-[11px] text-slate-400">Internal name displayed in admin dashboards and reports.</p>
           </div>
@@ -167,14 +167,14 @@
               type="text" 
               x-model="form.label_default" 
               placeholder="e.g. BUY 3 GET 1 FREE" 
-              class="w-full px-3.5 py-2.5 text-xs font-black tracking-wide uppercase bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-black tracking-wide uppercase bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <!-- Quick Preset Chips -->
             <div class="flex items-center gap-1.5 flex-wrap pt-1">
               <span class="text-[10px] text-slate-400 font-bold">Quick Presets:</span>
               <button type="button" @click="form.label_default = 'BUY 3 GET 1 FREE'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">BUY 3 GET 1 FREE</button>
               <button type="button" @click="form.label_default = 'FREE WHEEL ALIGNMENT'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition cursor-pointer">FREE WHEEL ALIGNMENT</button>
-              <button type="button" @click="form.label_default = 'SPECIAL PROMOTION'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 transition cursor-pointer">SPECIAL PROMOTION</button>
+              <button type="button" @click="form.label_default = 'SPECIAL PROMOTION'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[#f7f4fd] text-purple-700 border border-purple-200 hover:bg-[#ede5fa] transition cursor-pointer">SPECIAL PROMOTION</button>
               <button type="button" @click="form.label_default = 'BUY 2 GET 10% OFF'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition cursor-pointer">BUY 2 GET 10% OFF</button>
             </div>
             <p class="text-[11px] text-slate-400">Displays on top of product cards in the store as shown in the reference image.</p>
@@ -188,7 +188,7 @@
             x-model="form.description" 
             rows="2" 
             placeholder="Promotion terms, eligibility details or customer service notes..."
-            class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+            class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
           ></textarea>
         </div>
 
@@ -200,7 +200,7 @@
             <div class="flex items-center gap-3 pt-1">
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" x-model="form.is_active" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#a855f7]"></div>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4B237B]"></div>
               </label>
               <span class="text-xs font-bold text-slate-800" x-text="form.is_active ? 'Enabled' : 'Disabled'"></span>
             </div>
@@ -214,7 +214,7 @@
               min="0" 
               max="9999" 
               x-model.number="form.priority" 
-              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <p class="text-[10px] text-slate-400">Rule with priority 0 runs before priority 10.</p>
           </div>
@@ -225,7 +225,7 @@
             <input 
               type="date" 
               x-model="form.from_date" 
-              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
           </div>
 
@@ -235,7 +235,7 @@
             <input 
               type="date" 
               x-model="form.to_date" 
-              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
           </div>
         </div>
@@ -246,8 +246,8 @@
           <div class="flex flex-wrap gap-2 pt-1">
             {% for w in lookups.websites %}
             <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border cursor-pointer transition select-none text-xs font-bold"
-                   :class="form.website_ids.includes({{ w.id }}) ? 'bg-blue-50 border-[#a855f7] text-[#a855f7]' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
-              <input type="checkbox" :value="{{ w.id }}" x-model="form.website_ids" class="rounded text-[#a855f7] focus:ring-0">
+                   :class="form.website_ids.includes({{ w.id }}) ? 'bg-blue-50 border-[#4B237B] text-[#4B237B]' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              <input type="checkbox" :value="{{ w.id }}" x-model="form.website_ids" class="rounded text-[#4B237B] focus:ring-0">
               <span>{{ w.name }}</span>
               {% if w.is_default %}<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 font-extrabold uppercase">Default</span>{% endif %}
             </label>
@@ -262,8 +262,8 @@
           <div class="flex flex-wrap gap-2 pt-1">
             {% for g in lookups.customer_groups %}
             <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border cursor-pointer transition select-none text-xs font-bold"
-                   :class="form.customer_group_ids.includes({{ g.id }}) ? 'bg-blue-50 border-[#a855f7] text-[#a855f7]' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
-              <input type="checkbox" :value="{{ g.id }}" x-model="form.customer_group_ids" class="rounded text-[#a855f7] focus:ring-0">
+                   :class="form.customer_group_ids.includes({{ g.id }}) ? 'bg-blue-50 border-[#4B237B] text-[#4B237B]' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              <input type="checkbox" :value="{{ g.id }}" x-model="form.customer_group_ids" class="rounded text-[#4B237B] focus:ring-0">
               <span>{{ g.name }}</span>
             </label>
             {% endfor %}
@@ -278,8 +278,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- Option 1: Auto-Apply -->
             <label class="p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3"
-                   :class="form.coupon_type === 'NO_COUPON' ? 'border-[#a855f7] bg-blue-50/40' : 'border-slate-200 bg-white hover:bg-slate-50'">
-              <input type="radio" name="coupon_type" value="NO_COUPON" x-model="form.coupon_type" class="mt-1 text-[#a855f7] focus:ring-0">
+                   :class="form.coupon_type === 'NO_COUPON' ? 'border-[#4B237B] bg-blue-50/40' : 'border-slate-200 bg-white hover:bg-slate-50'">
+              <input type="radio" name="coupon_type" value="NO_COUPON" x-model="form.coupon_type" class="mt-1 text-[#4B237B] focus:ring-0">
               <div>
                 <div class="text-xs font-black text-slate-900">Auto-Apply (No Coupon Required)</div>
                 <p class="text-[11px] text-slate-500 mt-0.5">Promotion automatically activates in store &amp; checkout when criteria are satisfied (e.g. Buy 3 Get 1 Free, Free Wheel Alignment).</p>
@@ -288,8 +288,8 @@
 
             <!-- Option 2: Specific Coupon -->
             <label class="p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3"
-                   :class="form.coupon_type === 'SPECIFIC_COUPON' ? 'border-[#a855f7] bg-blue-50/40' : 'border-slate-200 bg-white hover:bg-slate-50'">
-              <input type="radio" name="coupon_type" value="SPECIFIC_COUPON" x-model="form.coupon_type" class="mt-1 text-[#a855f7] focus:ring-0">
+                   :class="form.coupon_type === 'SPECIFIC_COUPON' ? 'border-[#4B237B] bg-blue-50/40' : 'border-slate-200 bg-white hover:bg-slate-50'">
+              <input type="radio" name="coupon_type" value="SPECIFIC_COUPON" x-model="form.coupon_type" class="mt-1 text-[#4B237B] focus:ring-0">
               <div>
                 <div class="text-xs font-black text-slate-900">Specific Coupon Code</div>
                 <p class="text-[11px] text-slate-500 mt-0.5">Requires the customer to manually enter a coupon code during checkout to unlock the discount.</p>
@@ -298,7 +298,7 @@
           </div>
 
           <!-- Coupon Inputs (Only when SPECIFIC_COUPON) -->
-          <div x-show="form.coupon_type === 'SPECIFIC_COUPON'" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-2xl bg-purple-50/50 border border-purple-100">
+          <div x-show="form.coupon_type === 'SPECIFIC_COUPON'" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-2xl bg-[#f7f4fd]/50 border border-purple-100">
             <div class="space-y-1.5">
               <label class="block text-xs font-bold text-slate-700">Primary Coupon Code <span class="text-rose-500">*</span></label>
               <input 
@@ -348,7 +348,7 @@
                 min="0"
                 x-model.number="cartConditions.min_subtotal" 
                 placeholder="0.00" 
-                class="w-full pl-12 pr-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
+                class="w-full pl-12 pr-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
               >
             </div>
             <p class="text-[10px] text-slate-400">0 = no minimum spend requirement.</p>
@@ -362,7 +362,7 @@
               min="0"
               x-model.number="cartConditions.min_qty" 
               placeholder="e.g. 4" 
-              class="w-full px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
+              class="w-full px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
             >
             <p class="text-[10px] text-slate-400">e.g. set to 4 for set-of-4 tyre deals.</p>
           </div>
@@ -376,7 +376,7 @@
               min="0"
               x-model.number="cartConditions.min_weight" 
               placeholder="Optional" 
-              class="w-full px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#a855f7]"
+              class="w-full px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
             >
             <p class="text-[10px] text-slate-400">Leave blank if weight is not restricted.</p>
           </div>
@@ -402,7 +402,7 @@
             <label class="block text-xs font-bold text-slate-700">Discount Formula</label>
             <select 
               x-model="form.discount_type" 
-              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition cursor-pointer"
+              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition cursor-pointer"
             >
               <option value="percent_of_original">Percent of Product Price (%)</option>
               <option value="fixed_per_item">Fixed Amount Per Item (AED)</option>
@@ -422,7 +422,7 @@
               min="0" 
               x-model.number="form.discount_amount" 
               required
-              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
           </div>
 
@@ -434,7 +434,7 @@
               min="1" 
               x-model.number="form.discount_qty_step" 
               placeholder="Leave blank for regular discount" 
-              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition"
+              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <p class="text-[10px] text-slate-400">e.g. 4 for "Buy 3 Get 1 Free" (groups of 4).</p>
           </div>
@@ -495,7 +495,7 @@
             <label class="block text-xs font-bold text-slate-700">Free Service / Free Shipping Grant</label>
             <select 
               x-model="form.free_shipping" 
-              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#a855f7] transition cursor-pointer"
+              class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition cursor-pointer"
             >
               <option value="no">No Free Service</option>
               <option value="matching_items">Free Service / Fitting for Matching Items Only</option>
@@ -509,7 +509,7 @@
             <div class="flex items-center gap-3 pt-2">
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" x-model="form.discard_subsequent_rules" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#a855f7]"></div>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4B237B]"></div>
               </label>
               <span class="text-xs font-bold text-slate-800" x-text="form.discard_subsequent_rules ? 'Stop lower priority rules from applying' : 'Allow other discounts to stack'"></span>
             </div>

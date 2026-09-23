@@ -9,11 +9,11 @@
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
     <div>
       <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
-        <a href="/visionadmin/attributes" class="hover:text-[#7e22ce] transition">Catalog</a>
+        <a href="/visionadmin/attributes" class="hover:text-[#2b1247] transition">Catalog</a>
         <span>/</span>
-        <a href="/visionadmin/attributes?tab=sets" class="hover:text-[#7e22ce] transition">Attribute Sets</a>
+        <a href="/visionadmin/attributes?tab=sets" class="hover:text-[#2b1247] transition">Attribute Sets</a>
         <span>/</span>
-        <span class="text-[#7e22ce] font-bold" x-text="form.id ? 'Edit Set' : 'New Set'"></span>
+        <span class="text-[#2b1247] font-bold" x-text="form.id ? 'Edit Set' : 'New Set'"></span>
       </div>
       <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1" x-text="form.id ? ('Edit Attribute Set: ' + form.name) : 'Create New Attribute Set'"></h1>
       <p class="text-xs text-slate-500 font-medium mt-0.5">Schema blueprint grouping dynamic attributes for vehicle &amp; product catalogs.</p>
@@ -39,10 +39,10 @@
       <template x-if="form.id">
         <a 
           :href="'/visionadmin/attribute-sets/' + form.id + '/builder'" 
-          class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-blue-200 bg-[#faf5ff] hover:bg-blue-100 text-[#7e22ce] font-bold text-xs tracking-wide transition shadow-2xs active:scale-95"
+          class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-blue-200 bg-[#f7f4fd] hover:bg-blue-100 text-[#2b1247] font-bold text-xs tracking-wide transition shadow-2xs active:scale-95"
           title="Open Full-Screen Schema Builder"
         >
-          <svg class="w-4 h-4 text-[#7e22ce]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <svg class="w-4 h-4 text-[#2b1247]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           <span>Schema Builder ↗</span>
         </a>
       </template>
@@ -51,7 +51,7 @@
         type="button" 
         @click="saveSet()" 
         :disabled="isSaving"
-        class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 active:scale-95 cursor-pointer"
+        class="px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 active:scale-95 cursor-pointer"
       >
         <span x-text="isSaving ? 'Saving...' : (form.id ? 'Save Changes' : 'Save Attribute Set')"></span>
       </button>
@@ -68,7 +68,7 @@
           x-model="form.name" 
           required 
           placeholder="e.g. Electric Vehicle (EV) Tyres, Commercial Fleet, Batteries" 
-          class="w-full px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+          class="w-full px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4B237B]"
         />
         <p class="text-[11px] text-slate-400 mt-1">For internal use.</p>
       </div>
@@ -78,7 +78,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Based On <span class="text-rose-500">*</span></label>
           <select 
             x-model="form.clone_from_id" 
-            class="w-full px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+            class="w-full px-4 py-2.5 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4B237B]"
           >
             {% for s in attribute_sets %}
               <option value="{{ s.id }}">{{ s.name }}</option>
@@ -100,7 +100,7 @@
           type="text" 
           x-model="form.slug" 
           placeholder="e.g. ev_tyres (auto-generated if left blank)" 
-          class="w-full px-4 py-2.5 text-xs font-mono font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+          class="w-full px-4 py-2.5 text-xs font-mono font-bold rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4B237B]"
         />
         <p class="text-[10px] text-slate-400 mt-1">Unique slug used in catalog routing and EAV schema lookups.</p>
       </div>
@@ -111,7 +111,7 @@
           x-model="form.description" 
           rows="3" 
           placeholder="Describe the catalog scope and specifications this set handles..." 
-          class="w-full px-4 py-2.5 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#a855f7]"
+          class="w-full px-4 py-2.5 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#4B237B]"
         ></textarea>
       </div>
 
@@ -125,7 +125,7 @@
         <button 
           type="submit" 
           :disabled="isSaving"
-          class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 cursor-pointer active:scale-95"
+          class="px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition shadow-xs disabled:opacity-50 cursor-pointer active:scale-95"
           x-text="isSaving ? 'Saving...' : (form.id ? 'Save Changes' : 'Save Attribute Set')"
         ></button>
       </div>

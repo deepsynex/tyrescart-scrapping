@@ -16,7 +16,7 @@ for _p in reversed([_app_dir, _root_dir, _scraperapp_dir, _visionadmin_dir, _sit
 
 from datetime import timedelta
 
-from flask import Flask, jsonify, render_template, request, session, send_from_directory, g, redirect
+from flask import Flask, jsonify, render_template, request, session, send_from_directory, g, redirect, make_response
 
 import db
 from scraperapp.tcsadmin import register_tcsadmin_routes
@@ -222,6 +222,35 @@ def serve_tyrescart_image(filename):
 
     placeholder_dir = os.path.join(app.static_folder, 'assets', 'images')
     return send_from_directory(placeholder_dir, 'no-image-available.svg')
+
+
+# ============================================================================
+# PWA & OFFLINE INFRASTRUCTURE ROUTES
+# ============================================================================
+
+@app.route('/offline')
+def offline_page():
+    """Serves the standalone, lightweight offline fallback page."""
+    response = make_response(render_template('offline.html'))
+    response.headers['Cache-Control'] = 'public, max-age=3600'
+    return response
+
+
+@app.route('/service-worker.js')
+def service_worker():
+    """Serves the service worker from root scope with necessary PWA headers."""
+    response = make_response(send_from_directory(app.static_folder, 'service-worker.js', mimetype='application/javascript'))
+    response.headers['Service-Worker-Allowed'] = '/'
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
+
+
+@app.route('/manifest.json')
+def manifest():
+    """Serves the PWA web app manifest."""
+    response = make_response(send_from_directory(app.static_folder, 'manifest.json', mimetype='application/manifest+json'))
+    response.headers['Cache-Control'] = 'public, max-age=86400'
+    return response
 
 
 # ============================================================================

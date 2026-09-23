@@ -15,11 +15,11 @@
     <div class="bg-white p-5 sm:p-6 rounded-3xl border border-[#E8EDE4] shadow-xs flex items-center justify-between flex-wrap gap-4">
       <div>
         <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
-          <a href="/visionadmin/products" @click.prevent="closeForm()" class="hover:text-[#7e22ce] transition">Catalog</a>
+          <a href="/visionadmin/products" @click.prevent="closeForm()" class="hover:text-[#2b1247] transition">Catalog</a>
           <span>/</span>
-          <a href="/visionadmin/products" @click.prevent="closeForm()" class="hover:text-[#7e22ce] transition">Products</a>
+          <a href="/visionadmin/products" @click.prevent="closeForm()" class="hover:text-[#2b1247] transition">Products</a>
           <span>/</span>
-          <span class="text-[#7e22ce] font-bold" x-text="isEditMode ? 'Edit Product' : 'New Product'"></span>
+          <span class="text-[#2b1247] font-bold" x-text="isEditMode ? 'Edit Product' : 'New Product'"></span>
         </div>
         <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1" x-text="isEditMode ? 'Edit Product: ' + (form.display_name || form.sku) : 'New Product'"></h1>
         <p class="text-xs text-slate-500 font-medium mt-0.5" x-text="isEditMode ? ('Editing SKU: ' + form.sku + ' • Product ID: #' + form.id) : 'Define product attributes, SKU, pricing, tyre sizing, EU labels, and stock.'"></p>
@@ -52,7 +52,7 @@
             type="button" 
             @click="saveProduct()" 
             :disabled="isSubmitting"
-            class="px-5 py-2.5 rounded-l-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition cursor-pointer disabled:opacity-50 flex items-center gap-2 active:scale-95"
+            class="px-5 py-2.5 rounded-l-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer disabled:opacity-50 flex items-center gap-2 active:scale-95"
           >
             <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
             <span x-text="isSubmitting ? 'Saving...' : 'Save Product'"></span>
@@ -61,7 +61,7 @@
             type="button" 
             @click="saveMenuOpen = !saveMenuOpen" 
             :disabled="isSubmitting"
-            class="px-3 py-2.5 rounded-r-2xl bg-[#7e22ce] hover:bg-[#3d8212] text-white text-xs border-l border-white/20 transition cursor-pointer"
+            class="px-3 py-2.5 rounded-r-2xl bg-[#2b1247] hover:bg-[#3d8212] text-white text-xs border-l border-white/20 transition cursor-pointer"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
@@ -131,7 +131,7 @@
                 <select 
                   x-model="form.attribute_set_id" 
                   @change="onAttributeSetChange(form.attribute_set_id, isEditMode ? form.id : null)" 
-                  class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-bold text-slate-800 bg-white shadow-2xs outline-hidden cursor-pointer"
+                  class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-bold text-slate-800 bg-white shadow-2xs outline-hidden cursor-pointer"
                 >
                   {% for s in attribute_sets %}
                     <option value="{{ s.id }}">{{ s.name }}</option>
@@ -145,7 +145,7 @@
                 <a 
                   :href="'/visionadmin/catalog/attribute-sets/' + form.attribute_set_id + '/builder'" 
                   target="_blank"
-                  class="text-[11px] text-[#a855f7] hover:underline font-semibold whitespace-nowrap shrink-0 flex items-center gap-1"
+                  class="text-[11px] text-[#4B237B] hover:underline font-semibold whitespace-nowrap shrink-0 flex items-center gap-1"
                   title="Open Attribute Set Builder in new tab"
                 >
                   <span>Edit Set</span>
@@ -161,7 +161,7 @@
 
         <!-- Loading indicator while switching attribute set -->
         <div x-show="form.loadingSchema" class="bg-white border border-slate-200 rounded-xs p-8 shadow-2xs flex items-center justify-center gap-2 text-slate-400 font-medium">
-          <svg class="w-4 h-4 animate-spin text-[#a855f7]" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+          <svg class="w-4 h-4 animate-spin text-[#4B237B]" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
           <span>Loading attribute set specifications...</span>
         </div>
 
@@ -170,7 +170,7 @@
           <!-- Expand / Collapse All helper when multiple groups exist -->
           <template x-if="form.attribute_groups && form.attribute_groups.length > 1">
             <div class="flex items-center justify-end gap-2 px-1 text-xs">
-              <button type="button" @click="expandAllGroups()" class="text-[#a855f7] hover:underline font-semibold cursor-pointer">Expand All Groups</button>
+              <button type="button" @click="expandAllGroups()" class="text-[#4B237B] hover:underline font-semibold cursor-pointer">Expand All Groups</button>
               <span class="text-slate-300">|</span>
               <button type="button" @click="collapseAllGroups()" class="text-slate-500 hover:text-slate-800 hover:underline font-semibold cursor-pointer">Collapse All Groups</button>
             </div>
@@ -185,7 +185,7 @@
                 class="w-full py-3.5 px-6 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/75 cursor-pointer transition select-none"
               >
                 <div class="flex items-center gap-2.5">
-                  <span class="w-2 h-2 rounded-full bg-[#a855f7]"></span>
+                  <span class="w-2 h-2 rounded-full bg-[#4B237B]"></span>
                   <span class="text-xs sm:text-sm font-bold text-[#303030] uppercase tracking-wide" x-text="formatGroupName(group)"></span>
                   <span class="text-[11px] text-slate-400 font-semibold px-2 py-0.5 rounded-full bg-slate-100" x-text="(group.attributes ? group.attributes.filter(a => a.code !== 'attribute_set_id' && a.code !== 'category_ids' && a.code !== 'display_name').length : 0) + ' attributes'"></span>
                 </div>
@@ -229,7 +229,7 @@
                           :value="form.sku || form.dynamic_attributes['sku'] || ''"
                           @input="form.sku = $event.target.value; form.dynamic_attributes['sku'] = $event.target.value; syncDynamicField('sku', $event.target.value)"
                           placeholder="" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           required
                         />
                       </template>
@@ -240,7 +240,7 @@
                           :value="form.brand_id || form.dynamic_attributes['brand'] || ''"
                           @change="form.brand_id = $event.target.value; form.dynamic_attributes['brand'] = $event.target.value; syncDynamicField('brand', $event.target.value)"
                           :required="attr.is_required"
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                         >
                           <option value="">-- Please Select --</option>
                           <template x-for="b in brands" :key="b.id">
@@ -256,7 +256,7 @@
                             type="button" 
                             @click="form.status = (form.status === 'active' ? 'inactive' : 'active'); form.dynamic_attributes['status'] = form.status; syncDynamicField('status', form.status)" 
                             class="w-11 h-5 rounded-full relative transition-colors duration-200 cursor-pointer flex items-center"
-                            :class="form.status === 'active' ? 'bg-[#a855f7]' : 'bg-slate-300'"
+                            :class="form.status === 'active' ? 'bg-[#4B237B]' : 'bg-slate-300'"
                           >
                             <div 
                               class="w-4 h-4 rounded-full bg-white shadow-xs absolute transition-transform duration-200"
@@ -274,7 +274,7 @@
                           :value="form.display_name || form.dynamic_attributes['product_name'] || form.dynamic_attributes['name'] || ''"
                           @input="onProductNameInput($event.target.value)"
                           placeholder="" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           required
                         />
                       </template>
@@ -287,10 +287,10 @@
                             :value="form.slug || form.dynamic_attributes['url_key'] || ''"
                             @input="form.slug = $event.target.value; form.dynamic_attributes['url_key'] = $event.target.value; syncDynamicField('url_key', $event.target.value)"
                             placeholder="" 
-                            class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                            class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           />
                           <label class="flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" x-model="form.create_redirect" class="w-3.5 h-3.5 rounded-xs text-[#a855f7] focus:ring-[#a855f7] border-slate-300" checked />
+                            <input type="checkbox" x-model="form.create_redirect" class="w-3.5 h-3.5 rounded-xs text-[#4B237B] focus:ring-[#4B237B] border-slate-300" checked />
                             <span class="text-xs text-slate-600">Create Permanent Redirect for old URL</span>
                           </label>
                         </div>
@@ -299,7 +299,7 @@
                       <!-- 7. Price & Price Per Item / Advanced Pricing -->
                       <template x-if="['price', 'price_per_item', 'special_price', 'cost', 'tier_price', 'msrp'].includes(attr.code)">
                         <div>
-                          <div class="flex items-center w-full max-w-[220px] rounded-xs border border-[#adadad] bg-white overflow-hidden shadow-2xs focus-within:border-[#a855f7]">
+                          <div class="flex items-center w-full max-w-[220px] rounded-xs border border-[#adadad] bg-white overflow-hidden shadow-2xs focus-within:border-[#4B237B]">
                             <span class="px-3 py-1.5 bg-slate-100 border-r border-[#adadad] text-xs font-semibold text-slate-600 select-none">AED</span>
                             <input 
                               type="number" 
@@ -324,7 +324,7 @@
                           <div 
                             id="category-select-trigger"
                             @click="categoryDropdownOpen = !categoryDropdownOpen" 
-                            class="flex-1 min-h-[34px] px-2 py-1 rounded-xs border border-[#adadad] bg-white hover:border-slate-500 focus-within:border-[#a855f7] cursor-pointer flex items-center justify-between gap-2 transition select-none shadow-2xs"
+                            class="flex-1 min-h-[34px] px-2 py-1 rounded-xs border border-[#adadad] bg-white hover:border-slate-500 focus-within:border-[#4B237B] cursor-pointer flex items-center justify-between gap-2 transition select-none shadow-2xs"
                           >
                             <!-- Selected categories list or placeholder -->
                             <div class="flex flex-wrap items-center gap-1.5 py-0.5 max-w-[calc(100%-32px)]">
@@ -379,7 +379,7 @@
                                 type="text" 
                                 x-model="categorySearch" 
                                 placeholder="Search categories..." 
-                                class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xs border border-[#adadad] focus:border-[#a855f7] outline-none" 
+                                class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xs border border-[#adadad] focus:border-[#4B237B] outline-none" 
                               />
                               <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -398,7 +398,7 @@
                                       :value="cat.id" 
                                       :checked="isCategorySelected(cat.id)" 
                                       @change="toggleCategory(cat.id)" 
-                                      class="rounded-xs text-[#a855f7] focus:ring-[#a855f7] w-4 h-4 cursor-pointer accent-[#a855f7]" 
+                                      class="rounded-xs text-[#4B237B] focus:ring-[#4B237B] w-4 h-4 cursor-pointer accent-[#4B237B]" 
                                     />
                                     <span 
                                       :class="isCategorySelected(cat.id) ? 'font-bold text-slate-900' : 'font-medium text-slate-700'" 
@@ -415,7 +415,7 @@
 
                             <div class="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-200 text-xs">
                               <div class="flex items-center gap-3">
-                                <button type="button" @click="selectAllCategories()" class="text-[#a855f7] font-semibold hover:underline cursor-pointer">Select All</button>
+                                <button type="button" @click="selectAllCategories()" class="text-[#4B237B] font-semibold hover:underline cursor-pointer">Select All</button>
                                 <button type="button" @click="clearCategories()" class="text-slate-500 hover:text-rose-600 font-medium cursor-pointer">Clear</button>
                               </div>
                               <div class="flex items-center gap-2">
@@ -440,7 +440,7 @@
                           size="5"
                           @change="handleMultiselectChange(attr.code, $event)"
                           :required="attr.is_required"
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                         >
                           <template x-for="opt in (attr.options || [])" :key="opt.id || opt.value">
                             <option 
@@ -459,7 +459,7 @@
                             type="button" 
                             @click="form.dynamic_attributes[attr.code] = !form.dynamic_attributes[attr.code]; syncDynamicField(attr.code, form.dynamic_attributes[attr.code])" 
                             class="w-11 h-5 rounded-full relative transition-colors duration-200 cursor-pointer flex items-center"
-                            :class="form.dynamic_attributes[attr.code] ? 'bg-[#a855f7]' : 'bg-slate-300'"
+                            :class="form.dynamic_attributes[attr.code] ? 'bg-[#4B237B]' : 'bg-slate-300'"
                           >
                             <div 
                               class="w-4 h-4 rounded-full bg-white shadow-xs absolute transition-transform duration-200"
@@ -476,7 +476,7 @@
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? String(form.dynamic_attributes[attr.code]) : ''"
                           @change="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :required="attr.is_required"
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden cursor-pointer"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden cursor-pointer"
                         >
                           <option value="">-- Please Select --</option>
                           <template x-for="opt in attr.options" :key="opt.id || opt.value">
@@ -492,7 +492,7 @@
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? form.dynamic_attributes[attr.code] : ''"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :placeholder="'Enter ' + formatAttrName(attr)" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           :required="attr.is_required"
                         />
                       </template>
@@ -506,7 +506,7 @@
                             :value="form.dynamic_attributes['weight'] !== undefined ? form.dynamic_attributes['weight'] : form.weight"
                             @input="form.dynamic_attributes['weight'] = $event.target.value; form.weight = $event.target.value; syncDynamicField('weight', $event.target.value)"
                             placeholder="0.0" 
-                            class="w-32 px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                            class="w-32 px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                             :required="attr.is_required"
                           />
                           <span class="text-xs text-slate-600 font-medium">kg</span>
@@ -520,7 +520,7 @@
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? form.dynamic_attributes[attr.code] : (attr.code === 'display_name' ? form.display_name : '')"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :placeholder="attr.default_value || ''" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           :required="attr.is_required"
                         />
                       </template>
@@ -533,7 +533,7 @@
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? form.dynamic_attributes[attr.code] : ''"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :placeholder="attr.default_value || ''" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           :required="attr.is_required"
                         />
                       </template>
@@ -545,7 +545,7 @@
                           :value="form.dynamic_attributes[attr.code] || ''"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :required="attr.is_required"
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                         ></textarea>
                       </template>
 
@@ -556,7 +556,7 @@
                           :value="form.dynamic_attributes[attr.code] || ''"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :required="attr.is_required"
-                          class="w-full max-w-xs px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-xs px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                         />
                       </template>
 
@@ -569,7 +569,7 @@
                               :value="form.dynamic_attributes[attr.code] || (attr.code === 'image' || attr.code === 'small_image' ? form.image_path : '')"
                               @input="form.dynamic_attributes[attr.code] = $event.target.value; if (attr.code === 'image' || attr.code === 'small_image') form.image_path = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                               placeholder="Image URL or upload path"
-                              class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                              class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                               :required="attr.is_required"
                             />
                             <label class="px-3 py-1.5 rounded-xs bg-[#514943] hover:bg-[#3d3732] text-white text-xs font-semibold cursor-pointer shadow-xs transition select-none whitespace-nowrap shrink-0">
@@ -592,7 +592,7 @@
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? form.dynamic_attributes[attr.code] : ''"
                           @input="form.dynamic_attributes[attr.code] = $event.target.value; syncDynamicField(attr.code, $event.target.value)"
                           :placeholder="attr.default_value || ''" 
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] focus:ring-1 focus:ring-[#a855f7] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
                           :required="attr.is_required"
                         />
                       </template>
@@ -629,11 +629,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-xs font-semibold text-[#303030] mb-1">Stock Quantity</label>
-                <input type="number" x-model="form.stock_qty" placeholder="0" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white" />
+                <input type="number" x-model="form.stock_qty" placeholder="0" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white" />
               </div>
               <div>
                 <label class="block text-xs font-semibold text-[#303030] mb-1">Stock Status</label>
-                <select x-model="form.stock_status" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white">
+                <select x-model="form.stock_status" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white">
                   <option value="in_stock">In Stock</option>
                   <option value="out_of_stock">Out of Stock</option>
                   <option value="backorder">Backorder</option>
@@ -641,7 +641,7 @@
               </div>
               <div>
                 <label class="block text-xs font-semibold text-[#303030] mb-1">Cost Price (AED, Internal)</label>
-                <input type="number" step="0.01" x-model="form.cost_price" placeholder="Supplier cost" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white" />
+                <input type="number" step="0.01" x-model="form.cost_price" placeholder="Supplier cost" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white" />
               </div>
             </div>
           </div>
@@ -662,11 +662,11 @@
           <div x-show="accordions.content" class="p-6 border-t border-slate-100 space-y-4">
             <div>
               <label class="block text-xs font-semibold text-[#303030] mb-1">Short Description</label>
-              <textarea rows="2" x-model="form.short_desc_en" placeholder="Short description excerpt" class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white"></textarea>
+              <textarea rows="2" x-model="form.short_desc_en" placeholder="Short description excerpt" class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white"></textarea>
             </div>
             <div>
               <label class="block text-xs font-semibold text-[#303030] mb-1">Full Description</label>
-              <textarea rows="4" x-model="form.description_en" placeholder="Detailed product specifications, tyre performance, compound technology..." class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white"></textarea>
+              <textarea rows="4" x-model="form.description_en" placeholder="Detailed product specifications, tyre performance, compound technology..." class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white"></textarea>
             </div>
           </div>
         </div>
@@ -714,7 +714,7 @@
 
             <div class="max-w-3xl">
               <label class="block text-xs font-semibold text-[#303030] mb-1">Image URL / External Path</label>
-              <input type="text" x-model="form.image_path" placeholder="https://... or /static/uploads/..." class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white" />
+              <input type="text" x-model="form.image_path" placeholder="https://... or /static/uploads/..." class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white" />
             </div>
           </div>
         </div>
@@ -740,7 +740,7 @@
                 </label>
                 <span class="block text-[10px] text-slate-400 font-normal">[store view]</span>
               </div>
-              <input type="text" x-model="form.canonical_url" placeholder="e.g. michelin-primacy-4-205-55r16" class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white" />
+              <input type="text" x-model="form.canonical_url" placeholder="e.g. michelin-primacy-4-205-55r16" class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white" />
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-center py-1">
@@ -748,7 +748,7 @@
                 <label class="text-xs font-semibold text-[#303030]">Meta Title</label>
                 <span class="block text-[10px] text-slate-400 font-normal">[store view]</span>
               </div>
-              <input type="text" x-model="form.meta_title_en" placeholder="Leave empty to auto-use product name" class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-medium text-slate-800 bg-white" />
+              <input type="text" x-model="form.meta_title_en" placeholder="Leave empty to auto-use product name" class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-medium text-slate-800 bg-white" />
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-start py-1">
@@ -757,7 +757,7 @@
                 <span class="block text-[10px] text-slate-400 font-normal">[store view]</span>
               </div>
               <div class="w-full max-w-2xl">
-                <textarea rows="3" x-model="form.meta_desc_en" placeholder="Search engine preview description" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#a855f7] text-xs font-normal text-slate-800 bg-white"></textarea>
+                <textarea rows="3" x-model="form.meta_desc_en" placeholder="Search engine preview description" class="w-full px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white"></textarea>
                 <span class="text-[10px] text-slate-400 block mt-1">Maximum 255 chars. Meta Description should optimally be between 150-160 characters</span>
               </div>
             </div>
@@ -789,7 +789,7 @@
                       :value="web.id" 
                       :checked="isWebsiteSelected(web.id)"
                       @change="toggleWebsiteSelection(web.id, $event.target.checked)"
-                      class="w-4 h-4 text-[#a855f7] rounded-xs focus:ring-[#a855f7]" 
+                      class="w-4 h-4 text-[#4B237B] rounded-xs focus:ring-[#4B237B]" 
                     />
                     <span class="text-xs font-medium text-slate-700" x-text="formatWebsiteName(web)"></span>
                     <template x-if="web.is_default == 1">
@@ -830,7 +830,7 @@
             type="button" 
             @click="saveProduct()" 
             :disabled="isSubmitting"
-            class="px-6 py-2.5 rounded-2xl bg-[#a855f7] hover:bg-[#7e22ce] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
+            class="px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
           >
             <span x-text="isSubmitting ? 'Saving...' : 'Save Product'"></span>
           </button>
@@ -857,7 +857,7 @@
             type="text" 
             x-model="newCategoryForm.name" 
             placeholder="e.g. Run Flat, Summer 2026, 255/35 R20" 
-            class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#a855f7] outline-none text-xs" 
+            class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#4B237B] outline-none text-xs" 
             @keydown.enter.prevent="quickCreateCategory()"
           />
         </div>
@@ -865,7 +865,7 @@
           <label class="block font-semibold text-slate-700 mb-1">Parent Category</label>
           <select 
             x-model="newCategoryForm.parent_id" 
-            class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#a855f7] outline-none text-xs bg-white"
+            class="w-full px-3 py-2 rounded-xs border border-[#adadad] focus:border-[#4B237B] outline-none text-xs bg-white"
           >
             <template x-for="cat in categories" :key="cat.id">
               <option :value="cat.id" x-text="getCategoryName(cat.id)" :selected="cat.id == newCategoryForm.parent_id"></option>
