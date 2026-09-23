@@ -9,7 +9,8 @@ import os
 import math
 import re
 from datetime import datetime, timedelta
-from flask import Blueprint, current_app, render_template, request, session, abort, redirect, make_response, send_from_directory, jsonify
+from urllib.parse import urlencode
+from flask import Blueprint, current_app, g, render_template, request, session, abort, redirect, make_response, send_from_directory, jsonify
 from models.blog import Blog
 from models.page import Page
 from models.page_section import PageSection
@@ -29,6 +30,52 @@ site_bp = Blueprint('site', __name__)
 # robots.txt/sitemap.xml live, alongside app/, scrapers/, templates/) is
 # two directories up (siteapp -> app -> root).
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# --- Storefront is English-only ---------------------------------------------
+# The Arabic (and any other) locale variants are retired on the public site:
+# every /<lang>/... URL 301s to its English equivalent, the ?lang= / ?locale=
+# switches are dropped, and each storefront request is pinned to en/ltr so the
+# translated values still held in the database are never rendered to visitors.
+# The DB data and the VisionAdmin locale tooling are deliberately untouched --
+# deleting this block restores the multilingual storefront as it was.
+CLIENT_LOCALE = 'en'
+_LOCALE_PREFIX_RE = re.compile(r'^/([a-z]{2})(?:-[a-z]{2})?(?=/|$)', re.IGNORECASE)
+_LOCALE_QUERY_KEYS = ('locale', 'lang')
+
+
+def _english_url(path):
+    """Rebuilds `path` with the locale query params stripped."""
+    kept = [(k, v) for k, v in request.args.items(multi=True)
+            if k.lower() not in _LOCALE_QUERY_KEYS]
+    if not kept:
+        return path
+    return path + '?' + urlencode(kept)
+
+
+@site_bp.before_request
+def _force_english_storefront():
+    path = request.path or '/'
+
+    # JSON endpoints are pinned to English but never redirected -- a 301 on an
+    # XHR is the kind of thing that quietly breaks a caller that doesn't follow.
+    if not path.startswith('/api/'):
+        prefix = _LOCALE_PREFIX_RE.match(path)
+        if prefix:
+            target = path[prefix.end():] or '/'
+            if not target.startswith('/'):
+                target = '/' + target
+            return redirect(_english_url(target), code=301)
+
+        if any(k.lower() in _LOCALE_QUERY_KEYS for k in request.args.keys()):
+            return redirect(_english_url(path), code=301)
+
+    # Highest-priority override in StoreContext.get_current_language(), so this
+    # also settles i18n.get_locale(), the `locale` template variable and the
+    # is_ar checks inside the composable block components.
+    g.current_language = CLIENT_LOCALE
+    g.current_direction = 'ltr'
+    if str(session.get('site_locale') or CLIENT_LOCALE).lower() != CLIENT_LOCALE:
+        session['site_locale'] = CLIENT_LOCALE
 
 
 # --- SEO: robots.txt / sitemap.xml ---

@@ -426,18 +426,22 @@
         var rawFaqs = (secData.section_data && secData.section_data.faqs) ? secData.section_data.faqs : [];
         if (!Array.isArray(rawFaqs)) rawFaqs = [];
 
-        var itemsHtml = '';
-        rawFaqs.forEach(function(f, idx) {
-          if (!f) return;
+        // Keep only usable entries, then deal them alternately into two
+        // independent columns so an open answer only grows its own column.
+        var faqs = rawFaqs.filter(function(f) {
+          return f && getLocalizedText(f.question, locale).trim();
+        });
+
+        var columnsHtml = ['', ''];
+        faqs.forEach(function(f, idx) {
           var q = getLocalizedText(f.question, locale);
           var a = getLocalizedText(f.answer, locale);
-          if (!q || !q.trim()) return;
 
           var isFirst = (idx === 0);
           var answerContent = a.trim().startsWith('<p') ? a : ('<p>' + a + '</p>');
 
-          itemsHtml += `
-            <div class="faq-item ${isFirst ? 'active' : ''}" data-faq-item>
+          columnsHtml[idx % 2] += `
+            <div class="faq-item ${isFirst ? 'active' : ''}" data-faq-item style="order:${idx}">
               <button type="button" class="faq-summary" aria-expanded="${isFirst ? 'true' : 'false'}">
                 <span class="faq-question-text">${escapeHtml(q)}</span>
                 <span class="faq-chevron-icon" aria-hidden="true">
@@ -454,6 +458,10 @@
             </div>
           `;
         });
+
+        var itemsHtml = columnsHtml.map(function(col) {
+          return `<div class="faq-col">${col}</div>`;
+        }).join('');
 
         var headerHtml = '';
         if (subtitle || title) {

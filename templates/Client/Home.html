@@ -633,7 +633,35 @@
     {% elif sec.section_type == 'faq' %}
       <!-- ================= 8. FAQ (Rendered via JS) ================= -->
       <section id="faq" class="faq" data-section-id="{{ sec.id or 'faq' }}">
-        <div id="home-faq-container" class="wrap" style="max-width:840px">
+        <style>
+          /* Two-column FAQ. Duplicated from client.css on purpose: kept here so
+             the layout survives a client.css rewrite. Each .faq-col stacks on
+             its own, so an open answer never leaves a blank gap opposite it. */
+          #faq .faq-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+            gap: 20px;
+          }
+          #faq .faq-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-width: 0;
+          }
+          @media(max-width: 860px) {
+            #faq .faq-list {
+              grid-template-columns: minmax(0, 1fr);
+              gap: 14px;
+            }
+            /* Single column on mobile: drop the wrappers and let the inline
+               `order` on each card restore the original question sequence. */
+            #faq .faq-col {
+              display: contents;
+            }
+          }
+        </style>
+        <div id="home-faq-container" class="wrap" style="max-width:1120px">
           <!-- Dynamically rendered by client.js -->
         </div>
         <script id="home-faq-json" type="application/json">

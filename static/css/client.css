@@ -1572,9 +1572,32 @@ header {
 }
 
 .faq-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+}
+
+/* Each column stacks on its own, so an open answer never leaves a
+   blank gap in the opposite column. */
+.faq-col {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
+}
+
+@media(max-width: 860px) {
+  .faq-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  /* Single column on mobile: drop the wrappers and let the inline
+     `order` on each card restore the original question sequence. */
+  .faq-col {
+    display: contents;
+  }
 }
 
 .faq-item,
@@ -7379,9 +7402,39 @@ details summary span:last-child {
   margin-top: 36px;
 }
 
-@media(max-width: 900px) {
+/* Tablet: three columns squeeze each card to ~250px of text, so the headings
+   overrun the min-heights that keep the desktop row aligned. Drop to two
+   columns and let the odd card out span the row. */
+@media(max-width: 1100px) {
   .tv-ev-grid-3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .tv-ev-grid-3 > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* The cards carry inline min-heights tuned for the 3-up desktop row; on
+     wider cards they only add dead space, and they need !important to beat
+     the inline style. */
+  .tv-ev-grid-3 .tv-ev-advice-card h3,
+  .tv-ev-grid-3 .tv-ev-advice-card p {
+    min-height: 0 !important;
+  }
+}
+
+@media(max-width: 640px) {
+  .tv-ev-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tv-ev-grid-3 > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+
+  .tv-ev-advice-card {
+    padding: 26px 22px;
   }
 }
 
@@ -11415,7 +11468,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   border-color: #c084fc;
   color: #8D25EB;
 }
-}
+
 
 .tv-pdp-fitment-controls {
   display: flex;
@@ -13086,5 +13139,3 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(168, 85, 247, 0.12);
 }
-
-
