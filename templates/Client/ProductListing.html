@@ -250,7 +250,37 @@
           </div>
         </div>
 
-        <!-- 6. Origin -->
+        <!-- 6. Runflat Technology -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="3"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+              <span>Runflat</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <div class="tv-filter-list" id="filter-runflat-list">
+            {% if filter_runflats|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No runflat options available</span>
+            {% endif %}
+            {% for rf in filter_runflats %}
+            {% set is_active_rf = active_runflats and (rf.key in active_runflats or (rf.label|lower) in active_runflats) %}
+            <label class="tv-filter-item {% if rf.count == 0 and not is_active_rf %}tv-filter-empty{% endif %}" data-filter-name="{{ rf.label }}">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="runflat" value="{{ rf.key }}" {% if is_active_rf %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ rf.label }}</span>
+              </span>
+              <span class="tv-filter-count">{{ "{:,}".format(rf.count) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 7. Origin -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
@@ -449,7 +479,14 @@
               data-category="{{ p.tyres_category or 'Premium' }}"
               data-offer="{{ p.offer_banner or '' }}">
           
-          <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated / Offer Badge (Right) -->
+          <!-- Top Offer Banner (Full Width Strip on top of card) -->
+          {% if p.offer_banner %}
+          <div class="tv-card-top-banner">
+            <span class="tv-offer-title">{{ p.offer_banner }}</span>
+          </div>
+          {% endif %}
+
+          <!-- 1. Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
           <div class="tv-card-header-bar">
             {% set card_b_slug = p.brand_slug or (p.brand_name|lower|replace(' ', '-')) %}
             <a href="/tyres/brand/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View all {{ p.brand_name }} tyres" onclick="event.stopPropagation();">
@@ -462,16 +499,12 @@
             </a>
 
             <div class="tv-card-badge-wrap">
-              {% if p.offer_banner %}
-              <span class="tv-card-badge tv-badge-offer">{{ p.offer_banner }}</span>
-              {% else %}
               <span class="tv-card-badge tv-badge-toprated">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
                 <span>Top Rated</span>
               </span>
-              {% endif %}
             </div>
           </div>
 

@@ -709,6 +709,7 @@ def _fetch_catalog_products(args, locale='en'):
                 'year': ([], []),
                 'origin': ([], []),
                 'type': ([], []),
+                'runflat': ([], []),
                 'price': ([], []),
                 'promo': ([], []),
                 'search': ([], [])
@@ -902,6 +903,25 @@ def _fetch_catalog_products(args, locale='en'):
                 if t_clauses:
                     clauses['type'][0].append("(" + " OR ".join(t_clauses) + ")")
 
+            # 9b. Runflat Technology filter
+            raw_runflats = args.getlist('runflat') or args.getlist('is_runflat') or args.getlist('run_flat')
+            runflats = []
+            for r_entry in raw_runflats:
+                for r_part in r_entry.split(','):
+                    rp = r_part.strip().lower()
+                    if rp and rp not in runflats:
+                        runflats.append(rp)
+
+            if runflats:
+                rf_clauses = []
+                for rf in runflats:
+                    if rf in ('runflat', 'run_flat', 'run flat', 'yes', '1', 'true'):
+                        rf_clauses.append("(p.run_flat = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IN ('RunFlat', 'runflat', 'yes', '1') OR p.name LIKE '%%runflat%%' OR p.name LIKE '%%run flat%%')")
+                    elif rf in ('standard', 'non_runflat', 'non-runflat', 'no', '0', 'false'):
+                        rf_clauses.append("(p.run_flat = 0 AND (JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) NOT IN ('RunFlat', 'runflat', 'yes', '1')) AND p.name NOT LIKE '%%runflat%%' AND p.name NOT LIKE '%%run flat%%')")
+                if rf_clauses:
+                    clauses['runflat'][0].append("(" + " OR ".join(rf_clauses) + ")")
+
             # 10. Price filter
             max_price = args.get('max_price')
             if max_price:
@@ -1027,7 +1047,8 @@ def _fetch_catalog_products(args, locale='en'):
                 'patterns': {},
                 'oems': {},
                 'origins': {},
-                'promotions': {}
+                'promotions': {},
+                'runflats': {}
             }
 
             # 1. Warranty facet
@@ -1132,6 +1153,22 @@ def _fetch_catalog_products(args, locale='en'):
             facets['promotions'] = {
                 'buy_3_get_1_free': int(pr_row.get('buy_3_get_1_free') or 0),
                 'free_wheel_alignment': int(pr_row.get('free_wheel_alignment') or 0)
+            }
+
+            # 8. Runflat facet
+            rf_where, rf_params = get_where_except('runflat')
+            cur.execute(f"""
+                SELECT 
+                    SUM(CASE WHEN (p.run_flat = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IN ('RunFlat', 'runflat', 'yes', '1') OR p.name LIKE '%%runflat%%' OR p.name LIKE '%%run flat%%') THEN 1 ELSE 0 END) as runflat_cnt,
+                    SUM(CASE WHEN (p.run_flat = 0 AND (JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) NOT IN ('RunFlat', 'runflat', 'yes', '1')) AND p.name NOT LIKE '%%runflat%%' AND p.name NOT LIKE '%%run flat%%') THEN 1 ELSE 0 END) as standard_cnt
+                FROM products p
+                LEFT JOIN brands b ON p.brand_id = b.id
+                WHERE {rf_where}
+            """, rf_params)
+            rf_row = cur.fetchone() or {}
+            facets['runflats'] = {
+                'runflat': int(rf_row.get('runflat_cnt') or 0),
+                'standard': int(rf_row.get('standard_cnt') or 0)
             }
 
             return {
@@ -1313,6 +1350,7 @@ def _render_product_listing(locale, filter_path=None):
         active_sizes.append(s.strip())
         active_sizes.append(s.strip().replace('/', '-').replace(' ', '-'))
     active_types = [t.lower() for t in (combined_args.getlist('type') or combined_args.getlist('tire_type'))]
+    active_runflats = [rf.lower().strip() for rf in (combined_args.getlist('runflat') or combined_args.getlist('is_runflat') or combined_args.getlist('run_flat'))]
     active_max_price = combined_args.get('max_price')
     active_min_price = combined_args.get('min_price')
     active_sort = combined_args.get('sort') or 'price-asc'
@@ -1567,6 +1605,30 @@ def _render_product_listing(locale, filter_path=None):
                 'count': run_flat_cnt
             })
 
+            # 5b. Sidebar: Runflat from DB
+            cur.execute("""
+                SELECT 
+                    SUM(CASE WHEN (run_flat = 1 OR JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.runflat')) IN ('RunFlat', 'runflat', 'yes', '1') OR name LIKE '%runflat%' OR name LIKE '%run flat%') THEN 1 ELSE 0 END) as runflat_cnt,
+                    SUM(CASE WHEN (run_flat = 0 AND (JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.runflat')) IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.runflat')) NOT IN ('RunFlat', 'runflat', 'yes', '1')) AND name NOT LIKE '%runflat%' AND name NOT LIKE '%run flat%') THEN 1 ELSE 0 END) as standard_cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+            """)
+            rf_res = cur.fetchone() or {}
+            rf_live_cnt = int(rf_res.get('runflat_cnt') or 0)
+            std_live_cnt = int(rf_res.get('standard_cnt') or 0)
+            filter_runflats = [
+                {
+                    'key': 'runflat',
+                    'label': 'Runflat',
+                    'count': facets.get('runflats', {}).get('runflat', rf_live_cnt) if facets else rf_live_cnt
+                },
+                {
+                    'key': 'standard',
+                    'label': 'Standard',
+                    'count': facets.get('runflats', {}).get('standard', std_live_cnt) if facets else std_live_cnt
+                }
+            ]
+
             # 6. Sidebar: Promotions / Special Offers directly synced with active cart_price_rules in DB
             cur.execute("""
                 SELECT id, name
@@ -1647,6 +1709,7 @@ def _render_product_listing(locale, filter_path=None):
                 filter_sizes=filter_sizes,
                 filter_vehicles=filter_vehicles,
                 filter_tyre_types=filter_tyre_types,
+                filter_runflats=filter_runflats,
                 filter_promotions=filter_promotions,
                 min_price=min_price,
                 max_price=max_price,
@@ -1659,6 +1722,7 @@ def _render_product_listing(locale, filter_path=None):
                 active_vehicles=active_vehicles,
                 active_sizes=active_sizes,
                 active_types=active_types,
+                active_runflats=active_runflats,
                 active_promotions=active_promotions,
                 active_max_price=active_max_price,
                 active_min_price=active_min_price,

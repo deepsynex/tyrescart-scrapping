@@ -1156,9 +1156,11 @@ function createProductCardHTML(p) {
 
   const slugVal = escapeHtml(p.slug || '');
 
-  const badgeHTML = hasOffer
-    ? `<span class="tv-card-badge tv-badge-offer">${escapeHtml(p.offer_banner)}</span>`
-    : `<span class="tv-card-badge tv-badge-toprated">
+  const topOfferHTML = hasOffer
+    ? `<div class="tv-card-top-banner"><span class="tv-offer-title">${escapeHtml(p.offer_banner)}</span></div>`
+    : '';
+
+  const badgeHTML = `<span class="tv-card-badge tv-badge-toprated">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
         </svg>
@@ -1194,7 +1196,9 @@ function createProductCardHTML(p) {
          data-price-set4="${setOf4Formatted}"
          data-offer="${escapeHtml(p.offer_banner || '')}">
 
-      <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated / Offer Badge (Right) -->
+      ${topOfferHTML}
+
+      <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
       <div class="tv-card-header-bar">
         <a href="/tyres/brand/${encodeURIComponent(rawBrandSlug)}" class="tv-card-brand-wrap" title="View all ${brandName} tyres" onclick="event.stopPropagation();">
           ${brandLogo}
@@ -1234,7 +1238,7 @@ function createProductCardHTML(p) {
           </h3>
         </a>
 
-        <!-- 3. Product Size --> 2025 -->
+        <!-- 3. Product Size -->
         <div class="tv-card-size-row">
           <span class="tv-card-spec-text">${sizeSpec}</span>
           <span class="tv-card-year-meta" title="Manufacturing Year">
@@ -1792,6 +1796,7 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const selectedWarranties = Array.from(document.querySelectorAll('input[name="warranty"]:checked')).map(cb => cb.value.trim());
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
+  const selectedRunflats = Array.from(document.querySelectorAll('input[name="runflat"]:checked')).map(cb => cb.value.trim());
   const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
@@ -1814,6 +1819,7 @@ async function fetchProducts(page = 1, scrollUp = true) {
   selectedWarranties.forEach(w => params.append('warranty', w));
   selectedYears.forEach(y => params.append('year', y));
   selectedOrigins.forEach(org => params.append('origin', org));
+  selectedRunflats.forEach(rf => params.append('runflat', rf));
   selectedSizes.forEach(s => params.append('size', s));
   selectedVehicles.forEach(v => params.append('vehicle', v));
   selectedTypes.forEach(t => params.append('type', t));
@@ -2040,6 +2046,9 @@ function updateSidebarFacetCounts(facets) {
 
   // 7. Promotion
   updateGroupItems('promotion', facets.promotions, true, val => val.replace(/-/g, '_'));
+
+  // 8. Runflat
+  updateGroupItems('runflat', facets.runflats, true);
 }
 
 function refreshFilterVisibility() {
