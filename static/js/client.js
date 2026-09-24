@@ -1355,6 +1355,7 @@ function addToCartWithCard(btn, title, basePrice) {
   setTimeout(() => {
     btn.innerHTML = originalHTML;
     btn.style.background = '';
+  }, 2000);
 }
 
 function handleProductCardClick(e, slug) {
