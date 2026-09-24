@@ -1030,61 +1030,43 @@ function renderSkeletons(count) {
   for (let i = 0; i < num; i++) {
     html += `
       <div class="tv-product-card tv-card-skeleton" aria-hidden="true">
-        <!-- 1. Top Banner Placeholder -->
-        <div class="tv-skeleton-banner"></div>
-
-        <!-- 2. Card Body Placeholder -->
-        <div class="tv-skeleton-body" style="position: relative;">
-          <!-- Top Row: Eye button placeholder left, brand logo right -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div class="tv-skeleton-box" style="width: 28px; height: 28px; border-radius: 50%;"></div>
-            <div class="tv-skeleton-box" style="width: 68px; height: 20px; border-radius: 6px;"></div>
-          </div>
-
-          <!-- Tyre Image Placeholder -->
-          <div class="tv-skeleton-box tv-skeleton-img"></div>
-          
-          <!-- Warranty & Silhouette Row -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div class="tv-skeleton-box" style="width: 76px; height: 16px; border-radius: 6px;"></div>
-            <div class="tv-skeleton-box" style="width: 28px; height: 14px; border-radius: 4px;"></div>
-          </div>
-
-          <!-- Size (Left) & Pattern (Right) Side-by-Side Row Placeholder -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div class="tv-skeleton-box" style="width: 95px; height: 18px; border-radius: 6px;"></div>
-            <div class="tv-skeleton-box" style="width: 80px; height: 18px; border-radius: 6px;"></div>
-          </div>
-
-          <!-- Year & Origin Row -->
-          <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-            <div class="tv-skeleton-box" style="width: 34px; height: 14px; border-radius: 4px;"></div>
-            <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
-          </div>
-
-          <!-- Price & Action Section (Separated by Divider) -->
-          <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid #EDF2F7;">
-            <!-- Fitted Price Label Placeholder -->
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
-              <div class="tv-skeleton-box" style="width: 60px; height: 12px; border-radius: 4px;"></div>
-            </div>
-            
-            <!-- Main Price & Action Buttons Row -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-              <div>
-                <div class="tv-skeleton-box" style="width: 76px; height: 22px; border-radius: 6px; margin-bottom: 6px;"></div>
-                <div class="tv-skeleton-box" style="width: 95px; height: 13px; border-radius: 4px;"></div>
-              </div>
-              <div style="display: flex; gap: 6px;">
-                <div class="tv-skeleton-box" style="width: 40px; height: 34px; border-radius: 8px;"></div>
-                <div class="tv-skeleton-box" style="width: 58px; height: 34px; border-radius: 8px;"></div>
-              </div>
-            </div>
-          </div>
+        <!-- Top Bar Placeholder: Logo Left, Badge Right -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="tv-skeleton-box" style="width: 75px; height: 24px; border-radius: 6px;"></div>
+          <div class="tv-skeleton-box" style="width: 80px; height: 22px; border-radius: 20px;"></div>
         </div>
 
-        <!-- 3. Bottom Installment Strip Placeholder -->
-        <div class="tv-skeleton-footer-strip"></div>
+        <!-- Tyre Image Placeholder (Centered, no background) -->
+        <div class="tv-skeleton-box tv-skeleton-img" style="height: 180px; margin-bottom: 14px; border-radius: 12px;"></div>
+
+        <!-- Product Title Placeholder -->
+        <div class="tv-skeleton-box" style="width: 85%; height: 20px; border-radius: 6px; margin-bottom: 8px;"></div>
+
+        <!-- Size Spec Placeholder -->
+        <div class="tv-skeleton-box" style="width: 55%; height: 16px; border-radius: 4px; margin-bottom: 10px;"></div>
+
+        <!-- Meta Pills Row Placeholder (Year, Origin, Runflat, Premium) -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
+          <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
+          <div class="tv-skeleton-box" style="width: 50px; height: 14px; border-radius: 4px;"></div>
+          <div class="tv-skeleton-box" style="width: 55px; height: 14px; border-radius: 4px;"></div>
+        </div>
+
+        <!-- Price & Action Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px;">
+          <div>
+            <div class="tv-skeleton-box" style="width: 90px; height: 24px; border-radius: 6px; margin-bottom: 4px;"></div>
+            <div class="tv-skeleton-box" style="width: 105px; height: 12px; border-radius: 4px;"></div>
+          </div>
+          <div class="tv-skeleton-box" style="width: 110px; height: 38px; border-radius: 10px;"></div>
+        </div>
+
+        <!-- Bottom Info Strip Placeholder: In Stock | Fitted -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F5F9;">
+          <div class="tv-skeleton-box" style="width: 70px; height: 14px; border-radius: 4px;"></div>
+          <div class="tv-skeleton-box" style="width: 95px; height: 14px; border-radius: 4px;"></div>
+        </div>
       </div>
     `;
   }
@@ -1137,18 +1119,34 @@ function createProductCardHTML(p) {
   }
 
   const warrantyText = escapeHtml(p.warranty || '1 Year Warranty');
-  const patternTitle = escapeHtml(p.pattern_name || p.display_name || 'Tyre');
-  const sizeSpec = escapeHtml(p.full_size_spec || p.tire_size_label || 'Standard Fit');
-  const yearVal = escapeHtml(p.year || '2024');
-  const originVal = escapeHtml(p.country_of_origin || 'China');
-  const priceVal = typeof p.price === 'number' ? p.price : parseFloat(p.price || 0);
-  const priceFormatted = priceVal.toFixed(2);
-  const setOf4Price = calculateSetPrice(priceVal, 4, p.offer_banner || '');
   const brandName = escapeHtml(p.brand_name || '');
+
+  // 2. Remove brand name in product name as requested
+  let rawPattern = (p.pattern_name || p.display_name || 'Tyre').trim();
+  if (brandName && rawPattern.toLowerCase().startsWith(brandName.toLowerCase())) {
+    rawPattern = rawPattern.slice(brandName.length).trim();
+  }
+  rawPattern = rawPattern.replace(/^[\s\-_:]+/, '').trim();
+  if (!rawPattern) rawPattern = (p.pattern_name || p.display_name || 'Tyre');
+  const patternTitle = escapeHtml(rawPattern);
+
+  const sizeSpec = escapeHtml(p.full_size_spec || p.tire_size_label || 'Standard Fit');
+  const yearVal = escapeHtml(p.year || '2025');
+  const originVal = escapeHtml(p.country_of_origin || 'USA');
+  const runflatVal = escapeHtml(p.runflat_text || (p.is_runflat ? 'Runflat' : 'Standard'));
+  const categoryVal = escapeHtml(p.tyres_category || 'Premium');
+
+  const priceVal = typeof p.price === 'number' ? p.price : parseFloat(p.price || 0);
+  const displayPrice = (priceVal % 1 === 0) ? priceVal.toFixed(0) : priceVal.toFixed(2);
+  const setOf4Val = p.set_of_4_price ? (typeof p.set_of_4_price === 'number' ? p.set_of_4_price : parseFloat(p.set_of_4_price || (priceVal * 4))) : (priceVal * 4);
+  const setOf4Formatted = (setOf4Val % 1 === 0) ? Math.round(setOf4Val).toLocaleString() : setOf4Val.toFixed(2);
+
+  const rawBrandSlug = (p.brand_slug || p.brand_name || '').toLowerCase().trim().replace(/\s+/g, '-');
+  const brandSlug = escapeHtml(rawBrandSlug);
   const brandLogo = p.brand_logo ? `<img src="${p.brand_logo}" alt="${brandName}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"><span class="tv-card-brand-fallback" style="display:none;">${brandName}</span>` : `<span class="tv-card-brand-fallback">${brandName}</span>`;
 
   const imgPath = p.image_path || '/static/assets/images/no-image-available.svg';
-  const cleanTitle = escapeHtml((brandName + ' ' + patternTitle).trim()).replace(/'/g, "\\'");
+  const cleanTitle = escapeHtml(patternTitle).replace(/'/g, "\\'");
   const fullTitle = escapeHtml(p.full_title || (brandName + ' ' + sizeSpec + ' ' + patternTitle + ' ' + yearVal));
   const widthVal = escapeHtml(p.width || '155 mm');
   const profileVal = escapeHtml(p.profile || 'None');
@@ -1157,6 +1155,15 @@ function createProductCardHTML(p) {
   const skuVal = escapeHtml(p.sku || ('TCKL-' + (p.id || '12726')));
 
   const slugVal = escapeHtml(p.slug || '');
+
+  const badgeHTML = hasOffer
+    ? `<span class="tv-card-badge tv-badge-offer">${escapeHtml(p.offer_banner)}</span>`
+    : `<span class="tv-card-badge tv-badge-toprated">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span>Top Rated</span>
+      </span>`;
 
   return `
     <div class="tv-product-card ${hasOffer ? 'has-offer' : ''}"
@@ -1175,6 +1182,8 @@ function createProductCardHTML(p) {
          data-load-speed="${loadSpeedVal}"
          data-year="${yearVal}"
          data-country="${originVal}"
+         data-runflat="${runflatVal}"
+         data-category="${categoryVal}"
          data-warranty="${warrantyText}"
          data-sku="${skuVal}"
          data-image="${imgPath}"
@@ -1182,120 +1191,107 @@ function createProductCardHTML(p) {
          data-type="${escapeHtml(p.season || 'summer')}"
          data-price="${priceVal}"
          data-price-set2="${calculateSetPrice(priceVal, 2, p.offer_banner || '')}"
-         data-price-set4="${setOf4Price}"
+         data-price-set4="${setOf4Formatted}"
          data-offer="${escapeHtml(p.offer_banner || '')}">
-      
-      <!-- 1. Top Offer Banner (Only when offer exists) -->
-      ${offerBannerHTML}
 
-      <!-- 2. Main Card Body (Two Columns Split) -->
-      <div class="tv-card-main-split">
-        <!-- Left Column: Quickview Eye + Tyre Image -->
-        <div class="tv-card-left-col">
-          <!-- Quick-view Eye Button (Top Left) -->
-          <button class="tv-btn-quickview" onclick="openQuickView(this)" title="Quick view" type="button" aria-label="Quick view">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-
-          <!-- Centered Tyre Image Link -->
-          <a href="/${slugVal}" class="tv-card-img-link" aria-label="${patternTitle}">
-            <div class="tv-card-tyre-box tv-img-loading">
-              <img src="${imgPath}" 
-                   alt="${patternTitle}" 
-                   class="tv-product-img" 
-                   loading="lazy" 
-                   onload="this.parentElement.classList.remove('tv-img-loading')"
-                   onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
-            </div>
-          </a>
-        </div>
-
-        <!-- Right Column: Details & Pricing -->
-        <div class="tv-card-right-col">
-          <!-- Brand Logo Top Right -->
-          <div class="tv-card-brand-wrap" title="${brandName}">
-            ${brandLogo}
-          </div>
-
-          <!-- Pattern Title Link -->
-          <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
-            <h3 class="tv-card-pattern">
-              ${patternTitle}
-            </h3>
-          </a>
-
-          <!-- Size Spec with (i) Icon -->
-          <div class="tv-card-size-row">
-            <span class="tv-card-spec-text">${sizeSpec}</span>
-            <span class="tv-spec-info-btn" title="Tyre specification details">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2.2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-            </span>
-          </div>
-
-          <!-- Meta: Year & Country -->
-          <div class="tv-card-meta-row">
-            <span class="tv-meta-item tv-meta-year">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="3"></circle>
-                <line x1="12" y1="2" x2="12" y2="5"></line>
-                <line x1="12" y1="19" x2="12" y2="22"></line>
-              </svg>
-              <span>${yearVal}</span>
-            </span>
-            <span class="tv-meta-item tv-meta-country">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span>${originVal}</span>
-            </span>
-          </div>
-
-          <!-- Price Note -->
-          <div class="tv-card-price-note" onclick="openFittedPriceModal(event)" role="button" tabindex="0">
-            Price incl. Replacement
-          </div>
-
-          <!-- Row 1: Main Unit Price (Dirham Icon Font) -->
-          <div class="tv-card-unit-price-wrap">
-            <span class="currency-dirham tv-curr-glyph">&#xe900;</span>
-            <strong class="tv-card-price-num">${priceFormatted}</strong>
-            <span class="tv-card-per-tyre">/ tyre</span>
-          </div>
-
-          <!-- Row 2: Dynamic Set Price (Changes on Qty select) -->
-          <div class="tv-card-set-row tv-card-set4-wrap tv-card-dynamic-set-wrap">
-            Set of 4: <span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> <strong>${setOf4Price}</strong>
-          </div>
+      <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated / Offer Badge (Right) -->
+      <div class="tv-card-header-bar">
+        <a href="/tyres/brand/${encodeURIComponent(rawBrandSlug)}" class="tv-card-brand-wrap" title="View all ${brandName} tyres" onclick="event.stopPropagation();">
+          ${brandLogo}
+        </a>
+        <div class="tv-card-badge-wrap">
+          ${badgeHTML}
         </div>
       </div>
 
-      <!-- 3. Bottom Action Bar -->
-      <div class="tv-card-bottom-bar">
-        <span class="tv-warranty-pill">${warrantyText}</span>
+      <!-- 2. Centered Tyre Image (No background color) -->
+      <div class="tv-card-img-area">
+        <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
 
-        <select class="tv-qty-select" onchange="updateCardQty(this, ${priceVal})" aria-label="Quantity">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
+        <a href="/${slugVal}" class="tv-card-img-link" aria-label="${patternTitle}">
+          <div class="tv-card-tyre-box tv-img-loading">
+            <img src="${imgPath}" 
+                 alt="${patternTitle}" 
+                 class="tv-product-img" 
+                 loading="lazy" 
+                 onload="this.parentElement.classList.remove('tv-img-loading')"
+                 onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+          </div>
+        </a>
+      </div>
 
-        <button type="button" class="tv-btn-card-add" onclick="addToCartWithCard(this, '${cleanTitle}', ${priceVal})">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- 3. Product Info Block -->
+      <div class="tv-card-info-block">
+        <!-- Product Pattern Name (Brand name removed) -->
+        <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
+          <h3 class="tv-card-pattern">
+            ${patternTitle}
+          </h3>
+        </a>
+
+        <!-- 3. Product Size --> 2025 -->
+        <div class="tv-card-size-row">
+          <span class="tv-card-spec-text">${sizeSpec}</span>
+          <span class="tv-card-year-meta" title="Manufacturing Year">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>${yearVal}</span>
+          </span>
+        </div>
+
+        <!-- 4. USA __ Runflat __ premium -->
+        <div class="tv-card-meta-row">
+          <span class="tv-meta-item tv-meta-country" title="Origin">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>${originVal}</span>
+          </span>
+
+          <span class="tv-meta-item tv-meta-runflat" title="Technology">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 3v5"></path><path d="M12 16v5"></path><path d="M3 12h5"></path><path d="M16 12h5"></path>
+            </svg>
+            <span>${runflatVal}</span>
+          </span>
+
+          <span class="tv-meta-item tv-meta-premium" title="Category">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>${categoryVal}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- 4. Price & Add to Cart Line -->
+      <div class="tv-card-price-action-row">
+        <div class="tv-card-pricing-left">
+          <div class="tv-card-main-price-line">
+            <span class="tv-card-currency">AED</span>
+            <strong class="tv-card-price-num">${displayPrice}</strong>
+            <span class="tv-card-per-tyre">/tyre</span>
+          </div>
+          <div class="tv-card-set4-line">
+            Set of 4 &bull; AED ${setOf4Formatted}
+          </div>
+        </div>
+
+        <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '${cleanTitle}', ${priceVal});" aria-label="Add to cart">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -1304,54 +1300,61 @@ function createProductCardHTML(p) {
         </button>
       </div>
 
+      <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
+      <div class="tv-card-bottom-info">
+        <div class="tv-stock-status">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="8 12 11 15 16 9"></polyline>
+          </svg>
+          <span>In Stock</span>
+        </div>
+
+        <span class="tv-bottom-sep">|</span>
+
+        <div class="tv-fitted-status">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+          </svg>
+          <span>Fitted Included</span>
+          <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </span>
+        </div>
+      </div>
+
     </div>
   `;
-}
-
-function updateCardQty(select, basePrice) {
-  const card = select.closest('.tv-product-card');
-  if (!card) return;
-  const qty = parseInt(select.value, 10) || 1;
-  let p = basePrice;
-  if (p === undefined || p === null || isNaN(p)) {
-    const rawPrice = card.getAttribute('data-price') || card.querySelector('.tv-card-price-num')?.textContent || '0';
-    p = parseFloat(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
-  } else {
-    p = parseFloat(String(p).replace(/[^0-9.]/g, '')) || 0;
-  }
-  const offer = card.getAttribute('data-offer') || card.querySelector('.tv-offer-title')?.textContent?.trim() || '';
-  const total = calculateSetPrice(p, qty, offer);
-  const setWrap = card.querySelector('.tv-card-dynamic-set-wrap') || card.querySelector('.tv-card-set4-wrap');
-  if (setWrap) {
-    const label = qty === 1 ? 'Set of 1' : `Set of ${qty}`;
-    setWrap.innerHTML = `${label}: <span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> <strong>${total}</strong>`;
-  }
 }
 
 function addToCartWithCard(btn, title, basePrice) {
   const card = btn.closest('.tv-product-card');
   const select = card ? card.querySelector('.tv-qty-select') : null;
-  const qty = select ? parseInt(select.value, 10) || 1 : 1;
+  const qty = select ? parseInt(select.value, 10) || 1 : 4;
   let p = basePrice;
   if (p === undefined || p === null || isNaN(p)) {
-    const rawPrice = card ? (card.getAttribute('data-price') || card.querySelector('.tv-card-main-price')?.textContent || '0') : '0';
+    const rawPrice = card ? (card.getAttribute('data-price') || card.querySelector('.tv-card-price-num')?.textContent || '0') : '0';
     p = parseFloat(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
   } else {
     p = parseFloat(String(p).replace(/[^0-9.]/g, '')) || 0;
   }
-  const offer = card ? (card.getAttribute('data-offer') || card.querySelector('.tv-card-top-banner')?.textContent?.trim() || '') : '';
+  const offer = card ? (card.getAttribute('data-offer') || card.querySelector('.tv-badge-offer')?.textContent?.trim() || '') : '';
   const total = calculateSetPrice(p, qty, offer);
   
   const originalHTML = btn.innerHTML;
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Added</span>';
-  btn.style.background = '#008738';
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Added</span>';
+  btn.style.background = '#16a34a';
   
   showToast(`Added ${qty}x ${title} to fitting cart!`);
   
   setTimeout(() => {
     btn.innerHTML = originalHTML;
     btn.style.background = '';
-  }, 2000);
 }
 
 function handleProductCardClick(e, slug) {
@@ -1821,17 +1824,20 @@ async function fetchProducts(page = 1, scrollUp = true) {
     params.set('max_price', maxPrice);
   }
 
-  // Keep browser URL clean at /tyres/ without showing filter slugs in the address bar
-  let cleanBasePath = '/tyres/';
+  // Keep browser URL clean; preserve or set /tyres/brand/<brand_slug> when 1 brand is selected
+  let basePrefix = '/tyres';
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   if (pathParts.length > 0 && ['ar', 'en', 'de', 'fr', 'es', 'ru', 'zh'].includes(pathParts[0].toLowerCase())) {
-    cleanBasePath = '/' + pathParts[0].toLowerCase() + '/tyres/';
+    basePrefix = '/' + pathParts[0].toLowerCase() + '/tyres';
   } else if (window.location.pathname.startsWith('/car-tyres')) {
-    cleanBasePath = '/car-tyres/';
+    basePrefix = '/car-tyres';
   } else if (window.location.pathname.startsWith('/products')) {
-    cleanBasePath = '/products/';
-  } else {
-    cleanBasePath = '/tyres/';
+    basePrefix = '/products';
+  }
+
+  let cleanBasePath = basePrefix + '/';
+  if (selectedBrands.length === 1) {
+    cleanBasePath = basePrefix + '/brand/' + encodeURIComponent(selectedBrands[0].toLowerCase());
   }
 
   if (window.location.pathname !== cleanBasePath || window.location.search) {
@@ -1882,10 +1888,51 @@ async function fetchProducts(page = 1, scrollUp = true) {
       }
     }
 
-    // Update catalog count heading
+    // Update catalog count heading, hero titles, breadcrumb & document meta
     const heading = document.getElementById('catalog-count-heading');
-    if (heading) {
-      heading.textContent = `${window.totalCount.toLocaleString()} Car Tyres`;
+    const heroTitle = document.getElementById('tv-hero-title');
+    const heroSub = document.getElementById('tv-hero-sub');
+    const breadcrumbCurrent = document.getElementById('tv-breadcrumb-current');
+    const metaDesc = document.querySelector('meta[name="description"]');
+
+    if (selectedBrands.length === 1) {
+      const brandInput = document.querySelector(`input[name="brand"][value="${selectedBrands[0]}"]`);
+      const brandLabel = brandInput ? (brandInput.closest('.tv-filter-item')?.querySelector('.tv-filter-item-left span:last-child')?.textContent?.trim() || selectedBrands[0]) : selectedBrands[0];
+      const brandName = brandLabel.charAt(0).toUpperCase() + brandLabel.slice(1);
+
+      document.title = `Buy ${brandName} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision`;
+      if (metaDesc) {
+        metaDesc.setAttribute('content', `Looking for ${brandName} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.`);
+      }
+      if (breadcrumbCurrent) {
+        breadcrumbCurrent.textContent = brandName;
+      }
+      if (heroTitle) {
+        heroTitle.textContent = `Buy ${brandName} Tyres Online UAE`;
+      }
+      if (heroSub) {
+        heroSub.textContent = `Looking for ${brandName} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.`;
+      }
+      if (heading) {
+        heading.textContent = `${window.totalCount.toLocaleString()} ${brandName} Tyres`;
+      }
+    } else {
+      document.title = 'Car Tyres Dubai & Abu Dhabi | Buy Premium Tyres Online | TyresVision';
+      if (metaDesc) {
+        metaDesc.setAttribute('content', 'Shop premium car tyres online in UAE. Leading brands including Michelin, Bridgestone, Continental, Pirelli & Goodyear with free doorstep mobile fitting.');
+      }
+      if (breadcrumbCurrent) {
+        breadcrumbCurrent.textContent = 'Car Tyres';
+      }
+      if (heroTitle) {
+        heroTitle.textContent = 'Car Tyres';
+      }
+      if (heroSub) {
+        heroSub.textContent = 'Choose from a wide range of premium tyres for a safer and smoother journey.';
+      }
+      if (heading) {
+        heading.textContent = `${window.totalCount.toLocaleString()} Car Tyres`;
+      }
     }
 
     // Update pagination controls

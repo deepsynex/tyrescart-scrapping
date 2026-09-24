@@ -601,14 +601,19 @@ def _format_product_for_client(p, locale='en'):
         else:
             p_dict['display_name'] = name_raw or p_dict.get('sku')
 
-    # Pattern / Model Name (e.g. "Atrezzo Eco")
+    # Pattern / Model Name (e.g. "Atrezzo Eco") - strip brand name as requested
+    b_name = (p_dict.get('brand_name') or '').strip()
     pat = str(attr.get('pattern') or attr.get('pattern.1') or '').strip()
     if not pat or pat.lower() in ('none', 'null', '0'):
         pat = p_dict.get('display_name') or ''
-        b_name = p_dict.get('brand_name') or ''
-        if b_name and pat.lower().startswith(b_name.lower()):
-            pat = pat[len(b_name):].strip()
-    p_dict['pattern_name'] = pat or p_dict.get('display_name') or 'Tyre'
+    if b_name and pat.lower().startswith(b_name.lower()):
+        pat = pat[len(b_name):].strip()
+    pat = re.sub(r'^[\s\-_:]+', '', pat).strip()
+
+    d_name = (p_dict.get('display_name') or '').strip()
+    if b_name and d_name.lower().startswith(b_name.lower()):
+        d_name = re.sub(r'^[\s\-_:]+', '', d_name[len(b_name):].strip())
+    p_dict['pattern_name'] = pat or d_name or 'Tyre'
 
     # Size spec with load/speed index (e.g. "165/65 R14 79T")
     base_size = str(p_dict.get('tire_size_label') or attr.get('tire_size') or attr.get('tyre_size') or '').strip()
@@ -656,14 +661,29 @@ def _format_product_for_client(p, locale='en'):
     yr_val = str(attr.get('year') or attr.get('dot') or '').strip()
     if not yr_val or yr_val.lower() in ('none', 'null', '0'):
         m_yr = re.search(r'\b(202[3-7])\b', str(p_dict.get('name') or '') + ' ' + str(p_dict.get('display_name') or ''))
-        yr_val = m_yr.group(1) if m_yr else '2024'
+        yr_val = m_yr.group(1) if m_yr else '2025'
     p_dict['year'] = yr_val
 
-    # Country of Origin (e.g. "China", "Japan", "Germany")
+    # Country of Origin (e.g. "China", "Japan", "Germany", "USA")
     origin_val = str(attr.get('country_of_origin') or attr.get('origin') or attr.get('country') or '').strip()
     if not origin_val or origin_val.lower() in ('none', 'null', '0'):
-        origin_val = 'China'
+        origin_val = 'USA'
     p_dict['country_of_origin'] = origin_val.title()
+
+    # Runflat tyre detection
+    rf_val = str(attr.get('runflat') or attr.get('is_runflat') or '').strip().lower()
+    full_name_str = (str(p_dict.get('name') or '') + ' ' + str(p_dict.get('display_name') or '') + ' ' + pat).lower()
+    is_rf = rf_val in ('yes', '1', 'true', 'rft', 'runflat') or 'runflat' in full_name_str or 'run flat' in full_name_str or ' rft' in full_name_str
+    p_dict['is_runflat'] = is_rf
+    p_dict['runflat_text'] = 'Runflat' if is_rf else 'Standard'
+
+    # Tyre Category (e.g. "Premium", "Budget", "Mid-Range")
+    cat_val = str(attr.get('tyres_category') or attr.get('category') or '').strip()
+    if not cat_val or cat_val.lower() in ('none', 'null', '0', 'default'):
+        cat_val = 'Premium'
+    else:
+        cat_val = cat_val.title()
+    p_dict['tyres_category'] = cat_val
 
     p_dict['warranty'] = str(attr.get('warranty') or '1 Year Warranty').strip()
     p_dict['full_title'] = f"{p_dict['brand_name']} {p_dict['full_size_spec']} {p_dict['pattern_name']} {yr_val}".strip()
@@ -1135,7 +1155,18 @@ def _parse_filter_path(filter_path):
     if not filter_path:
         return args
 
-    segments = [s.strip() for s in filter_path.split('/') if s.strip()]
+    raw_segments = [s.strip() for s in filter_path.split('/') if s.strip()]
+    segments = []
+    i = 0
+    while i < len(raw_segments):
+        s = raw_segments[i]
+        if s.lower() in ('brand', 'brands') and i + 1 < len(raw_segments):
+            segments.append(f"brand-{raw_segments[i+1]}")
+            i += 2
+        else:
+            segments.append(s)
+            i += 1
+
     for seg in segments:
         m_page = re.match(r'^page-(\d+)(?:-(\d+))?$', seg, re.IGNORECASE)
         if m_page:
@@ -1585,6 +1616,19 @@ def _render_product_listing(locale, filter_path=None):
             if min_price >= max_price:
                 max_price = min_price + 1000
 
+            active_brand_name = ''
+            active_brand_slug = ''
+            if active_brands and len(active_brands) == 1:
+                target_b = active_brands[0].lower()
+                for fb in filter_brands:
+                    if fb['slug'].lower() == target_b or fb['name'].lower() == target_b:
+                        active_brand_name = fb['name']
+                        active_brand_slug = fb['slug']
+                        break
+                if not active_brand_name:
+                    active_brand_name = active_brands[0].capitalize()
+                    active_brand_slug = active_brands[0]
+
             resp = make_response(render_template(
                 'Client/ProductListing.html',
                 products=products,
@@ -1593,6 +1637,8 @@ def _render_product_listing(locale, filter_path=None):
                 per_page=per_page,
                 total_pages=total_pages,
                 filter_brands=filter_brands,
+                active_brand_name=active_brand_name,
+                active_brand_slug=active_brand_slug,
                 filter_patterns=filter_patterns,
                 filter_oem_tyres=filter_oem_tyres,
                 filter_warranties=filter_warranties,

@@ -9,12 +9,15 @@
  * The service worker will automatically purge old caches and install fresh assets.
  */
 
-const CACHE_NAME = 'tyresvision-offline-v1';
+const CACHE_NAME = 'tyresvision-offline-v2';
 
 // Minimal, essential offline resources to pre-cache on install
 const PRECACHE_RESOURCES = [
   '/offline',
   '/static/assets/images/offline-bg.png',
+  '/static/assets/images/logo/tyresvision-horizontal-clean.png',
+  '/static/assets/images/logo/tyresvision-icon-symbol.png',
+  '/static/assets/images/logo/favicon.ico',
   '/manifest.json'
 ];
 

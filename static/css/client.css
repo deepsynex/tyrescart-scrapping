@@ -227,6 +227,87 @@ section {
   margin-inline: auto
 }
 
+/* ---------------- RESPONSIVE OFFICIAL LOGO ---------------- */
+.tv-brand-logo-pic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.tv-header-logo-img {
+  height: 40px;
+  width: auto;
+  max-height: 40px;
+  max-width: 175px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+.logo:hover .tv-header-logo-img {
+  transform: scale(1.03);
+}
+
+.tv-footer-logo-img {
+  height: 46px;
+  width: auto;
+  max-height: 46px;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+.logo.on-dark:hover .tv-footer-logo-img {
+  transform: translateY(-2px);
+  opacity: 0.94;
+}
+
+.tv-drawer-logo-img {
+  height: 34px;
+  width: auto;
+  max-height: 34px;
+  max-width: 145px;
+  object-fit: contain;
+  display: block;
+}
+
+@media(max-width: 979px) {
+  .tv-header-logo-img {
+    height: 35px;
+    max-height: 35px;
+    max-width: 150px;
+  }
+}
+
+@media(max-width: 640px) {
+  .tv-footer-logo-img {
+    height: 38px;
+    max-height: 38px;
+  }
+}
+
+@media(max-width: 480px) {
+  .tv-header-logo-img {
+    height: 32px;
+    max-height: 32px;
+    max-width: 135px;
+  }
+}
+
+/* Mobile Small (<= 380px): Standalone Brand Mark Icon is activated via <picture> */
+@media(max-width: 380px) {
+  .tv-header-logo-img {
+    height: 32px;
+    width: 32px;
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+  }
+}
+
 /* ---------------- LOGO ---------------- */
 .logo {
   display: inline-flex;
@@ -461,19 +542,258 @@ header {
 
 .nav-links {
   display: none;
-  gap: 28px;
+  gap: 22px;
   font-size: .94rem;
-  font-weight: 600
+  font-weight: 600;
+  align-items: center;
 }
 
-.nav-links a {
+.nav-links > a {
   text-decoration: none;
   color: var(--slate);
   transition: color 0.18s ease;
+  padding: 8px 0;
+  position: relative;
 }
 
-.nav-links a:hover {
-  color: var(--green-deep);
+.nav-links > a:hover {
+  color: var(--primary, #4B237B);
+}
+
+/* ---------------- NAVIGATION DROPDOWNS (Services & Coverage) ---------------- */
+.nav-item-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 2px;
+  font-family: inherit;
+  font-size: .94rem;
+  font-weight: 600;
+  color: var(--slate);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.18s ease;
+  line-height: 1.2;
+}
+
+.nav-link-btn:hover,
+.nav-link-btn.is-active {
+  color: var(--primary, #4B237B);
+}
+
+.dropdown-chevron {
+  color: var(--slate);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
+}
+
+.nav-link-btn:hover .dropdown-chevron,
+.nav-link-btn.is-active .dropdown-chevron {
+  color: var(--primary, #4B237B);
+  transform: rotate(180deg);
+}
+
+/* Active purple underline indicator (Reference image) */
+.nav-link-btn .active-indicator {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--primary, #4B237B);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link-btn:hover .active-indicator,
+.nav-link-btn.is-active .active-indicator {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* Dropdown Floating Menu Container */
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 270px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid rgba(75, 35, 123, 0.09);
+  box-shadow: 0 20px 45px -8px rgba(75, 35, 123, 0.18), 0 8px 20px -4px rgba(15, 23, 42, 0.05);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 105;
+}
+
+.nav-dropdown-coverage {
+  min-width: 280px;
+}
+
+/* Invisible hover bridge */
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 0;
+  right: 0;
+  height: 14px;
+}
+
+/* Dropdown Menu Item */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text-heading, #0F172A);
+}
+
+.dropdown-item:hover {
+  background: #f7f4fd;
+  transform: translateX(2px);
+}
+
+.dropdown-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Soft Lavender Icon Box */
+.dropdown-icon-box {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 11px;
+  background: #f7f4fd;
+  color: var(--primary, #4B237B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dropdown-item:hover .dropdown-icon-box {
+  background: #ede5fa;
+  color: #6b21a8;
+  transform: scale(1.06);
+}
+
+.dropdown-item-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0F172A;
+  transition: color 0.18s ease;
+  white-space: nowrap;
+}
+
+.dropdown-item:hover .dropdown-item-title {
+  color: var(--primary, #4B237B);
+}
+
+.dropdown-item-arrow {
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover .dropdown-item-arrow {
+  color: var(--primary, #4B237B);
+  transform: translateX(3px);
+}
+
+/* Mobile Accordions inside Mobile Nav Drawer */
+.mobile-nav-accordion {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+}
+
+.mobile-nav-accordion-btn:hover,
+.mobile-nav-accordion-btn.is-open {
+  background: #f7f4fd;
+  color: var(--primary, #4B237B);
+}
+
+.mobile-nav-accordion-btn .accordion-chevron {
+  transition: transform 0.25s ease;
+  color: #94a3b8;
+}
+
+.mobile-nav-accordion-btn.is-open .accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--primary, #4B237B);
+}
+
+.mobile-nav-sublinks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 8px 36px;
+}
+
+.mobile-nav-sublink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--slate);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.mobile-nav-sublink:hover {
+  background: #f7f4fd;
+  color: var(--primary, #4B237B);
+}
+
+@media(min-width: 980px) and (max-width: 1100px) {
+  .nav-links {
+    gap: 14px;
+    font-size: 0.88rem;
+  }
+  .nav-link-btn {
+    font-size: 0.88rem;
+  }
 }
 
 .nav-cta {
@@ -7721,7 +8041,7 @@ details.tv-faq-item[open] {
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
   position: -webkit-sticky;
   position: sticky;
-  top: 24px;
+  top: 100px;
   align-self: flex-start;
   max-height: none;
   overflow: visible;
@@ -8883,25 +9203,18 @@ body.filter-open .float-wa {
   }
 
   .tv-product-card {
-    border-radius: 14px;
+    border-radius: 16px;
+    padding: 14px 14px 12px 14px;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
   }
 
-  .tv-card-top-banner {
-    font-size: 0.82rem;
-    padding: 6px 10px;
+  .tv-card-img-area {
+    height: 160px;
+    margin: 2px 0 10px 0;
   }
 
-  .tv-card-img-wrap {
-    height: 140px;
-  }
-
-  .tv-product-img {
-    max-height: 135px;
-  }
-
-  .tv-card-body {
-    padding: 12px 14px 10px 14px;
+  .tv-card-tyre-box .tv-product-img {
+    max-height: 150px;
   }
 
   .tv-card-brand-size-row {
@@ -8960,26 +9273,27 @@ body.filter-open .float-wa {
   }
 }
 
-/* 6. INDIVIDUAL PRODUCT CARD (Exact Match to Reference Design) */
+/* 6. INDIVIDUAL PRODUCT CARD (Modern Card Box Design) */
 .tv-product-card {
   background: #ffffff;
   border: 1px solid #E2E8F0;
-  border-radius: 12px;
+  border-radius: 18px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
   min-width: 0;
+  padding: 16px 16px 14px 16px;
+  cursor: pointer;
 }
 
 .tv-product-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   border-color: #CBD5E1;
-  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.09);
-  cursor: pointer;
+  box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
 }
 
 /* SKELETON LOADING SHIMMER ANIMATION (Exact match to uploaded mockup) */
@@ -9123,76 +9437,123 @@ body.filter-open .float-wa {
   color: #047857;
 }
 
-/* Main Card Body (Two Column Horizontal Split) */
-.tv-card-main-split {
-  display: grid;
-  grid-template-columns: 102px minmax(0, 1fr);
-  gap: 10px;
-  padding: 10px 10px 6px 10px;
-  position: relative;
-}
+/* -------------------------------------------------------------
+   NEW REDESIGNED PRODUCT CARD (Matches Mockup Reference)
+   ------------------------------------------------------------- */
 
-/* Left Column: Quickview Eye + Tyre Image */
-.tv-card-left-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  min-height: 90px;
-}
-
-/* Quick View Eye Button (Top Left of Left Col) */
-.tv-btn-quickview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+/* 1. Header Bar: Brand Logo (Left) & Badge / Top Rated (Right) */
+.tv-card-header-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #64748b;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  min-height: 28px;
+  width: 100%;
+}
+
+.tv-card-brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  max-height: 28px;
+  text-decoration: none;
   cursor: pointer;
-  z-index: 3;
-  transition: all 0.15s ease;
-  padding: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.tv-btn-quickview:hover {
-  border-color: #6B00CC;
-  color: #6B00CC;
-  transform: scale(1.08);
+.tv-card-brand-wrap:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
 }
 
-/* Tyre Image Link & Box */
+.tv-card-brand-img {
+  max-height: 26px;
+  max-width: 110px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.tv-card-brand-fallback {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0F172A;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tv-card-badge-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tv-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tv-badge-toprated {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+}
+
+.tv-badge-offer {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1E40AF;
+  text-transform: uppercase;
+}
+
+/* 2. Centered Tyre Image (No background color) */
+.tv-card-img-area {
+  position: relative;
+  width: 100%;
+  height: 185px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 12px 0;
+  background: transparent !important;
+}
+
 .tv-card-img-link {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: 100%;
+  background: transparent !important;
 }
 
 .tv-card-tyre-box {
   width: 100%;
-  height: 120px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent !important;
 }
 
 .tv-card-tyre-box .tv-product-img {
-  max-height: 115px;
-  max-width: 98px;
+  max-height: 175px;
+  max-width: 90%;
   width: auto;
   height: auto;
   object-fit: contain;
-  transition: transform 0.25s ease;
+  background: transparent !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: block;
 }
 
@@ -9200,38 +9561,42 @@ body.filter-open .float-wa {
   transform: scale(1.05);
 }
 
-/* Right Column: Details & Pricing */
-.tv-card-right-col {
+.tv-btn-quickview {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tv-btn-quickview:hover {
+  color: #0F172A;
+  border-color: #CBD5E1;
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. Product Info Block */
+.tv-card-info-block {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  margin-bottom: 8px;
 }
 
-/* Brand Logo (Top Right) */
-.tv-card-brand-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 22px;
-  margin-bottom: 2px;
-}
-
-.tv-card-brand-img {
-  max-height: 20px;
-  max-width: 82px;
-  object-fit: contain;
-  display: block;
-}
-
-.tv-card-brand-fallback {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #0f172a;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-/* Pattern Title Link */
 .tv-card-pattern-link {
   text-decoration: none;
   color: inherit;
@@ -9239,60 +9604,65 @@ body.filter-open .float-wa {
   min-width: 0;
 }
 
-/* Pattern Title */
 .tv-card-pattern {
-  font-size: 14.5px;
-  font-weight: 750;
-  color: #6B00CC;
-  line-height: 1.25;
-  margin: 0 0 3px 0;
-  white-space: nowrap;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.28;
+  margin: 0 0 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  min-height: 2.56em;
   cursor: pointer;
   transition: color 0.15s ease;
 }
 
 .tv-card-pattern:hover {
-  color: #500099;
+  color: #DC2626;
 }
 
-/* Size Spec Row with (i) Info Icon */
+/* Product Size Row */
 .tv-card-size-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 3px;
+  justify-content: space-between;
+  margin-bottom: 6px;
 }
 
 .tv-card-spec-text {
-  font-size: 15px;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1E293B;
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
-.tv-spec-info-btn {
+.tv-card-year-meta {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: #6B00CC;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
 }
 
-/* Meta Row (Year & Country) */
+.tv-card-year-meta svg {
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+/* Meta attributes row: USA __ Runflat __ Premium */
 .tv-card-meta-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: nowrap;
-  font-size: 13px;
-  color: #1e293b;
-  font-weight: 700;
-  margin-bottom: 3px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .tv-meta-item {
@@ -9303,181 +9673,160 @@ body.filter-open .float-wa {
 }
 
 .tv-meta-item svg {
-  color: #64748b;
+  color: #64748B;
   flex-shrink: 0;
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
 }
 
-/* Price Note (Price incl. Replacement) */
-.tv-card-price-note {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 550;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-  margin-bottom: 3px;
-  width: fit-content;
-  user-select: none;
+/* 4. Price & Add to Cart Line */
+.tv-card-price-action-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
 }
 
-.tv-card-price-note:hover {
-  color: #6B00CC;
+.tv-card-pricing-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
-/* Main Unit Price: [Dirham Glyph] 121.00 / tyre */
-.tv-card-unit-price-wrap {
+.tv-card-main-price-line {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  margin-bottom: 2px;
+  gap: 3px;
+  line-height: 1;
 }
 
-.tv-curr-glyph {
-  font-family: UAEDirham, sans-serif !important;
-  font-weight: 400;
-  font-size: 19px;
-  line-height: 1;
-  color: #6B00CC;
-  display: inline-block;
-  vertical-align: baseline;
-}
-
-.tv-curr-glyph-pdp {
-  font-family: UAEDirham, sans-serif !important;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 1;
-  color: inherit;
-  display: inline-block;
-  vertical-align: baseline;
+.tv-card-currency {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
 }
 
 .tv-card-price-num {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 900;
-  color: #6B00CC;
+  color: #0F172A;
   letter-spacing: -0.02em;
   line-height: 1;
 }
 
 .tv-card-per-tyre {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #64748b;
-}
-
-/* Dynamic Set Price Row */
-.tv-card-set-row,
-.tv-card-set4-wrap,
-.tv-card-dynamic-set-wrap {
-  font-size: 12.5px;
-  color: #475569;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.tv-curr-glyph-sub {
-  font-family: UAEDirham, sans-serif !important;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 1;
-  color: #0f172a;
-  display: inline-block;
-  vertical-align: baseline;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
   margin-left: 1px;
 }
 
-.tv-card-set-row strong,
-.tv-card-set4-wrap strong,
-.tv-card-dynamic-set-wrap strong {
-  color: #0f172a;
-  font-weight: 800;
-  font-size: 13.5px;
-}
-
-/* Bottom Action Bar (Warranty | Qty | Add to Cart) */
-.tv-card-bottom-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  padding: 6px 10px 10px 10px;
-  border-top: 1px solid #f1f5f9;
-  margin-top: auto;
-}
-
-/* Warranty Pill */
-.tv-warranty-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f7f4fd;
-  border: 1px solid #c0a8ed;
-  color: #6902C7;
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0;
-  padding: 0 5px;
-  height: 28px;
-  border-radius: 5px;
-  white-space: nowrap;
-  line-height: 1;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-/* Quantity Select */
-.tv-qty-select {
-  border: 1.8px solid #8600FF;
-  border-radius: 8px;
-  background-color: #ffffff;
-  color: #0f172a;
-  font-size: 13px;
-  font-weight: 800;
-  height: 28px;
-  width: 40px;
-  padding: 0 4px;
-  text-align: center;
-  cursor: pointer;
-  outline: none;
-  flex-shrink: 0;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tv-qty-select:focus {
-  border-color: #8600FF;
-  box-shadow: 0 0 0 2.5px rgba(134, 0, 255, 0.2);
-}
-
-/* Add to Cart Button */
-.tv-btn-card-add {
-  background: #8600FF;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  height: 28px;
-  padding: 0 8px;
+.tv-card-set4-line {
   font-size: 11.5px;
+  font-weight: 500;
+  color: #64748B;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Red Add to Cart Button */
+.tv-btn-card-add {
+  background: #E02424;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12.5px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(224, 36, 36, 0.22);
 }
 
 .tv-btn-card-add:hover {
-  background: #6B00CC;
+  background: #C81E1E;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(224, 36, 36, 0.35);
+}
+
+.tv-btn-card-add:active {
+  transform: translateY(0);
 }
 
 .tv-btn-card-add svg {
   flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+/* 5. Bottom Info Strip: In Stock | Fitted Included */
+.tv-card-bottom-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #F1F5F9;
+  margin-top: 12px;
+  padding-top: 10px;
+  font-size: 12px;
+}
+
+.tv-stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #16A34A;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.tv-stock-status svg {
+  flex-shrink: 0;
+}
+
+.tv-bottom-sep {
+  color: #CBD5E1;
+  font-weight: 300;
+  font-size: 12px;
+  margin: 0 4px;
+}
+
+.tv-fitted-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #475569;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.tv-fitted-status svg {
+  flex-shrink: 0;
+}
+
+.tv-fitted-info-btn {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 2px;
+  color: #94A3B8;
+  transition: color 0.15s ease;
+}
+
+.tv-fitted-info-btn:hover {
+  color: #0F172A;
 }
 
 /* 7. PAGINATION */
@@ -9638,7 +9987,7 @@ body.tv-modal-active {
 }
 
 .tv-fitted-modal-title .tv-text-green {
-  color: #008738;
+  color: #475569;
 }
 
 .tv-fitted-modal-close {
@@ -9735,9 +10084,9 @@ body.tv-modal-active {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #ECFDF5;
-  color: #008738;
-  border: 1.5px solid #A7F3D0;
+  /* background: #ECFDF5; */
+  color: #8600ff;
+  /* border: 1.5px solid #A7F3D0; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9899,6 +10248,7 @@ body.tv-modal-active {
 .tv-qv-left-showcase {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .tv-qv-img-showcase-card {
@@ -9908,6 +10258,7 @@ body.tv-modal-active {
   padding: 18px 20px 20px 20px;
   position: relative;
   min-height: 280px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -10040,12 +10391,9 @@ body.tv-modal-active {
   transform: translateY(-50%) scale(1.08);
 }
 
-/* Sub-features grid under tyre card (4 items) */
+/* Sub-features grid under tyre card (hidden) */
 .tv-qv-subfeatures-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 14px;
+  display: none !important;
 }
 
 @media (max-width: 480px) {
@@ -10122,9 +10470,7 @@ body.tv-modal-active {
 }
 
 .tv-qv-actions-top {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  display: none !important;
 }
 
 .tv-qv-action-btn {
@@ -10260,7 +10606,7 @@ body.tv-modal-active {
 
 /* Pricing, Sets, Stepper & CTAs Box */
 .tv-qv-price-cta-box {
-  background: #0000000d;
+  background: #6b00cc1a;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 16px 20px;
@@ -10489,7 +10835,7 @@ body.tv-modal-active {
 
 /* Trust Strip (Free Standard Installation, Free Wheel Balancing, Fast & Reliable Delivery) */
 .tv-qv-trust-strip {
-  background: #f0f7ff;
+  /* background: #f0f7ff; */
   border: 1px solid #daccf5;
   border-radius: 12px;
   padding: 12px 18px;
@@ -10544,10 +10890,9 @@ body.tv-modal-active {
   line-height: 1.35;
 }
 
-/* Bottom Tabs: Description | Specifications | Reviews (0) */
+/* Bottom Tabs: Description | Specifications | Reviews (hidden) */
 .tv-qv-tabs-container {
-  border-top: 1px solid #e2e8f0;
-  padding-top: 14px;
+  display: none !important;
 }
 
 .tv-qv-tabs-nav {
