@@ -21,6 +21,9 @@ import openpyxl
 from curl_cffi import requests as c_requests
 from scrapy.selector import Selector
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _cf_cookie_fetcher
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _TIMESTAMP = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
@@ -98,10 +101,15 @@ def fetch_with_impersonation(session, url, max_retries=3):
             r = session.get(url, impersonate=imp, headers=HEADERS, timeout=25)
             if r.status_code == 200 and len(r.text) > 50:
                 return r
+            if r.status_code == 403 and ('Just a moment' in r.text or '__cf_chl_rt_tk' in r.text):
+                # A real Cloudflare JS/Turnstile challenge -- no amount of
+                # curl_cffi retrying gets past this, so stop early and let
+                # the stealth-browser fallback below handle it.
+                break
             time.sleep(0.3 * (attempt + 1))
         except Exception:
             time.sleep(0.3 * (attempt + 1))
-    return None
+    return _cf_cookie_fetcher.fetch(url)
 
 
 def get_sel_text(selector, dont_skip=None):
@@ -351,5 +359,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        _cf_cookie_fetcher.close()
     

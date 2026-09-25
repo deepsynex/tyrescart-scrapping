@@ -12,6 +12,9 @@ from curl_cffi import requests
 from parsel import Selector
 import openpyxl
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _cf_cookie_fetcher
+
 # =========================
 # OUTPUT & INPUT SETUP
 # =========================
@@ -105,16 +108,22 @@ class PitstopArabiaScraper:
                 if resp.status_code == 200:
                     return resp
                 elif resp.status_code == 403:
-                    # Exponential backoff with jitter, capped at 12s, so a
-                    # transient rate-limit block gets enough cool-down time
-                    # before the next attempt instead of hammering again fast.
+                    # A real Cloudflare JS/Turnstile challenge (not just a
+                    # transient rate-limit) can't be solved by retrying with
+                    # curl_cffi no matter how long we back off -- go straight
+                    # to the stealth-browser fallback instead of burning the
+                    # rest of the retry budget on a request type that will
+                    # never get past it.
+                    if 'Just a moment' in resp.text or '__cf_chl_rt_tk' in resp.text:
+                        break
                     delay = min(2.0 * (attempt + 1) + random.uniform(0, 1.5), 12.0)
                     time.sleep(delay)
                 else:
                     time.sleep(1.0 + random.uniform(0, 0.5))
             except Exception:
                 time.sleep(1.5 * (attempt + 1) + random.uniform(0, 1.0))
-        return None
+
+        return _cf_cookie_fetcher.fetch(url)
 
     def parse_product_detail(self, url, html, source_url):
         emit_status(url, 'running')
@@ -329,4 +338,7 @@ class PitstopArabiaScraper:
 
 if __name__ == '__main__':
     scraper = PitstopArabiaScraper(OUTPUT_FILE, CSV_FILE)
-    scraper.run()
+    try:
+        scraper.run()
+    finally:
+        _cf_cookie_fetcher.close()
