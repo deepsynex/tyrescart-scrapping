@@ -17,10 +17,7 @@
   window.pdpInitialQty = 4;
 </script>
 <style>
-/* ==========================================================================
-   PRODUCT DETAIL PAGE
-   Clean UI: Review Insert Form Only (No reviews displayed on page)
-   ========================================================================== */
+
 
 @font-face {
   font-family: 'UAEDirham';
@@ -53,6 +50,12 @@
   padding: 0 24px;
 }
 
+@media  screen and (max-width: 767px) {
+  .tv-ref-container {
+      padding: 0 14px;
+  }
+}
+
 /* --- Breadcrumb Bar & Header Strip --- */
 .tv-ref-breadcrumb-bar {
   background: #ffffff;
@@ -76,7 +79,7 @@
 }
 
 .tv-ref-bc-item:hover {
-  color: #0066ff;
+  color: var(--primary);
 }
 
 .tv-ref-bc-sep {
@@ -112,7 +115,7 @@
 
 /* --- Main 2-Column Section --- */
 .tv-ref-main-section {
-  padding: 24px 0 32px;
+  padding: 6px 0 32px;
 }
 
 .tv-ref-main-grid {
@@ -132,9 +135,9 @@
 /* 1. Image Showcase Card */
 .tv-ref-showcase-card {
   background: #ffffff;
-  border: 1px solid #eef2f6;
+  border: 1px solid #CBD5E1;
   border-radius: 16px;
-  padding: 24px 28px;
+  padding: 15px;
   position: relative;
   box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.03), 0 1px 4px rgba(15, 23, 42, 0.02);
   transition: box-shadow 0.3s ease;
@@ -166,7 +169,7 @@
 .tv-ref-brand-text {
   font-size: 20px;
   font-weight: 900;
-  color: #0066ff;
+  color: var(--primary);
   letter-spacing: 0.5px;
 }
 
@@ -190,7 +193,6 @@
   grid-template-columns: 1.15fr 1fr;
   gap: 28px;
   align-items: center;
-  margin-bottom: 24px;
 }
 
 .tv-ref-tyre-visual-col {
@@ -203,7 +205,7 @@
 
 .tv-ref-tyre-img-wrap {
   width: 100%;
-  max-width: 290px;
+  max-width: 313px;
   height: 290px;
   display: flex;
   align-items: center;
@@ -216,19 +218,20 @@
   max-height: 100%;
   object-fit: contain;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.14));
 }
 
 .tv-ref-tyre-visual-col:hover .tv-ref-main-tyre-img {
-  transform: scale(1.04) rotate(1deg);
+  transform: scale(1.04);
 }
 
 .tv-ref-zoom-btn {
-  margin-top: 14px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
+  position: absolute;
+  left: 0;
   border-radius: 20px;
-  padding: 6px 16px;
+  width: 30px;
+  height: 30px;
   font-size: 12.5px;
   font-weight: 600;
   color: #475569;
@@ -239,12 +242,12 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
+  top: 0;
 }
 
 .tv-ref-zoom-btn:hover {
-  border-color: #0066ff;
-  color: #0066ff;
-  transform: translateY(-1px);
+  border-color: var(--primary);
+  color: var(--primary);
   box-shadow: 0 3px 8px rgba(0, 102, 255, 0.12);
 }
 
@@ -278,9 +281,9 @@
 }
 
 .tv-feat-leaf { background: #e6fcf5; color: #12b886; }
-.tv-feat-grip { background: #0000000d; color: #475569; border: 1px solid #e2e8f0; }
-.tv-feat-quiet { background: #0000000d; color: #475569; border: 1px solid #e2e8f0; }
-.tv-feat-tread { background: #0000000d; color: #475569; border: 1px solid #e2e8f0; }
+.tv-feat-grip { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+.tv-feat-quiet { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+.tv-feat-tread { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
 
 .tv-ref-feat-text {
   display: flex;
@@ -327,16 +330,16 @@
 }
 
 .tv-ref-action-pill:hover {
-  border-color: #0066ff;
-  color: #0066ff;
-  background: #0000000d;
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #f8fafc;
   transform: translateY(-1px);
 }
 
 /* 2. Key Specifications Section */
 .tv-ref-specs-card {
   background: #ffffff;
-  border: 1px solid #eef2f6;
+  border: 1px solid #CBD5E1;
   border-radius: 16px;
   padding: 24px 28px;
   box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.03), 0 1px 4px rgba(15, 23, 42, 0.02);
@@ -349,6 +352,7 @@
   margin-bottom: 20px;
 }
 
+
 .tv-ref-specs-title {
   font-size: 18px;
   font-weight: 800;
@@ -358,7 +362,7 @@
 }
 
 .tv-ref-view-all-specs {
-  color: #0066ff;
+  color: var(--primary);
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -403,7 +407,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #0066ff;
+  background: var(--primary);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -442,24 +446,35 @@
   margin-top: 4px;
 }
 
+@media  screen and (max-width: 767px) {
+.tv-ref-specs-head {
+    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 6px;
+}
+.tv-ref-specs-card {
+    padding: 10px;
+}
+}
+
 /* --- RIGHT COLUMN: Buy Card (Exact Match to Reference Image) --- */
 .tv-ref-right-col {
-  position: sticky;
-  top: 24px;
+    position: sticky;
+    top: 90px;
 }
 
 .tv-ref-buy-card {
   background: #ffffff;
-  border: 1px solid #eef2f6;
+  border: 1px solid #CBD5E1;
   border-radius: 16px;
-  padding: 26px 28px;
+  padding: 26px 26px;
   box-shadow: 0 6px 30px -4px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
 }
 
 .tv-ref-buy-brand {
   font-size: 13.5px;
   font-weight: 900;
-  color: #0066ff;
+  color: var(--primary);
   letter-spacing: 0.5px;
   margin-bottom: 6px;
 }
@@ -489,7 +504,7 @@
 }
 
 .tv-ref-write-review-link {
-  color: #0066ff;
+  color: var(--primary);
   font-size: 13px;
   font-weight: 700;
   text-decoration: underline;
@@ -507,7 +522,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .tv-ref-badge-promo {
@@ -562,7 +577,7 @@
 
 /* Price Block */
 .tv-ref-price-block {
-  margin-bottom: 18px;
+  margin-bottom: 9px;
 }
 
 .tv-ref-price-main-line {
@@ -573,14 +588,18 @@
 }
 
 .tv-ref-curr {
-  font-size: 24px;
-  font-weight: 900;
-  color: #0f172a;
+    font-size: 29px;
+    font-weight: 900;
+    color: #0f172a;
+    top: 1px;
+    position: relative;
 }
 
 .tv-ref-curr-sub {
-  font-size: 14px;
-  font-weight: 700;
+    font-size: 14px;
+    font-weight: 700;
+    position: relative;
+    top: 1px;
 }
 
 .tv-ref-price-val {
@@ -609,10 +628,12 @@
 }
 
 .tv-ref-set4-subtext {
-  font-size: 13px;
+  font-size: 14px;
   color: #475569;
-  margin-top: 5px;
   font-weight: 600;
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid #e2e8f0;
 }
 
 .tv-ref-set4-subtext strong {
@@ -628,7 +649,7 @@
 }
 
 .tv-ref-tax-note {
-  font-size: 11.5px;
+  font-size: 14px;
   color: #64748b;
   margin-top: 4px;
 }
@@ -639,7 +660,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
@@ -718,7 +739,7 @@
   width: 100%;
   height: 48px;
   background: #ffffff;
-  border: 2px solid #0066ff;
+  border: 2px solid var(--primary);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -740,8 +761,8 @@
 
 .tv-custom-dropdown.is-open .tv-dropdown-trigger,
 .tv-dropdown-trigger:focus-visible {
-  border-color: #0066ff;
-  box-shadow: 0 0 0 3.5px rgba(0, 102, 255, 0.18);
+  border-color: var(--primary);
+  box-shadow: none;
 }
 
 .tv-dropdown-val {
@@ -766,8 +787,8 @@
 
 .tv-dropdown-chevron {
   flex-shrink: 0;
-  color: #0066ff;
-  stroke: #0066ff;
+  color: var(--primary);
+  stroke: var(--primary);
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -847,7 +868,7 @@
 
 /* Selected State: Solid Blue with White Checkmark */
 .tv-dropdown-opt.is-selected {
-  background-color: #0066ff !important;
+  background-color: var(--primary) !important;
   color: #ffffff !important;
 }
 
@@ -877,7 +898,7 @@
 }
 
 .tv-ref-btn-add-cart {
-  background: #0066ff;
+  background: #000;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -890,16 +911,13 @@
   gap: 8px;
   cursor: pointer;
   width: 100%;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.25);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
   box-sizing: border-box;
 }
 
 .tv-ref-btn-add-cart:hover {
-  background: #0052cc;
-  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.35);
-  transform: translateY(-1px);
+    background: var(--primary);
 }
 
 .tv-ref-btn-add-cart:active {
@@ -912,8 +930,8 @@
 
 .tv-ref-btn-buy-now {
   background: #ffffff;
-  color: #0066ff;
-  border: 2px solid #0066ff;
+  color: var(--primary);
+  border: 2px solid var(--primary);
   border-radius: 8px;
   height: 46px;
   font-size: 15px;
@@ -930,20 +948,17 @@
 }
 
 .tv-ref-btn-buy-now:hover {
-  background: #f7f4fd;
+  background: #faf5ff;
   transform: translateY(-1px);
 }
 
 .tv-ref-btn-buy-now:active {
   transform: scale(0.99);
 }
-  width: 100%;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: inherit;
-}
+
 
 .tv-ref-btn-buy-now:hover {
-  background: #f7f4fd;
+  background: #faf5ff;
   transform: translateY(-1px);
 }
 
@@ -953,11 +968,11 @@
 
 /* 3 Trust Trio at Bottom of Buy Card */
 .tv-ref-trust-trio {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding-top: 20px;
-  border-top: 1px solid #f1f5f9;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid #cccccc96;
 }
 
 .tv-ref-trio-item {
@@ -969,13 +984,14 @@
 }
 
 .tv-ref-trio-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #f7f4fd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #faf5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
 }
 
 .tv-ref-trio-item span {
@@ -986,7 +1002,7 @@
 
 /* --- TABS SECTION --- */
 .tv-ref-tabs-section {
-  padding: 16px 0 36px;
+  padding: 16px 0 1rem;
 }
 
 .tv-ref-tabs-nav {
@@ -1021,11 +1037,11 @@
 }
 
 .tv-ref-tab-btn:hover {
-  color: #0066ff;
+  color: var(--primary);
 }
 
 .tv-ref-tab-btn.active {
-  color: #0066ff;
+  color: var(--primary);
 }
 
 .tv-ref-tab-btn.active::after {
@@ -1035,7 +1051,7 @@
   left: 0;
   right: 0;
   height: 2.5px;
-  background: #0066ff;
+  background: var(--primary);
   border-radius: 2px;
 }
 
@@ -1051,7 +1067,7 @@
 /* Tab Pane Wrapper */
 .tv-ref-tab-content-wrap {
   background: #ffffff;
-  border: 1px solid #eef2f6;
+  border: 1px solid #CBD5E1;
   border-radius: 16px;
   padding: 32px 36px;
   box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.03), 0 1px 4px rgba(15, 23, 42, 0.02);
@@ -1107,7 +1123,7 @@
 
 /* Right Details: Why Choose Brand */
 .tv-ref-details-right {
-  background: #0000000d;
+  background: #f8fafc;
   border: 1px solid #f1f5f9;
   border-radius: 12px;
   padding: 26px 28px;
@@ -1129,7 +1145,7 @@
 .tv-ref-why-logo-text {
   font-size: 16px;
   font-weight: 900;
-  color: #0066ff;
+  color: var(--primary);
 }
 
 .tv-ref-why-title {
@@ -1202,7 +1218,7 @@
 }
 
 .tv-specs-table th {
-  background: #0000000d;
+  background: #f8fafc;
   padding: 13px 18px;
   border: 1px solid #e2e8f0;
   text-align: left;
@@ -1270,7 +1286,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #0066ff;
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1326,7 +1342,7 @@
 .tv-ref-review-insert-card {
   max-width: 680px;
   margin: 0 auto;
-  background: #0000000d;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   padding: 32px;
@@ -1396,7 +1412,7 @@
 
 .tv-ref-form-field input:focus,
 .tv-ref-form-field textarea:focus {
-  border-color: #0066ff;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
 }
 
@@ -1408,7 +1424,7 @@
 }
 
 .tv-ref-btn-submit-rev {
-  background: #0066ff;
+  background: var(--primary);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -1451,7 +1467,7 @@
 }
 
 .tv-ref-fit-item {
-  background: #0000000d;
+  background: #f8fafc;
   border: 1px solid #f1f5f9;
   border-radius: 8px;
   padding: 12px 14px;
@@ -1470,7 +1486,7 @@
   gap: 8px;
   font-size: 12px;
   color: #64748b;
-  background: #f7f4fd;
+  background: #faf5ff;
   border-radius: 8px;
   padding: 10px 14px;
 }
@@ -1510,7 +1526,7 @@
 
 .tv-ref-trust-strip {
   background: #ffffff;
-  border: 1px solid #eef2f6;
+  border: 1px solid #CBD5E1;
   border-radius: 12px;
   padding: 22px 28px;
   display: grid;
@@ -1526,14 +1542,15 @@
 }
 
 .tv-ref-pillar-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: #f7f4fd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #faf5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #eee;
 }
 
 .tv-ref-pillar-text {
@@ -1580,7 +1597,7 @@
 }
 
 .tv-ref-related-view-all {
-  color: #0066ff;
+  color: var(--primary);
   font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
@@ -1618,8 +1635,8 @@
 }
 
 .tv-pdp-nav-arrow:hover {
-  background: #0066ff;
-  border-color: #0066ff;
+  background: var(--primary);
+  border-color: var(--primary);
   color: #ffffff;
   transform: scale(1.06);
   box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
@@ -1691,17 +1708,12 @@
 }
 
 @media (max-width: 768px) {
-  .tv-ref-showcase-body {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 20px;
-  }
   .tv-ref-tyre-visual-col {
     margin-bottom: 4px;
   }
   .tv-ref-features-col {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 16px 24px;
     width: 100%;
     max-width: 520px;
@@ -1718,7 +1730,7 @@
     text-align: left;
   }
   .tv-ref-specs-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   .tv-ref-details-grid {
     grid-template-columns: 1fr;
@@ -1779,11 +1791,11 @@
     transition: background 0.2s ease;
   }
   .tv-ref-accordion-header:hover {
-    background: #0000000d;
+    background: #f8fafc;
   }
   .tv-ref-accordion-header.active {
     background: #f0f7ff;
-    border-bottom: 1px solid #daccf5;
+    border-bottom: 1px solid #e9d5ff;
   }
   .tv-ref-accordion-title {
     font-size: 15px;
@@ -1792,7 +1804,7 @@
     letter-spacing: -0.2px;
   }
   .tv-ref-accordion-header.active .tv-ref-accordion-title {
-    color: #0066ff;
+    color: var(--primary);
   }
   .tv-ref-accordion-chevron {
     color: #64748b;
@@ -1801,7 +1813,7 @@
   }
   .tv-ref-accordion-header.active .tv-ref-accordion-chevron {
     transform: rotate(180deg);
-    color: #0066ff;
+    color: var(--primary);
   }
   .tv-ref-pane {
     padding: 20px 16px;
@@ -1847,7 +1859,7 @@
   }
   .tv-specs-table th {
     width: 42% !important;
-    background: #0000000d;
+    background: #f8fafc;
     color: #475569;
     font-weight: 700;
     border-bottom: 1px solid #f1f5f9;
@@ -1866,10 +1878,25 @@
   }
 }
 
+
+@media (max-width: 767px) {
+  .tv-ref-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+  .tv-ref-showcase-body {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 20px;
+  }
+  .tv-ref-btn-label-text {
+    display: none;
+  }
+  }
+
 @media (max-width: 480px) {
   .tv-ref-features-col {
     gap: 14px 12px;
-    padding: 0 6px;
+    padding: 0 px;
   }
   .tv-ref-feature-item {
     gap: 10px;
@@ -1891,6 +1918,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.tv-ref-per-tyre {
+  font-size: 16px; color: #4a5c73; font-weight: 600; margin-left: 4px;
+}
+
+@media  screen and (max-width: 767px) {
+.tv-ref-showcase-card {
+   padding: 10px;
+}
+.tv-ref-tyre-img-wrap {
+    width: 100%;
+    max-width: 100%;
+}
+.tv-ref-buy-card {
+    padding: 12px;
+}
+.tv-ref-curr {
+    font-size: 22px;
+}
+.tv-ref-price-val {
+    font-size: 22px;
+}
+.tv-ref-price-main-line {
+    gap: 5px;
+}
+.tv-ref-price-block {
+    margin-bottom: 5px;
+} 
+
+.tv-ref-main-grid,
+.tv-ref-left-col {
+    gap: 14px;
+}
+.tv-ref-main-section {
+    padding: 6px 0 2px;
+}
+.tv-ref-specs-grid {
+    gap: 8px;
+}
+.tv-ref-tabs-section {
+    padding: 16px 0 5px 0;
+}
+.tv-ref-trust-strip {
+    padding: 10px;
+}
+}
+
+
 </style>
 {% endblock %}
 
@@ -1954,16 +2030,16 @@
                      class="tv-ref-main-tyre-img"
                      id="pdp-main-image"
                      onerror="this.src='/static/uploads/products/michelin_energy_xm2_wheel.jpg'">
-              </div>
-              <button type="button" class="tv-ref-zoom-btn" onclick="openZoomModal()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                   <button type="button" class="tv-ref-zoom-btn" onclick="openZoomModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   <line x1="11" y1="8" x2="11" y2="14"></line>
                   <line x1="8" y1="11" x2="14" y2="11"></line>
                 </svg>
-                <span>Click to zoom</span>
               </button>
+              </div>
+
             </div>
 
             <!-- Right: 4 Feature Props Stack (Fuel Efficient, Superior Grip, Quiet & Comfortable, Longer Tread Life) -->
@@ -2010,13 +2086,6 @@
             </div>
           </div>
 
-          <!-- Bottom Action Buttons Row: Share -->
-          <div class="tv-ref-showcase-actions">
-            <button type="button" class="tv-ref-action-pill" onclick="shareProduct()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              <span>Share</span>
-            </button>
-          </div>
         </div>
 
         <!-- KEY SPECIFICATIONS SECTION (8 CARDS) -->
@@ -2126,10 +2195,8 @@
       <div class="tv-ref-right-col">
         <div class="tv-ref-buy-card">
           <!-- Top Brand Label in Blue -->
-          <div class="tv-ref-buy-brand">{{ product.brand_name|upper }}.</div>
 
           <!-- Product Title -->
-          <h2 class="tv-ref-buy-title">{{ product.title }} {{ product.year }}</h2>
 
 
 
@@ -2153,12 +2220,12 @@
             <div class="tv-ref-price-main-line">
               <span class="currency-dirham tv-ref-curr">&#xe900;</span>
               <strong id="pdp-display-price" class="tv-ref-price-val">{{ product.price_formatted }}</strong>
-              <span class="tv-ref-per-tyre" style="font-size: 14px; color: #64748b; font-weight: 600; margin-left: 4px;">/ tyre</span>
-            </div>
+              <span class="tv-ref-per-tyre">/ tyre</span>
 
-            <!-- Set price in small text below the price -->
-            <div class="tv-ref-set4-subtext">
-              <span id="pdp-set-label">Set of 4:</span> <span class="currency-dirham tv-ref-curr-sub">&#xe900;</span> <strong id="pdp-set4-disp-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</strong>
+              <!-- Set price inline, next to the per-tyre price -->
+              <span class="tv-ref-set4-subtext">
+                <span id="pdp-set-label">Set of 4:</span> <span class="currency-dirham tv-ref-curr-sub">&#xe900;</span> <strong id="pdp-set4-disp-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</strong>
+              </span>
             </div>
 
             <div class="tv-ref-tax-note">Inclusive of all taxes</div>
@@ -2185,7 +2252,7 @@
                 <button type="button" class="tv-dropdown-trigger" id="pdp-qty-trigger" aria-haspopup="listbox" aria-expanded="false" onclick="toggleQtyDropdown(event)">
                   <span class="tv-dropdown-val" id="pdp-qty-current-val">4</span>
                   <span class="tv-dropdown-divider"></span>
-                  <svg class="tv-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0066ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="tv-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
@@ -2231,17 +2298,9 @@
             <div class="tv-ref-cart-col">
               <button type="button" id="pdp-add-to-cart-btn" class="tv-ref-btn-add-cart" onclick="addToCartPDP('{{ product.id }}', '{{ product.title|escape }}', {{ product.price }})">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                <span id="pdp-btn-label">Add to Cart &bull; <span class="currency-dirham">&#xe900;</span> <span id="pdp-btn-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</span></span>
+                <span id="pdp-btn-label"><span class="tv-ref-btn-label-text">Add to Cart &bull; </span><span class="currency-dirham">&#xe900;</span> <span id="pdp-btn-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</span></span>
               </button>
             </div>
-          </div>
-
-          <!-- Buy Now Full Width Row -->
-          <div class="tv-ref-buy-now-wrap">
-            <button type="button" id="pdp-buy-now-btn" class="tv-ref-btn-buy-now" onclick="buyNowPDP('{{ product.id }}', '{{ product.title|escape }}', {{ product.price }})">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-              <span>Buy Now</span>
-            </button>
           </div>
 
           <!-- Split in 4 Payment with Tabby & Tamara (Below Buy Now) -->
@@ -2255,21 +2314,21 @@
           <div class="tv-ref-trust-trio">
             <div class="tv-ref-trio-item">
               <div class="tv-ref-trio-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
               </div>
               <span>Original Products</span>
             </div>
 
             <div class="tv-ref-trio-item">
               <div class="tv-ref-trio-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <span>Secure Payment</span>
             </div>
 
             <div class="tv-ref-trio-item">
               <div class="tv-ref-trio-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
               </div>
               <span>Easy Returns</span>
             </div>
@@ -2289,7 +2348,6 @@
       <div class="tv-ref-tabs-nav" role="tablist">
         <button type="button" class="tv-ref-tab-btn active" data-tab="tab-details" onclick="switchRefTab('tab-details', this)">Product Details</button>
         <button type="button" class="tv-ref-tab-btn" data-tab="tab-specs" onclick="switchRefTab('tab-specs', this)">Specifications</button>
-        <button type="button" class="tv-ref-tab-btn" data-tab="tab-reviews" onclick="switchRefTab('tab-reviews', this)">Write a Review</button>
         <button type="button" class="tv-ref-tab-btn" data-tab="tab-fitment" onclick="switchRefTab('tab-fitment', this)">Fitment Guide</button>
         {% if product.faqs and product.faqs|length > 0 %}
         <button type="button" class="tv-ref-tab-btn" data-tab="tab-faqs" onclick="switchRefTab('tab-faqs', this)">FAQs</button>
@@ -2334,19 +2392,19 @@
                 
                 <div class="tv-ref-why-list">
                   <div class="tv-ref-why-item">
-                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
                     <span>Global Brand with Trusted Quality</span>
                   </div>
                   <div class="tv-ref-why-item">
-                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
                     <span>Excellent Value for Money</span>
                   </div>
                   <div class="tv-ref-why-item">
-                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div>
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div>
                     <span>Engineered for Real Driving Conditions</span>
                   </div>
                   <div class="tv-ref-why-item">
-                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+                    <div class="tv-ref-why-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
                     <span>Wide Range of Sizes</span>
                   </div>
                 </div>
@@ -2464,7 +2522,7 @@
               <div class="tv-ref-fit-item"><strong>Suzuki</strong> Swift, Dzire, Celerio</div>
             </div>
             <div class="tv-ref-fit-note">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
               <span>Always verify your vehicle manufacturer's door jamb placard or current tyre sidewall marking before ordering.</span>
             </div>
           </div>
@@ -2504,7 +2562,7 @@
         <!-- 1. Free Shipping -->
         <div class="tv-ref-pillar-item">
           <div class="tv-ref-pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2">
               <rect x="1" y="3" width="15" height="13"></rect>
               <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
               <circle cx="5.5" cy="18.5" r="2.5"></circle>
@@ -2520,7 +2578,7 @@
         <!-- 2. Hassle-Free Returns -->
         <div class="tv-ref-pillar-item">
           <div class="tv-ref-pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2">
               <polyline points="1 4 1 10 7 10"></polyline>
               <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
             </svg>
@@ -2534,7 +2592,7 @@
         <!-- 3. Expert Support -->
         <div class="tv-ref-pillar-item">
           <div class="tv-ref-pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2">
               <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
               <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
             </svg>
@@ -2548,7 +2606,7 @@
         <!-- 4. Secure Payments -->
         <div class="tv-ref-pillar-item">
           <div class="tv-ref-pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b237b" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               <polyline points="9 12 11 14 15 10"></polyline>
             </svg>
@@ -2563,6 +2621,8 @@
   </section>
 
   <!-- 5. YOU MAY ALSO LIKE (CAROUSEL WITH PRODUCT LIST CARDS) -->
+
+
   <section class="tv-ref-related-section">
     <div class="tv-ref-container">
       <div class="tv-ref-related-head">
@@ -2582,129 +2642,190 @@
           </div>
         </div>
       </div>
-
       <!-- CAROUSEL TRACK (Scrollable, NOT automatic moving) -->
       <div class="tv-pdp-related-carousel" id="related-products-carousel">
         {% for rp in related_products %}
-        <div class="tv-product-card tv-rel-carousel-card" data-price="{{ rp.price }}" data-offer="{{ rp.offer_banner }}">
+        <div class="tv-product-card tv-rel-carousel-card {% if rp.offer_banner %}has-offer{% endif %}"
+             data-slug="{{ rp.slug }}"
+             onclick="handleProductCardClick(event, '{{ rp.slug }}')"
+             data-brand="{{ rp.brand_slug or (rp.brand_name|lower) }}"
+             data-brand-name="{{ rp.brand_name }}"
+             data-brand-logo="{{ rp.brand_logo or '' }}"
+             data-pattern="{{ rp.pattern_name or rp.display_name }}"
+             data-full-title="{{ rp.full_title or (rp.brand_name ~ ' ' ~ rp.full_size_spec ~ ' ' ~ rp.pattern_name ~ ' ' ~ (rp.year or '2024')) }}"
+             data-size="{{ rp.tire_size_label }}"
+             data-full-spec="{{ rp.full_size_spec }}"
+             data-width="{{ rp.width or '155 mm' }}"
+             data-profile="{{ rp.profile or 'None' }}"
+             data-rim="{{ rp.rim_size or 'R16' }}"
+             data-load-speed="{{ rp.load_speed or '86Q' }}"
+             data-year="{{ rp.year or '2024' }}"
+             data-country="{{ rp.country_of_origin or 'China' }}"
+             data-warranty="{{ rp.warranty or '1 Year Warranty' }}"
+             data-sku="{{ rp.sku or ('TCKL-' ~ rp.id) }}"
+             data-image="{{ rp.image_path or '/static/assets/images/no-image-available.svg' }}"
+             data-vehicle="{{ rp.vehicle_type or 'car' }}"
+             data-type="{{ rp.tire_type or 'summer' }}"
+             data-price="{{ rp.price|float }}"
+             data-price-set2="{{ "%.2f"|format(rp.price * 2) }}"
+             data-price-set4="{{ "%.2f"|format(rp.set_of_4_price or (rp.price * 4)) }}"
+             data-price-set8="{{ "%.2f"|format(rp.set_of_8_price or (rp.price * 8)) }}"
+             data-rating="{{ rp.rating|float }}"
+             data-order="{{ rp.sort_order or loop.index }}"
+             data-runflat="{{ 'Runflat' if rp.is_runflat else '' }}"
+             data-category="{{ rp.tyres_category or 'Premium' }}"
+             data-offer="{{ rp.offer_banner or '' }}">
           
-          <!-- 1. Top Offer Banner (Only when offer exists) -->
+          <!-- 0. Top Offer Ribbon (Only when offer exists) -->
           {% if rp.offer_banner %}
-          <div class="tv-card-top-banner {% if 'ARRIVAL' in rp.offer_banner.upper() %}tv-banner-green{% else %}tv-banner-blue{% endif %}">
-            <span class="tv-offer-title">{{ rp.offer_banner }}</span>
+          <div class="tv-card-offer-ribbon {% if 'ARRIVAL' in rp.offer_banner.upper() %}tv-ribbon-green{% endif %}">
+            <span class="tv-offer-ribbon-text">{{ rp.offer_banner }}</span>
           </div>
           {% endif %}
 
-          <!-- 2. Main Card Body (Two Columns Split - Product Listing Page style) -->
-          <div class="tv-card-main-split">
-            <!-- Left Column: Tyre Image -->
-            <div class="tv-card-left-col">
-              <a href="/{{ rp.slug }}" class="tv-card-img-link" aria-label="{{ rp.pattern_name or rp.title }}">
-                <div class="tv-card-tyre-box">
-                  <img src="{{ rp.image_path }}" 
-                       alt="{{ rp.pattern_name or rp.title }}" 
-                       class="tv-product-img" 
-                       loading="lazy" 
-                       onerror="this.src='/static/uploads/products/michelin_energy_xm2_wheel.jpg'">
-                </div>
-              </a>
+          <!-- 1. Top Header Bar: Brand Logo (Left) -->
+          <div class="tv-card-header-bar">
+            {% set card_b_slug = rp.brand_slug or (rp.brand_name|lower|replace(' ', '-')) %}
+            <a href="/tyres/brand/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View all {{ rp.brand_name }} tyres" onclick="event.stopPropagation();">
+              {% if rp.brand_logo %}
+              <img src="{{ rp.brand_logo }}" alt="{{ rp.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+              <span class="tv-card-brand-fallback" style="display:none;">{{ rp.brand_name }}</span>
+              {% else %}
+              <span class="tv-card-brand-fallback">{{ rp.brand_name }}</span>
+              {% endif %}
+            </a>
+          </div>
+
+          <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
+          <div class="tv-card-img-area">
+            <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+
+            <div class="tv-card-img-link">
+              <div class="tv-card-tyre-box tv-img-loading">
+                <img src="{{ rp.image_path or '/static/assets/images/no-image-available.svg' }}" 
+                     alt="{{ rp.pattern_name or rp.display_name }}" 
+                     class="tv-product-img" 
+                     loading="lazy" 
+                     onload="this.parentElement.classList.remove('tv-img-loading')"
+                     onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+              </div>
             </div>
 
-            <!-- Right Column: Details & Pricing -->
-            <div class="tv-card-right-col">
-              <!-- Brand Logo Top Right -->
-              <div class="tv-card-brand-wrap" title="{{ rp.brand_name }}">
-                {% if rp.brand_logo %}
-                <img src="{{ rp.brand_logo }}" alt="{{ rp.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                <span class="tv-card-brand-fallback" style="display:none;">{{ rp.brand_name }}</span>
-                {% else %}
-                <span class="tv-card-brand-fallback">{{ rp.brand_name }}</span>
-                {% endif %}
-              </div>
+            <div class="car-brand-logos">
+              <img src="{{ url_for('static', filename='assets/images/bmw.png') }}" alt="Brand Image">
+              <img src="{{ url_for('static', filename='assets/images/mercedes-benz.png') }}" alt="Brand Image">
+            </div>
 
-              <!-- Pattern Title Link -->
-              <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.title }}">
+            <div class="tyre-type-icons">
+              <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
+                     <g id="Group_243" data-name="Group 243" transform="translate(0)">
+                        <path id="Path_411" data-name="Path 411" d="M-122.615,146.25a14.294,14.294,0,0,0,.9,1.807,1.609,1.609,0,0,0,.935.518c1.073.245,2.161.424,3.313.642a4.4,4.4,0,0,1,2.574-3.96,4.107,4.107,0,0,1,2.686-.294,4.432,4.432,0,0,1,3.413,4.935l21.435.432a4.315,4.315,0,0,1,1.162-4.224,4.061,4.061,0,0,1,3.118-1.236,4.36,4.36,0,0,1,4.163,5.139c.687-.113,1.356-.194,2.011-.338,1.472-.323,1.693-.616,1.987-2.158a5.746,5.746,0,0,0-.342-2.547,2.327,2.327,0,0,0-1.6-1.7,39.349,39.349,0,0,0-7.593-2.017,16.658,16.658,0,0,1-3.88-1.389c-1.793-.78-3.566-1.607-5.351-2.407a21.266,21.266,0,0,0-9.744-1.617,33.618,33.618,0,0,0-11.928,2.885,20.127,20.127,0,0,1-5.156,1.381c-1.089.153-1.255.357-1.256,1.444,0,.358-.012.716,0,1.073a2.047,2.047,0,0,1-.454,1.677,2.842,2.842,0,0,0-.391.931Zm30.034-4.853a.274.274,0,0,1-.12.014c-2.485-.069-4.97-.144-7.455-.2-.27-.007-.33-.139-.381-.359-.23-.982-.476-1.96-.714-2.939-.071-.291-.135-.584-.222-.962,3.475.284,6.78.76,9.465,2.868Zm-9.58-.407a.745.745,0,0,1-.153.049c-2.3-.068-4.594-.135-6.89-.218a.451.451,0,0,1-.317-.243,1.572,1.572,0,0,1,.174-1.881,8.174,8.174,0,0,0,.455-.7.938.938,0,0,1,.418-.325,17.885,17.885,0,0,1,5.381-.687.411.411,0,0,1,.315.232C-102.558,138.468-102.363,139.723-102.161,140.989Zm-11.361-.195a1.036,1.036,0,0,1,.612-1.247c.563-.291,1.137-.561,1.714-.823.506-.23,1.022-.436,1.534-.653-.557.9-1.154,1.725-1.762,2.543a.451.451,0,0,1-.3.172C-112.325,140.8-112.928,140.794-113.522,140.794Z" transform="translate(122.615 -135.806)" />
+                        <path id="Path_412" data-name="Path 412" d="M512.565,314.14a3.6,3.6,0,1,0,3.6,3.624A3.629,3.629,0,0,0,512.565,314.14Zm.312,1.314,1.1.473c-.269.253-.451.444-.653.61-.235.192-.407.1-.443-.176A8.107,8.107,0,0,1,512.877,315.454Zm0,4.553c0-.385-.021-.647.006-.906s.2-.346.412-.185.426.372.718.632Zm-2.582-2.585.5-1.186c.23.3.4.5.543.717.06.089.121.236.086.313a.392.392,0,0,1-.29.149C510.886,317.437,510.64,317.422,510.295,317.422Zm.463,1.772-.445-1.135c.352,0,.615-.021.874.005.3.03.368.2.177.436C511.2,318.705,511.02,318.9,510.757,319.194Zm4.1-1.678-1.151-.247c.2-.267.4-.534.6-.8.012-.015.057,0,.144-.009Zm-.416,1.52-.189.072c-.151-.194-.314-.38-.449-.584a.47.47,0,0,1-.082-.321c.014-.063.158-.13.248-.137.259-.018.52-.006.861-.006Zm-2.194-3.58a7.38,7.38,0,0,1-.008.906c-.039.276-.2.369-.445.165-.2-.165-.407-.324-.714-.568Zm-1.139,4.083c.3-.255.48-.424.679-.567a.428.428,0,0,1,.309-.082c.067.017.138.154.145.242.019.255.007.513.007.871Z" transform="translate(-503.07 -304.356)" />
+                        <path id="Path_413" data-name="Path 413" d="M-32.965,314.14a3.616,3.616,0,0,0-3.619,3.614,3.631,3.631,0,0,0,3.609,3.579,3.607,3.607,0,0,0,3.585-3.545A3.6,3.6,0,0,0-32.965,314.14Zm.3,1.326,1.144.474c-.3.256-.5.447-.72.612s-.389.1-.418-.169S-32.665,315.835-32.665,315.466Zm1.5.812.453,1.144c-.355,0-.617.017-.876,0-.306-.025-.363-.2-.185-.434C-31.619,316.775-31.436,316.585-31.17,316.278Zm.472,1.782-.484,1.09c-.26-.282-.452-.465-.612-.673s-.1-.386.177-.413S-31.093,318.06-30.7,318.06Zm-2.6-2.6c0,.355.012.614-.007.871-.006.088-.074.225-.14.244a.419.419,0,0,1-.314-.071c-.208-.15-.4-.328-.682-.57Zm-1.483.8c.25.3.428.492.58.7a.415.415,0,0,1,.067.313c-.019.066-.156.131-.244.138-.258.018-.518.007-.863.007Zm.011,2.963-.474-1.164c.356,0,.619-.018.878,0,.287.025.382.18.194.428C-34.341,318.712-34.523,318.919-34.774,319.224Zm2.107.794c0-.357-.014-.6.007-.846a.379.379,0,0,1,.15-.279.394.394,0,0,1,.308.076c.213.145.409.314.708.55Zm-1.762-.474c.29-.253.468-.426.666-.572a.429.429,0,0,1,.312-.081c.065.016.136.154.142.242.019.258.007.519.007.871Z" transform="translate(72.415 -304.356)" />
+                     </g>
+                  </svg>
+              </span>
+            </div>
+
+            <span class="tv-card-warranty-badge">
+              <span>{{ rp.warranty }}</span>
+            </span>
+          </div>
+
+          <div class="product-bottom-detail">
+            <!-- 3. Product Info Block -->
+            <div class="tv-card-info-block">
+              <!-- Product Pattern / Model Name (Brand name removed) -->
+              <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
                 <h3 class="tv-card-pattern">
-                  {{ rp.pattern_name or rp.title }}
+                  {{ rp.pattern_name or rp.display_name }}
                 </h3>
               </a>
 
-              <!-- Size Spec with (i) Icon -->
+              <!-- 3. Product Size -->
               <div class="tv-card-size-row">
-                <span class="tv-card-spec-text">{{ rp.size }}</span>
-                <span class="tv-spec-info-btn" title="Tyre specification details">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0066cc" stroke-width="2.2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                <span class="tv-card-spec-text">{{ rp.full_size_spec }}</span>
+                <span class="tv-card-year-meta" title="Manufacturing Year">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
+                  <span>{{ rp.year or '2025' }}</span>
                 </span>
               </div>
 
-              <!-- Meta: Year & Country -->
+              <!-- 4. USA __ Runflat __ premium -->
               <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-year">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <line x1="12" y1="2" x2="12" y2="5"></line>
-                    <line x1="12" y1="19" x2="12" y2="22"></line>
-                  </svg>
-                  <span>{{ rp.year }}</span>
+                <span class="tv-meta-item tv-meta-country" title="Origin">
+                  <span>{{ rp.country_of_origin or 'USA' }}</span>
                 </span>
-                <span class="tv-meta-item tv-meta-country">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
-                  </svg>
-                  <span>{{ rp.country }}</span>
+
+                <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                  {% if rp.is_runflat or rp.runflat_text == 'Runflat' %}
+                  <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                  {% endif %}
                 </span>
-              </div>
 
-              <!-- Price Note -->
-              <div class="tv-card-price-note">
-                Price incl. Replacement
-              </div>
-
-              <!-- Row 1: Main Unit Price -->
-              <div class="tv-card-unit-price-wrap">
-                <span class="currency-dirham tv-curr-glyph">&#xe900;</span>
-                <strong class="tv-card-price-num">{{ rp.price_formatted }}</strong>
-                <span class="tv-card-per-tyre">/ tyre</span>
-              </div>
-
-              <!-- Row 2: Dynamic Set Price -->
-              <div class="tv-card-set-row tv-card-set4-wrap tv-card-dynamic-set-wrap">
-                Set of 4: <span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> <strong>{{ rp.price_set4_formatted }}</strong>
+                <span class="tv-meta-item tv-meta-premium" title="Category">
+                  <span>{{ rp.tyres_category or '' }}</span>
+                </span>
               </div>
             </div>
+
+            <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
+            <div class="tv-card-bottom-info">
+              <div class="tv-stock-status">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="8 12 11 15 16 9"></polyline>
+                </svg>
+                <span>In Stock</span>
+              </div>
+
+              <div class="tv-fitted-status">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                  <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                <span>Fitted Included</span>
+                <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                  <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 4. Price & Add to Cart Line -->
+            <div class="tv-card-price-action-row">
+              <div class="tv-card-pricing-left">
+                <div class="tv-card-main-price-line">
+                  <span class="currency-dirham tv-ref-curr">&#xe900;</span>
+                  <strong class="tv-card-price-num">{{ "%.0f"|format(rp.price) if (rp.price % 1 == 0) else "%.2f"|format(rp.price) }}</strong>
+                  <span class="tv-card-per-tyre">/tyre</span>
+                </div>
+                <div class="tv-card-set4-line">
+                  Set of 4 &bull; <span class="currency-dirham tv-ref-curr">&#xe900;</span> {{ "%.0f"|format(rp.set_of_4_price or (rp.price * 4)) if ((rp.set_of_4_price or (rp.price * 4)) % 1 == 0) else "%.2f"|format(rp.set_of_4_price or (rp.price * 4)) }}
+                </div>
+              </div>
+
+              <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '{{ rp.pattern_name or rp.display_name }}', {{ rp.price }});" aria-label="Add to cart">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
           </div>
-
-          <!-- 3. Bottom Action Bar -->
-          <div class="tv-card-bottom-bar">
-            <span class="tv-warranty-pill">{{ rp.warranty }}</span>
-
-            <select class="tv-qty-select" onchange="updateCardQty(this, {{ rp.price }})" aria-label="Quantity">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4" selected>4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-            </select>
-
-            <button type="button" class="tv-btn-card-add" onclick="addToCartWithCard(this, '{{ rp.brand_name }} {{ rp.pattern_name or rp.title }}', {{ rp.price }})">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              <span>Add to Cart</span>
-            </button>
-          </div>
+          <!-- /product-bottom-detail -->
 
         </div>
         {% endfor %}
@@ -3113,7 +3234,21 @@ function openZoomModal() {
   bigImg.src = img.src;
   bigImg.style.cssText = 'max-width:85vw;max-height:85vh;object-fit:contain;transition:transform 0.2s;';
   modal.appendChild(bigImg);
-  modal.onclick = function() { document.body.removeChild(modal); };
+
+  var closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', 'Close');
+  closeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  closeBtn.style.cssText = 'position:absolute;top:20px;left:20px;width:44px;height:44px;border-radius:50%;border:none;background:#ffffff;color:#0f172a;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+  modal.appendChild(closeBtn);
+
+  function closeModal() {
+    if (modal.parentNode) modal.parentNode.removeChild(modal);
+    document.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) { if (e.key === 'Escape') closeModal(); }
+  modal.onclick = closeModal;
+  document.addEventListener('keydown', onKey);
   document.body.appendChild(modal);
 }
 
@@ -3164,4 +3299,338 @@ function openPaymentModal() {
   alert('Tabby & Tamara Payment Plans:\n\n• Pay in 4 equal monthly installments\n• Zero interest, zero added fees\n• Available for all UAE debit and credit cards');
 }
 </script>
+
+
+<!-- Fitted Price Full Screen / Bottom Drawer Modal (Exact match to reference mockup) -->
+<div id="tv-fitted-price-modal" class="tv-fitted-modal-overlay" onclick="handleFittedModalBackdrop(event)" role="dialog" aria-modal="true" aria-labelledby="tv-fitted-modal-title">
+  <div class="tv-fitted-modal-container" onclick="event.stopPropagation()">
+    <div class="tv-fitted-modal-card">
+      <div class="tv-fitted-modal-header">
+        <h2 id="tv-fitted-modal-title" class="tv-fitted-modal-title">Fully Fitted <span class="tv-text-green">Price per tyre</span></h2>
+        <button type="button" class="tv-fitted-modal-close" onclick="closeFittedPriceModal()" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="tv-fitted-modal-body">
+        <p class="tv-fitted-highlight-note">There are NO EXTRAS to pay on the day of your visit - in relation to the tyre fitting.</p>
+        <h3 class="tv-fitted-included-heading">THE FOLLOWING IS INCLUDED IN THE PRICE,</h3>
+        <ul class="tv-fitted-features-list">
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>VAT</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>Fitting (Bead lock wheel etc. excluded)</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>Balancing</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>New rubber valve (standard valve only)</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>Delivery to installer</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>Disposal of old tyres</span>
+          </li>
+          <li>
+            <span class="tv-check-icon-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span>On purchase of 4 tyres, 1 FREE scheduled instance of tyre rotation every 20,000kms per year</span>
+          </li>
+        </ul>
+        <div class="tv-fitted-modal-footer">
+          <button type="button" class="tv-btn-modal-done" onclick="closeFittedPriceModal()">
+            Got It
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick View Modal (Full Width Bottom Drawer) -->
+<div id="tv-quickview-modal" class="tv-qv-modal-overlay" onclick="handleQuickViewBackdrop(event)" role="dialog" aria-modal="true" aria-labelledby="tv-qv-modal-title">
+  <div class="tv-qv-modal-container" onclick="event.stopPropagation()">
+    <div class="tv-qv-modal-card">
+
+      <!-- Modal Header Bar -->
+      <div class="tv-qv-modal-header">
+        <div class="tv-qv-header-title-wrap">
+          <h2 id="tv-qv-modal-title" class="tv-qv-modal-title">Quick View</h2>
+          <div class="tv-qv-title-bar"></div>
+        </div>
+        <button type="button" class="tv-qv-modal-close" onclick="closeQuickView()" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="tv-qv-modal-body">
+        <div class="tv-qv-main-grid">
+
+          <!-- Left: Tyre Showcase Card & Sub-Badges -->
+          <div class="tv-qv-left-showcase">
+            <div class="tv-qv-img-showcase-card">
+              <!-- Top bar of Tyre Card: In Stock badge -->
+              <div class="tv-qv-showcase-top">
+                <span class="tv-qv-stock-badge">
+                  <span class="tv-qv-stock-dot"></span> In Stock
+                </span>
+              </div>
+
+              <!-- Center Stage with Radial Glow and Tyre Image (No arrows) -->
+              <div class="tv-qv-stage">
+                <div class="tv-qv-radial-glow"></div>
+                <img id="tv-qv-img" src="/static/assets/images/no-image-available.svg" alt="Tyre Image" class="tv-qv-img" loading="eager">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Brand, Title, Subtitle, Specifications, Price, Trust, Tabs -->
+          <div class="tv-qv-right-col">
+            <!-- Top brand & action buttons (Wishlist & Share) -->
+            <div class="tv-qv-meta-top">
+              <div class="tv-qv-brand-main">
+                <img id="tv-qv-brand-logo" src="" alt="Brand Logo" class="tv-qv-brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <span id="tv-qv-brand-fallback" class="tv-qv-brand-fallback" style="display:none;">WINDFORCE</span>
+              </div>
+            </div>
+
+            <!-- Product Title & Subtitle -->
+            <h3 id="tv-qv-title" class="tv-qv-product-title">Windforce 155 R12C 8GQ Mile Max 2025</h3>
+            <p class="tv-qv-product-subtitle" id="tv-qv-subtitle">Reliable performance for your daily drive. Built for durability and safety.</p>
+
+            <!-- 11 Specifications Grid (Exact 4 + 4 + 3 horizontal cards with solid blue circular icons) -->
+            <div class="tv-qv-spec-grid">
+              <!-- 1. WIDTH -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 3v3M12 18v3M3 12h3M18 12h3"></path></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">WIDTH</span>
+                  <strong id="tv-qv-spec-width" class="tv-qv-spec-val">155 mm</strong>
+                </div>
+              </div>
+
+              <!-- 2. PROFILE -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="7 10 12 5 17 10"></polyline><polyline points="7 14 12 19 17 14"></polyline></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">PROFILE</span>
+                  <strong id="tv-qv-spec-profile" class="tv-qv-spec-val">None</strong>
+                </div>
+              </div>
+
+              <!-- 3. RIM SIZE -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="3" x2="12" y2="8"></line><line x1="12" y1="16" x2="12" y2="21"></line><line x1="3" y1="12" x2="8" y2="12"></line><line x1="16" y1="12" x2="21" y2="12"></line></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">RIM SIZE</span>
+                  <strong id="tv-qv-spec-rim" class="tv-qv-spec-val">R12C</strong>
+                </div>
+              </div>
+
+              <!-- 4. LOAD/SPEED -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">LOAD/SPEED</span>
+                  <strong id="tv-qv-spec-loadspeed" class="tv-qv-spec-val">86Q</strong>
+                </div>
+              </div>
+
+              <!-- 5. BRAND -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1.5"></circle></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">BRAND</span>
+                  <strong id="tv-qv-spec-brand" class="tv-qv-spec-val">Windforce</strong>
+                </div>
+              </div>
+
+              <!-- 6. PATTERN -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">PATTERN</span>
+                  <strong id="tv-qv-spec-pattern" class="tv-qv-spec-val">Mile Max</strong>
+                </div>
+              </div>
+
+              <!-- 7. SIZE (i) -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">SIZE <span class="tv-info-glyph" title="Tyre Size Information">ⓘ</span></span>
+                  <strong id="tv-qv-spec-size" class="tv-qv-spec-val">155 R12C 86Q</strong>
+                </div>
+              </div>
+
+              <!-- 8. YEAR -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">YEAR</span>
+                  <strong id="tv-qv-spec-year" class="tv-qv-spec-val">2025</strong>
+                </div>
+              </div>
+
+              <!-- 9. COUNTRY -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">COUNTRY</span>
+                  <strong id="tv-qv-spec-country" class="tv-qv-spec-val">China</strong>
+                </div>
+              </div>
+
+              <!-- 10. WARRANTY -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">WARRANTY</span>
+                  <strong id="tv-qv-spec-warranty" class="tv-qv-spec-val">1 Year Warranty</strong>
+                </div>
+              </div>
+
+              <!-- 11. SKU -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">SKU</span>
+                  <strong id="tv-qv-spec-sku" class="tv-qv-spec-val">TCKL-12726</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing, Sets, Stepper & CTAs Box -->
+            <div class="tv-qv-price-cta-box">
+              <div class="tv-qv-price-info">
+                <div class="tv-qv-fitted-label" onclick="openFittedPriceModal(event)" role="button" tabindex="0">
+                  <span>Fitted Price</span>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <div class="tv-qv-price-row">
+                  <div class="tv-qv-main-cost">
+                    <span class="currency-dirham tv-curr-glyph">&#xe900;</span>
+                    <strong id="tv-qv-price" class="tv-qv-price-num">148.00</strong>
+                    <span class="tv-qv-unit">/ per pcs</span>
+                  </div>
+                </div>
+                <div class="tv-qv-sets-line">
+                  <span class="tv-qv-curr-set-badge" id="tv-qv-selected-set-wrap">Set of <strong id="tv-qv-selected-qty-label">4</strong>: <strong id="tv-qv-total-price"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 592.00</strong></span>
+                  <span class="tv-qv-set-divider">|</span>
+                  <span>Set of 2 : <strong id="tv-qv-set2"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 296.00</strong></span>
+                  <span class="tv-qv-set-divider">|</span>
+                  <span>Set of 4 : <strong id="tv-qv-set4"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 592.00</strong></span>
+                </div>
+              </div>
+
+              <!-- Controls on the right: Stepper + Add to Cart + Contact Us -->
+              <div class="tv-qv-cta-group">
+                <div class="tv-qv-cta-top-row">
+                  <div class="tv-qv-stepper">
+                    <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(-1)" aria-label="Decrease quantity">&minus;</button>
+                    <input type="text" id="tv-qv-qty-input" class="tv-qv-step-val" value="4" readonly aria-label="Quantity">
+                    <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(1)" aria-label="Increase quantity">&plus;</button>
+                  </div>
+                  <button type="button" class="tv-qv-add-cart-btn" id="tv-qv-add-cart-btn" onclick="addQuickViewToCart(this)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Add to Cart</span>
+                  </button>
+                </div>
+                <a href="/contact-us" id="tv-qv-contact-btn" class="tv-qv-contact-outline-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <span>Contact Us</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Trust Strip (Free Standard Installation, Free Wheel Balancing, Fast & Reliable Delivery) -->
+            <div class="tv-qv-trust-strip">
+              <div class="tv-qv-trust-col">
+                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                </div>
+                <div class="tv-qv-trust-info">
+                  <strong>Free Standard Installation</strong>
+                  <p>At our partner garages across UAE</p>
+                </div>
+              </div>
+              <div class="tv-qv-trust-col">
+                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="3" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="21"></line></svg>
+                </div>
+                <div class="tv-qv-trust-info">
+                  <strong>Free Wheel Balancing</strong>
+                  <p>With every tyre installation</p>
+                </div>
+              </div>
+              <div class="tv-qv-trust-col">
+                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                </div>
+                <div class="tv-qv-trust-info">
+                  <strong>Fast &amp; Reliable Delivery</strong>
+                  <p>Across Dubai &amp; Abu Dhabi</p>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

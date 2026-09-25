@@ -250,33 +250,30 @@
           </div>
         </div>
 
-        <!-- 6. Runflat Technology -->
+        <!-- 6. Run Flat -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="3"></circle>
-                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                <circle cx="12" cy="12" r="4"></circle>
+                <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+                <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+                <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+                <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
               </svg>
-              <span>Runflat</span>
+              <span>Run Flat</span>
             </div>
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
           <div class="tv-filter-list" id="filter-runflat-list">
-            {% if filter_runflats|length == 0 %}
-            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No runflat options available</span>
-            {% endif %}
-            {% for rf in filter_runflats %}
-            {% set is_active_rf = active_runflats and (rf.key in active_runflats or (rf.label|lower) in active_runflats) %}
-            <label class="tv-filter-item {% if rf.count == 0 and not is_active_rf %}tv-filter-empty{% endif %}" data-filter-name="{{ rf.label }}">
+            <label class="tv-filter-item {% if (filter_runflat_count or 0) == 0 and not active_runflat %}tv-filter-empty{% endif %}" data-filter-name="Run Flat">
               <span class="tv-filter-item-left">
-                <input type="checkbox" name="runflat" value="{{ rf.key }}" {% if is_active_rf %}checked{% endif %} onchange="filterProducts()">
-                <span>{{ rf.label }}</span>
+                <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
+                <span>Run Flat</span>
               </span>
-              <span class="tv-filter-count">{{ "{:,}".format(rf.count) }}</span>
+              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 0) }}</span>
             </label>
-            {% endfor %}
           </div>
         </div>
 
@@ -450,7 +447,6 @@
         {% for p in products %}
         <div class="tv-product-card {% if p.offer_banner %}has-offer{% endif %}"
              data-slug="{{ p.slug }}"
-             onclick="handleProductCardClick(event, '{{ p.slug }}')"
              data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
              data-brand-name="{{ p.brand_name }}"
              data-brand-logo="{{ p.brand_logo or '' }}"
@@ -475,18 +471,20 @@
               data-price-set8="{{ "%.2f"|format(p.set_of_8_price or (p.price * 8)) }}"
               data-rating="{{ p.rating|float }}"
               data-order="{{ p.sort_order or loop.index }}"
-              data-runflat="{{ 'Runflat' if p.is_runflat else 'Standard' }}"
+              data-runflat="{{ 'Runflat' if p.is_runflat else '' }}"
               data-category="{{ p.tyres_category or 'Premium' }}"
               data-offer="{{ p.offer_banner or '' }}">
           
-          <!-- Top Offer Banner (Full Width Strip on top of card) -->
+          <!-- 0. Top Offer Ribbon (Only when offer exists) -->
           {% if p.offer_banner %}
-          <div class="tv-card-top-banner">
-            <span class="tv-offer-title">{{ p.offer_banner }}</span>
+          <div class="tv-card-offer-ribbon {% if 'ARRIVAL' in p.offer_banner.upper() %}tv-ribbon-green{% endif %}">
+            <span class="tv-offer-ribbon-text">{{ p.offer_banner }}</span>
           </div>
           {% endif %}
 
-          <!-- 1. Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
+ 
+
+          <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
           <div class="tv-card-header-bar">
             {% set card_b_slug = p.brand_slug or (p.brand_name|lower|replace(' ', '-')) %}
             <a href="/tyres/brand/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View all {{ p.brand_name }} tyres" onclick="event.stopPropagation();">
@@ -498,14 +496,14 @@
               {% endif %}
             </a>
 
-            <div class="tv-card-badge-wrap">
+            <!-- '<div class="tv-card-badge-wrap">
               <span class="tv-card-badge tv-badge-toprated">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                 </svg>
                 <span>Top Rated</span>
               </span>
-            </div>
+            </div>' -->
           </div>
 
           <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
@@ -517,7 +515,7 @@
               </svg>
             </button>
 
-            <a href="/{{ p.slug }}" class="tv-card-img-link" aria-label="{{ p.pattern_name or p.display_name }}">
+            <div class="tv-card-img-link">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}" 
                      alt="{{ p.pattern_name or p.display_name }}" 
@@ -526,9 +524,63 @@
                      onload="this.parentElement.classList.remove('tv-img-loading')"
                      onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
               </div>
-            </a>
+            </div>
+
+            <div class="car-brand-logos">
+              <img src="{{ url_for('static', filename='assets/images/bmw.png') }}" alt="Brand Image">
+              <img src="{{ url_for('static', filename='assets/images/mercedes-benz.png') }}" alt="Brand Image">
+            </div>
+
+            <div class="tyre-type-icons">
+              <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
+                     <g id="Group_243" data-name="Group 243" transform="translate(0)">
+                        <path id="Path_411" data-name="Path 411" d="M-122.615,146.25a14.294,14.294,0,0,0,.9,1.807,1.609,1.609,0,0,0,.935.518c1.073.245,2.161.424,3.313.642a4.4,4.4,0,0,1,2.574-3.96,4.107,4.107,0,0,1,2.686-.294,4.432,4.432,0,0,1,3.413,4.935l21.435.432a4.315,4.315,0,0,1,1.162-4.224,4.061,4.061,0,0,1,3.118-1.236,4.36,4.36,0,0,1,4.163,5.139c.687-.113,1.356-.194,2.011-.338,1.472-.323,1.693-.616,1.987-2.158a5.746,5.746,0,0,0-.342-2.547,2.327,2.327,0,0,0-1.6-1.7,39.349,39.349,0,0,0-7.593-2.017,16.658,16.658,0,0,1-3.88-1.389c-1.793-.78-3.566-1.607-5.351-2.407a21.266,21.266,0,0,0-9.744-1.617,33.618,33.618,0,0,0-11.928,2.885,20.127,20.127,0,0,1-5.156,1.381c-1.089.153-1.255.357-1.256,1.444,0,.358-.012.716,0,1.073a2.047,2.047,0,0,1-.454,1.677,2.842,2.842,0,0,0-.391.931Zm30.034-4.853a.274.274,0,0,1-.12.014c-2.485-.069-4.97-.144-7.455-.2-.27-.007-.33-.139-.381-.359-.23-.982-.476-1.96-.714-2.939-.071-.291-.135-.584-.222-.962,3.475.284,6.78.76,9.465,2.868Zm-9.58-.407a.745.745,0,0,1-.153.049c-2.3-.068-4.594-.135-6.89-.218a.451.451,0,0,1-.317-.243,1.572,1.572,0,0,1,.174-1.881,8.174,8.174,0,0,0,.455-.7.938.938,0,0,1,.418-.325,17.885,17.885,0,0,1,5.381-.687.411.411,0,0,1,.315.232C-102.558,138.468-102.363,139.723-102.161,140.989Zm-11.361-.195a1.036,1.036,0,0,1,.612-1.247c.563-.291,1.137-.561,1.714-.823.506-.23,1.022-.436,1.534-.653-.557.9-1.154,1.725-1.762,2.543a.451.451,0,0,1-.3.172C-112.325,140.8-112.928,140.794-113.522,140.794Z" transform="translate(122.615 -135.806)" />
+                        <path id="Path_412" data-name="Path 412" d="M512.565,314.14a3.6,3.6,0,1,0,3.6,3.624A3.629,3.629,0,0,0,512.565,314.14Zm.312,1.314,1.1.473c-.269.253-.451.444-.653.61-.235.192-.407.1-.443-.176A8.107,8.107,0,0,1,512.877,315.454Zm0,4.553c0-.385-.021-.647.006-.906s.2-.346.412-.185.426.372.718.632Zm-2.582-2.585.5-1.186c.23.3.4.5.543.717.06.089.121.236.086.313a.392.392,0,0,1-.29.149C510.886,317.437,510.64,317.422,510.295,317.422Zm.463,1.772-.445-1.135c.352,0,.615-.021.874.005.3.03.368.2.177.436C511.2,318.705,511.02,318.9,510.757,319.194Zm4.1-1.678-1.151-.247c.2-.267.4-.534.6-.8.012-.015.057,0,.144-.009Zm-.416,1.52-.189.072c-.151-.194-.314-.38-.449-.584a.47.47,0,0,1-.082-.321c.014-.063.158-.13.248-.137.259-.018.52-.006.861-.006Zm-2.194-3.58a7.38,7.38,0,0,1-.008.906c-.039.276-.2.369-.445.165-.2-.165-.407-.324-.714-.568Zm-1.139,4.083c.3-.255.48-.424.679-.567a.428.428,0,0,1,.309-.082c.067.017.138.154.145.242.019.255.007.513.007.871Z" transform="translate(-503.07 -304.356)" />
+                        <path id="Path_413" data-name="Path 413" d="M-32.965,314.14a3.616,3.616,0,0,0-3.619,3.614,3.631,3.631,0,0,0,3.609,3.579,3.607,3.607,0,0,0,3.585-3.545A3.6,3.6,0,0,0-32.965,314.14Zm.3,1.326,1.144.474c-.3.256-.5.447-.72.612s-.389.1-.418-.169S-32.665,315.835-32.665,315.466Zm1.5.812.453,1.144c-.355,0-.617.017-.876,0-.306-.025-.363-.2-.185-.434C-31.619,316.775-31.436,316.585-31.17,316.278Zm.472,1.782-.484,1.09c-.26-.282-.452-.465-.612-.673s-.1-.386.177-.413S-31.093,318.06-30.7,318.06Zm-2.6-2.6c0,.355.012.614-.007.871-.006.088-.074.225-.14.244a.419.419,0,0,1-.314-.071c-.208-.15-.4-.328-.682-.57Zm-1.483.8c.25.3.428.492.58.7a.415.415,0,0,1,.067.313c-.019.066-.156.131-.244.138-.258.018-.518.007-.863.007Zm.011,2.963-.474-1.164c.356,0,.619-.018.878,0,.287.025.382.18.194.428C-34.341,318.712-34.523,318.919-34.774,319.224Zm2.107.794c0-.357-.014-.6.007-.846a.379.379,0,0,1,.15-.279.394.394,0,0,1,.308.076c.213.145.409.314.708.55Zm-1.762-.474c.29-.253.468-.426.666-.572a.429.429,0,0,1,.312-.081c.065.016.136.154.142.242.019.258.007.519.007.871Z" transform="translate(72.415 -304.356)" />
+                     </g>
+                  </svg>
+              </span>
+              <!-- <span>
+              <svg version="1.2" xmlns="http://www.w3.org/2000/svg" width="47.747" height="16.977" viewBox="0 0 321 138" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
+                  <title>suv-svg</title>
+                  <g id="Layer">
+                    <g id="Layer">
+                        <path id="Layer" fill-rule="evenodd" class="s0" d="m16.1 14.5c3.2-7.4 10.4-12.3 18.3-12.7 58.5-2.9 107.2-1.9 148.7 3.2 3.6 0.4 7 1.8 9.9 4l21 16.3c17.7 13.9 44.6 0.3 90.8 21 15.8 7.2 22.2 39.4 9.1 54.9-3.9 4.7-9 7.1-14.9 7.2 0.1-0.8 0.1-1.6 0.1-2.4 0-25.1-20.4-45.5-45.4-45.5-25.1 0-45.5 20.4-45.5 45.5 0 0.8 0 1.6 0.1 2.4h-89.9c0.1-0.8 0.1-1.6 0.1-2.4 0-25.1-20.4-45.5-45.5-45.5-25.1 0-45.5 20.4-45.5 45.5 0 0.8 0 1.6 0.1 2.4h-1.7c-13.8 0-25.1-11.3-25.1-25.6-0.2-9.6 0.9-35.3 15.3-68.3zm135.8 33.1h49.7c1.3 0 2.7-0.5 3.6-1.5l6.3-6.3c-5.1-2.9-5.8-4.1-26.9-20.2-0.9-0.8-2-1.2-3.2-1.3-9.4-1.1-19.3-2.1-29.5-2.8zm-53-12.2c2.8 2.3-0.3-0.4 10.8 10.7 0.9 1 2.3 1.5 3.6 1.5h25.3v-32.9c-12.6-0.7-25.8-1.1-39.7-1.1zm-13.4-4.3v-17.5c-16 0.1-32.8 0.6-50.6 1.5-2.9 0.2-5.5 2-6.7 4.7-1.7 3.9-3.2 7.7-4.5 11.3z" />
+                    </g>
+                    <path id="Layer" class="s0" d="m73 138.1c-17.8 0-32.1-14.3-32.1-32.1 0-17.8 14.3-32.1 32.1-32.1 17.8 0 32.1 14.3 32.1 32.1 0 17.8-14.3 32.1-32.1 32.1z" />
+                    <path id="Layer" class="s0" d="m221.5 106c0 17.7 14.4 32.1 32.1 32.1 17.7 0 32.1-14.4 32.1-32.1 0-17.7-14.4-32.1-32.1-32.1-17.7-0.1-32.1 14.4-32.1 32.1z" />
+                  </g>
+              </svg>
+              </span>
+              <span>
+            <svg class="w-[1.75rem] sm:w-[2rem] h-auto sm:h-auto" fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="100" height="80" viewBox="0 0 612 612" xml:space="preserve">
+                <g>
+                  <path d="M612,327.56v-21.606c0-10.533-4.213-20.628-11.701-28.037L484.107,162.958c-7.384-7.306-17.352-11.403-27.739-11.403
+                      h-58.622v-21.988c0-16.336-13.243-29.58-29.58-29.58H29.58C13.243,99.987,0,113.23,0,129.567V327.56H612z M432.551,190.303
+                      c0-2.563,2.071-4.634,4.635-4.634h21.396c1.184,0,2.366,0.494,3.253,1.282l91.006,86.865c3.057,2.86,0.986,7.987-3.154,7.987
+                      h-112.5c-2.563,0-4.635-2.07-4.635-4.634V190.303z M612,343.903v65.486c0,16.336-13.243,29.578-29.579,29.578h-31.65
+                      c-5.719-39.242-39.539-69.412-80.357-69.412c-40.721,0-74.54,30.17-80.259,69.412h-160.42
+                      c-5.718-39.242-39.538-69.412-80.259-69.412c-40.721,0-74.541,30.17-80.259,69.412H29.58C13.243,438.968,0,425.726,0,409.39
+                      v-65.486H612z M470.456,389.313c-33.883,0-61.351,27.467-61.351,61.35s27.469,61.35,61.351,61.35s61.35-27.467,61.35-61.35
+                      S504.339,389.313,470.456,389.313z M470.456,481.339c-16.941,0-30.675-13.734-30.675-30.676s13.732-30.674,30.675-30.674
+                      c16.941,0,30.676,13.732,30.676,30.674S487.397,481.339,470.456,481.339z M149.464,389.313c-33.883,0-61.35,27.467-61.35,61.35
+                      s27.468,61.35,61.35,61.35s61.35-27.467,61.35-61.35S183.346,389.313,149.464,389.313z M149.464,481.339
+                      c-16.941,0-30.676-13.734-30.676-30.676s13.734-30.674,30.676-30.674c16.941,0,30.675,13.732,30.675,30.674
+                      S166.405,481.339,149.464,481.339z"/>
+                </g>
+            </svg>
+              </span> -->
+            </div>
+
+  
+            <span class="tv-card-warranty-badge">
+              <span>{{ p.warranty }}</span>
+            </span>
           </div>
 
+          <div class="product-bottom-detail">
           <!-- 3. Product Info Block -->
           <div class="tv-card-info-block">
             <!-- Product Pattern / Model Name (Brand name removed) -->
@@ -555,28 +607,40 @@
             <!-- 4. USA __ Runflat __ premium -->
             <div class="tv-card-meta-row">
               <span class="tv-meta-item tv-meta-country" title="Origin">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
                 <span>{{ p.country_of_origin or 'USA' }}</span>
               </span>
 
               <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="9"></circle>
-                  <circle cx="12" cy="12" r="4"></circle>
-                  <path d="M12 3v5"></path><path d="M12 16v5"></path><path d="M3 12h5"></path><path d="M16 12h5"></path>
-                </svg>
-                <span>{{ p.runflat_text or 'Runflat' }}</span>
+                {% if p.is_runflat or p.runflat_text == 'Runflat' %}
+                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                {% endif %}
               </span>
 
               <span class="tv-meta-item tv-meta-premium" title="Category">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-                <span>{{ p.tyres_category or 'Premium' }}</span>
+                <span>{{ p.tyres_category or '' }}</span>
+              </span>
+            </div>
+          </div>
+
+              <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
+          <div class="tv-card-bottom-info">
+            <div class="tv-stock-status">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="8 12 11 15 16 9"></polyline>
+              </svg>
+              <span>In Stock</span>
+            </div>
+
+
+            <div class="tv-fitted-status">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+              <span>Fitted Included</span>
+              <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
               </span>
             </div>
           </div>
@@ -585,12 +649,12 @@
           <div class="tv-card-price-action-row">
             <div class="tv-card-pricing-left">
               <div class="tv-card-main-price-line">
-                <span class="tv-card-currency">AED</span>
+                <span class="currency-dirham tv-ref-curr"></span>
                 <strong class="tv-card-price-num">{{ "%.0f"|format(p.price) if (p.price % 1 == 0) else "%.2f"|format(p.price) }}</strong>
                 <span class="tv-card-per-tyre">/tyre</span>
               </div>
               <div class="tv-card-set4-line">
-                Set of 4 &bull; AED {{ "%.0f"|format(p.set_of_4_price or (p.price * 4)) if ((p.set_of_4_price or (p.price * 4)) % 1 == 0) else "%.2f"|format(p.set_of_4_price or (p.price * 4)) }}
+                Set of 4 &bull; <span class="currency-dirham tv-ref-curr"></span> {{ "%.0f"|format(p.set_of_4_price or (p.price * 4)) if ((p.set_of_4_price or (p.price * 4)) % 1 == 0) else "%.2f"|format(p.set_of_4_price or (p.price * 4)) }}
               </div>
             </div>
 
@@ -603,34 +667,8 @@
               <span>Add to Cart</span>
             </button>
           </div>
-
-          <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
-          <div class="tv-card-bottom-info">
-            <div class="tv-stock-status">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="8 12 11 15 16 9"></polyline>
-              </svg>
-              <span>In Stock</span>
-            </div>
-
-            <span class="tv-bottom-sep">|</span>
-
-            <div class="tv-fitted-status">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                <line x1="7" y1="7" x2="7.01" y2="7"></line>
-              </svg>
-              <span>Fitted Included</span>
-              <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-              </span>
-            </div>
           </div>
+          <!-- /product-bottom-detail -->
 
         </div>
         {% endfor %}

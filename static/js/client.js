@@ -1030,42 +1030,85 @@ function renderSkeletons(count) {
   for (let i = 0; i < num; i++) {
     html += `
       <div class="tv-product-card tv-card-skeleton" aria-hidden="true">
-        <!-- Top Bar Placeholder: Logo Left, Badge Right -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <div class="tv-skeleton-box" style="width: 75px; height: 24px; border-radius: 6px;"></div>
-          <div class="tv-skeleton-box" style="width: 80px; height: 22px; border-radius: 20px;"></div>
+        <!-- 1. Top Header Bar: Brand Logo Left & Top Rated Badge Right -->
+        <div class="tv-card-header-bar">
+          <div class="tv-skeleton-box" style="width: 82px; height: 26px; border-radius: 6px;"></div>
+          <div class="tv-skeleton-box" style="width: 78px; height: 22px; border-radius: 20px;"></div>
         </div>
 
-        <!-- Tyre Image Placeholder (Centered, no background) -->
-        <div class="tv-skeleton-box tv-skeleton-img" style="height: 180px; margin-bottom: 14px; border-radius: 12px;"></div>
-
-        <!-- Product Title Placeholder -->
-        <div class="tv-skeleton-box" style="width: 85%; height: 20px; border-radius: 6px; margin-bottom: 8px;"></div>
-
-        <!-- Size Spec Placeholder -->
-        <div class="tv-skeleton-box" style="width: 55%; height: 16px; border-radius: 4px; margin-bottom: 10px;"></div>
-
-        <!-- Meta Pills Row Placeholder (Year, Origin, Runflat, Premium) -->
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-          <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
-          <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
-          <div class="tv-skeleton-box" style="width: 50px; height: 14px; border-radius: 4px;"></div>
-          <div class="tv-skeleton-box" style="width: 55px; height: 14px; border-radius: 4px;"></div>
-        </div>
-
-        <!-- Price & Action Section -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px;">
-          <div>
-            <div class="tv-skeleton-box" style="width: 90px; height: 24px; border-radius: 6px; margin-bottom: 4px;"></div>
-            <div class="tv-skeleton-box" style="width: 105px; height: 12px; border-radius: 4px;"></div>
+        <!-- 2. Centered Tyre Image Area -->
+        <div class="tv-card-img-area">
+          <div class="tv-btn-quickview" style="pointer-events: none; border-color: transparent; background: transparent;">
+            <div class="tv-skeleton-box" style="width: 100%; height: 100%; border-radius: 50%;"></div>
           </div>
-          <div class="tv-skeleton-box" style="width: 110px; height: 38px; border-radius: 10px;"></div>
+
+          <div class="tv-card-img-link" style="display: flex; align-items: center; justify-content: center;">
+            <div class="tv-skeleton-box tv-skeleton-tyre"></div>
+          </div>
+
+          <div class="car-brand-logos" style="opacity: 0.35;">
+            <div class="tv-skeleton-box" style="width: 18px; height: 18px; border-radius: 50%; margin-bottom: 4px;"></div>
+            <div class="tv-skeleton-box" style="width: 18px; height: 18px; border-radius: 50%;"></div>
+          </div>
+
+          <div class="tyre-type-icons" style="opacity: 0.35;">
+            <div class="tv-skeleton-box" style="width: 32px; height: 12px; border-radius: 3px;"></div>
+          </div>
+
+          <span class="tv-card-warranty-badge">
+            <div class="tv-skeleton-box" style="width: 108px; height: 20px; border-radius: 20px 0 0 20px;"></div>
+          </span>
         </div>
 
-        <!-- Bottom Info Strip Placeholder: In Stock | Fitted -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #F1F5F9;">
-          <div class="tv-skeleton-box" style="width: 70px; height: 14px; border-radius: 4px;"></div>
-          <div class="tv-skeleton-box" style="width: 95px; height: 14px; border-radius: 4px;"></div>
+        <!-- 3. Bottom Detail Wrapper -->
+        <div class="product-bottom-detail">
+          <div class="tv-card-info-block">
+            <!-- Pattern Title -->
+            <div class="tv-skeleton-box" style="width: 68%; height: 20px; border-radius: 6px; margin-bottom: 8px;"></div>
+
+            <!-- Size Row: Size (Left) & Year (Right) -->
+            <div class="tv-card-size-row" style="margin-bottom: 6px;">
+              <div class="tv-skeleton-box" style="width: 110px; height: 16px; border-radius: 4px;"></div>
+              <div class="tv-skeleton-box" style="width: 48px; height: 16px; border-radius: 4px;"></div>
+            </div>
+
+            <!-- Meta Row: 3 columns (Country, Runflat, Premium) -->
+            <div class="tv-card-meta-row">
+              <span class="tv-meta-item tv-meta-country">
+                <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
+              </span>
+              <span class="tv-meta-item tv-meta-runflat">
+                <div class="tv-skeleton-box" style="width: 58px; height: 14px; border-radius: 4px; margin: auto;"></div>
+              </span>
+              <span class="tv-meta-item tv-meta-premium">
+                <div class="tv-skeleton-box" style="width: 48px; height: 14px; border-radius: 4px; margin-left: auto;"></div>
+              </span>
+            </div>
+          </div>
+
+          <!-- Bottom Info Strip: In Stock | Fitted Included -->
+          <div class="tv-card-bottom-info">
+            <div class="tv-stock-status">
+              <div class="tv-skeleton-box" style="width: 65px; height: 16px; border-radius: 4px;"></div>
+            </div>
+            <div class="tv-fitted-status">
+              <div class="tv-skeleton-box" style="width: 105px; height: 16px; border-radius: 4px;"></div>
+            </div>
+          </div>
+
+          <!-- Price & Add to Cart Row -->
+          <div class="tv-card-price-action-row">
+            <div class="tv-card-pricing-left">
+              <div class="tv-card-main-price-line">
+                <div class="tv-skeleton-box" style="width: 88px; height: 24px; border-radius: 6px; margin-bottom: 4px;"></div>
+              </div>
+              <div class="tv-card-set4-line">
+                <div class="tv-skeleton-box" style="width: 115px; height: 13px; border-radius: 4px;"></div>
+              </div>
+            </div>
+
+            <div class="tv-skeleton-box" style="width: 115px; height: 38px; border-radius: 8px;"></div>
+          </div>
         </div>
       </div>
     `;
@@ -1111,18 +1154,38 @@ function createProductCardHTML(p) {
   let offerBannerHTML = '';
   if (hasOffer) {
     const isArrival = String(p.offer_banner).toUpperCase().includes('ARRIVAL');
-    const bannerClass = isArrival ? 'tv-banner-green' : 'tv-banner-blue';
+    const ribbonClass = isArrival ? 'tv-ribbon-green' : '';
     offerBannerHTML = `
-      <div class="tv-card-top-banner ${bannerClass}">
-        <span class="tv-offer-title">${escapeHtml(p.offer_banner)}</span>
-      </div>`;
+          <!-- 0. Top Offer Ribbon (Only when offer exists) -->
+          <div class="tv-card-offer-ribbon ${ribbonClass}">
+            <span class="tv-offer-ribbon-text">${escapeHtml(p.offer_banner)}</span>
+          </div>`;
   }
 
-  const warrantyText = escapeHtml(p.warranty || '1 Year Warranty');
   const brandName = escapeHtml(p.brand_name || '');
+  const rawBrandSlug = (p.brand_slug || p.brand_name || '').toLowerCase().trim().replace(/[\s_]+/g, '-');
+  const cardBrandSlug = escapeHtml(rawBrandSlug);
 
-  // 2. Remove brand name in product name as requested
-  let rawPattern = (p.pattern_name || p.display_name || 'Tyre').trim();
+  // Brand Logo (Left) & Fallback
+  let brandLogoHTML = '';
+  if (p.brand_logo) {
+    brandLogoHTML = `
+              <img src="${escapeHtml(p.brand_logo)}" alt="${brandName}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+              <span class="tv-card-brand-fallback" style="display:none;">${brandName}</span>`;
+  } else {
+    brandLogoHTML = `<span class="tv-card-brand-fallback">${brandName}</span>`;
+  }
+
+  const badgeHTML = `
+              <span class="tv-card-badge tv-badge-toprated">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Top Rated</span>
+              </span>`;
+
+  // Pattern / Model Name (Brand name removed)
+  let rawPattern = (p.pattern_name || p.display_name || '').trim();
   if (brandName && rawPattern.toLowerCase().startsWith(brandName.toLowerCase())) {
     rawPattern = rawPattern.slice(brandName.length).trim();
   }
@@ -1130,22 +1193,34 @@ function createProductCardHTML(p) {
   if (!rawPattern) rawPattern = (p.pattern_name || p.display_name || 'Tyre');
   const patternTitle = escapeHtml(rawPattern);
 
-  const sizeSpec = escapeHtml(p.full_size_spec || p.tire_size_label || 'Standard Fit');
+  const sizeSpec = escapeHtml(p.full_size_spec || p.tire_size_label || '');
   const yearVal = escapeHtml(p.year || '2025');
   const originVal = escapeHtml(p.country_of_origin || 'USA');
-  const runflatVal = escapeHtml(p.runflat_text || (p.is_runflat ? 'Runflat' : 'Standard'));
   const categoryVal = escapeHtml(p.tyres_category || 'Premium');
+  const warrantyText = escapeHtml(p.warranty || '1 Year Warranty');
+
+  const isRunflat = Boolean(
+    p.is_runflat === true ||
+    p.is_runflat === 1 ||
+    p.is_runflat === '1' ||
+    p.run_flat === 1 ||
+    p.run_flat === '1' ||
+    (p.runflat_text && p.runflat_text.toLowerCase() === 'runflat')
+  );
+  const runflatDataVal = isRunflat ? 'Runflat' : '';
+  const runflatContent = isRunflat ? `<span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span>` : '';
 
   const priceVal = typeof p.price === 'number' ? p.price : parseFloat(p.price || 0);
   const displayPrice = (priceVal % 1 === 0) ? priceVal.toFixed(0) : priceVal.toFixed(2);
   const setOf4Val = p.set_of_4_price ? (typeof p.set_of_4_price === 'number' ? p.set_of_4_price : parseFloat(p.set_of_4_price || (priceVal * 4))) : (priceVal * 4);
-  const setOf4Formatted = (setOf4Val % 1 === 0) ? Math.round(setOf4Val).toLocaleString() : setOf4Val.toFixed(2);
+  const setOf4Formatted = (setOf4Val % 1 === 0) ? (setOf4Val).toFixed(0) : setOf4Val.toFixed(2);
 
-  const rawBrandSlug = (p.brand_slug || p.brand_name || '').toLowerCase().trim().replace(/\s+/g, '-');
-  const brandSlug = escapeHtml(rawBrandSlug);
-  const brandLogo = p.brand_logo ? `<img src="${p.brand_logo}" alt="${brandName}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"><span class="tv-card-brand-fallback" style="display:none;">${brandName}</span>` : `<span class="tv-card-brand-fallback">${brandName}</span>`;
+  const priceSet2 = (priceVal * 2).toFixed(2);
+  const priceSet4 = (setOf4Val).toFixed(2);
+  const priceSet8 = (p.set_of_8_price ? parseFloat(p.set_of_8_price) : (priceVal * 8)).toFixed(2);
 
-  const imgPath = p.image_path || '/static/assets/images/no-image-available.svg';
+  const imgPath = escapeHtml(p.image_path || '/static/assets/images/no-image-available.svg');
+  const slugVal = escapeHtml(p.slug || '');
   const cleanTitle = escapeHtml(patternTitle).replace(/'/g, "\\'");
   const fullTitle = escapeHtml(p.full_title || (brandName + ' ' + sizeSpec + ' ' + patternTitle + ' ' + yearVal));
   const widthVal = escapeHtml(p.width || '155 mm');
@@ -1153,186 +1228,184 @@ function createProductCardHTML(p) {
   const rimVal = escapeHtml(p.rim_size || 'R16');
   const loadSpeedVal = escapeHtml(p.load_speed || '86Q');
   const skuVal = escapeHtml(p.sku || ('TCKL-' + (p.id || '12726')));
-
-  const slugVal = escapeHtml(p.slug || '');
-
-  const topOfferHTML = hasOffer
-    ? `<div class="tv-card-top-banner"><span class="tv-offer-title">${escapeHtml(p.offer_banner)}</span></div>`
-    : '';
-
-  const badgeHTML = `<span class="tv-card-badge tv-badge-toprated">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-        <span>Top Rated</span>
-      </span>`;
+  const ratingVal = p.rating ? parseFloat(p.rating) : 4.5;
+  const orderVal = p.sort_order || 1;
 
   return `
-    <div class="tv-product-card ${hasOffer ? 'has-offer' : ''}"
-         data-slug="${slugVal}"
-         onclick="handleProductCardClick(event, '${slugVal}')"
-         data-brand="${escapeHtml(p.brand_slug || '')}"
-         data-brand-name="${brandName}"
-         data-brand-logo="${escapeHtml(p.brand_logo || '')}"
-         data-pattern="${patternTitle}"
-         data-full-title="${fullTitle}"
-         data-size="${escapeHtml(p.tire_size_label || '')}"
-         data-full-spec="${sizeSpec}"
-         data-width="${widthVal}"
-         data-profile="${profileVal}"
-         data-rim="${rimVal}"
-         data-load-speed="${loadSpeedVal}"
-         data-year="${yearVal}"
-         data-country="${originVal}"
-         data-runflat="${runflatVal}"
-         data-category="${categoryVal}"
-         data-warranty="${warrantyText}"
-         data-sku="${skuVal}"
-         data-image="${imgPath}"
-         data-vehicle="${escapeHtml(p.vehicle_type || 'car')}"
-         data-type="${escapeHtml(p.season || 'summer')}"
-         data-price="${priceVal}"
-         data-price-set2="${calculateSetPrice(priceVal, 2, p.offer_banner || '')}"
-         data-price-set4="${setOf4Formatted}"
-         data-offer="${escapeHtml(p.offer_banner || '')}">
+        <div class="tv-product-card ${hasOffer ? 'has-offer' : ''}"
+             data-slug="${slugVal}"
+             onclick="handleProductCardClick(event, '${slugVal}')"
+             data-brand="${cardBrandSlug}"
+             data-brand-name="${brandName}"
+             data-brand-logo="${escapeHtml(p.brand_logo || '')}"
+             data-pattern="${patternTitle}"
+             data-full-title="${fullTitle}"
+             data-size="${escapeHtml(p.tire_size_label || '')}"
+             data-full-spec="${sizeSpec}"
+             data-width="${widthVal}"
+             data-profile="${profileVal}"
+             data-rim="${rimVal}"
+             data-load-speed="${loadSpeedVal}"
+             data-year="${yearVal}"
+             data-country="${originVal}"
+             data-warranty="${warrantyText}"
+             data-sku="${skuVal}"
+             data-image="${imgPath}"
+             data-vehicle="${escapeHtml(p.vehicle_type || 'car')}"
+             data-type="${escapeHtml(p.tire_type || p.season || 'summer')}"
+             data-price="${priceVal}"
+             data-price-set2="${priceSet2}"
+             data-price-set4="${priceSet4}"
+             data-price-set8="${priceSet8}"
+             data-rating="${ratingVal}"
+             data-order="${orderVal}"
+             data-runflat="${runflatDataVal}"
+             data-category="${categoryVal}"
+             data-offer="${escapeHtml(p.offer_banner || '')}">
+          
+          ${offerBannerHTML}
 
-      ${topOfferHTML}
+          <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
+          <div class="tv-card-header-bar">
+            <a href="/tyres/brand/${cardBrandSlug}" class="tv-card-brand-wrap" title="View all ${brandName} tyres" onclick="event.stopPropagation();">
+              ${brandLogoHTML}
+            </a>
 
-      <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
-      <div class="tv-card-header-bar">
-        <a href="/tyres/brand/${encodeURIComponent(rawBrandSlug)}" class="tv-card-brand-wrap" title="View all ${brandName} tyres" onclick="event.stopPropagation();">
-          ${brandLogo}
-        </a>
-        <div class="tv-card-badge-wrap">
-          ${badgeHTML}
-        </div>
-      </div>
-
-      <!-- 2. Centered Tyre Image (No background color) -->
-      <div class="tv-card-img-area">
-        <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </button>
-
-        <a href="/${slugVal}" class="tv-card-img-link" aria-label="${patternTitle}">
-          <div class="tv-card-tyre-box tv-img-loading">
-            <img src="${imgPath}" 
-                 alt="${patternTitle}" 
-                 class="tv-product-img" 
-                 loading="lazy" 
-                 onload="this.parentElement.classList.remove('tv-img-loading')"
-                 onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+            <div class="tv-card-badge-wrap">
+              ${badgeHTML}
+            </div>
           </div>
-        </a>
-      </div>
 
-      <!-- 3. Product Info Block -->
-      <div class="tv-card-info-block">
-        <!-- Product Pattern Name (Brand name removed) -->
-        <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
-          <h3 class="tv-card-pattern">
-            ${patternTitle}
-          </h3>
-        </a>
+          <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
+          <div class="tv-card-img-area">
+            <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
 
-        <!-- 3. Product Size -->
-        <div class="tv-card-size-row">
-          <span class="tv-card-spec-text">${sizeSpec}</span>
-          <span class="tv-card-year-meta" title="Manufacturing Year">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            <span>${yearVal}</span>
-          </span>
-        </div>
+            <div class="tv-card-img-link">
+              <div class="tv-card-tyre-box tv-img-loading">
+                <img src="${imgPath}" 
+                     alt="${patternTitle}" 
+                     class="tv-product-img" 
+                     loading="lazy" 
+                     onload="this.parentElement.classList.remove('tv-img-loading')"
+                     onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+              </div>
+            </div>
 
-        <!-- 4. USA __ Runflat __ premium -->
-        <div class="tv-card-meta-row">
-          <span class="tv-meta-item tv-meta-country" title="Origin">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-            <span>${originVal}</span>
-          </span>
+            <div class="car-brand-logos">
+              <img src="/static/assets/images/bmw.png" alt="Brand Image">
+              <img src="/static/assets/images/mercedes-benz.png" alt="Brand Image">
+            </div>
 
-          <span class="tv-meta-item tv-meta-runflat" title="Technology">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="9"></circle>
-              <circle cx="12" cy="12" r="4"></circle>
-              <path d="M12 3v5"></path><path d="M12 16v5"></path><path d="M3 12h5"></path><path d="M16 12h5"></path>
-            </svg>
-            <span>${runflatVal}</span>
-          </span>
+            <div class="tyre-type-icons">
+              <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
+                     <g id="Group_243" data-name="Group 243" transform="translate(0)">
+                        <path id="Path_411" data-name="Path 411" d="M-122.615,146.25a14.294,14.294,0,0,0,.9,1.807,1.609,1.609,0,0,0,.935.518c1.073.245,2.161.424,3.313.642a4.4,4.4,0,0,1,2.574-3.96,4.107,4.107,0,0,1,2.686-.294,4.432,4.432,0,0,1,3.413,4.935l21.435.432a4.315,4.315,0,0,1,1.162-4.224,4.061,4.061,0,0,1,3.118-1.236,4.36,4.36,0,0,1,4.163,5.139c.687-.113,1.356-.194,2.011-.338,1.472-.323,1.693-.616,1.987-2.158a5.746,5.746,0,0,0-.342-2.547,2.327,2.327,0,0,0-1.6-1.7,39.349,39.349,0,0,0-7.593-2.017,16.658,16.658,0,0,1-3.88-1.389c-1.793-.78-3.566-1.607-5.351-2.407a21.266,21.266,0,0,0-9.744-1.617,33.618,33.618,0,0,0-11.928,2.885,20.127,20.127,0,0,1-5.156,1.381c-1.089.153-1.255.357-1.256,1.444,0,.358-.012.716,0,1.073a2.047,2.047,0,0,1-.454,1.677,2.842,2.842,0,0,0-.391.931Zm30.034-4.853a.274.274,0,0,1-.12.014c-2.485-.069-4.97-.144-7.455-.2-.27-.007-.33-.139-.381-.359-.23-.982-.476-1.96-.714-2.939-.071-.291-.135-.584-.222-.962,3.475.284,6.78.76,9.465,2.868Zm-9.58-.407a.745.745,0,0,1-.153.049c-2.3-.068-4.594-.135-6.89-.218a.451.451,0,0,1-.317-.243,1.572,1.572,0,0,1,.174-1.881,8.174,8.174,0,0,0,.455-.7.938.938,0,0,1,.418-.325,17.885,17.885,0,0,1,5.381-.687.411.411,0,0,1,.315.232C-102.558,138.468-102.363,139.723-102.161,140.989Zm-11.361-.195a1.036,1.036,0,0,1,.612-1.247c.563-.291,1.137-.561,1.714-.823.506-.23,1.022-.436,1.534-.653-.557.9-1.154,1.725-1.762,2.543a.451.451,0,0,1-.3.172C-112.325,140.8-112.928,140.794-113.522,140.794Z" transform="translate(122.615 -135.806)" />
+                        <path id="Path_412" data-name="Path 412" d="M512.565,314.14a3.6,3.6,0,1,0,3.6,3.624A3.629,3.629,0,0,0,512.565,314.14Zm.312,1.314,1.1.473c-.269.253-.451.444-.653.61-.235.192-.407.1-.443-.176A8.107,8.107,0,0,1,512.877,315.454Zm0,4.553c0-.385-.021-.647.006-.906s.2-.346.412-.185.426.372.718.632Zm-2.582-2.585.5-1.186c.23.3.4.5.543.717.06.089.121.236.086.313a.392.392,0,0,1-.29.149C510.886,317.437,510.64,317.422,510.295,317.422Zm.463,1.772-.445-1.135c.352,0,.615-.021.874.005.3.03.368.2.177.436C511.2,318.705,511.02,318.9,510.757,319.194Zm4.1-1.678-1.151-.247c.2-.267.4-.534.6-.8.012-.015.057,0,.144-.009Zm-.416,1.52-.189.072c-.151-.194-.314-.38-.449-.584a.47.47,0,0,1-.082-.321c.014-.063.158-.13.248-.137.259-.018.52-.006.861-.006Zm-2.194-3.58a7.38,7.38,0,0,1-.008.906c-.039.276-.2.369-.445.165-.2-.165-.407-.324-.714-.568Zm-1.139,4.083c.3-.255.48-.424.679-.567a.428.428,0,0,1,.309-.082c.067.017.138.154.145.242.019.255.007.513.007.871Z" transform="translate(-503.07 -304.356)" />
+                        <path id="Path_413" data-name="Path 413" d="M-32.965,314.14a3.616,3.616,0,0,0-3.619,3.614,3.631,3.631,0,0,0,3.609,3.579,3.607,3.607,0,0,0,3.585-3.545A3.6,3.6,0,0,0-32.965,314.14Zm.3,1.326,1.144.474c-.3.256-.5.447-.72.612s-.389.1-.418-.169S-32.665,315.835-32.665,315.466Zm1.5.812.453,1.144c-.355,0-.617.017-.876,0-.306-.025-.363-.2-.185-.434C-31.619,316.775-31.436,316.585-31.17,316.278Zm.472,1.782-.484,1.09c-.26-.282-.452-.465-.612-.673s-.1-.386.177-.413S-31.093,318.06-30.7,318.06Zm-2.6-2.6c0,.355.012.614-.007.871-.006.088-.074.225-.14.244a.419.419,0,0,1-.314-.071c-.208-.15-.4-.328-.682-.57Zm-1.483.8c.25.3.428.492.58.7a.415.415,0,0,1,.067.313c-.019.066-.156.131-.244.138-.258.018-.518.007-.863.007Zm.011,2.963-.474-1.164c.356,0,.619-.018.878,0,.287.025.382.18.194.428C-34.341,318.712-34.523,318.919-34.774,319.224Zm2.107.794c0-.357-.014-.6.007-.846a.379.379,0,0,1,.15-.279.394.394,0,0,1,.308.076c.213.145.409.314.708.55Zm-1.762-.474c.29-.253.468-.426.666-.572a.429.429,0,0,1,.312-.081c.065.016.136.154.142.242.019.258.007.519.007.871Z" transform="translate(72.415 -304.356)" />
+                     </g>
+                  </svg>
+              </span>
+            </div>
 
-          <span class="tv-meta-item tv-meta-premium" title="Category">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            <span>${categoryVal}</span>
-          </span>
-        </div>
-      </div>
-
-      <!-- 4. Price & Add to Cart Line -->
-      <div class="tv-card-price-action-row">
-        <div class="tv-card-pricing-left">
-          <div class="tv-card-main-price-line">
-            <span class="tv-card-currency">AED</span>
-            <strong class="tv-card-price-num">${displayPrice}</strong>
-            <span class="tv-card-per-tyre">/tyre</span>
+            <span class="tv-card-warranty-badge">
+              <span>${warrantyText}</span>
+            </span>
           </div>
-          <div class="tv-card-set4-line">
-            Set of 4 &bull; AED ${setOf4Formatted}
+
+          <div class="product-bottom-detail">
+            <!-- 3. Product Info Block -->
+            <div class="tv-card-info-block">
+              <!-- Product Pattern / Model Name (Brand name removed) -->
+              <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
+                <h3 class="tv-card-pattern">
+                  ${patternTitle}
+                </h3>
+              </a>
+
+              <!-- 3. Product Size -->
+              <div class="tv-card-size-row">
+                <span class="tv-card-spec-text">${sizeSpec}</span>
+                <span class="tv-card-year-meta" title="Manufacturing Year">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <span>${yearVal}</span>
+                </span>
+              </div>
+
+              <!-- 4. USA __ Runflat __ premium -->
+              <div class="tv-card-meta-row">
+                <span class="tv-meta-item tv-meta-country" title="Origin">
+                  <span>${originVal}</span>
+                </span>
+
+                <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                  ${runflatContent}
+                </span>
+
+                <span class="tv-meta-item tv-meta-premium" title="Category">
+                  <span>${categoryVal}</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
+            <div class="tv-card-bottom-info">
+              <div class="tv-stock-status">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="8 12 11 15 16 9"></polyline>
+                </svg>
+                <span>In Stock</span>
+              </div>
+
+              <div class="tv-fitted-status">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                  <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                <span>Fitted Included</span>
+                <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                  <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 4. Price & Add to Cart Line -->
+            <div class="tv-card-price-action-row">
+              <div class="tv-card-pricing-left">
+                <div class="tv-card-main-price-line">
+                  <span class="currency-dirham tv-ref-curr">&#xe900;</span>
+                  <strong class="tv-card-price-num">${displayPrice}</strong>
+                  <span class="tv-card-per-tyre">/tyre</span>
+                </div>
+                <div class="tv-card-set4-line">
+                  Set of 4 &bull; <span class="currency-dirham tv-ref-curr">&#xe900;</span> ${setOf4Formatted}
+                </div>
+              </div>
+
+              <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '${cleanTitle}', ${priceVal});" aria-label="Add to cart">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
           </div>
+          <!-- /product-bottom-detail -->
+
         </div>
-
-        <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '${cleanTitle}', ${priceVal});" aria-label="Add to cart">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
-          <span>Add to Cart</span>
-        </button>
-      </div>
-
-      <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
-      <div class="tv-card-bottom-info">
-        <div class="tv-stock-status">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="8 12 11 15 16 9"></polyline>
-          </svg>
-          <span>In Stock</span>
-        </div>
-
-        <span class="tv-bottom-sep">|</span>
-
-        <div class="tv-fitted-status">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-            <line x1="7" y1="7" x2="7.01" y2="7"></line>
-          </svg>
-          <span>Fitted Included</span>
-          <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-    </div>
   `;
 }
 
@@ -1347,14 +1420,27 @@ function addToCartWithCard(btn, title, basePrice) {
   } else {
     p = parseFloat(String(p).replace(/[^0-9.]/g, '')) || 0;
   }
-  const offer = card ? (card.getAttribute('data-offer') || card.querySelector('.tv-badge-offer')?.textContent?.trim() || '') : '';
-  const total = calculateSetPrice(p, qty, offer);
+  const imgEl = card ? card.querySelector('.tv-product-img') : null;
+  const imgSrc = imgEl ? (imgEl.src || imgEl.getAttribute('data-src') || '') : '';
+  const specEl = card ? card.querySelector('.tv-card-spec-text') : null;
+  const sizeSpec = specEl ? specEl.textContent.trim() : '';
   
   const originalHTML = btn.innerHTML;
   btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Added</span>';
   btn.style.background = '#16a34a';
-  
-  showToast(`Added ${qty}x ${title} to fitting cart!`);
+
+  if (typeof window.addTyreToCart === 'function') {
+    window.addTyreToCart({
+      title: title,
+      price: p,
+      qty: qty,
+      image: imgSrc,
+      size: sizeSpec,
+      sku: 'SKU-' + (title || '').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
+    });
+  } else if (typeof showToast === 'function') {
+    showToast(`Added ${qty}x ${title} to fitting cart!`);
+  }
   
   setTimeout(() => {
     btn.innerHTML = originalHTML;
@@ -1755,7 +1841,13 @@ function buildFilterPath(page = 1) {
     segments.push('promotion-' + selectedPromotions.map(pr => encodeURIComponent(pr.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
 
-  // 12. Price range segment: price-418-5668
+  // 12. Run Flat segment: runflat
+  const selectedRunflat = document.querySelector('input[name="runflat"]:checked');
+  if (selectedRunflat) {
+    segments.push('runflat');
+  }
+
+  // 13. Price range segment: price-418-5668
   const sliderMin = parseFloat(minPriceSlider?.min || 0);
   const sliderMax = parseFloat(maxPriceSlider?.max || 2000);
   const curMin = minPrice !== '' ? parseFloat(minPrice) : sliderMin;
@@ -1764,7 +1856,7 @@ function buildFilterPath(page = 1) {
     segments.push(`price-${Math.round(curMin)}-${Math.round(curMax)}`);
   }
 
-  // 13. Sort segment (Default: price-asc)
+  // 14. Sort segment (Default: price-asc)
   if (sortVal && sortVal !== 'price-asc') {
     segments.push('sort-' + encodeURIComponent(sortVal.toLowerCase()));
   }
@@ -1796,7 +1888,6 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const selectedWarranties = Array.from(document.querySelectorAll('input[name="warranty"]:checked')).map(cb => cb.value.trim());
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
-  const selectedRunflats = Array.from(document.querySelectorAll('input[name="runflat"]:checked')).map(cb => cb.value.trim());
   const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
@@ -1819,11 +1910,14 @@ async function fetchProducts(page = 1, scrollUp = true) {
   selectedWarranties.forEach(w => params.append('warranty', w));
   selectedYears.forEach(y => params.append('year', y));
   selectedOrigins.forEach(org => params.append('origin', org));
-  selectedRunflats.forEach(rf => params.append('runflat', rf));
   selectedSizes.forEach(s => params.append('size', s));
   selectedVehicles.forEach(v => params.append('vehicle', v));
   selectedTypes.forEach(t => params.append('type', t));
   selectedPromotions.forEach(pr => params.append('promotion', pr));
+  const activeRunflatCb = document.querySelector('input[name="runflat"]:checked');
+  if (activeRunflatCb) {
+    params.set('runflat', 'runflat');
+  }
   if (minPrice && parseFloat(minPrice) > parseFloat(minPriceSlider?.min || 0)) {
     params.set('min_price', minPrice);
   }
@@ -2047,8 +2141,31 @@ function updateSidebarFacetCounts(facets) {
   // 7. Promotion
   updateGroupItems('promotion', facets.promotions, true, val => val.replace(/-/g, '_'));
 
-  // 8. Runflat
-  updateGroupItems('runflat', facets.runflats, true);
+  // 8. Run Flat
+  if (facets.runflat !== undefined) {
+    const rfCount = facets.runflat;
+    const rfEl = document.getElementById('tv-filter-count-runflat');
+    if (rfEl) rfEl.textContent = Number(rfCount).toLocaleString();
+    const rfCb = document.querySelector('input[name="runflat"]');
+    const rfItem = rfCb ? rfCb.closest('.tv-filter-item') : null;
+    if (rfItem) {
+      if (rfCount === 0 && (!rfCb || !rfCb.checked)) {
+        rfItem.classList.add('tv-filter-empty');
+        rfItem.style.display = 'none';
+      } else {
+        rfItem.classList.remove('tv-filter-empty');
+        rfItem.style.display = '';
+      }
+    }
+    const rfGroup = rfCb ? rfCb.closest('.tv-filter-group') : null;
+    if (rfGroup) {
+      if (rfCount === 0 && (!rfCb || !rfCb.checked)) {
+        rfGroup.classList.add('tv-group-empty');
+      } else {
+        rfGroup.classList.remove('tv-group-empty');
+      }
+    }
+  }
 }
 
 function refreshFilterVisibility() {
@@ -2435,13 +2552,14 @@ function updateActiveFilterBadges() {
   const selectedVehicles = document.querySelectorAll('input[name="vehicle_type"]:checked').length;
   const selectedTypes = document.querySelectorAll('input[name="tire_type"]:checked').length;
   const selectedPromotions = document.querySelectorAll('input[name="promotion"]:checked').length;
+  const selectedRunflat = document.querySelectorAll('input[name="runflat"]:checked').length;
   
   const minSlider = document.getElementById('min-price-slider');
   const maxSlider = document.getElementById('max-price-slider');
   const isPriceActive = (minSlider && parseFloat(minSlider.value) > parseFloat(minSlider.min || 0)) ||
                         (maxSlider && parseFloat(maxSlider.value) < parseFloat(maxSlider.max || 2000));
   const priceActive = isPriceActive ? 1 : 0;
-  const totalActive = selectedBrands + selectedPatterns + selectedOems + selectedWarranties + selectedYears + selectedOrigins + selectedSizes + selectedVehicles + selectedTypes + selectedPromotions + priceActive;
+  const totalActive = selectedBrands + selectedPatterns + selectedOems + selectedWarranties + selectedYears + selectedOrigins + selectedSizes + selectedVehicles + selectedTypes + selectedPromotions + selectedRunflat + priceActive;
 
   const btnBadge = document.getElementById('tv-filter-badge');
   const drawerBadge = document.getElementById('tv-drawer-badge');
@@ -2624,7 +2742,17 @@ window.escapeHtml = escapeHtml;
 window.capitalize = capitalize;
 window.renderSkeletons = renderSkeletons;
 window.createProductCardHTML = createProductCardHTML;
-window.calculateSetPrice = calculateSetPrice;
+function updateCardQty(select) {
+  if (!select) return;
+  const card = select.closest('.tv-product-card');
+  if (!card) return;
+  const priceEl = card.querySelector('.tv-card-price-num');
+  const basePrice = parseFloat(card.getAttribute('data-price') || (priceEl ? priceEl.textContent : 0)) || 0;
+  const qty = parseInt(select.value, 10) || 1;
+  const total = basePrice * qty;
+  const totalEl = card.querySelector('.tv-card-total-price');
+  if (totalEl) totalEl.textContent = total.toFixed(2);
+}
 window.updateCardQty = updateCardQty;
 window.addToCartWithCard = addToCartWithCard;
 window.handleProductCardClick = handleProductCardClick;
@@ -3048,5 +3176,1439 @@ document.addEventListener('click', function() {
 
 window.initClientCustomDropdowns = initClientCustomDropdowns;
 document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
+
+/* ==========================================================================
+   TYRESVISION CART OVERVIEW DRAWER & CHECKOUT MODULE (Next.js Port)
+   ========================================================================== */
+
+(function() {
+  'use strict';
+
+  // ── Global Cart & Drawer State ──
+  var currentDrawerSection = 'cart'; // 'cart' | 'fitting' | 'contact'
+  var drawerOpen = false;
+  var appliedCoupon = null;
+  var couponDiscount = 0.0;
+  var orderNotes = '';
+
+  // Step 3: Store Locator State
+  var storeData = {
+    cities: ["All", "Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah"],
+    branches: [],
+    mobileVans: [],
+    timeSlots: [
+      "09:00 AM - 11:00 AM",
+      "11:00 AM - 01:00 PM",
+      "02:00 PM - 04:00 PM",
+      "04:00 PM - 06:00 PM",
+      "06:00 PM - 08:00 PM"
+    ]
+  };
+  var deliveryMode = 'install_outlet'; // 'install_outlet' | 'mobile_van' | 'free_shipping'
+  var selectedCity = 'All';
+  var searchQuery = '';
+  var expandedStoreId = null;
+  var selectedStore = null;
+  var selectedVan = null;
+  var selectedDate = '';
+  var selectedTimeSlot = '';
+  var mobileAddress = '';
+  var isLocating = false;
+
+  // Step 4: Vehicle & Payment State
+  var makesList = [];
+  var selectedMake = '';
+  var selectedModel = '';
+  var selectedYear = '';
+  var paymentMethod = 'payment_link'; // 'payment_link' | 'cashondelivery'
+  var isPlacingOrder = false;
+
+  // ── Utility: Generate upcoming 14 dates ──
+  function getUpcomingDates() {
+    var dates = [];
+    var now = new Date();
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (var i = 1; i <= 14; i++) {
+      var d = new Date(now);
+      d.setDate(now.getDate() + i);
+      var dayName = days[d.getDay()];
+      var monthName = months[d.getMonth()];
+      var dateNum = d.getDate();
+      var iso = d.toISOString().split('T')[0];
+      var prefix = i === 1 ? 'Tomorrow - ' : '';
+      dates.push({
+        value: iso,
+        label: prefix + dayName + ', ' + dateNum + ' ' + monthName
+      });
+    }
+    return dates;
+  }
+
+  // ── Cart Storage Helpers ──
+  function getCartItems() {
+    try {
+      var raw = localStorage.getItem('tv_cart_items');
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCartItems(items) {
+    try {
+      localStorage.setItem('tv_cart_items', JSON.stringify(items));
+    } catch (e) {}
+    updateCartBadges();
+  }
+
+  function getCartTotalTyres(items) {
+    if (!items) items = getCartItems();
+    return items.reduce(function(sum, it) {
+      return sum + (parseInt(it.qty, 10) || 1);
+    }, 0);
+  }
+
+  function getCartSubtotal(items) {
+    if (!items) items = getCartItems();
+    return items.reduce(function(sum, it) {
+      var price = parseFloat(it.price) || 0;
+      var qty = parseInt(it.qty, 10) || 1;
+      return sum + (price * qty);
+    }, 0);
+  }
+
+  function updateCartBadges() {
+    var items = getCartItems();
+    var totalTyres = getCartTotalTyres(items);
+
+    // Floating side tab badge
+    var sideBadge = document.getElementById('tv-overview-badge');
+    if (sideBadge) {
+      if (totalTyres > 0) {
+        sideBadge.textContent = totalTyres;
+        sideBadge.style.display = 'flex';
+      } else {
+        sideBadge.style.display = 'none';
+      }
+    }
+
+    // Navbar cart badge
+    var navBadge = document.getElementById('header-cart-badge');
+    if (navBadge) {
+      if (totalTyres > 0) {
+        navBadge.textContent = totalTyres;
+        navBadge.style.display = 'flex';
+      } else {
+        navBadge.style.display = 'none';
+      }
+    }
+  }
+
+  // ── Public Cart Mutation API ──
+  function addTyreToCart(item) {
+    var items = getCartItems();
+    var sku = item.sku || item.title || 'TYRE-' + Date.now();
+    var existingIndex = -1;
+
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].sku === sku || items[i].title === item.title) {
+        existingIndex = i;
+        break;
+      }
+    }
+
+    var addQty = parseInt(item.qty, 10) || 1;
+    if (existingIndex > -1) {
+      items[existingIndex].qty = (parseInt(items[existingIndex].qty, 10) || 1) + addQty;
+    } else {
+      items.push({
+        id: item.id || sku,
+        sku: sku,
+        title: item.title || 'Genuine Tyre',
+        name: item.title || 'Genuine Tyre',
+        price: parseFloat(item.price) || 0,
+        qty: addQty,
+        image: item.image || '/static/assets/images/no-image-available.svg',
+        size: item.size || ''
+      });
+    }
+
+    saveCartItems(items);
+    renderDrawerCart();
+    openOverviewDrawer('cart');
+  }
+
+  // ── Drawer Open / Close / Toggle ──
+  function openOverviewDrawer(section) {
+    drawerOpen = true;
+    var backdrop = document.getElementById('tv-overview-backdrop');
+    var panel = document.getElementById('tv-overview-panel');
+    var successScreen = document.getElementById('tv-drawer-success-screen');
+    var mainFlow = document.getElementById('tv-drawer-main-flow');
+
+    if (successScreen) successScreen.style.display = 'none';
+    if (mainFlow) mainFlow.style.display = 'block';
+
+    if (backdrop) backdrop.classList.add('is-open');
+    if (panel) panel.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+
+    if (section) {
+      setOverviewActiveSection(section);
+    } else {
+      renderDrawerCart();
+    }
+
+    // Lazy load stores and vehicle makes
+    loadStoreLocatorData();
+    loadVehicleMakes();
+  }
+
+  function closeOverviewDrawer() {
+    drawerOpen = false;
+    var backdrop = document.getElementById('tv-overview-backdrop');
+    var panel = document.getElementById('tv-overview-panel');
+    if (backdrop) backdrop.classList.remove('is-open');
+    if (panel) panel.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  function toggleOverviewDrawer() {
+    if (drawerOpen) {
+      closeOverviewDrawer();
+    } else {
+      openOverviewDrawer();
+    }
+  }
+
+  // ── Step Navigation & Progress Stepper ──
+  function setOverviewActiveSection(section) {
+    currentDrawerSection = section;
+
+    var cartBody = document.getElementById('tv-cart-section-body');
+    var fittingBody = document.getElementById('tv-fitting-section-body');
+    var contactBody = document.getElementById('tv-contact-section-body');
+
+    var cartChev = document.getElementById('tv-cart-chevron');
+    var fittingChev = document.getElementById('tv-fitting-chevron');
+    var contactChev = document.getElementById('tv-contact-chevron');
+
+    var subtitle = document.getElementById('tv-progress-subtitle');
+    var fillBar = document.getElementById('tv-stepper-fill-bar');
+
+    var circle2 = document.getElementById('tv-step-circle-2');
+    var lbl2 = document.getElementById('tv-step-lbl-2');
+    var circle3 = document.getElementById('tv-step-circle-3');
+    var lbl3 = document.getElementById('tv-step-lbl-3');
+    var circle4 = document.getElementById('tv-step-circle-4');
+    var lbl4 = document.getElementById('tv-step-lbl-4');
+
+    // Hide all accordion bodies first
+    if (cartBody) cartBody.style.display = 'none';
+    if (fittingBody) fittingBody.style.display = 'none';
+    if (contactBody) contactBody.style.display = 'none';
+
+    if (cartChev) cartChev.classList.remove('is-open');
+    if (fittingChev) fittingChev.classList.remove('is-open');
+    if (contactChev) contactChev.classList.remove('is-open');
+
+    // Reset circles
+    [circle2, circle3, circle4].forEach(function(c) {
+      if (c) {
+        c.className = 'tv-step-circle';
+      }
+    });
+    [lbl2, lbl3, lbl4].forEach(function(l) {
+      if (l) {
+        l.className = 'tv-step-lbl';
+      }
+    });
+
+    if (section === 'cart') {
+      if (cartBody) cartBody.style.display = 'block';
+      if (cartChev) cartChev.classList.add('is-open');
+      if (subtitle) subtitle.textContent = 'Step 2 of 5 • Shopping Cart';
+      if (fillBar) fillBar.style.width = '25%';
+
+      if (circle2) { circle2.classList.add('is-current'); circle2.textContent = '2'; }
+      if (lbl2) lbl2.classList.add('is-current');
+      if (circle3) circle3.textContent = '3';
+      if (circle4) circle4.textContent = '4';
+
+      renderDrawerCart();
+
+    } else if (section === 'fitting') {
+      if (fittingBody) fittingBody.style.display = 'block';
+      if (fittingChev) fittingChev.classList.add('is-open');
+      if (subtitle) subtitle.textContent = 'Step 3 of 5 • Installer Network';
+      if (fillBar) fillBar.style.width = '50%';
+
+      if (circle2) {
+        circle2.classList.add('is-checked');
+        circle2.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      }
+      if (lbl2) lbl2.classList.add('is-checked');
+      if (circle3) { circle3.classList.add('is-current'); circle3.textContent = '3'; }
+      if (lbl3) lbl3.classList.add('is-current');
+      if (circle4) circle4.textContent = '4';
+
+      renderStoreLocator();
+
+    } else if (section === 'contact') {
+      if (contactBody) contactBody.style.display = 'block';
+      if (contactChev) contactChev.classList.add('is-open');
+      if (subtitle) subtitle.textContent = 'Step 4 of 5 • Contact & Vehicle';
+      if (fillBar) fillBar.style.width = '75%';
+
+      if (circle2) {
+        circle2.classList.add('is-checked');
+        circle2.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      }
+      if (circle3) {
+        circle3.classList.add('is-checked');
+        circle3.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      }
+      if (lbl2) lbl2.classList.add('is-checked');
+      if (lbl3) lbl3.classList.add('is-checked');
+
+      if (circle4) { circle4.classList.add('is-current'); circle4.textContent = '4'; }
+      if (lbl4) lbl4.classList.add('is-current');
+
+      updateCheckoutSummary();
+      loadVehicleMakes();
+    }
+  }
+
+  function toggleOverviewSection(section) {
+    if (currentDrawerSection === section) {
+      var body = document.getElementById('tv-' + section + '-section-body');
+      var chev = document.getElementById('tv-' + section + '-chevron');
+      if (body) {
+        var isHidden = body.style.display === 'none';
+        body.style.display = isHidden ? 'block' : 'none';
+        if (chev) {
+          if (isHidden) chev.classList.add('is-open');
+          else chev.classList.remove('is-open');
+        }
+      }
+    } else {
+      setOverviewActiveSection(section);
+    }
+  }
+
+  // ── Render Cart Items (Step 2) ──
+  function renderDrawerCart() {
+    var items = getCartItems();
+    var emptyView = document.getElementById('tv-cart-empty-view');
+    var filledView = document.getElementById('tv-cart-filled-view');
+    var itemsContainer = document.getElementById('tv-cart-items-list');
+
+    var totalTyres = getCartTotalTyres(items);
+    var subtotal = getCartSubtotal(items);
+    // var vat = Math.round(Math.max(0, subtotal - couponDiscount) * 0.05 * 100) / 100;
+    var grandTotal = Math.max(0, subtotal - couponDiscount); //+ vat;
+
+    // Header summaries
+    var summaryText = document.getElementById('tv-cart-summary-text');
+    if (summaryText) {
+      summaryText.textContent = totalTyres + ' ' + (totalTyres === 1 ? 'tyre selected' : 'tyres selected');
+    }
+
+    var totalBadge = document.getElementById('tv-cart-total-badge');
+    var headerTotal = document.getElementById('tv-header-order-total');
+    if (totalBadge && headerTotal) {
+      if (grandTotal > 0) {
+        headerTotal.textContent = 'AED ' + grandTotal.toFixed(2);
+        totalBadge.style.display = 'block';
+      } else {
+        totalBadge.style.display = 'none';
+      }
+    }
+
+    // Top Strip
+    var stripTyres = document.getElementById('tv-total-strip-tyres');
+    var stripAmount = document.getElementById('tv-total-strip-amount');
+    if (stripTyres) stripTyres.textContent = totalTyres + ' ' + (totalTyres === 1 ? 'tyre in your cart' : 'tyres in your cart');
+    if (stripAmount) stripAmount.textContent = 'AED ' + grandTotal.toFixed(2);
+
+    // Summary calculation rows
+    var subtotalEl = document.getElementById('tv-calc-subtotal');
+    var discountRow = document.getElementById('tv-calc-discount-row');
+    var discountEl = document.getElementById('tv-calc-discount');
+    var vatEl = document.getElementById('tv-calc-vat');
+    var grandTotalEl = document.getElementById('tv-calc-grand-total');
+    var placeOrderBtnText = document.getElementById('tv-place-order-text');
+
+    if (subtotalEl) subtotalEl.textContent = 'AED ' + subtotal.toFixed(2);
+    if (discountRow && discountEl) {
+      if (couponDiscount > 0) {
+        discountEl.textContent = '-AED ' + couponDiscount.toFixed(2);
+        discountRow.style.display = 'flex';
+      } else {
+        discountRow.style.display = 'none';
+      }
+    }
+    // if (vatEl) vatEl.textContent = 'AED ' + vat.toFixed(2);
+    if (grandTotalEl) grandTotalEl.textContent = 'AED ' + grandTotal.toFixed(2);
+    if (placeOrderBtnText) placeOrderBtnText.textContent = 'PLACE ORDER • AED ' + grandTotal.toFixed(2);
+
+    if (items.length === 0) {
+      if (emptyView) emptyView.style.display = 'block';
+      if (filledView) filledView.style.display = 'none';
+      return;
+    }
+
+    if (emptyView) emptyView.style.display = 'none';
+    if (filledView) filledView.style.display = 'block';
+
+    if (!itemsContainer) return;
+    itemsContainer.innerHTML = '';
+
+    items.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'tv-cart-item-card';
+
+      var qty = parseInt(item.qty, 10) || 1;
+      var unitPrice = parseFloat(item.price) || 0;
+      var lineTotal = (qty * unitPrice).toFixed(2);
+
+      card.innerHTML = `
+        <div class="tv-item-thumb-box">
+          <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" class="tv-item-thumb-img" onerror="this.src='/static/assets/images/no-image-available.svg'" />
+        </div>
+        <div class="tv-item-info">
+          <h4 class="tv-item-title" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</h4>
+          <div class="tv-item-meta">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span>TyresVision Certified Fitment</span>
+          </div>
+          <div class="tv-item-controls">
+            <div class="tv-qty-dropdown-wrap">
+              <select class="tv-qty-select" onchange="window.updateDrawerCartQty('${escapeHtml(item.sku)}', this.value)">
+                ${[1, 2, 3, 4, 5, 6, 7, 8].map(function(n) {
+                  return '<option value="' + n + '"' + (n === qty ? ' selected' : '') + '>' + n + '</option>';
+                }).join('')}
+              </select>
+              <svg class="tv-qty-select-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <span class="tv-item-price-unit">AED ${lineTotal}</span>
+            <button type="button" onclick="window.removeDrawerCartItem('${escapeHtml(item.sku)}')" class="tv-btn-remove-item" title="Remove item" aria-label="Remove item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        </div>
+      `;
+      itemsContainer.appendChild(card);
+    });
+  }
+
+  function updateDrawerCartQty(sku, newQty) {
+    var items = getCartItems();
+    var q = parseInt(newQty, 10) || 1;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].sku === sku) {
+        items[i].qty = q;
+        break;
+      }
+    }
+    saveCartItems(items);
+    renderDrawerCart();
+  }
+
+  function removeDrawerCartItem(sku) {
+    var items = getCartItems();
+    items = items.filter(function(it) {
+      return it.sku !== sku;
+    });
+    saveCartItems(items);
+    renderDrawerCart();
+  }
+
+  // ── Coupon Sub-Accordion ──
+  function toggleSubAccordion(sub) {
+    var body = document.getElementById('tv-sub-acc-' + sub + '-body');
+    var chev = document.getElementById('tv-chevron-' + sub);
+    if (!body) return;
+    var isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    if (chev) {
+      if (isHidden) chev.classList.add('is-open');
+      else chev.classList.remove('is-open');
+    }
+  }
+
+  function applyDrawerCoupon() {
+    var input = document.getElementById('tv-drawer-coupon-code');
+    var msg = document.getElementById('tv-coupon-status-msg');
+    var appliedBox = document.getElementById('tv-coupon-applied-box');
+    var inputForm = document.getElementById('tv-coupon-input-form');
+    var tag = document.getElementById('tv-coupon-active-tag');
+
+    var code = input ? input.value.trim() : '';
+    if (!code) return;
+
+    var items = getCartItems();
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ op: 'applyCoupon', code: code, items: items })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        appliedCoupon = data.coupon || code;
+        couponDiscount = parseFloat(data.discount) || 0.0;
+        if (msg) {
+          msg.textContent = 'Coupon applied: ' + (data.label || appliedCoupon);
+          msg.className = 'tv-coupon-feedback text-emerald-600 font-bold text-xs mt-1';
+          msg.style.display = 'block';
+        }
+        if (appliedBox) appliedBox.style.display = 'flex';
+        if (inputForm) inputForm.style.display = 'none';
+        if (tag) tag.textContent = appliedCoupon;
+        renderDrawerCart();
+      } else {
+        if (msg) {
+          msg.textContent = data.error || 'Invalid coupon code.';
+          msg.className = 'tv-coupon-feedback text-red-600 font-bold text-xs mt-1';
+          msg.style.display = 'block';
+        }
+      }
+    })
+    .catch(function(err) {
+      if (msg) {
+        msg.textContent = 'Error applying coupon.';
+        msg.className = 'tv-coupon-feedback text-red-600 font-bold text-xs mt-1';
+        msg.style.display = 'block';
+      }
+    });
+  }
+
+  function removeDrawerCoupon() {
+    appliedCoupon = null;
+    couponDiscount = 0.0;
+    var msg = document.getElementById('tv-coupon-status-msg');
+    var appliedBox = document.getElementById('tv-coupon-applied-box');
+    var inputForm = document.getElementById('tv-coupon-input-form');
+    var input = document.getElementById('tv-drawer-coupon-code');
+
+    if (appliedBox) appliedBox.style.display = 'none';
+    if (inputForm) inputForm.style.display = 'flex';
+    if (input) input.value = '';
+    if (msg) msg.style.display = 'none';
+
+    renderDrawerCart();
+  }
+
+  // ── Step 3: Store Locator & Fitment Network ──
+  function loadStoreLocatorData(coords) {
+    var url = '/api/store-locator';
+    if (coords && coords.lat && coords.lng) {
+      url += '?lat=' + coords.lat + '&lng=' + coords.lng;
+    }
+    fetch(url)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.success) {
+          storeData = data;
+          if (!selectedStore && data.branches && data.branches.length > 0) {
+            selectedStore = data.branches[0];
+          }
+          if (!selectedVan && data.mobileVans && data.mobileVans.length > 0) {
+            selectedVan = data.mobileVans[0];
+          }
+          renderStoreLocator();
+        }
+      })
+      .catch(function(err) {
+        console.warn('Failed to fetch store locator:', err);
+      });
+  }
+
+  function setDrawerDeliveryMode(mode) {
+    deliveryMode = mode;
+
+    var btnOutlet = document.getElementById('tv-mode-btn-outlet');
+    var btnVan = document.getElementById('tv-mode-btn-van');
+    var btnShip = document.getElementById('tv-mode-btn-shipping');
+
+    var contentOutlet = document.getElementById('tv-mode-content-outlet');
+    var contentVan = document.getElementById('tv-mode-content-van');
+    var contentShip = document.getElementById('tv-mode-content-shipping');
+
+    // Reset buttons
+    [btnOutlet, btnVan, btnShip].forEach(function(b) {
+      if (b) {
+        b.classList.remove('is-active');
+        var ic = b.querySelector('.tv-mode-icon-circle');
+        if (ic) ic.classList.remove('is-active');
+      }
+    });
+
+    // Reset contents
+    if (contentOutlet) contentOutlet.style.display = 'none';
+    if (contentVan) contentVan.style.display = 'none';
+    if (contentShip) contentShip.style.display = 'none';
+
+    if (mode === 'install_outlet') {
+      if (btnOutlet) {
+        btnOutlet.classList.add('is-active');
+        var ic1 = btnOutlet.querySelector('.tv-mode-icon-circle');
+        if (ic1) ic1.classList.add('is-active');
+      }
+      if (contentOutlet) contentOutlet.style.display = 'block';
+    } else if (mode === 'mobile_van') {
+      if (btnVan) {
+        btnVan.classList.add('is-active');
+        var ic2 = btnVan.querySelector('.tv-mode-icon-circle');
+        if (ic2) ic2.classList.add('is-active');
+      }
+      if (contentVan) contentVan.style.display = 'block';
+    } else if (mode === 'free_shipping') {
+      if (btnShip) {
+        btnShip.classList.add('is-active');
+        var ic3 = btnShip.querySelector('.tv-mode-icon-circle');
+        if (ic3) ic3.classList.add('is-active');
+      }
+      if (contentShip) contentShip.style.display = 'block';
+    }
+  }
+
+  function filterDrawerCity(city, btn) {
+    selectedCity = city;
+    var pills = document.querySelectorAll('.tv-city-pill');
+    pills.forEach(function(p) { p.classList.remove('is-active'); });
+    if (btn) btn.classList.add('is-active');
+    renderStoreLocator();
+  }
+
+  function handleDrawerInstallerSearch(query) {
+    searchQuery = (query || '').toLowerCase().trim();
+    renderStoreLocator();
+  }
+
+  function handleDrawerUseMyLocation() {
+    if (isLocating) return;
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    var locateBtn = document.getElementById('tv-btn-my-location');
+    var locateLbl = document.getElementById('tv-locate-label');
+    isLocating = true;
+    if (locateLbl) locateLbl.textContent = 'Locating...';
+
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        loadStoreLocatorData({ lat: lat, lng: lng });
+
+        // Geocode area name
+        fetch('/api/geocode?lat=' + lat + '&lng=' + lng)
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            var searchInput = document.getElementById('tv-installer-search');
+            if (searchInput && d.address) {
+              searchInput.value = d.address;
+            }
+          })
+          .finally(function() {
+            isLocating = false;
+            if (locateLbl) locateLbl.textContent = 'Location set';
+          });
+      },
+      function(err) {
+        isLocating = false;
+        if (locateLbl) locateLbl.textContent = 'Use my location';
+        alert('Could not determine your location. Please select an outlet or city manually.');
+      },
+      { timeout: 8000, enableHighAccuracy: true }
+    );
+  }
+
+  function renderStoreLocator() {
+    renderOutletBranches();
+    renderMobileVans();
+  }
+
+  function renderOutletBranches() {
+    var container = document.getElementById('tv-branches-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var branches = storeData.branches || [];
+    var filtered = branches.filter(function(b) {
+      var matchCity = selectedCity === 'All' || (b.city && b.city.toLowerCase() === selectedCity.toLowerCase());
+      var matchSearch = !searchQuery ||
+        (b.name && b.name.toLowerCase().indexOf(searchQuery) > -1) ||
+        (b.address && b.address.toLowerCase().indexOf(searchQuery) > -1) ||
+        (b.city && b.city.toLowerCase().indexOf(searchQuery) > -1);
+      return matchCity && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="p-6 text-center bg-white rounded-xl border border-gray-200">
+          <p class="text-xs text-gray-500">No fitting partners found for this city or search.</p>
+          <button type="button" onclick="window.resetStoreFilters()" class="text-xs font-bold text-[#ed1c24] mt-2 underline cursor-pointer">Reset Filters</button>
+        </div>
+      `;
+      return;
+    }
+
+    var upcomingDates = getUpcomingDates();
+    var timeSlots = storeData.timeSlots || [
+      "09:00 AM - 11:00 AM", "11:00 AM - 01:00 PM", "02:00 PM - 04:00 PM", "04:00 PM - 06:00 PM"
+    ];
+
+    if (!selectedDate && upcomingDates.length > 0) {
+      selectedDate = upcomingDates[0].value;
+    }
+    if (!selectedTimeSlot && timeSlots.length > 0) {
+      selectedTimeSlot = timeSlots[0];
+    }
+
+    filtered.forEach(function(branch) {
+      var isSelected = selectedStore && selectedStore.id === branch.id;
+      var isExpanded = expandedStoreId === branch.id;
+
+      var card = document.createElement('div');
+      card.className = 'tv-branch-card' + (isSelected ? ' is-selected' : '');
+      card.id = 'branch-card-' + branch.id;
+
+      var whatsappNum = (branch.whatsapp || '+971505069575').replace(/[^0-9]/g, '');
+      var lat = branch.lat || 25.2048;
+      var lng = branch.lng || 55.2708;
+
+      card.innerHTML = `
+        <div class="tv-branch-head" onclick="window.toggleDrawerBranch('${escapeHtml(branch.id)}')">
+          <div class="tv-branch-badge-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="tv-branch-title-row">
+              <h4 class="tv-branch-name">${escapeHtml(branch.name)}</h4>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-gray-400 ${isExpanded ? 'rotate-180 text-[#ed1c24]' : ''}"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <p class="tv-branch-address">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>${escapeHtml(branch.address)}</span>
+            </p>
+            <p class="tv-branch-distance">
+              <span class="tv-dot-red"></span>
+              <span>${(branch.distance !== undefined ? parseFloat(branch.distance) : 4.5).toFixed(2)} km away</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="tv-branch-actions">
+          <a href="https://wa.me/${whatsappNum}" target="_blank" rel="noopener">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"/></svg>
+            <span>WhatsApp</span>
+          </a>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            <span>Directions</span>
+          </a>
+          <button type="button" onclick="window.toggleDrawerBranch('${escapeHtml(branch.id)}')">
+            <span>Select Date &amp; Time</span>
+          </button>
+        </div>
+
+        <!-- Floating Anchored Popover -->
+        ${isExpanded ? `
+          <div class="tv-anchored-popover">
+            <div class="tv-popover-caret"></div>
+            <div class="tv-popover-header">
+              <span class="tv-popover-title">
+                <span class="tv-dot-red"></span>
+                <span>Select Fitting Date &amp; Time</span>
+              </span>
+              <button type="button" onclick="window.toggleDrawerBranch('${escapeHtml(branch.id)}')" class="tv-btn-popover-close">✕</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-700 mb-1">Preferred Date</label>
+                <select id="popover-date-${escapeHtml(branch.id)}" class="w-full h-8 px-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-black bg-white">
+                  ${upcomingDates.map(function(d) {
+                    var isDSelected = selectedDate === d.value;
+                    return '<option value="' + d.value + '"' + (isDSelected ? ' selected' : '') + '>' + d.label + '</option>';
+                  }).join('')}
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-gray-700 mb-1">Time Slot</label>
+                <select id="popover-time-${escapeHtml(branch.id)}" class="w-full h-8 px-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-black bg-white">
+                  ${timeSlots.map(function(t) {
+                    var isTSelected = selectedTimeSlot === t;
+                    return '<option value="' + t + '"' + (isTSelected ? ' selected' : '') + '>' + t + '</option>';
+                  }).join('')}
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onclick="window.confirmBranchFitting('${escapeHtml(branch.id)}')"
+              class="btn-slide-black w-full py-2.5 rounded-lg text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              <span>CONFIRM &amp; PROCEED TO CHECKOUT</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        ` : ''}
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function toggleDrawerBranch(branchId) {
+    if (expandedStoreId === branchId) {
+      expandedStoreId = null;
+    } else {
+      expandedStoreId = branchId;
+      var branches = storeData.branches || [];
+      for (var i = 0; i < branches.length; i++) {
+        if (branches[i].id === branchId) {
+          selectedStore = branches[i];
+          break;
+        }
+      }
+    }
+    renderOutletBranches();
+  }
+
+  function confirmBranchFitting(branchId) {
+    var dateEl = document.getElementById('popover-date-' + branchId);
+    var timeEl = document.getElementById('popover-time-' + branchId);
+
+    if (dateEl && dateEl.value) selectedDate = dateEl.value;
+    if (timeEl && timeEl.value) selectedTimeSlot = timeEl.value;
+
+    var upcomingDates = getUpcomingDates();
+    var timeSlots = storeData.timeSlots || [
+      "09:00 AM - 11:00 AM", "11:00 AM - 01:00 PM", "02:00 PM - 04:00 PM", "04:00 PM - 06:00 PM"
+    ];
+    if (!selectedDate && upcomingDates.length > 0) selectedDate = upcomingDates[0].value;
+    if (!selectedTimeSlot && timeSlots.length > 0) selectedTimeSlot = timeSlots[0];
+
+    var branches = storeData.branches || [];
+    for (var i = 0; i < branches.length; i++) {
+      if (branches[i].id === branchId) {
+        selectedStore = branches[i];
+        break;
+      }
+    }
+
+    expandedStoreId = null;
+    deliveryMode = 'install_outlet';
+
+    // Update Step 3 header text
+    var summaryEl = document.getElementById('tv-fitting-summary-text');
+    if (summaryEl && selectedStore) {
+      summaryEl.textContent = selectedStore.name + ' (' + selectedDate + ')';
+    }
+
+    setOverviewActiveSection('contact');
+  }
+
+  function renderMobileVans() {
+    var container = document.getElementById('tv-mobile-vans-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var vans = storeData.mobileVans || [];
+    var upcomingDates = getUpcomingDates();
+    var timeSlots = storeData.timeSlots || [
+      "09:00 AM - 11:00 AM", "11:00 AM - 01:00 PM", "02:00 PM - 04:00 PM", "04:00 PM - 06:00 PM"
+    ];
+
+    if (!selectedDate && upcomingDates.length > 0) {
+      selectedDate = upcomingDates[0].value;
+    }
+    if (!selectedTimeSlot && timeSlots.length > 0) {
+      selectedTimeSlot = timeSlots[0];
+    }
+
+    vans.forEach(function(van) {
+      var card = document.createElement('div');
+      card.className = 'tv-branch-card';
+      var whatsappNum = (van.whatsapp || '+971505069575').replace(/[^0-9]/g, '');
+
+      card.innerHTML = `
+        <div class="tv-branch-head">
+          <div class="tv-branch-badge-icon" style="background:#eef2ff; border-color:#c7d2fe; color:#4338ca;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="tv-branch-name">${escapeHtml(van.name)}</h4>
+            <p class="tv-branch-address">${escapeHtml(van.address)}</p>
+            <p class="tv-branch-distance">
+              <span class="text-emerald-600 font-bold">Doorstep Fitting Across UAE</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Mobile Fitting Location Input -->
+        <div class="mt-3 pt-3 border-t border-gray-100">
+          <label class="block text-[11px] font-bold text-gray-700 mb-1">Fitting Address / Villa / Office Car Park <span class="text-red-500">*</span></label>
+          <input
+            type="text"
+            id="van-addr-${escapeHtml(van.id)}"
+            value="${escapeHtml(mobileAddress)}"
+            placeholder="e.g. Villa 24, Springs 14, Dubai"
+            class="tv-form-input mb-2.5"
+          />
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+            <div>
+              <label class="block text-[10.5px] font-bold text-gray-700 mb-1">Preferred Date</label>
+              <select id="van-date-${escapeHtml(van.id)}" class="tv-form-select">
+                ${upcomingDates.map(function(d) {
+                  return '<option value="' + d.value + '"' + (selectedDate === d.value ? ' selected' : '') + '>' + d.label + '</option>';
+                }).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10.5px] font-bold text-gray-700 mb-1">Time Slot</label>
+              <select id="van-time-${escapeHtml(van.id)}" class="tv-form-select">
+                ${timeSlots.map(function(t) {
+                  return '<option value="' + t + '"' + (selectedTimeSlot === t ? ' selected' : '') + '>' + t + '</option>';
+                }).join('')}
+              </select>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="window.confirmVanFitting('${escapeHtml(van.id)}')"
+            class="btn-slide-black w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+          >
+            <span>CONFIRM &amp; PROCEED TO CHECKOUT</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function confirmVanFitting(vanId) {
+    var addrEl = document.getElementById('van-addr-' + vanId);
+    var dateEl = document.getElementById('van-date-' + vanId);
+    var timeEl = document.getElementById('van-time-' + vanId);
+
+    mobileAddress = addrEl ? addrEl.value.trim() : '';
+    if (dateEl && dateEl.value) selectedDate = dateEl.value;
+    if (timeEl && timeEl.value) selectedTimeSlot = timeEl.value;
+
+    var upcomingDates = getUpcomingDates();
+    var timeSlots = storeData.timeSlots || [
+      "09:00 AM - 11:00 AM", "11:00 AM - 01:00 PM", "02:00 PM - 04:00 PM", "04:00 PM - 06:00 PM"
+    ];
+    if (!selectedDate && upcomingDates.length > 0) selectedDate = upcomingDates[0].value;
+    if (!selectedTimeSlot && timeSlots.length > 0) selectedTimeSlot = timeSlots[0];
+
+    if (!mobileAddress) {
+      alert('Please enter your doorstep fitting address.');
+      if (addrEl) addrEl.focus();
+      return;
+    }
+
+    var vans = storeData.mobileVans || [];
+    for (var i = 0; i < vans.length; i++) {
+      if (vans[i].id === vanId) {
+        selectedVan = vans[i];
+        break;
+      }
+    }
+
+    deliveryMode = 'mobile_van';
+
+    var summaryEl = document.getElementById('tv-fitting-summary-text');
+    if (summaryEl) {
+      summaryEl.textContent = 'Mobile Doorstep Van (' + selectedDate + ')';
+    }
+
+    setOverviewActiveSection('contact');
+  }
+
+  function handleConfirmFreeShipping() {
+    deliveryMode = 'free_shipping';
+    var summaryEl = document.getElementById('tv-fitting-summary-text');
+    if (summaryEl) {
+      summaryEl.textContent = 'Free Delivery to Doorstep';
+    }
+    setOverviewActiveSection('contact');
+  }
+
+  function resetStoreFilters() {
+    selectedCity = 'All';
+    searchQuery = '';
+    var searchInput = document.getElementById('tv-installer-search');
+    if (searchInput) searchInput.value = '';
+    var pills = document.querySelectorAll('.tv-city-pill');
+    pills.forEach(function(p, idx) {
+      if (idx === 0) p.classList.add('is-active');
+      else p.classList.remove('is-active');
+    });
+    renderStoreLocator();
+  }
+
+  // ── Step 4: Contact & Vehicle Details ──
+  function loadVehicleMakes() {
+    if (makesList.length > 0) return;
+    fetch('/api/vehicles?action=makes')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (Array.isArray(data)) {
+          makesList = data;
+          var makeSelect = document.getElementById('tv-vehicle-make');
+          if (makeSelect) {
+            makeSelect.innerHTML = '<option value="">Select Make</option>';
+            data.forEach(function(m) {
+              var opt = document.createElement('option');
+              opt.value = m.value;
+              opt.textContent = m.label;
+              makeSelect.appendChild(opt);
+            });
+          }
+        }
+      })
+      .catch(function(e) { console.warn('Vehicle makes load error:', e); });
+  }
+
+  function handleDrawerMakeChange(make) {
+    selectedMake = make;
+    selectedModel = '';
+    selectedYear = '';
+
+    var modelSelect = document.getElementById('tv-vehicle-model');
+    var yearSelect = document.getElementById('tv-vehicle-year');
+
+    if (!make) {
+      if (modelSelect) {
+        modelSelect.innerHTML = '<option value="">Select Model</option>';
+        modelSelect.disabled = true;
+      }
+      if (yearSelect) {
+        yearSelect.innerHTML = '<option value="">Select Year</option>';
+      }
+      return;
+    }
+
+    fetch('/api/vehicles?action=models&make=' + encodeURIComponent(make))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (modelSelect && Array.isArray(data)) {
+          modelSelect.disabled = false;
+          modelSelect.innerHTML = '<option value="">Select Model</option>';
+          data.forEach(function(m) {
+            var opt = document.createElement('option');
+            opt.value = m.value;
+            opt.textContent = m.label;
+            modelSelect.appendChild(opt);
+          });
+        }
+      });
+  }
+
+  function handleDrawerModelChange(model) {
+    selectedModel = model;
+    var yearSelect = document.getElementById('tv-vehicle-year');
+
+    fetch('/api/vehicles?action=years&model=' + encodeURIComponent(model))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (yearSelect && Array.isArray(data)) {
+          yearSelect.innerHTML = '<option value="">Select Year</option>';
+          data.forEach(function(y) {
+            var opt = document.createElement('option');
+            opt.value = y.value;
+            opt.textContent = y.label;
+            yearSelect.appendChild(opt);
+          });
+        }
+      });
+  }
+
+  function handlePaymentMethodChange(val) {
+    paymentMethod = val;
+    var wrapLink = document.getElementById('tv-pm-wrap-link');
+    var wrapCod = document.getElementById('tv-pm-wrap-cod');
+
+    if (val === 'payment_link') {
+      if (wrapLink) wrapLink.classList.add('is-active');
+      if (wrapCod) wrapCod.classList.remove('is-active');
+      if (wrapLink) {
+        var c1 = wrapLink.querySelector('.tv-radio-circle');
+        if (c1) c1.classList.add('is-checked');
+      }
+      if (wrapCod) {
+        var c2 = wrapCod.querySelector('.tv-radio-circle');
+        if (c2) c2.classList.remove('is-checked');
+      }
+    } else {
+      if (wrapCod) wrapCod.classList.add('is-active');
+      if (wrapLink) wrapLink.classList.remove('is-active');
+      if (wrapCod) {
+        var c1 = wrapCod.querySelector('.tv-radio-circle');
+        if (c1) c1.classList.add('is-checked');
+      }
+      if (wrapLink) {
+        var c2 = wrapLink.querySelector('.tv-radio-circle');
+        if (c2) c2.classList.remove('is-checked');
+      }
+    }
+  }
+
+  function updateCheckoutSummary() {
+    var summaryEl = document.getElementById('tv-shipping-summary-text');
+    if (!summaryEl) return;
+
+    if (deliveryMode === 'free_shipping') {
+      summaryEl.innerHTML = '<span><strong class="text-gray-900">Mode:</strong> Free Direct Shipping (Doorstep)</span>';
+    } else if (deliveryMode === 'mobile_van') {
+      var vName = selectedVan ? selectedVan.name : 'Mobile Fitting Fleet';
+      summaryEl.innerHTML = `
+        <span><strong class="text-gray-900">Mode:</strong> Mobile Van Service</span> • 
+        <span><strong class="text-gray-900">Address:</strong> ${escapeHtml(mobileAddress || 'Customer Doorstep')}</span>
+        ${selectedDate ? ` • <span><strong class="text-gray-900">Date:</strong> ${selectedDate}</span>` : ''}
+        ${selectedTimeSlot ? ` • <span><strong class="text-gray-900">Time:</strong> ${selectedTimeSlot}</span>` : ''}
+      `;
+    } else {
+      var sName = selectedStore ? selectedStore.name : 'TyresVision Al Quoz Hub';
+      summaryEl.innerHTML = `
+        <span><strong class="text-gray-900">Mode:</strong> Install at Outlet</span> • 
+        <span><strong class="text-gray-900">Installer:</strong> ${escapeHtml(sName)}</span>
+        ${selectedDate ? ` • <span><strong class="text-gray-900">Date:</strong> ${selectedDate}</span>` : ''}
+        ${selectedTimeSlot ? ` • <span><strong class="text-gray-900">Time:</strong> ${selectedTimeSlot}</span>` : ''}
+      `;
+    }
+
+    // Auto fill street with mobileAddress if set
+    var streetInput = document.getElementById('tv-input-street');
+    if (streetInput && !streetInput.value && mobileAddress) {
+      streetInput.value = mobileAddress;
+    }
+  }
+
+  // ── Place Order API Call ──
+  function handleDrawerPlaceOrder() {
+    var errorBanner = document.getElementById('tv-checkout-error-banner');
+    var errorMsg = document.getElementById('tv-checkout-error-msg');
+    var placeBtn = document.getElementById('tv-btn-place-order');
+    var spinner = document.getElementById('tv-place-order-spinner');
+    var arrow = document.getElementById('tv-place-order-arrow');
+
+    function showError(msg) {
+      if (errorBanner && errorMsg) {
+        errorMsg.textContent = msg;
+        errorBanner.style.display = 'flex';
+        errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        alert(msg);
+      }
+    }
+
+    if (errorBanner) errorBanner.style.display = 'none';
+
+    var items = getCartItems();
+    if (!items || items.length === 0) {
+      showError('Your cart is empty. Please add tyres first.');
+      return;
+    }
+
+    var fname = (document.getElementById('tv-input-fname')?.value || '').trim();
+    var lname = (document.getElementById('tv-input-lname')?.value || '').trim();
+    var phone = (document.getElementById('tv-input-phone')?.value || '').trim();
+    var email = (document.getElementById('tv-input-email')?.value || '').trim();
+    var street = (document.getElementById('tv-input-street')?.value || '').trim();
+    var city = (document.getElementById('tv-input-city')?.value || '').trim();
+    var emirate = document.getElementById('tv-input-emirate')?.value || 'Dubai';
+
+    var make = document.getElementById('tv-vehicle-make')?.value || '';
+    var model = document.getElementById('tv-vehicle-model')?.value || '';
+    var year = document.getElementById('tv-vehicle-year')?.value || '';
+    var plate = (document.getElementById('tv-vehicle-plate')?.value || '').trim();
+    var comments = (document.getElementById('tv-drawer-order-comments')?.value || '').trim();
+
+    if (!fname || !lname) {
+      showError('Please enter your First Name and Last Name.');
+      return;
+    }
+    if (!phone) {
+      showError('Please enter your UAE mobile number.');
+      return;
+    }
+    if (!street || !city) {
+      showError('Please enter your Street address and City.');
+      return;
+    }
+
+    // Format phone with +971
+    var cleanPhone = phone.replace(/^0+/, '');
+    if (!cleanPhone.startsWith('+')) {
+      cleanPhone = '+971' + cleanPhone.replace(/^971/, '');
+    }
+
+    var vehicleParts = [
+      make ? 'Make: ' + make : '',
+      model ? 'Model: ' + model : '',
+      year ? 'Year: ' + year : '',
+      plate ? 'Plate: ' + plate : ''
+    ].filter(Boolean).join(', ');
+
+    var shippingPayload = {
+      firstname: fname,
+      lastname: lname,
+      telephone: cleanPhone,
+      email: email,
+      street: street + (vehicleParts ? ' (' + vehicleParts + ')' : ''),
+      city: city,
+      emirate: emirate,
+      country_code: 'AE'
+    };
+
+    var installerPayload = {
+      deliveryMode: deliveryMode,
+      storeId: selectedStore ? selectedStore.id : (selectedVan ? selectedVan.id : null),
+      pickupDate: selectedDate,
+      pickupTime: selectedTimeSlot,
+      pickupLocation: deliveryMode === 'mobile_van' ? (mobileAddress || street) : ''
+    };
+
+    isPlacingOrder = true;
+    if (placeBtn) placeBtn.disabled = true;
+    if (spinner) spinner.style.display = 'inline-block';
+    if (arrow) arrow.style.display = 'none';
+
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        op: 'placeOrder',
+        items: items,
+        shipping: shippingPayload,
+        installer: installerPayload,
+        paymentMethod: paymentMethod,
+        discount: couponDiscount,
+        orderComments: comments
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.success) {
+        var orderNum = data.orderNumber || data.orderId || 'TV-' + Date.now().toString().slice(-6);
+
+        // Update Success Screen details
+        var successNum = document.getElementById('tv-success-ordernumber');
+        var successCust = document.getElementById('tv-success-customer');
+        var successPhone = document.getElementById('tv-success-phone');
+        var successService = document.getElementById('tv-success-service');
+        var successPayment = document.getElementById('tv-success-payment');
+
+        if (successNum) successNum.textContent = orderNum;
+        if (successCust) successCust.textContent = fname + ' ' + lname;
+        if (successPhone) successPhone.textContent = cleanPhone;
+        if (successService) {
+          successService.textContent = deliveryMode === 'install_outlet' ?
+            'Installer Workshop Fitting (' + (selectedStore ? selectedStore.name : 'Al Quoz Hub') + ')' :
+            deliveryMode === 'mobile_van' ? 'Mobile Van Doorstep Fitting' : 'Direct Tyre Shipping';
+        }
+        if (successPayment) {
+          successPayment.textContent = paymentMethod === 'payment_link' ?
+            'Pay via Payment Link' : 'Cash / Card on Completion';
+        }
+
+        // Show Success Screen
+        var successScreen = document.getElementById('tv-drawer-success-screen');
+        var mainFlow = document.getElementById('tv-drawer-main-flow');
+        if (mainFlow) mainFlow.style.display = 'none';
+        if (successScreen) successScreen.style.display = 'flex';
+
+        // Clear local cart
+        saveCartItems([]);
+        appliedCoupon = null;
+        couponDiscount = 0.0;
+        updateCartBadges();
+
+      } else {
+        showError(data.error || 'Failed to place order. Please try again.');
+      }
+    })
+    .catch(function(err) {
+      showError('Connection error while placing order. Please try again.');
+    })
+    .finally(function() {
+      isPlacingOrder = false;
+      if (placeBtn) placeBtn.disabled = false;
+      if (spinner) spinner.style.display = 'none';
+      if (arrow) arrow.style.display = 'inline-block';
+    });
+  }
+
+  function resetDrawerAndContinue() {
+    closeOverviewDrawer();
+    var successScreen = document.getElementById('tv-drawer-success-screen');
+    var mainFlow = document.getElementById('tv-drawer-main-flow');
+    if (successScreen) successScreen.style.display = 'none';
+    if (mainFlow) mainFlow.style.display = 'flex';
+    setOverviewActiveSection('cart');
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // ── Integrate Existing Storefront Add-To-Cart Handlers ──
+  window.addToCartWithCard = function(btn, title, basePrice) {
+    var card = btn ? btn.closest('.tv-product-card') : null;
+    var select = card ? card.querySelector('.tv-qty-select') : null;
+    var qty = select ? parseInt(select.value, 10) || 1 : 4;
+    var imgEl = card ? (card.querySelector('.tv-product-img') || card.querySelector('.tv-card-main-img')) : null;
+    var imgSrc = imgEl ? (imgEl.src || imgEl.getAttribute('data-src') || card.getAttribute('data-image')) : '';
+    var sizeBadge = card ? (card.querySelector('.tv-card-spec-text') || card.querySelector('.tv-card-size-badge')) : null;
+    var sizeText = sizeBadge ? sizeBadge.textContent.trim() : (card ? (card.getAttribute('data-full-spec') || card.getAttribute('data-size') || '') : '');
+    var brand = card ? (card.getAttribute('data-brand-name') || '') : '';
+    var pattern = card ? (card.getAttribute('data-pattern') || title) : title;
+    var sku = card ? (card.getAttribute('data-sku') || ('SKU-' + pattern.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase())) : '';
+
+    var originalHTML = btn.innerHTML;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Added';
+    btn.style.background = '#10B981';
+
+    addTyreToCart({
+      title: pattern,
+      brand: brand,
+      price: basePrice,
+      qty: qty,
+      image: imgSrc,
+      size: sizeText,
+      sku: sku
+    });
+
+    if (typeof showToast === 'function') {
+      showToast('Added ' + qty + 'x ' + pattern + ' to cart!', 'success');
+    }
+
+    setTimeout(function() {
+      btn.innerHTML = originalHTML;
+      btn.style.background = '';
+    }, 1200);
+  };
+
+  window.addQuickViewToCart = function(btn) {
+    if (!window.currentQuickViewProduct) return;
+    var p = window.currentQuickViewProduct;
+    var qty = window.currentQuickViewQty || 4;
+
+    addTyreToCart({
+      title: p.fullTitle || p.name || 'Tyre',
+      price: p.price,
+      qty: qty,
+      image: p.image || '',
+      size: p.size || '',
+      sku: p.sku || 'SKU-QV'
+    });
+
+    if (typeof closeQuickView === 'function') closeQuickView();
+    if (typeof showToast === 'function') {
+      showToast('Added ' + qty + 'x ' + p.fullTitle + ' to cart!', 'success');
+    }
+  };
+
+  window.addToCartPDP = function(productId, title, price) {
+    var input = document.getElementById('pdp-qty-input');
+    var qty = input ? (parseInt(input.value, 10) || 1) : 4;
+    var unitPrice = (typeof window.pdpProductPrice === 'number') ? window.pdpProductPrice : price;
+    var imgEl = document.querySelector('.tv-pdp-main-img img, .pdp-gallery-main img');
+    var imgSrc = imgEl ? imgEl.src : '';
+
+    addTyreToCart({
+      id: productId,
+      sku: 'PDP-' + productId,
+      title: title,
+      price: unitPrice,
+      qty: qty,
+      image: imgSrc
+    });
+
+    if (typeof showToast === 'function') {
+      showToast('Added ' + qty + 'x ' + title + ' to cart!', 'success');
+    }
+  };
+
+  window.addRelToCart = function(btn, title, price) {
+    var card = btn ? btn.closest('.tv-rel-card') : null;
+    var qtySelect = card ? card.querySelector('.tv-rel-qty-select') : null;
+    var qty = qtySelect ? (parseInt(qtySelect.value, 10) || 1) : 4;
+    var imgEl = card ? card.querySelector('img') : null;
+    var imgSrc = imgEl ? imgEl.src : '';
+
+    addTyreToCart({
+      title: title,
+      price: price,
+      qty: qty,
+      image: imgSrc,
+      sku: 'REL-' + (title || '').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()
+    });
+
+    if (typeof showToast === 'function') {
+      showToast('Added ' + qty + 'x ' + title + ' to cart!', 'success');
+    }
+  };
+
+  window.showCartModal = function(e) {
+    if (e) e.preventDefault();
+    openOverviewDrawer('cart');
+  };
+
+  // Expose global drawer APIs
+  window.openOverviewDrawer = openOverviewDrawer;
+  window.closeOverviewDrawer = closeOverviewDrawer;
+  window.toggleOverviewDrawer = toggleOverviewDrawer;
+  window.setOverviewActiveSection = setOverviewActiveSection;
+  window.toggleOverviewSection = toggleOverviewSection;
+  window.updateDrawerCartQty = updateDrawerCartQty;
+  window.removeDrawerCartItem = removeDrawerCartItem;
+  window.toggleSubAccordion = toggleSubAccordion;
+  window.applyDrawerCoupon = applyDrawerCoupon;
+  window.removeDrawerCoupon = removeDrawerCoupon;
+  window.setDrawerDeliveryMode = setDrawerDeliveryMode;
+  window.filterDrawerCity = filterDrawerCity;
+  window.handleDrawerInstallerSearch = handleDrawerInstallerSearch;
+  window.handleDrawerUseMyLocation = handleDrawerUseMyLocation;
+  window.toggleDrawerBranch = toggleDrawerBranch;
+  window.confirmBranchFitting = confirmBranchFitting;
+  window.confirmVanFitting = confirmVanFitting;
+  window.handleConfirmFreeShipping = handleConfirmFreeShipping;
+  window.resetStoreFilters = resetStoreFilters;
+  window.handleDrawerMakeChange = handleDrawerMakeChange;
+  window.handleDrawerModelChange = handleDrawerModelChange;
+  window.handlePaymentMethodChange = handlePaymentMethodChange;
+  window.handleDrawerPlaceOrder = handleDrawerPlaceOrder;
+  window.resetDrawerAndContinue = resetDrawerAndContinue;
+  window.addTyreToCart = addTyreToCart;
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', function() {
+    updateCartBadges();
+  });
+
+})();
+
 
 

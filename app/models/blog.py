@@ -725,7 +725,7 @@ class Blog(SlugMixin, SoftDeleteMixin, SearchableMixin):
         """Returns distinct category names stored in blog_categories table, localized for any requested locale."""
         cats = cls.get_all_categories(locale=locale)
         if cats:
-            return [str(c.get('display_name') or localize_value(c.get('name'), locale) or '').strip() for c in cats if c.get('name')]
+            return [c.get('display_name') or localize_value(c.get('name'), locale) for c in cats if c.get('name')]
 
         conn = get_connection()
         try:

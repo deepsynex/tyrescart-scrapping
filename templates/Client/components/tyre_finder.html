@@ -1,0 +1,517 @@
+{# =========================================================================
+   TYRE FINDER WIDGET (Matching PitStopArabia Reference Design)
+   Tabs: Car Tyres | Car Wheels | Motorbike Tyres
+   Options: SEARCH BY Size | SEARCH BY Vehicle | BROWSE BY Brands | BROWSE BY EV Tyres
+   ========================================================================= #}
+<div class="tv-tyre-finder-box" id="homeTyreFinder">
+  <!-- 1. Top Tabs Nav -->
+  <div class="tv-tf-tabs" role="tablist">
+    <button type="button" class="tv-tf-tab active" data-tab="car-tyres" role="tab" aria-selected="true">
+      <svg class="tv-tf-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8.5" cy="12" r="6.5"></circle>
+        <circle cx="8.5" cy="12" r="2.8"></circle>
+        <path d="M16 6h3"></path>
+        <path d="M17 9h4"></path>
+        <path d="M17 12h4"></path>
+        <path d="M17 15h4"></path>
+        <path d="M16 18h3"></path>
+      </svg>
+      <span>Car Tyres</span>
+    </button>
+    <button type="button" class="tv-tf-tab" data-tab="car-wheels" role="tab" aria-selected="false">
+      <svg class="tv-tf-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 2.5l.6 1.4L6 4.5l-1.4.6L4 6.5l-.6-1.4L2 4.5l1.4-.6z" fill="currentColor" stroke="none"></path>
+        <path d="M7 11.5l1.5-4h7l1.5 4"></path>
+        <rect x="5" y="11.5" width="14" height="6" rx="2"></rect>
+        <circle cx="8" cy="17.5" r="1.3" fill="currentColor"></circle>
+        <circle cx="16" cy="17.5" r="1.3" fill="currentColor"></circle>
+        <line x1="9" y1="14" x2="15" y2="14"></line>
+      </svg>
+      <span>Car Wheels</span>
+    </button>
+    <button type="button" class="tv-tf-tab" data-tab="motorbike-tyres" role="tab" aria-selected="false">
+      <svg class="tv-tf-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8.5" cy="12" r="6.5"></circle>
+        <circle cx="8.5" cy="12" r="2.8"></circle>
+        <path d="M16 7h3"></path>
+        <path d="M17 10h4"></path>
+        <path d="M17 14h4"></path>
+        <path d="M16 17h3"></path>
+      </svg>
+      <span>Motorbike Tyres</span>
+    </button>
+  </div>
+
+  <!-- 2. Main Content Card -->
+  <div class="tv-tf-body">
+    <!-- TAB 1: CAR TYRES -->
+    <div class="tv-tf-panel active" id="tf-panel-car-tyres">
+      <!-- 4 Search/Browse Action Cards in a Row -->
+      <div class="tv-tf-action-grid">
+        <!-- Option 1: SEARCH BY Size -->
+        <div class="tv-tf-action-item" data-action="size" role="button" tabindex="0" onclick="toggleTfDrawer('size')">
+          <div class="tv-tf-item-left">
+            <div class="tv-tf-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11.5" cy="12.5" r="8"></circle>
+                <circle cx="11.5" cy="12.5" r="3.5"></circle>
+                <circle cx="11.5" cy="7.5" r="1" fill="currentColor"></circle>
+                <circle cx="15.5" cy="10.5" r="1" fill="currentColor"></circle>
+                <circle cx="14.5" cy="15" r="1" fill="currentColor"></circle>
+                <circle cx="8.5" cy="15" r="1" fill="currentColor"></circle>
+                <circle cx="7.5" cy="10.5" r="1" fill="currentColor"></circle>
+                <path d="M19 3v3m-1.5-1.5h3"></path>
+              </svg>
+            </div>
+            <div class="tv-tf-text-wrap">
+              <span class="tv-tf-kicker">SEARCH BY</span>
+              <span class="tv-tf-title">Size</span>
+            </div>
+          </div>
+          <span class="tv-tf-arrow-btn" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Option 2: SEARCH BY Vehicle -->
+        <div class="tv-tf-action-item" data-action="vehicle" role="button" tabindex="0" onclick="toggleTfDrawer('vehicle')">
+          <div class="tv-tf-item-left">
+            <div class="tv-tf-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8.5" cy="12" r="6.5"></circle>
+                <circle cx="8.5" cy="12" r="2.8"></circle>
+                <path d="M16 6h3"></path>
+                <path d="M17 9h4"></path>
+                <path d="M17 12h4"></path>
+                <path d="M17 15h4"></path>
+                <path d="M16 18h3"></path>
+              </svg>
+            </div>
+            <div class="tv-tf-text-wrap">
+              <span class="tv-tf-kicker">SEARCH BY</span>
+              <span class="tv-tf-title">Vehicle</span>
+            </div>
+          </div>
+          <span class="tv-tf-arrow-btn" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Option 3: BROWSE BY Brands -->
+        <div class="tv-tf-action-item" data-action="brands" role="button" tabindex="0" onclick="toggleTfDrawer('brands')">
+          <div class="tv-tf-item-left">
+            <div class="tv-tf-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <circle cx="12" cy="12" r="5"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <line x1="12" y1="3" x2="12" y2="7"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+                <line x1="3" y1="12" x2="7" y2="12"></line>
+                <line x1="17" y1="12" x2="21" y2="12"></line>
+              </svg>
+            </div>
+            <div class="tv-tf-text-wrap">
+              <span class="tv-tf-kicker">BROWSE BY</span>
+              <span class="tv-tf-title">Brands</span>
+            </div>
+          </div>
+          <span class="tv-tf-arrow-btn" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Option 4: BROWSE BY EV Tyres -->
+        <div class="tv-tf-action-item" data-action="ev" role="button" tabindex="0" onclick="toggleTfDrawer('ev')">
+          <div class="tv-tf-item-left">
+            <div class="tv-tf-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="3" height="6" rx="1.5" fill="currentColor"></rect>
+                <rect x="19" y="3" width="3" height="6" rx="1.5" fill="currentColor"></rect>
+                <rect x="2" y="15" width="3" height="6" rx="1.5" fill="currentColor"></rect>
+                <rect x="19" y="15" width="3" height="6" rx="1.5" fill="currentColor"></rect>
+                <line x1="5" y1="6" x2="19" y2="6"></line>
+                <line x1="5" y1="18" x2="19" y2="18"></line>
+                <rect x="7" y="8" width="10" height="8" rx="2"></rect>
+                <path d="M12.5 10l-1.5 2.2h1.5l-1 2.3" stroke-width="1.8"></path>
+              </svg>
+            </div>
+            <div class="tv-tf-text-wrap">
+              <span class="tv-tf-kicker">BROWSE BY</span>
+              <span class="tv-tf-title">EV Tyres</span>
+            </div>
+          </div>
+          <span class="tv-tf-arrow-btn" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- ================= EXPANDABLE DRAWERS ================= -->
+
+      <!-- 1. SIZE DRAWER -->
+      <div class="tv-tf-drawer" id="tf-drawer-size">
+        <div class="tv-tf-drawer-content">
+          <div class="tv-tf-form-row">
+            <div class="tv-tf-form-field">
+              <label for="tfSizeWidth">Width</label>
+              <select id="tfSizeWidth" class="tv-tf-select" aria-label="Tyre width">
+                <option value="">Select Width</option>
+                <option value="155">155</option>
+                <option value="165">165</option>
+                <option value="175">175</option>
+                <option value="185">185</option>
+                <option value="195">195</option>
+                <option value="205">205</option>
+                <option value="215">215</option>
+                <option value="225">225</option>
+                <option value="235">235</option>
+                <option value="245">245</option>
+                <option value="255">255</option>
+                <option value="265">265</option>
+                <option value="275">275</option>
+                <option value="285">285</option>
+                <option value="295">295</option>
+                <option value="305">305</option>
+                <option value="315">315</option>
+                <option value="325">325</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-field">
+              <label for="tfSizeProfile">Profile</label>
+              <select id="tfSizeProfile" class="tv-tf-select" aria-label="Tyre profile">
+                <option value="">Select Profile</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="60">60</option>
+                <option value="65">65</option>
+                <option value="70">70</option>
+                <option value="75">75</option>
+                <option value="80">80</option>
+                <option value="85">85</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-field">
+              <label for="tfSizeRim">Rim Size</label>
+              <select id="tfSizeRim" class="tv-tf-select" aria-label="Tyre rim size">
+                <option value="">Select Rim</option>
+                <option value="13">R13</option>
+                <option value="14">R14</option>
+                <option value="15">R15</option>
+                <option value="16">R16</option>
+                <option value="17">R17</option>
+                <option value="18">R18</option>
+                <option value="19">R19</option>
+                <option value="20">R20</option>
+                <option value="21">R21</option>
+                <option value="22">R22</option>
+                <option value="23">R23</option>
+                <option value="24">R24</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-action">
+              <button type="button" class="tv-tf-btn-submit" onclick="submitTyreFinderSize()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Find Tyres</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Popular Sizes quick tags -->
+          <div class="tv-tf-quick-row">
+            <span class="tv-tf-quick-title">Popular Sizes:</span>
+            <div class="tv-tf-chips-wrap">
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('205', '55', '16')">205/55 R16</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('225', '45', '18')">225/45 R18</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('235', '55', '19')">235/55 R19</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('265', '65', '17')">265/65 R17</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('255', '45', '20')">255/45 R20</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('265', '60', '18')">265/60 R18</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('225', '40', '18')">225/40 R18</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickSize('245', '45', '19')">245/45 R19</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. VEHICLE DRAWER -->
+      <div class="tv-tf-drawer" id="tf-drawer-vehicle">
+        <div class="tv-tf-drawer-content">
+          <div class="tv-tf-form-row">
+            <div class="tv-tf-form-field">
+              <label for="tfVehYear">Year</label>
+              <select id="tfVehYear" class="tv-tf-select" aria-label="Vehicle year">
+                <option value="">Year</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-field">
+              <label for="tfVehMake">Make</label>
+              <select id="tfVehMake" class="tv-tf-select" aria-label="Vehicle make" onchange="tfOnMakeChange(this.value)">
+                <option value="">Select Make</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Lexus">Lexus</option>
+                <option value="Ford">Ford</option>
+                <option value="BMW">BMW</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Kia">Kia</option>
+                <option value="Land Rover">Land Rover</option>
+                <option value="Porsche">Porsche</option>
+                <option value="Audi">Audi</option>
+                <option value="Mitsubishi">Mitsubishi</option>
+                <option value="Honda">Honda</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="Tesla">Tesla</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-field">
+              <label for="tfVehModel">Model</label>
+              <select id="tfVehModel" class="tv-tf-select" aria-label="Vehicle model">
+                <option value="">Select Model</option>
+              </select>
+            </div>
+
+            <div class="tv-tf-form-action">
+              <button type="button" class="tv-tf-btn-submit" onclick="submitTyreFinderVehicle()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span>Find My Tyres</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Popular Vehicles quick chips -->
+          <div class="tv-tf-quick-row">
+            <span class="tv-tf-quick-title">Popular in UAE:</span>
+            <div class="tv-tf-chips-wrap">
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('Toyota', 'Land Cruiser')">Toyota Land Cruiser</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('Nissan', 'Patrol')">Nissan Patrol</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('Lexus', 'LX570')">Lexus LX570</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('Toyota', 'Prado')">Toyota Prado</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('BMW', 'X5')">BMW X5</button>
+              <button type="button" class="tv-tf-size-chip" onclick="tfPickVehicle('Ford', 'F-150')">Ford F-150</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. BRANDS DRAWER -->
+      <div class="tv-tf-drawer" id="tf-drawer-brands">
+        <div class="tv-tf-drawer-content">
+          <div class="tv-tf-brands-grid">
+            <a href="/tyres/brand/michelin" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_884b41a82943de82_1789467748.png" alt="Michelin" loading="lazy">
+              <span>Michelin</span>
+            </a>
+            <a href="/tyres/brand/bridgestone" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_cb7761b3ead4b59d_1789390038.png" alt="Bridgestone" loading="lazy">
+              <span>Bridgestone</span>
+            </a>
+            <a href="/tyres/brand/continental" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_24bed4da10cda88d_1789390087.png" alt="Continental" loading="lazy">
+              <span>Continental</span>
+            </a>
+            <a href="/tyres/brand/pirelli" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_fdb78675dade1522_1789467868.png" alt="Pirelli" loading="lazy">
+              <span>Pirelli</span>
+            </a>
+            <a href="/tyres/brand/goodyear" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_5efb86debe60281a_1789467079.png" alt="Goodyear" loading="lazy">
+              <span>Goodyear</span>
+            </a>
+            <a href="/tyres/brand/dunlop" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_412e791c7f963968_1789466881.png" alt="Dunlop" loading="lazy">
+              <span>Dunlop</span>
+            </a>
+            <a href="/tyres/brand/yokohama" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_02bc8d77485a6734_1789468342.png" alt="Yokohama" loading="lazy">
+              <span>Yokohama</span>
+            </a>
+            <a href="/tyres/brand/hankook" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_1553b44568a70852_1789467181.png" alt="Hankook" loading="lazy">
+              <span>Hankook</span>
+            </a>
+            <a href="/tyres/brand/kumho" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_3955fe93affc90bd_1789467271.png" alt="Kumho" loading="lazy">
+              <span>Kumho</span>
+            </a>
+            <a href="/tyres/brand/sailun" class="tv-tf-brand-card">
+              <img src="/static/uploads/brands/brand_8431577e1222ab7f_1789468123.jpg" alt="Sailun" loading="lazy">
+              <span>Sailun</span>
+            </a>
+          </div>
+          <div class="tv-tf-all-link-wrap">
+            <a href="/tyres" class="tv-tf-view-all-link">
+              <span>Browse All 60+ Tyre Brands</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. EV TYRES DRAWER -->
+      <div class="tv-tf-drawer" id="tf-drawer-ev">
+        <div class="tv-tf-drawer-content">
+          <div class="tv-tf-ev-box">
+            <div class="tv-tf-ev-details">
+              <div class="tv-tf-ev-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                <span>Electric Vehicle (EV) Certified Tyres</span>
+              </div>
+              <h4>Engineered for High Instant Torque & Low Road Noise</h4>
+              <p>Reinforced sidewalls for battery pack weight, specialized low rolling-resistance rubber for maximum driving range, and acoustic sound-absorbing foam inserts.</p>
+            </div>
+            <div class="tv-tf-ev-action-col">
+              <a href="/tyres?category=ev" class="tv-tf-btn-submit tv-tf-ev-btn">
+                <span>Browse All EV Tyres</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </a>
+              <div class="tv-tf-ev-quick-links">
+                <span class="tv-tf-quick-title">Popular EV Models:</span>
+                <div class="tv-tf-chips-wrap">
+                  <a href="/tyres?q=Tesla" class="tv-tf-size-chip">Tesla Model 3 / Y</a>
+                  <a href="/tyres?q=Porsche+Taycan" class="tv-tf-size-chip">Porsche Taycan</a>
+                  <a href="/tyres?q=BMW+i4" class="tv-tf-size-chip">BMW i4 / iX</a>
+                  <a href="/tyres?q=BYD" class="tv-tf-size-chip">BYD Seal / Atto</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CAR WHEELS -->
+    <div class="tv-tf-panel" id="tf-panel-car-wheels" style="display:none;">
+      <div class="tv-tf-sub-panel-wrap">
+        <div class="tv-tf-sub-intro">
+          <h3>Find Premium Alloy Wheels & Rims</h3>
+          <p>Search custom and OEM fitment wheels for your vehicle across Dubai and Abu Dhabi.</p>
+        </div>
+        <div class="tv-tf-form-row">
+          <div class="tv-tf-form-field">
+            <label for="tfWheelSize">Wheel Diameter</label>
+            <select id="tfWheelSize" class="tv-tf-select">
+              <option value="">Select Diameter</option>
+              <option value="16">16 inch</option>
+              <option value="17">17 inch</option>
+              <option value="18">18 inch</option>
+              <option value="19">19 inch</option>
+              <option value="20">20 inch</option>
+              <option value="21">21 inch</option>
+              <option value="22">22 inch</option>
+            </select>
+          </div>
+          <div class="tv-tf-form-field">
+            <label for="tfWheelPcd">Bolt Pattern (PCD)</label>
+            <select id="tfWheelPcd" class="tv-tf-select">
+              <option value="">Select Bolt Pattern</option>
+              <option value="5x114.3">5x114.3 (Japanese / Korean)</option>
+              <option value="5x120">5x120 (BMW / Land Rover)</option>
+              <option value="5x112">5x112 (Mercedes / Audi / VW)</option>
+              <option value="6x139.7">6x139.7 (Toyota / Nissan 4x4)</option>
+              <option value="5x108">5x108 (Ford / Volvo)</option>
+            </select>
+          </div>
+          <div class="tv-tf-form-action">
+            <a href="/tyres?category=wheels" class="tv-tf-btn-submit">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Search Wheels</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: MOTORBIKE TYRES -->
+    <div class="tv-tf-panel" id="tf-panel-motorbike-tyres" style="display:none;">
+      <div class="tv-tf-sub-panel-wrap">
+        <div class="tv-tf-sub-intro">
+          <h3>Motorcycle & Scooter Tyres</h3>
+          <p>Sport, Cruiser, Touring & Off-road motorcycle tyres delivered and fitted in UAE.</p>
+        </div>
+        <div class="tv-tf-form-row">
+          <div class="tv-tf-form-field">
+            <label for="tfBikeFront">Front Tyre Size</label>
+            <select id="tfBikeFront" class="tv-tf-select">
+              <option value="">Select Front Size</option>
+              <option value="120/70 ZR17">120/70 ZR17</option>
+              <option value="110/70 R17">110/70 R17</option>
+              <option value="120/60 ZR17">120/60 ZR17</option>
+              <option value="100/90-19">100/90-19</option>
+            </select>
+          </div>
+          <div class="tv-tf-form-field">
+            <label for="tfBikeRear">Rear Tyre Size</label>
+            <select id="tfBikeRear" class="tv-tf-select">
+              <option value="">Select Rear Size</option>
+              <option value="180/55 ZR17">180/55 ZR17</option>
+              <option value="190/55 ZR17">190/55 ZR17</option>
+              <option value="160/60 ZR17">160/60 ZR17</option>
+              <option value="200/55 ZR17">200/55 ZR17</option>
+            </select>
+          </div>
+          <div class="tv-tf-form-action">
+            <a href="/tyres?category=motorcycle" class="tv-tf-btn-submit">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Search Bike Tyres</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

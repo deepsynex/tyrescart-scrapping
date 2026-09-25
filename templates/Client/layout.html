@@ -11,10 +11,10 @@
 <link rel="canonical" href="{% block canonical_url %}https://www.tyresvision.com/{% endblock %}">
 <link rel="alternate" hreflang="en-ae" href="https://www.tyresvision.com/">
 <link rel="alternate" hreflang="x-default" href="https://www.tyresvision.com/">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%234B237B'/%3E%3Ccircle cx='20' cy='20' r='11' fill='none' stroke='%239f7dde' stroke-width='4.5'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23f7f4fd'/%3E%3C/svg%3E">
-<link rel="icon" type="image/webp" href="/static/assets/images/favicon-color.webp">
-<link rel="shortcut icon" href="/static/assets/images/favicon-color.webp" type="image/webp">
-<link rel="apple-touch-icon" href="/static/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/logo/favicon.ico') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/logo/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/logo/favicon-16x16.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/images/logo/apple-touch-icon-180x180.png') }}">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#4B237B">
 
@@ -57,7 +57,7 @@
       "logo": {
         "@type": "ImageObject",
         "@id": "https://www.tyresvision.com/#logo",
-        "url": "https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png",
+        "url": "https://www.tyresvision.com/static/assets/images/logo/tyresvision-primary-color.png",
         "caption": "TyresVision"
       },
       "description": "TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices, delivered free to a fitting centre near you, or fitted at your home or office by our mobile vans.",
@@ -560,7 +560,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {% endif %}
 
 </head>
-<body x-data="{ mobileNavOpen: false, noticeModalOpen: false, mobileServicesOpen: false }" :class="{ 'overflow-hidden': mobileNavOpen }" @keydown.escape.window="mobileNavOpen = false; noticeModalOpen = false;">
+<body x-data="{ mobileNavOpen: false, noticeModalOpen: false, mobileServicesOpen: false, mobileCoverageOpen: false }" :class="{ 'overflow-hidden': mobileNavOpen }" @keydown.escape.window="mobileNavOpen = false; noticeModalOpen = false;">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNN5FHT2"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -578,13 +578,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <header>
   <nav class="nav" aria-label="Main">
     <a class="logo" href="/" aria-label="TyresVision home">
-      <svg class="swoosh" width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-        <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      </svg>
-      <span class="word"><span class="t1">TYRES</span><span class="t2">VISI<span class="oring"></span>N</span></span>
+      <picture class="tv-brand-logo-pic">
+        <source media="(max-width: 380px)" srcset="{{ url_for('static', filename='assets/images/logo/tyresvision-icon-symbol.png') }}">
+        <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-horizontal-clean.png') }}"
+             alt="TyresVision UAE"
+             class="tv-header-logo-img"
+             width="155" height="44"
+             fetchpriority="high">
+      </picture>
     </a>
     <div class="nav-links">
       <!-- Services Dropdown (Matches Reference Image) -->
@@ -602,6 +603,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </svg>
           <span class="active-indicator" aria-hidden="true"></span>
         </button>
+
         <div class="nav-dropdown-menu" 
              x-show="open" 
              x-transition:enter="transition ease-out duration-200" 
@@ -616,43 +618,90 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <!-- 1. Tyre Fitting -->
           <a href="/mobile-tyre-fitting" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              <span class="dropdown-item-title">{{ _('Mobile Tyre Fitting') }}</span>
+              <span class="dropdown-icon-box" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <line x1="12" y1="2" x2="12" y2="8"/>
+                  <line x1="12" y1="16" x2="12" y2="22"/>
+                  <line x1="2" y1="12" x2="8" y2="12"/>
+                  <line x1="16" y1="12" x2="22" y2="12"/>
+                </svg>
+              </span>
+              <span class="dropdown-item-title">{{ _('Tyre Fitting') }}</span>
             </div>
+            <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
           </a>
 
-          <!-- 2. ev-tyres -->
-          <a href="/ev-tyres" class="dropdown-item" role="menuitem" @click="open = false">
+          <!-- 2. Wheel Alignment -->
+          <a href="/#services" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              
-              <span class="dropdown-item-title">{{ _('EV & Hybrid Tyres') }}</span>
+              <span class="dropdown-icon-box" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+              </span>
+              <span class="dropdown-item-title">{{ _('Wheel Alignment') }}</span>
             </div>
-          </a>
-          <a href="/off-road-4x4-tyres" class="dropdown-item" role="menuitem" @click="open = false">
-            <div class="dropdown-item-left">
-              
-              <span class="dropdown-item-title">{{ _('Off-Road & 4x4 Tyres') }}</span>
-            </div>
-          </a>
-          <a href="/tyre-brands" class="dropdown-item" role="menuitem" @click="open = false">
-            <div class="dropdown-item-left">
-              
-              <span class="dropdown-item-title">{{ _('Tyre Brands') }}</span>
-            </div>
-          </a>
-          <a href="/tyre-sizes" class="dropdown-item" role="menuitem" @click="open = false">
-            <div class="dropdown-item-left">
-              
-              <span class="dropdown-item-title">{{ _('Tyre Sizes & Prices') }}</span>
-            </div>
-          </a>
-          <a href="/tyres-by-car" class="dropdown-item" role="menuitem" @click="open = false">
-            <div class="dropdown-item-left">
-              
-              <span class="dropdown-item-title">{{ _('Tyres by Car Model') }}</span>
-            </div>
+            <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
           </a>
 
-        
+          <!-- 3. Wheel Balancing -->
+          <a href="/#services" class="dropdown-item" role="menuitem" @click="open = false">
+            <div class="dropdown-item-left">
+              <span class="dropdown-icon-box" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="7" r="5"/>
+                  <circle cx="12" cy="7" r="2"/>
+                  <rect x="5" y="14" width="14" height="4" rx="2"/>
+                  <rect x="5" y="18" width="14" height="4" rx="2"/>
+                </svg>
+              </span>
+              <span class="dropdown-item-title">{{ _('Wheel Balancing') }}</span>
+            </div>
+            <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+
+          <!-- 4. Tyre Pressure Check -->
+          <a href="/#services" class="dropdown-item" role="menuitem" @click="open = false">
+            <div class="dropdown-item-left">
+              <span class="dropdown-icon-box" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 10.5C5 7 8.1 4 12 4s7 3 7 6.5c0 4.2-2.3 7-2.3 7H7.3S5 14.7 5 10.5z"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <circle cx="12" cy="15" r="0.75" fill="currentColor"/>
+                </svg>
+              </span>
+              <span class="dropdown-item-title">{{ _('Tyre Pressure Check') }}</span>
+            </div>
+            <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+
+          <!-- 5. Mobile Tyre Service -->
+          <a href="/mobile-tyre-fitting" class="dropdown-item" role="menuitem" @click="open = false">
+            <div class="dropdown-item-left">
+              <span class="dropdown-icon-box" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v7h2"/>
+                  <circle cx="7" cy="17" r="2"/>
+                  <path d="M9 17h6"/>
+                  <circle cx="17" cy="17" r="2"/>
+                </svg>
+              </span>
+              <span class="dropdown-item-title">{{ _('Mobile Tyre Service') }}</span>
+            </div>
+            <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
         </div>
       </div>
       <a href="/#why" data-nav-target="#why">{{ _('Why us') }}</a>
@@ -670,6 +719,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.4 21 3 13.6 3 4.5 3 3.95 3.45 3.5 4 3.5h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
         <span class="btn-call-label">{{ _('Call now') }}</span>
       </a>
+
+      <!-- Cart Overview Button -->
+      <button type="button" class="btn-cart-nav" onclick="openOverviewDrawer('cart')" aria-label="View Shopping Cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="header-cart-badge" class="header-cart-badge" style="display:none;">0</span>
+      </button>
 
       <!-- Mobile Menu Hamburger Button (Alpine-controlled) -->
       <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" :aria-expanded="mobileNavOpen.toString()" @click="mobileNavOpen = true" aria-controls="mobileNavDrawer">
@@ -737,13 +796,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="f-grid">
       <div>
         <a class="logo lg on-dark" href="#top" aria-label="TyresVision home">
-          <svg class="swoosh" width="38" height="38" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-            <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-            <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-            <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-          </svg>
-          <span class="word"><span class="t1">TYRES</span><span class="t2">VISI<span class="oring"></span>N</span></span>
+          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-horizontal-white.png') }}"
+               alt="TyresVision"
+               class="tv-footer-logo-img"
+               width="190" height="54"
+               loading="lazy">
         </a>
         <p style="max-width:34ch;margin-top:16px">{{ _("Buy tyres online in Dubai & Abu Dhabi. 60+ brands, 7,000+ tyres, free fitting at centres, mobile vans too.") }}</p>
       </div>
@@ -818,13 +875,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <aside class="mobile-nav-drawer" id="mobileNavDrawer" :class="{ 'open': mobileNavOpen }" aria-label="Mobile Navigation" aria-hidden="true">
   <div class="mobile-nav-head">
     <a class="logo" href="/" aria-label="TyresVision home">
-      <svg class="swoosh" width="28" height="28" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-        <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
-      </svg>
-      <span class="word"><span class="t1">TYRES</span><span class="t2">VISI<span class="oring"></span>N</span></span>
+      <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-horizontal-clean.png') }}"
+           alt="TyresVision"
+           class="tv-drawer-logo-img"
+           width="140" height="40">
     </a>
     <button type="button" class="mobile-nav-close" id="mobileNavClose" @click="mobileNavOpen = false" aria-label="Close navigation menu">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -833,40 +887,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="mobile-nav-body">
     <nav class="mobile-nav-links">
-      <!-- 1. Mobile Accordion: Services & Tyres (First Option) -->
-      <div class="mobile-nav-accordion">
-        <button type="button" 
-                class="mobile-nav-accordion-btn" 
-                :class="{ 'is-open': mobileServicesOpen }" 
-                @click="mobileServicesOpen = !mobileServicesOpen">
-          <div class="flex items-center gap-3">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            <span>{{ _('Services & Tyres') }}</span>
-          </div>
-          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="mobile-nav-sublinks" x-show="mobileServicesOpen" x-collapse x-cloak>
-          <a href="/mobile-tyre-fitting" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('Mobile Tyre Fitting') }}</span>
-          </a>
-          <a href="/ev-tyres" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('EV & Hybrid Tyres') }}</span>
-          </a>
-          <a href="/off-road-4x4-tyres" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('Off-Road & 4x4 Tyres') }}</span>
-          </a>
-          <a href="/tyre-brands" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('Tyre Brands') }}</span>
-          </a>
-          <a href="/tyre-sizes" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('Tyre Sizes & Prices') }}</span>
-          </a>
-          <a href="/tyres-by-car" @click="mobileNavOpen = false" class="mobile-nav-sublink">
-            <span>{{ _('Tyres by Car Model') }}</span>
-          </a>
-        </div>
-      </div>
-
       <a href="/" @click="mobileNavOpen = false" class="mobile-nav-link" data-nav-target="/">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>{{ _('Home') }}</span>
@@ -879,6 +899,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span>{{ _('Prices') }}</span>
       </a>
+      <!-- Mobile Accordion: Services -->
+      <div class="mobile-nav-accordion">
+        <button type="button" 
+                class="mobile-nav-accordion-btn" 
+                :class="{ 'is-open': mobileServicesOpen }" 
+                @click="mobileServicesOpen = !mobileServicesOpen">
+          <div class="flex items-center gap-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span>{{ _('Services') }}</span>
+          </div>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="mobile-nav-sublinks" x-show="mobileServicesOpen" x-collapse x-cloak>
+          <a href="/mobile-tyre-fitting" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Fitting') }}</span>
+          </a>
+          <a href="/#services" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Wheel Alignment') }}</span>
+          </a>
+          <a href="/#services" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Wheel Balancing') }}</span>
+          </a>
+          <a href="/#services" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Pressure Check') }}</span>
+          </a>
+          <a href="/mobile-tyre-fitting" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Mobile Tyre Service') }}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobile Accordion: Coverage -->
+      <div class="mobile-nav-accordion">
+        <button type="button" 
+                class="mobile-nav-accordion-btn" 
+                :class="{ 'is-open': mobileCoverageOpen }" 
+                @click="mobileCoverageOpen = !mobileCoverageOpen">
+          <div class="flex items-center gap-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>{{ _('Coverage') }}</span>
+          </div>
+          <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="mobile-nav-sublinks" x-show="mobileCoverageOpen" x-collapse x-cloak>
+          <a href="/tyre-shop-dubai" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Dubai') }}</span>
+          </a>
+          <a href="/tyre-shop-abu-dhabi" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Abu Dhabi') }}</span>
+          </a>
+          <a href="/tyre-shop-sharjah" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Sharjah') }}</span>
+          </a>
+          <a href="/tyre-shop-ajman" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Ajman') }}</span>
+          </a>
+          <a href="/tyre-shop-ras-al-khaimah" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Ras Al Khaimah') }}</span>
+          </a>
+          <a href="/tyre-shop-fujairah" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Fujairah') }}</span>
+          </a>
+          <a href="/tyre-shop-umm-al-quwain" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+            <span>{{ _('Tyre Shop Umm Al Quwain') }}</span>
+          </a>
+        </div>
+      </div>
       <a href="/#how" @click="mobileNavOpen = false" class="mobile-nav-link" data-nav-target="#how">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
         <span>{{ _('How it Works') }}</span>
@@ -911,6 +998,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 </aside>
+
+<!-- Global Overview Drawer (Cart & Checkout Module) -->
+{% include 'Client/components/overview_drawer.html' %}
 
 <script src="{{ url_for('static', filename='js/client.js') }}?v={{ range(10000, 99999) | random }}"></script>
 
