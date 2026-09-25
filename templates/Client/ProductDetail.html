@@ -588,19 +588,19 @@
 }
 
 .tv-ref-curr {
-    font-size: 29px;
+    font-size: 24px;
     font-weight: 900;
     color: #0f172a;
     top: 1px;
     position: relative;
 }
 
-.tv-ref-curr-sub {
+<!-- .tv-ref-curr-sub {
     font-size: 14px;
     font-weight: 700;
     position: relative;
     top: 1px;
-}
+} -->
 
 .tv-ref-price-val {
   font-size: 30px;
@@ -2811,7 +2811,7 @@
                   <span class="tv-card-per-tyre">/tyre</span>
                 </div>
                 <div class="tv-card-set4-line">
-                  Set of 4 &bull; <span class="currency-dirham tv-ref-curr">&#xe900;</span> {{ "%.0f"|format(rp.set_of_4_price or (rp.price * 4)) if ((rp.set_of_4_price or (rp.price * 4)) % 1 == 0) else "%.2f"|format(rp.set_of_4_price or (rp.price * 4)) }}
+                  Set of 4 &bull; <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(rp.set_of_4_price or (rp.price * 4)) if ((rp.set_of_4_price or (rp.price * 4)) % 1 == 0) else "%.2f"|format(rp.set_of_4_price or (rp.price * 4)) }}
                 </div>
               </div>
 

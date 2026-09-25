@@ -1,6 +1,7 @@
 <!-- ==========================================================================
-     TYRESVISION OVERVIEW DRAWER / CART & CHECKOUT MODULE
-     Complete In-Drawer Purchase Flow: Cart Review -> Installer Network -> Contact & Vehicle -> Order Confirmed
+     TYRESVISION OVERVIEW DRAWER / CART & CHECKOUT MODULE (PURPLE THEME)
+     Scoped under unique parent class: .tv-cart-drawer
+     All styles defined in static/css/client.css (zero inline styles)
      ========================================================================== -->
 
 <!-- ── Floating Side Trigger Tab (Right edge) ── -->
@@ -9,15 +10,15 @@
   id="tv-overview-side-tab"
   onclick="toggleOverviewDrawer()"
   aria-label="Open Cart Overview"
-  class="btn-slide-black tv-drawer-side-tab"
+  class="tv-drawer-side-tab"
 >
   <div class="tv-side-tab-icon">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-400">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="tv-side-tab-star">
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
     </svg>
   </div>
   <span class="tv-side-tab-text">Overview</span>
-  <span id="tv-overview-badge" class="tv-side-tab-badge" style="display:none;">0</span>
+  <span id="tv-overview-badge" class="tv-side-tab-badge">0</span>
 </button>
 
 <!-- ── Backdrop Overlay ── -->
@@ -28,10 +29,10 @@
   aria-hidden="true"
 ></div>
 
-<!-- ── Overview Drawer Panel ── -->
+<!-- ── Overview Drawer Panel (Unique Parent: .tv-cart-drawer) ── -->
 <aside
   id="tv-overview-panel"
-  class="tv-overview-drawer-panel"
+  class="tv-overview-drawer-panel tv-cart-drawer"
   role="dialog"
   aria-modal="true"
   aria-label="Tyres & Fitment Overview"
@@ -64,10 +65,10 @@
   </div>
 
   <!-- 2. SUCCESS SCREEN (Visible when order is confirmed) -->
-  <div id="tv-drawer-success-screen" class="tv-drawer-success-screen" style="display:none;">
+  <div id="tv-drawer-success-screen" class="tv-drawer-success-screen">
     <div class="tv-success-content">
       <div class="tv-success-icon-wrap">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tv-success-check-icon">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
@@ -79,7 +80,7 @@
       <div class="tv-success-receipt">
         <div class="tv-receipt-row">
           <span class="tv-receipt-label">Order Number:</span>
-          <span id="tv-success-ordernumber" class="tv-receipt-val font-black text-base text-gray-950">TV-100000</span>
+          <span id="tv-success-ordernumber" class="tv-receipt-val tv-receipt-ordernumber">TV-100000</span>
         </div>
         <div class="tv-receipt-row">
           <span class="tv-receipt-label">Customer:</span>
@@ -101,7 +102,7 @@
 
       <div class="tv-warranty-banner">
         <div class="tv-warranty-header">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-emerald-600">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="tv-warranty-shield-icon">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
           <span>Free Manufacturer Warranty Included</span>
@@ -114,7 +115,7 @@
       <button
         type="button"
         onclick="resetDrawerAndContinue()"
-        class="btn-slide-black tv-btn-continue-shop"
+        class="tv-btn-continue-shop"
       >
         Continue Shopping
       </button>
@@ -133,7 +134,7 @@
 
       <div class="tv-stepper-wrap">
         <div class="tv-stepper-track-bg"></div>
-        <div id="tv-stepper-fill-bar" class="tv-stepper-track-fill" style="width: 25%;"></div>
+        <div id="tv-stepper-fill-bar" class="tv-stepper-track-fill"></div>
 
         <div class="tv-stepper-steps">
           <!-- Step 1 -->
@@ -184,7 +185,7 @@
           <p id="tv-cart-summary-text" class="tv-accordion-summary">0 tyres selected</p>
         </div>
         <div class="tv-accordion-meta">
-          <div id="tv-cart-total-badge" class="tv-header-price-badge" style="display:none;">
+          <div id="tv-cart-total-badge" class="tv-header-price-badge">
             <span class="tv-price-lbl">Order Total</span>
             <span id="tv-header-order-total" class="tv-price-val">AED 0.00</span>
           </div>
@@ -198,9 +199,9 @@
       <div id="tv-cart-section-body" class="tv-accordion-body">
         
         <!-- Cart Empty State -->
-        <div id="tv-cart-empty-view" class="tv-empty-cart-box" style="display:none;">
+        <div id="tv-cart-empty-view" class="tv-empty-cart-box">
           <div class="tv-empty-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-[#ed1c24]">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="tv-empty-cart-svg">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -211,7 +212,7 @@
           <button
             type="button"
             onclick="closeOverviewDrawer(); window.location.href='/tyres';"
-            class="btn-slide-red tv-btn-browse"
+            class="tv-btn-browse"
           >
             <span>Browse Tyres</span>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -239,14 +240,14 @@
             <!-- Coupon Accordion -->
             <div class="tv-sub-accordion">
               <button type="button" class="tv-sub-acc-btn" onclick="toggleSubAccordion('coupon')">
-                <span class="flex items-center gap-1.5">
+                <span class="tv-sub-acc-label-wrap">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                   <span>Apply Coupon Code</span>
                 </span>
                 <svg id="tv-chevron-coupon" class="tv-sub-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-              <div id="tv-sub-acc-coupon-body" class="tv-sub-acc-body" style="display:none;">
-                <div id="tv-coupon-applied-box" class="tv-coupon-active-box" style="display:none;">
+              <div id="tv-sub-acc-coupon-body" class="tv-sub-acc-body">
+                <div id="tv-coupon-applied-box" class="tv-coupon-active-box">
                   <span id="tv-coupon-active-tag" class="tv-coupon-tag">CODE</span>
                   <button type="button" onclick="removeDrawerCoupon()" class="tv-btn-coupon-remove">Remove</button>
                 </div>
@@ -257,24 +258,24 @@
                     placeholder="Enter coupon code (e.g. TYRES10)"
                     class="tv-input-coupon"
                   />
-                  <button type="button" onclick="applyDrawerCoupon()" class="btn-slide-black tv-btn-apply-coupon">
+                  <button type="button" onclick="applyDrawerCoupon()" class="tv-btn-apply-coupon">
                     Apply
                   </button>
                 </div>
-                <p id="tv-coupon-status-msg" class="tv-coupon-feedback" style="display:none;"></p>
+                <p id="tv-coupon-status-msg" class="tv-coupon-feedback"></p>
               </div>
             </div>
 
             <!-- Order Comments Accordion -->
-            <div class="tv-sub-accordion border-t border-gray-100">
+            <div class="tv-sub-accordion tv-sub-acc-border">
               <button type="button" class="tv-sub-acc-btn" onclick="toggleSubAccordion('comments')">
-                <span class="flex items-center gap-1.5">
+                <span class="tv-sub-acc-label-wrap">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                   <span>Do you have any comments regarding the order?</span>
                 </span>
                 <svg id="tv-chevron-comments" class="tv-sub-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-              <div id="tv-sub-acc-comments-body" class="tv-sub-acc-body" style="display:none;">
+              <div id="tv-sub-acc-comments-body" class="tv-sub-acc-body">
                 <textarea
                   id="tv-drawer-order-comments"
                   rows="2"
@@ -291,18 +292,14 @@
               <span class="tv-summary-row-lbl">Subtotal</span>
               <span id="tv-calc-subtotal" class="tv-summary-row-val">AED 0.00</span>
             </div>
-            <div class="tv-summary-row text-emerald-600 font-semibold">
+            <div class="tv-summary-row tv-summary-row-free">
               <span>Professional Fitting</span>
               <span class="font-black">FREE</span>
             </div>
-            <div id="tv-calc-discount-row" class="tv-summary-row text-emerald-600 font-semibold" style="display:none;">
+            <div id="tv-calc-discount-row" class="tv-summary-row tv-summary-row-discount">
               <span>Discount</span>
               <span id="tv-calc-discount">-AED 0.00</span>
             </div>
-            <!-- <div class="tv-summary-row text-gray-500">
-              <span>VAT (5%)</span>
-              <span id="tv-calc-vat" class="tv-summary-row-val">AED 0.00</span>
-            </div> -->
             <div class="tv-summary-total-row">
               <span>ORDER TOTAL</span>
               <span id="tv-calc-grand-total" class="tv-summary-total-val">AED 0.00</span>
@@ -314,7 +311,7 @@
             type="button"
             id="tv-btn-continue-to-installer"
             onclick="setOverviewActiveSection('fitting')"
-            class="btn-slide-black tv-btn-step-continue"
+            class="tv-btn-step-continue"
           >
             <span>CONTINUE TO INSTALLER NETWORK</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -343,12 +340,11 @@
       </button>
 
       <!-- Fitting Section Content -->
-      <div id="tv-fitting-section-body" class="tv-accordion-body" style="display:none;">
+      <div id="tv-fitting-section-body" class="tv-accordion-body">
         
         <!-- City Pills Filter -->
         <div class="tv-city-pills-bar">
           <div id="tv-city-pills" class="tv-city-pills-scroll">
-            <!-- Dynamically populated or rendered -->
             <button type="button" class="tv-city-pill is-active" onclick="filterDrawerCity('All', this)">All</button>
             <button type="button" class="tv-city-pill" onclick="filterDrawerCity('Dubai', this)">Dubai</button>
             <button type="button" class="tv-city-pill" onclick="filterDrawerCity('Abu Dhabi', this)">Abu Dhabi</button>
@@ -434,29 +430,29 @@
         </div>
 
         <!-- Mode 2 Content: Mobile Van Service -->
-        <div id="tv-mode-content-van" class="tv-mode-content-block" style="display:none;">
+        <div id="tv-mode-content-van" class="tv-mode-content-block">
           <div id="tv-mobile-vans-list" class="tv-branches-list">
             <!-- Dynamically populated mobile vans -->
           </div>
         </div>
 
         <!-- Mode 3 Content: Free Shipping -->
-        <div id="tv-mode-content-shipping" class="tv-mode-content-block" style="display:none;">
+        <div id="tv-mode-content-shipping" class="tv-mode-content-block">
           <div class="tv-free-shipping-card">
-            <div class="flex items-center gap-2.5 mb-2">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-600">
+            <div class="tv-free-shipping-head">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tv-shipping-icon">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
-              <h4 class="font-extrabold text-sm text-gray-950">Free Standard Tyre Delivery</h4>
+              <h4 class="tv-free-shipping-title">Free Standard Tyre Delivery</h4>
             </div>
-            <p class="text-xs text-gray-600 leading-relaxed mb-4">
+            <p class="tv-free-shipping-desc">
               Your tyres will be delivered directly to your doorstep anywhere across the UAE within 24–48 hours. Please note that this option does not include professional tyre mounting, balancing, or valve replacement.
             </p>
             <button
               type="button"
               onclick="handleConfirmFreeShipping()"
-              class="btn-slide-black w-full py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+              class="tv-btn-confirm-shipping"
             >
               <span>CONFIRM &amp; PROCEED TO CHECKOUT</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -487,10 +483,10 @@
       </button>
 
       <!-- Contact Section Content -->
-      <div id="tv-contact-section-body" class="tv-accordion-body" style="display:none;">
+      <div id="tv-contact-section-body" class="tv-accordion-body">
         
         <!-- Error Banner -->
-        <div id="tv-checkout-error-banner" class="tv-checkout-error" style="display:none;">
+        <div id="tv-checkout-error-banner" class="tv-checkout-error">
           <span id="tv-checkout-error-msg">Please fill in all required fields.</span>
           <button type="button" onclick="this.parentElement.style.display='none'" class="tv-btn-error-close">✕</button>
         </div>
@@ -505,42 +501,42 @@
           <div class="tv-form-card-body">
             <div class="tv-grid-2col">
               <div>
-                <label class="tv-form-label">First Name <span class="text-red-500">*</span></label>
+                <label class="tv-form-label">First Name <span class="tv-required-star">*</span></label>
                 <input type="text" id="tv-input-fname" placeholder="First Name" class="tv-form-input" required />
               </div>
               <div>
-                <label class="tv-form-label">Last Name <span class="text-red-500">*</span></label>
+                <label class="tv-form-label">Last Name <span class="tv-required-star">*</span></label>
                 <input type="text" id="tv-input-lname" placeholder="Last Name" class="tv-form-input" required />
               </div>
             </div>
 
-            <div class="tv-grid-2col mt-3">
+            <div class="tv-grid-2col tv-mt-3">
               <div>
-                <label class="tv-form-label">Mobile Number <span class="text-red-500">*</span></label>
+                <label class="tv-form-label">Mobile Number <span class="tv-required-star">*</span></label>
                 <div class="tv-phone-input-wrap">
                   <span class="tv-phone-prefix">+971</span>
                   <input type="tel" id="tv-input-phone" placeholder="50 123 4567" class="tv-phone-input" required />
                 </div>
               </div>
               <div>
-                <label class="tv-form-label">Email Address <span class="text-red-500">*</span></label>
+                <label class="tv-form-label">Email Address <span class="tv-required-star">*</span></label>
                 <input type="email" id="tv-input-email" placeholder="name@example.com" class="tv-form-input" required />
               </div>
             </div>
 
-            <div class="mt-3">
-              <label class="tv-form-label">Street Address / Villa / Building <span class="text-red-500">*</span></label>
+            <div class="tv-mt-3">
+              <label class="tv-form-label">Street Address / Villa / Building <span class="tv-required-star">*</span></label>
               <input type="text" id="tv-input-street" placeholder="e.g. Villa 14, Al Quoz 1" class="tv-form-input" required />
             </div>
 
-            <div class="tv-grid-2col mt-3">
+            <div class="tv-grid-2col tv-mt-3">
               <div>
-                <label class="tv-form-label">City / Area <span class="text-red-500">*</span></label>
+                <label class="tv-form-label">City / Area <span class="tv-required-star">*</span></label>
                 <input type="text" id="tv-input-city" placeholder="e.g. Dubai" class="tv-form-input" required />
               </div>
               <div>
-                <label class="tv-form-label">Emirate <span class="text-red-500">*</span></label>
-                <div class="relative">
+                <label class="tv-form-label">Emirate <span class="tv-required-star">*</span></label>
+                <div class="tv-select-wrap">
                   <select id="tv-input-emirate" class="tv-form-select">
                     <option value="Dubai" selected>Dubai</option>
                     <option value="Abu Dhabi">Abu Dhabi</option>
@@ -558,7 +554,7 @@
         </div>
 
         <!-- 2. Vehicle Details Form -->
-        <div class="tv-form-card mt-3">
+        <div class="tv-form-card tv-mt-3">
           <div class="tv-form-card-head">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <h4>VEHICLE DETAILS (FOR FITMENT ACCURACY)</h4>
@@ -568,7 +564,7 @@
             <div class="tv-grid-3col">
               <div>
                 <label class="tv-form-label">Vehicle Make</label>
-                <div class="relative">
+                <div class="tv-select-wrap">
                   <select id="tv-vehicle-make" onchange="handleDrawerMakeChange(this.value)" class="tv-form-select">
                     <option value="">Select Make</option>
                   </select>
@@ -578,7 +574,7 @@
 
               <div>
                 <label class="tv-form-label">Model</label>
-                <div class="relative">
+                <div class="tv-select-wrap">
                   <select id="tv-vehicle-model" onchange="handleDrawerModelChange(this.value)" class="tv-form-select" disabled>
                     <option value="">Select Model</option>
                   </select>
@@ -588,7 +584,7 @@
 
               <div>
                 <label class="tv-form-label">Year</label>
-                <div class="relative">
+                <div class="tv-select-wrap">
                   <select id="tv-vehicle-year" class="tv-form-select">
                     <option value="">Select Year</option>
                   </select>
@@ -597,7 +593,7 @@
               </div>
             </div>
 
-            <div class="mt-3">
+            <div class="tv-mt-3">
               <label class="tv-form-label">Plate Number (Optional)</label>
               <input type="text" id="tv-vehicle-plate" placeholder="e.g. Dubai A 12345" class="tv-form-input" />
             </div>
@@ -605,9 +601,9 @@
         </div>
 
         <!-- 3. Selected Fitment & Shipping Summary Box -->
-        <div class="tv-shipping-summary-card mt-3">
+        <div class="tv-shipping-summary-card tv-mt-3">
           <div class="tv-shipping-summary-head">
-            <div class="flex items-center gap-1.5">
+            <div class="tv-shipping-summary-title-wrap">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon></svg>
               <span>SHIPPING &amp; FITMENT METHOD</span>
             </div>
@@ -615,19 +611,19 @@
               Change
             </button>
           </div>
-          <div class="p-3.5">
+          <div class="tv-shipping-summary-body">
             <div class="tv-selected-installer-badge">
               <span class="tv-badge-tag">SELECTED INSTALLER</span>
               <div id="tv-shipping-summary-text" class="tv-badge-details">
-                <span><strong class="text-gray-900">Mode:</strong> Install at Outlet</span> • 
-                <span><strong class="text-gray-900">Installer:</strong> TyresVision Al Quoz Hub</span>
+                <span><strong class="tv-badge-strong">Mode:</strong> Install at Outlet</span> • 
+                <span><strong class="tv-badge-strong">Installer:</strong> TyresVision Al Quoz Hub</span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 4. Payment Methods -->
-        <div class="tv-payment-methods-card mt-3">
+        <div class="tv-payment-methods-card tv-mt-3">
           <div class="tv-payment-head">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
             <h4>PAYMENT METHOD</h4>
@@ -640,28 +636,28 @@
               <div class="tv-radio-circle is-checked">
                 <div class="tv-radio-dot"></div>
               </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-xs sm:text-sm text-gray-950">Pay via Payment Link</span>
+              <div class="tv-payment-info">
+                <div class="tv-payment-title-row">
+                  <span class="tv-payment-title">Pay via Payment Link</span>
                   <span class="tv-secure-tag">Instant Link</span>
                 </div>
-                <p class="text-[11px] text-gray-500 mt-0.5">
+                <p class="tv-payment-desc">
                   Receive a secure payment link via SMS &amp; WhatsApp for Apple Pay, Visa, Mastercard.
                 </p>
               </div>
             </label>
 
             <!-- Payment Option 2: Cash / Card on Delivery -->
-            <label class="tv-payment-option mt-2" id="tv-pm-wrap-cod">
+            <label class="tv-payment-option tv-mt-2" id="tv-pm-wrap-cod">
               <input type="radio" name="tv_payment_method" value="cashondelivery" onchange="handlePaymentMethodChange(this.value)" class="sr-only" />
               <div class="tv-radio-circle">
                 <div class="tv-radio-dot"></div>
               </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="font-bold text-xs sm:text-sm text-gray-800">Cash / Card on Completion</span>
+              <div class="tv-payment-info">
+                <div class="tv-payment-title-row">
+                  <span class="tv-payment-title">Cash / Card on Completion</span>
                 </div>
-                <p class="text-[11px] text-gray-500 mt-0.5">
+                <p class="tv-payment-desc">
                   Pay upon tyre fitment at the centre or to the mobile technician with cash or card.
                 </p>
               </div>
@@ -674,11 +670,11 @@
           type="button"
           id="tv-btn-place-order"
           onclick="handleDrawerPlaceOrder()"
-          class="btn-slide-black tv-btn-place-order mt-4"
+          class="tv-btn-place-order tv-mt-4"
         >
           <span id="tv-place-order-text">PLACE ORDER • AED 0.00</span>
           <svg id="tv-place-order-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          <div id="tv-place-order-spinner" class="tv-spinner" style="display:none;"></div>
+          <div id="tv-place-order-spinner" class="tv-spinner"></div>
         </button>
 
       </div>

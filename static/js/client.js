@@ -1033,7 +1033,6 @@ function renderSkeletons(count) {
         <!-- 1. Top Header Bar: Brand Logo Left & Top Rated Badge Right -->
         <div class="tv-card-header-bar">
           <div class="tv-skeleton-box" style="width: 82px; height: 26px; border-radius: 6px;"></div>
-          <div class="tv-skeleton-box" style="width: 78px; height: 22px; border-radius: 20px;"></div>
         </div>
 
         <!-- 2. Centered Tyre Image Area -->
@@ -1055,8 +1054,8 @@ function renderSkeletons(count) {
             <div class="tv-skeleton-box" style="width: 32px; height: 12px; border-radius: 3px;"></div>
           </div>
 
-          <span class="tv-card-warranty-badge">
-            <div class="tv-skeleton-box" style="width: 108px; height: 20px; border-radius: 20px 0 0 20px;"></div>
+          <span class="tv-card-warranty-badge" style="background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important;">
+            <div class="tv-skeleton-box" style="width: 104px; height: 22px; border-radius: 20px 0 0 20px;"></div>
           </span>
         </div>
 
@@ -1176,13 +1175,13 @@ function createProductCardHTML(p) {
     brandLogoHTML = `<span class="tv-card-brand-fallback">${brandName}</span>`;
   }
 
-  const badgeHTML = `
-              <span class="tv-card-badge tv-badge-toprated">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-                <span>Top Rated</span>
-              </span>`;
+  // const badgeHTML = `
+  //             <span class="tv-card-badge tv-badge-toprated">
+  //               <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1">
+  //                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+  //               </svg>
+  //               <span>Top Rated</span>
+  //             </span>`;
 
   // Pattern / Model Name (Brand name removed)
   let rawPattern = (p.pattern_name || p.display_name || '').trim();
@@ -1271,9 +1270,7 @@ function createProductCardHTML(p) {
               ${brandLogoHTML}
             </a>
 
-            <div class="tv-card-badge-wrap">
-              ${badgeHTML}
-            </div>
+            
           </div>
 
           <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
@@ -1389,7 +1386,7 @@ function createProductCardHTML(p) {
                   <span class="tv-card-per-tyre">/tyre</span>
                 </div>
                 <div class="tv-card-set4-line">
-                  Set of 4 &bull; <span class="currency-dirham tv-ref-curr">&#xe900;</span> ${setOf4Formatted}
+                  Set of 4 &bull; <span class="currency-dirham">&#xe900;</span> ${setOf4Formatted}
                 </div>
               </div>
 
@@ -3486,7 +3483,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       var body = document.getElementById('tv-' + section + '-section-body');
       var chev = document.getElementById('tv-' + section + '-chevron');
       if (body) {
-        var isHidden = body.style.display === 'none';
+        var isHidden = body.style.display === 'none' || (!body.style.display && window.getComputedStyle(body).display === 'none');
         body.style.display = isHidden ? 'block' : 'none';
         if (chev) {
           if (isHidden) chev.classList.add('is-open');
@@ -3631,7 +3628,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var body = document.getElementById('tv-sub-acc-' + sub + '-body');
     var chev = document.getElementById('tv-chevron-' + sub);
     if (!body) return;
-    var isHidden = body.style.display === 'none';
+    var isHidden = body.style.display === 'none' || (!body.style.display && window.getComputedStyle(body).display === 'none');
     body.style.display = isHidden ? 'block' : 'none';
     if (chev) {
       if (isHidden) chev.classList.add('is-open');
@@ -3854,7 +3851,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       container.innerHTML = `
         <div class="p-6 text-center bg-white rounded-xl border border-gray-200">
           <p class="text-xs text-gray-500">No fitting partners found for this city or search.</p>
-          <button type="button" onclick="window.resetStoreFilters()" class="text-xs font-bold text-[#ed1c24] mt-2 underline cursor-pointer">Reset Filters</button>
+          <button type="button" onclick="window.resetStoreFilters()" class="text-xs font-bold text-[#7C3AED] mt-2 underline cursor-pointer">Reset Filters</button>
         </div>
       `;
       return;
@@ -3892,14 +3889,14 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
           <div class="flex-1 min-w-0">
             <div class="tv-branch-title-row">
               <h4 class="tv-branch-name">${escapeHtml(branch.name)}</h4>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-gray-400 ${isExpanded ? 'rotate-180 text-[#ed1c24]' : ''}"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-gray-400 ${isExpanded ? 'rotate-180 text-[#7C3AED]' : ''}"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
             <p class="tv-branch-address">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span>${escapeHtml(branch.address)}</span>
             </p>
             <p class="tv-branch-distance">
-              <span class="tv-dot-red"></span>
+              <span class="tv-dot-purple"></span>
               <span>${(branch.distance !== undefined ? parseFloat(branch.distance) : 4.5).toFixed(2)} km away</span>
             </p>
           </div>
@@ -3925,7 +3922,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
             <div class="tv-popover-caret"></div>
             <div class="tv-popover-header">
               <span class="tv-popover-title">
-                <span class="tv-dot-red"></span>
+                <span class="tv-dot-purple"></span>
                 <span>Select Fitting Date &amp; Time</span>
               </span>
               <button type="button" onclick="window.toggleDrawerBranch('${escapeHtml(branch.id)}')" class="tv-btn-popover-close">✕</button>
@@ -4043,7 +4040,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
       card.innerHTML = `
         <div class="tv-branch-head">
-          <div class="tv-branch-badge-icon" style="background:#eef2ff; border-color:#c7d2fe; color:#4338ca;">
+          <div class="tv-branch-badge-icon tv-van-badge-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
           </div>
           <div class="flex-1 min-w-0">
