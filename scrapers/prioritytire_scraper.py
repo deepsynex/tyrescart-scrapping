@@ -8,6 +8,7 @@ Conforms to TyresCart protocol:
 import csv
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -43,6 +44,12 @@ DEFAULT_SITEMAPS = [
 SKIP_URL_PREFIXES = ("/tire-sets/",)
 
 IMPERSONATIONS = ["chrome131", "chrome124", "safari17_0", "edge101"]
+
+BASE_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Upgrade-Insecure-Requests": "1",
+}
 
 OUTPUT_FILE = (
     sys.argv[1]
@@ -84,11 +91,21 @@ def _get_cleaned_proxy():
 PROXY = _get_cleaned_proxy()
 
 
-def fetch_page_with_fallback(session, url, max_retries=2):
+def fetch_page_with_fallback(session, url, max_retries=4, referer=None):
     """Fetches URL via direct TLS impersonation, falling back to Cloudflare bypass gateway."""
     proxies = {"http": PROXY, "https": PROXY} if PROXY else None
+    headers = dict(BASE_HEADERS)
+    if referer:
+        headers["Referer"] = referer
 
-    # Step 1: Try direct connection with curl_cffi
+    # Small randomized delay before every request so a burst of concurrently
+    # submitted workers doesn't all land on the server in the same instant --
+    # that request-velocity pattern is what trips Cloudflare's rate-based bot
+    # detection even when the TLS fingerprint impersonation itself is fine.
+    time.sleep(random.uniform(0.3, 0.8))
+
+    # Step 1: Try direct connection with curl_cffi, backing off properly on
+    # an actual Cloudflare challenge instead of retrying near-instantly.
     for attempt in range(max_retries):
         imp = IMPERSONATIONS[attempt % len(IMPERSONATIONS)]
         try:
@@ -96,21 +113,26 @@ def fetch_page_with_fallback(session, url, max_retries=2):
                 url,
                 impersonate=imp,
                 proxies=proxies,
+                headers=headers,
                 timeout=18,
             )
             # Check for valid HTML with actual content (not Cloudflare challenge)
             if r.status_code == 200 and len(r.text) > 100:
                 if "Just a moment..." not in r.text and "__cf_chl_rt_tk" not in r.text:
                     return r.text
-            time.sleep(0.2 * (attempt + 1))
+            if r.status_code == 403 or "Just a moment" in r.text:
+                delay = min(2.0 * (attempt + 1) + random.uniform(0, 1.5), 12.0)
+                time.sleep(delay)
+            else:
+                time.sleep(0.5 * (attempt + 1))
         except Exception:
-            time.sleep(0.2 * (attempt + 1))
+            time.sleep(1.0 * (attempt + 1) + random.uniform(0, 1.0))
 
     # Step 2: Automatic Cloudflare challenge bypass gateway fallback
     try:
         jina_url = f"https://r.jina.ai/{url}"
-        headers = {"X-Return-Format": "html"}
-        res = requests.get(jina_url, headers=headers, timeout=30)
+        jina_headers = {"X-Return-Format": "html"}
+        res = requests.get(jina_url, headers=jina_headers, timeout=30)
         if res.status_code == 200 and len(res.text) > 200 and "Just a moment..." not in res.text:
             return res.text
     except Exception:
@@ -188,7 +210,7 @@ def extract_product_urls_from_listing(session, listing_url):
 
 def parse_product_page(session, url, parent_url):
     emit_status(url, 'running', parent=parent_url, url_type='product')
-    html_text = fetch_page_with_fallback(session, url)
+    html_text = fetch_page_with_fallback(session, url, referer=parent_url or "https://www.prioritytire.com/")
     if not html_text:
         emit_status(url, 'blocked', parent=parent_url, url_type='product')
         return None

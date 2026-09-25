@@ -291,13 +291,35 @@ def main():
 
     product_targets = []  # [(product_url, source_url), ...]
 
+    # Discovery (sitemap -> listing pages -> product links) used to fetch
+    # every listing page one at a time, which meant nothing reached the
+    # product-scraping thread pool below until that whole chain finished --
+    # for a sitemap with dozens of listing pages that's most of a run spent
+    # idle. Fetching listing pages concurrently fixes that; parse_listing's
+    # own per-request retry/backoff is untouched so behavior per-request
+    # doesn't change, just how many run at once.
+    discovery_sessions = threading.local()
+
+    def get_discovery_session():
+        if not hasattr(discovery_sessions, 'session'):
+            discovery_sessions.session = c_requests.Session()
+        return discovery_sessions.session
+
     for source_url in start_urls:
         listing_urls = parse_brands(session, source_url)
-        for listing_url in listing_urls:
-            product_targets.extend(
-                (product_url, source_url)
-                for product_url in parse_listing(session, listing_url, source_url)
-            )
+        if not listing_urls:
+            continue
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_listing = {
+                executor.submit(parse_listing, get_discovery_session(), listing_url, source_url): listing_url
+                for listing_url in listing_urls
+            }
+            for future in as_completed(future_to_listing):
+                try:
+                    for product_url in future.result():
+                        product_targets.append((product_url, source_url))
+                except Exception:
+                    emit_status(future_to_listing[future], 'blocked', parent=source_url, url_type='listing')
 
     if not product_targets:
         writer.close()

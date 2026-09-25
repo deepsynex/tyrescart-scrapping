@@ -38,9 +38,9 @@ class TempeTyresScraper(Spider):
         "FEEDS": {
             output_file: {"format": "xlsx", "encoding": "utf8", "store_empty": False}
         },
-        "DOWNLOAD_DELAY": 0.6,
+        "DOWNLOAD_DELAY": 0.35,
         "ROBOTSTXT_OBEY": False,
-        "CONCURRENT_REQUESTS": 3,
+        "CONCURRENT_REQUESTS": 5,
         "LOG_LEVEL": "INFO",
     }
 

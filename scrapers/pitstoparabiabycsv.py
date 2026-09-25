@@ -3,6 +3,7 @@ import os
 import random
 import re
 import sys
+import threading
 import time
 from datetime import datetime
 from collections import OrderedDict
@@ -41,9 +42,13 @@ HEADERS = {
 }
 
 
+_print_lock = threading.Lock()
+
+
 def emit_status(url, status, parent=None, url_type=None):
     """Protocol for dashboard live progress."""
-    print(f"URL_STATUS|{url}|{status}|{parent or ''}|{url_type or ''}", flush=True)
+    with _print_lock:
+        print(f"URL_STATUS|{url}|{status}|{parent or ''}|{url_type or ''}", flush=True)
 
 
 def normalise_url(url):
@@ -63,13 +68,15 @@ def get_sel_text(selector_list):
 
 
 class PitstopArabiaScraper:
-    def __init__(self, output_file, input_csv, max_workers=3):
+    def __init__(self, output_file, input_csv, max_workers=3, seed_workers=5):
         self.output_file = output_file
         self.input_csv = input_csv
         self.max_workers = max_workers
+        self.seed_workers = seed_workers
         self.seen_urls = set()
         self.seen_product_keys = set()
         self.scraped_items = []
+        self._items_lock = threading.Lock()
 
     def fetch(self, url, referer=None, retries=5):
         headers = HEADERS.copy()
@@ -217,10 +224,12 @@ class PitstopArabiaScraper:
                     full_product_url = f"https://www.pitstoparabia.com/en/tyres/{link}"
 
                 prod_key = normalise_url(full_product_url)
-                if prod_key not in self.seen_product_keys:
+                with self._items_lock:
+                    if prod_key in self.seen_product_keys:
+                        continue
                     self.seen_product_keys.add(prod_key)
-                    emit_status(full_product_url, 'pending', parent=source_url, url_type='product')
-                    product_tasks.append(full_product_url)
+                emit_status(full_product_url, 'pending', parent=source_url, url_type='product')
+                product_tasks.append(full_product_url)
 
             # Scrape product detail pages
             if product_tasks:
@@ -282,8 +291,19 @@ class PitstopArabiaScraper:
         for url in seed_urls:
             emit_status(url, 'pending', url_type='root')
 
-        for url in seed_urls:
-            self.process_source_url(url)
+        # Seed (root) URLs used to be processed one at a time, which meant a
+        # large input list spent most of its time idle waiting on whichever
+        # single source URL was currently in flight. Processing several seed
+        # URLs concurrently is what actually speeds up a big run -- the
+        # per-request pacing/backoff inside fetch() is untouched, so the low
+        # block rate is preserved regardless of how many seeds run at once.
+        with ThreadPoolExecutor(max_workers=self.seed_workers) as executor:
+            future_to_url = {executor.submit(self.process_source_url, url): url for url in seed_urls}
+            for future in as_completed(future_to_url):
+                try:
+                    future.result()
+                except Exception:
+                    emit_status(future_to_url[future], 'blocked', url_type='root')
 
         # Write to Excel
         wb = openpyxl.Workbook()

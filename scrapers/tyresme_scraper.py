@@ -39,8 +39,8 @@ class TyresMeScraper(Spider):
         "FEEDS": {
             output_file: {"format": "xlsx", "encoding": "utf8", "store_empty": False}
         },
-        "CONCURRENT_REQUESTS": 2,
-        "DOWNLOAD_DELAY": 0.8,
+        "CONCURRENT_REQUESTS": 3,
+        "DOWNLOAD_DELAY": 0.5,
         "HTTPERROR_ALLOWED_CODES": [429, 503],
         "RETRY_HTTP_CODES": [500, 502, 504, 408],
         "LOG_LEVEL": "INFO",

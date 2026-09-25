@@ -38,9 +38,9 @@ class ProshopScraper(Spider):
         "FEEDS": {
             output_file: {"format": "xlsx", "encoding": "utf8", "store_empty": False}
         },
-        "CONCURRENT_REQUESTS": 2,
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
-        "DOWNLOAD_DELAY": 0.5,
+        "CONCURRENT_REQUESTS": 4,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 4,
+        "DOWNLOAD_DELAY": 0.3,
         "RETRY_TIMES": 8,
         "RETRY_HTTP_CODES": [429, 500, 502, 503, 504],
         "LOG_LEVEL": "INFO",
