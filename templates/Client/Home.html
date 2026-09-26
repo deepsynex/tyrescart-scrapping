@@ -359,9 +359,24 @@
             {% if sec.content %}<p class="lead">{{ sec.content | safe }}</p>{% endif %}
           </div>
           {% set svcs = sec.section_data.services if sec.section_data and sec.section_data.services else [] %}
+          {% set service_links = {
+            'Tyre fitting': '/mobile-tyre-fitting',
+            'Wheel alignment': '/wheel-alignment',
+            'Wheel balancing': '/wheel-balancing',
+            'Car batteries': '/car-battery-replacement',
+            'Oil change': '/oil-change',
+            'Fleet servicing': '/fleet-tyre-services',
+            'Mobile van visit': '/mobile-tyre-fitting'
+          } %}
           <div class="svc-grid">
             {% for s in svcs %}
-            <div class="svc"><span class="dot" aria-hidden="true"></span>{{ s.name if s.name else s }}</div>
+            {% set s_name = s.name if s.name is string else (s.name.en if s.name and s.name.en is defined else (s.name if s.name else s)) %}
+            {% set s_url = s.url if (s.url is defined and s.url) else service_links.get(s_name, '') %}
+            {% if s_url %}
+              <a href="{{ s_url }}" class="svc svc-link"><span class="dot" aria-hidden="true"></span><span>{{ s.name if s.name else s }}</span></a>
+            {% else %}
+              <div class="svc"><span class="dot" aria-hidden="true"></span><span>{{ s.name if s.name else s }}</span></div>
+            {% endif %}
             {% endfor %}
           </div>
           {% if sec.section_data and sec.section_data.extra_blocks %}

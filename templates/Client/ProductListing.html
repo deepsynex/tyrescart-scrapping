@@ -526,12 +526,15 @@
               </div>
             </div>
 
+            {% if p.oem_logos and p.oem_logos|length > 0 %}
             <div class="car-brand-logos">
-              <img src="{{ url_for('static', filename='assets/images/bmw.png') }}" alt="Brand Image">
-              <img src="{{ url_for('static', filename='assets/images/mercedes-benz.png') }}" alt="Brand Image">
+              {% for logo in p.oem_logos %}
+              <img src="{{ logo.image_url }}" alt="{{ logo.name }}" title="{{ logo.name }} Approved OEM Tyre">
+              {% endfor %}
             </div>
+            {% endif %}
 
-            <div class="tyre-type-icons">
+            <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
               <span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
                      <g id="Group_243" data-name="Group 243" transform="translate(0)">
@@ -606,8 +609,13 @@
 
             <!-- 4. USA __ Runflat __ premium -->
             <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-country" title="Origin">
+              <span class="tv-meta-item tv-meta-country" title="Origin: {{ p.country_of_origin or 'USA' }}">
                 <span>{{ p.country_of_origin or 'USA' }}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
               </span>
 
               <span class="tv-meta-item tv-meta-runflat" title="Technology">
@@ -616,8 +624,13 @@
                 {% endif %}
               </span>
 
-              <span class="tv-meta-item tv-meta-premium" title="Category">
+              <span class="tv-meta-item tv-meta-premium" title="Category: {{ p.tyres_category or 'Budget' }}">
                 <span>{{ p.tyres_category or '' }}</span>
+                {% if p.tyres_category %}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                {% endif %}
               </span>
             </div>
           </div>

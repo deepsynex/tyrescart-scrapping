@@ -1,0 +1,43 @@
+<!-- Vehicle Compatibility Modal / Overlay (Matching TyresCart Design) -->
+<div class="fitment-bar-wrapper">
+  <!-- Slide-up Drawer Panel -->
+  <div id="item-size" class="fitment-drawer-panel fixed inset-x-0 bottom-0 overflow-hidden bg-white transform translate-y-full transition-transform ease-out duration-300 upper-popup" style="z-index: 99999; max-height: 85vh; height: 85vh;" role="dialog" aria-modal="true" aria-labelledby="item-size-title">
+    <div class="w-full flex flex-col overflow-hidden h-full py-4 lg:py-6 px-4 sm:px-8 max-w-7xl mx-auto">
+      
+      <!-- Top Title & Close Button -->
+      <div class="flex-shrink-0 tv-modal-header">
+        <h3 id="item-size-title" class="tv-modal-title">
+          <span class="product-name block [direction:ltr]">Compatible Vehicles</span>
+        </h3>
+        <button type="button" onclick="ItemSizeClose()" aria-label="Close" class="tv-modal-close-btn">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="flex-shrink-0 tv-modal-search-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" id="item-size-search" placeholder="Search by Make or Model..." oninput="filterTyrePopupContent(this.value)">
+      </div>
+
+      <!-- Loading State Indicator -->
+      <div id="item-size-loader" class="hidden">
+        <div class="tv-vehicle-spinner"></div>
+        <p style="font-size: 14px; font-weight: 600; color: #475569; margin: 0;">Finding compatible vehicles...</p>
+      </div>
+
+      <!-- Compatibility Results Grid (2 Columns on Desktop) -->
+      <div class="tyre-popup-content flex-1 overflow-y-auto drawer-scrollbar">
+        <!-- Loaded dynamically via AJAX -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dimmed Backdrop Overlay -->
+  <div id="item-size-overlay" onclick="ItemSizeClose()" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden transition-all ease-out duration-300" style="z-index: 99998;"></div>
+</div>

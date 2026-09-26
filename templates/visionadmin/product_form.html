@@ -433,23 +433,136 @@
                         </div>
                       </template>
 
-                      <!-- 9. Multiselect listbox (e.g. OEM Tyres) -->
-                      <template x-if="attr.type === 'multiselect' && attr.code !== 'categories'">
-                        <select 
-                          multiple 
-                          size="5"
-                          @change="handleMultiselectChange(attr.code, $event)"
-                          :required="attr.is_required"
-                          class="w-full max-w-2xl px-3 py-1.5 rounded-xs border border-[#adadad] focus:border-[#4B237B] text-xs font-normal text-slate-800 bg-white shadow-2xs outline-hidden"
+                      <!-- 9. Modern Interactive Multiselect Component (e.g. OEM Tyres) -->
+                      <template x-if="attr.type === 'multiselect' && attr.code !== 'categories' && attr.code !== 'category_ids'">
+                        <div 
+                          class="w-full max-w-2xl relative" 
+                          x-data="{ 
+                            open: false, 
+                            search: '',
+                            getFilteredOptions(options) {
+                              if (!options) return [];
+                              const q = (this.search || '').toLowerCase().trim();
+                              if (!q) return options;
+                              return options.filter(opt => {
+                                const lbl = typeof opt.label === 'object' ? (opt.label.en || opt.value || '') : (opt.label || opt.value || '');
+                                return String(lbl).toLowerCase().includes(q) || String(opt.value || '').toLowerCase().includes(q);
+                              });
+                            },
+                            getOptionLabel(val, options) {
+                              if (!options) return val;
+                              const opt = options.find(o => String(o.value) === String(val) || String(o.id) === String(val));
+                              if (!opt) return val;
+                              return typeof opt.label === 'object' ? (opt.label.en || opt.value) : (opt.label || opt.value);
+                            }
+                          }" 
+                          @click.outside="open = false"
                         >
-                          <template x-for="opt in (attr.options || [])" :key="opt.id || opt.value">
-                            <option 
-                              :value="opt.value" 
-                              x-text="typeof opt.label === 'object' ? (opt.label.en || opt.value) : (opt.label || opt.value)" 
-                              :selected="isMultiselectSelected(attr.code, opt.value)"
-                            ></option>
-                          </template>
-                        </select>
+                          <!-- Select Trigger Box with Tag Pills -->
+                          <div 
+                            @click="open = !open" 
+                            class="min-h-[36px] w-full px-2.5 py-1 rounded-xs border border-[#adadad] bg-white hover:border-slate-500 focus-within:border-[#4B237B] cursor-pointer flex items-center justify-between gap-2 transition select-none shadow-2xs"
+                            :class="open ? 'border-[#4B237B] ring-1 ring-[#4B237B]/20' : ''"
+                          >
+                            <!-- Selected Pills Container -->
+                            <div class="flex flex-wrap items-center gap-1.5 py-0.5 flex-1 min-w-0">
+                              <template x-if="getMultiselectValues(attr.code).length === 0">
+                                <span class="text-xs text-slate-400 font-normal select-none" x-text="'Select ' + (attr.name && (typeof attr.name === 'object' ? (attr.name.en || attr.code) : attr.name) || 'options') + '...'"></span>
+                              </template>
+                              <template x-for="val in getMultiselectValues(attr.code)" :key="val">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f5effb] hover:bg-[#ede3f7] text-[#4B237B] font-semibold text-xs rounded-xs border border-[#d8c3ee] select-none transition">
+                                  <span x-text="getOptionLabel(val, attr.options)"></span>
+                                  <button 
+                                    type="button" 
+                                    @click.stop="toggleMultiselectValue(attr.code, val)" 
+                                    class="text-[#4B237B] hover:text-rose-600 font-bold ml-1 text-sm leading-none transition cursor-pointer"
+                                    title="Remove"
+                                  >&times;</button>
+                                </span>
+                              </template>
+                            </div>
+
+                            <!-- Dropdown Arrow Indicator -->
+                            <div class="shrink-0 flex items-center justify-center w-6 h-6 text-[#555] border-l border-slate-200 pl-1">
+                              <svg class="w-3.5 h-3.5 text-slate-600 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                              </svg>
+                            </div>
+                          </div>
+
+                          <!-- Dropdown Menu Popover -->
+                          <div 
+                            x-show="open" 
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 translate-y-1 scale-98"
+                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                            x-transition:leave-end="opacity-0 translate-y-1 scale-98"
+                            class="absolute left-0 top-full mt-1.5 w-full bg-white border border-slate-300 rounded-xs shadow-xl p-3 z-50"
+                            style="display: none;"
+                            @click.stop
+                          >
+                            <!-- Search Bar inside dropdown -->
+                            <div class="relative mb-2">
+                              <input 
+                                type="text" 
+                                x-model="search" 
+                                :placeholder="'Search ' + (attr.name && (typeof attr.name === 'object' ? (attr.name.en || attr.code) : attr.name) || 'options') + '...'" 
+                                class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xs border border-[#adadad] focus:border-[#4B237B] outline-none" 
+                              />
+                              <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                              </svg>
+                            </div>
+
+                            <!-- Options Checklist -->
+                            <div class="max-h-60 overflow-y-auto space-y-1 pr-1">
+                              <template x-for="opt in getFilteredOptions(attr.options || [])" :key="opt.id || opt.value">
+                                <label 
+                                  class="flex items-center justify-between px-2.5 py-1.5 rounded-xs hover:bg-slate-50 cursor-pointer text-xs transition select-none"
+                                  :class="isMultiselectSelected(attr.code, opt.value) ? 'bg-[#f7f4fd] font-semibold text-[#4B237B]' : 'text-slate-700'"
+                                >
+                                  <div class="flex items-center gap-2.5">
+                                    <input 
+                                      type="checkbox" 
+                                      :value="opt.value" 
+                                      :checked="isMultiselectSelected(attr.code, opt.value)" 
+                                      @change="toggleMultiselectValue(attr.code, opt.value)" 
+                                      class="rounded-xs text-[#4B237B] focus:ring-[#4B237B] w-4 h-4 cursor-pointer accent-[#4B237B]" 
+                                    />
+                                    <span 
+                                      :class="isMultiselectSelected(attr.code, opt.value) ? 'font-bold text-[#4B237B]' : 'font-medium text-slate-700'" 
+                                      x-text="typeof opt.label === 'object' ? (opt.label.en || opt.value) : (opt.label || opt.value)"
+                                    ></span>
+                                  </div>
+                                  <span class="text-[10px] text-slate-400" x-text="opt.value"></span>
+                                </label>
+                              </template>
+                              <div x-show="getFilteredOptions(attr.options || []).length === 0" class="text-center py-4 text-xs text-slate-400">
+                                No matching options found
+                              </div>
+                            </div>
+
+                            <!-- Footer Actions -->
+                            <div class="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-200 text-xs">
+                              <div class="flex items-center gap-3">
+                                <button type="button" @click="selectAllMultiselect(attr.code, attr.options)" class="text-[#4B237B] font-semibold hover:underline cursor-pointer">Select All</button>
+                                <button type="button" @click="clearMultiselect(attr.code)" class="text-slate-500 hover:text-rose-600 font-medium cursor-pointer">Clear</button>
+                              </div>
+                              <div class="flex items-center gap-2">
+                                <span class="text-[11px] text-slate-500" x-text="getMultiselectValues(attr.code).length + ' selected'"></span>
+                                <button 
+                                  type="button" 
+                                  @click="open = false" 
+                                  class="px-3 py-1 rounded-xs bg-[#4B237B] hover:bg-[#381a5c] text-white font-semibold text-xs cursor-pointer shadow-xs transition"
+                                >
+                                  Done
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </template>
 
                       <!-- 10. Boolean Toggle (e.g. Tabby Payment) -->

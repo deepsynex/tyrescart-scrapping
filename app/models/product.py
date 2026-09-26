@@ -289,6 +289,13 @@ class Product:
             if k in d and d[k] is not None:
                 d[k] = d[k].isoformat() if hasattr(d[k], 'isoformat') else str(d[k])
 
+        # OEM Car Brand Logos
+        try:
+            from siteapp.clientroute import resolve_oem_car_logos
+            d['oem_logos'] = resolve_oem_car_logos(d)
+        except Exception:
+            d['oem_logos'] = []
+
         return d
 
     @classmethod
@@ -326,6 +333,7 @@ class Product:
                  run_flat = None, ev_rated = None,
                  rim_size: str = None, speed_rating: str = None,
                  country_of_origin: str = None, year = None,
+                 oem_tyres = None,
                  attr_code: str = None, attr_value: str = None):
         conn = get_connection()
         try:
@@ -421,6 +429,27 @@ class Product:
                         params.extend([y_int, str(y_int)])
                     except (ValueError, TypeError):
                         pass
+
+                if oem_tyres:
+                    if isinstance(oem_tyres, str):
+                        oem_list = [s.strip() for s in oem_tyres.split(',') if s.strip()]
+                    elif isinstance(oem_tyres, (list, tuple)):
+                        oem_list = [str(s).strip() for s in oem_tyres if str(s).strip()]
+                    else:
+                        oem_list = []
+
+                    if oem_list:
+                        oem_clauses = []
+                        for oem_item in oem_list:
+                            oem_clauses.append("""(
+                                p.oem_brand LIKE %s
+                                OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.oem_tyres')) LIKE %s
+                                OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.oem_brand')) LIKE %s
+                                OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.oem_marking')) LIKE %s
+                            )""")
+                            like_str = f"%{oem_item}%"
+                            params.extend([like_str, like_str, like_str, like_str])
+                        where_clauses.append(f"({' OR '.join(oem_clauses)})")
 
                 if attr_code and attr_value is not None and str(attr_value).strip() != '':
                     c_code = re.sub(r'[^a-zA-Z0-9_]', '', str(attr_code).strip())

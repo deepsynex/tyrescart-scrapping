@@ -492,6 +492,202 @@ def mobile_tyre_fitting_locale(lang_code):
     return resp
 
 
+_CARS_LOGO_DIR = os.path.join(BASE_DIR, 'static', 'assets', 'images', 'cars-logo')
+_CAR_LOGO_CACHE = None
+
+_BRAND_TO_FILE = {
+    'alfa romeo': 'alfa-romeo.png',
+    'alpina': 'alpina.png',
+    'aston martin': 'aston-martin.png',
+    'audi': 'audi.png',
+    'bentley': 'bentley.png',
+    'bmw': 'bmw.png',
+    'bugatti': 'bugatti.png',
+    'cadillac': 'cadillac.png',
+    'chevrolet': 'chevrolet.png',
+    'chrysler': 'chrysler.png',
+    'ferrari': 'ferrari.png',
+    'fiat': 'fiat.png',
+    'ford': 'ford.png',
+    'genesis': 'genesis.png',
+    'gmc': 'gmc.png',
+    'honda': 'honda.png',
+    'hyundai': 'hyundai.png',
+    'jaguar': 'jaguar.png',
+    'jeep': 'jeep.png',
+    'lamborghini': 'lamborghini.png',
+    'land rover': 'land-rover.png',
+    'lexus': 'lexus.png',
+    'lotus': 'lotus.png',
+    'maserati': 'maserati.png',
+    'mazda': 'mazda.png',
+    'mclaren': 'mclaren.png',
+    'mercedes-benz': 'mercedes-benz.png',
+    'mercedes': 'mercedes-benz.png',
+    'mercedes benz': 'mercedes-benz.png',
+    'mini': 'mini.png',
+    'mitsubishi': 'mitsubishi.png',
+    'nissan': 'nissan.png',
+    'peugeot': 'peugeot.png',
+    'porsche': 'porsche.png',
+    'renault': 'renault.png',
+    'rivian': 'rivian.png',
+    'rolls-royce': 'rolls-royce.png',
+    'rolls royce': 'rolls-royce.png',
+    'subaru': 'subaru.png',
+    'suzuki': 'suzuki.png',
+    'tesla': 'tesla.png',
+    'toyota': 'toyota.png',
+    'volkswagen': 'volkswagen.png',
+    'vw': 'volkswagen.png',
+    'volvo': 'volvo.png',
+}
+
+_MARKING_TO_BRANDS = {
+    '*': ['bmw'],
+    '1': ['bmw'],
+    '2': ['bmw'],
+    'mo': ['mercedes-benz'],
+    'moe': ['mercedes-benz'],
+    'mo1': ['mercedes-benz'],
+    'mos': ['mercedes-benz'],
+    'ao': ['audi'],
+    'ao1': ['audi'],
+    'ao2': ['audi'],
+    'aoe': ['audi'],
+    'ro1': ['audi'],
+    'ro2': ['audi'],
+    'n0': ['porsche'],
+    'n1': ['porsche'],
+    'n2': ['porsche'],
+    'n3': ['porsche'],
+    'n4': ['porsche'],
+    'na0': ['porsche'],
+    'na1': ['porsche'],
+    'nf0': ['porsche'],
+    'nc0': ['porsche'],
+    'nd0': ['porsche'],
+    'j': ['jaguar'],
+    'lr': ['land rover'],
+    'jlr': ['jaguar', 'land rover'],
+    't0': ['tesla'],
+    't1': ['tesla'],
+    'vol': ['volvo'],
+    'mgt': ['maserati'],
+    'ar': ['alfa romeo'],
+    'am8': ['aston martin'],
+    'aml': ['aston martin'],
+    'mc': ['mclaren'],
+    'f': ['ferrari'],
+}
+
+_DISPLAY_NAMES = {
+    'bmw': 'BMW',
+    'mercedes-benz': 'Mercedes-Benz',
+    'mercedes': 'Mercedes-Benz',
+    'vw': 'Volkswagen',
+    'volkswagen': 'Volkswagen',
+    'alfa-romeo': 'Alfa Romeo',
+    'aston-martin': 'Aston Martin',
+    'land-rover': 'Land Rover',
+    'rolls-royce': 'Rolls-Royce',
+    'mg': 'MG',
+    'byd': 'BYD',
+    'gmc': 'GMC',
+    'ram': 'RAM',
+}
+
+
+def _get_car_logo_files():
+    global _CAR_LOGO_CACHE
+    if _CAR_LOGO_CACHE is None:
+        _CAR_LOGO_CACHE = {}
+        try:
+            if os.path.isdir(_CARS_LOGO_DIR):
+                for f in os.listdir(_CARS_LOGO_DIR):
+                    if f.lower().endswith('.png'):
+                        _CAR_LOGO_CACHE[f.lower()] = f
+        except Exception:
+            pass
+    return _CAR_LOGO_CACHE
+
+
+def resolve_oem_car_logos(product_or_dict):
+    """
+    Extracts and resolves OEM car brand logo items:
+    Returns list of dicts: [{'name': 'BMW', 'image_url': '/static/assets/images/cars-logo/bmw.png'}, ...]
+    """
+    p = product_or_dict
+    raw_brands = []
+
+    # 1. From oem_brand column
+    oem_b = p.get('oem_brand')
+    if oem_b and str(oem_b).strip() and str(oem_b).strip().lower() not in ('none', '0', 'null', 'false'):
+        raw_brands.append(str(oem_b).strip())
+
+    # 2. From attributes_json
+    attr = p.get('attr') or p.get('attributes_json') or {}
+    if isinstance(attr, str):
+        try:
+            attr = json.loads(attr)
+        except Exception:
+            attr = {}
+    if isinstance(attr, dict):
+        attr_oem = attr.get('oem_tyres') or attr.get('oem_brand')
+        if attr_oem and str(attr_oem).strip() and str(attr_oem).strip().lower() not in ('none', '0', 'null', 'false'):
+            raw_brands.append(str(attr_oem).strip())
+
+    tokens = []
+    for rb in raw_brands:
+        for part in re.split(r'[,;/]+', rb):
+            tok = part.strip()
+            if tok and tok.lower() not in ('none', '0', 'null', 'false'):
+                tokens.append(tok)
+
+    # 3. If no tokens from oem_brand, check tyre_marking fallback
+    if not tokens and isinstance(attr, dict):
+        marking = attr.get('tyre_marking') or attr.get('tyre_markings') or attr.get('oem_marking') or ''
+        if marking:
+            for m_tok in re.split(r'[\s,;/]+', str(marking).strip()):
+                m_clean = m_tok.strip().lower()
+                if m_clean in _MARKING_TO_BRANDS:
+                    tokens.extend(_MARKING_TO_BRANDS[m_clean])
+
+    avail = _get_car_logo_files()
+    resolved_logos = []
+    seen_files = set()
+
+    for tok in tokens:
+        tok_clean = tok.strip()
+        tok_lower = tok_clean.lower()
+
+        brands_to_check = [tok_lower]
+        if tok_lower in _MARKING_TO_BRANDS:
+            brands_to_check = _MARKING_TO_BRANDS[tok_lower]
+
+        for b_name in brands_to_check:
+            filename = _BRAND_TO_FILE.get(b_name)
+            if not filename:
+                cand1 = f"{b_name}.png"
+                cand2 = f"{b_name.replace(' ', '-')}.png"
+                if cand1 in avail:
+                    filename = avail[cand1]
+                elif cand2 in avail:
+                    filename = avail[cand2]
+
+            if filename and filename in avail and filename not in seen_files:
+                seen_files.add(filename)
+                clean_key = b_name.lower().replace(' ', '-')
+                display_name = _DISPLAY_NAMES.get(clean_key) or _DISPLAY_NAMES.get(b_name.lower()) or b_name.replace('-', ' ').title()
+                resolved_logos.append({
+                    'name': display_name,
+                    'file': filename,
+                    'image_url': f"/static/assets/images/cars-logo/{filename}"
+                })
+
+    return resolved_logos
+
+
 def _format_product_for_client(p, locale='en'):
     p_dict = dict(p)
     attr = p_dict.get('attributes_json')
@@ -708,6 +904,10 @@ def _format_product_for_client(p, locale='en'):
 
     p_dict['full_title'] = f"{p_dict['brand_name']} {p_dict['full_size_spec']} {p_dict['pattern_name']} {yr_val}".strip()
     p_dict['fitted_text'] = attr.get('price_included_text') or 'Fitted Price'
+
+    # OEM Car Brand Logos
+    p_dict['oem_logos'] = resolve_oem_car_logos(p_dict)
+    p_dict['has_oem'] = len(p_dict['oem_logos']) > 0
 
     return p_dict
 
@@ -1883,8 +2083,8 @@ def _render_product_detail(slug_or_id, locale=None):
             # Offer banner and promotions
             raw_offer = (raw_attrs.get('offers') or raw_attrs.get('promotion') or raw_attrs.get('badge') or p_row.get('offer_banner') or '').strip()
             offer_banner = raw_offer.upper() if raw_offer and raw_offer.lower() not in ('none', '0', '', 'null') else ''
-            if not offer_banner:
-                offer_banner = 'BUY 3 GET 1 FREE'
+            # if not offer_banner:
+            #     offer_banner = 'BUY 3 GET 1 FREE'
 
             if 'BUY 3' in offer_banner:
                 price_set4 = round(price_f * 3, 2)
@@ -1927,7 +2127,10 @@ def _render_product_detail(slug_or_id, locale=None):
                 'run_flat': 'Yes' if p_row.get('run_flat') == 1 else 'No',
                 'warranty': warranty_str,
                 'tire_size_label': size_label or f"{width_val}/{profile_val} {rim_val}",
-                'faqs': raw_attrs.get('faqs') if isinstance(raw_attrs.get('faqs'), list) else ([] if not raw_attrs.get('faqs') else [raw_attrs.get('faqs')])
+                'faqs': raw_attrs.get('faqs') if isinstance(raw_attrs.get('faqs'), list) else ([] if not raw_attrs.get('faqs') else [raw_attrs.get('faqs')]),
+                'oem_brand': p_row.get('oem_brand'),
+                'oem_logos': resolve_oem_car_logos(p_row),
+                'has_oem': len(resolve_oem_car_logos(p_row)) > 0
             }
 
             # Related products: SAME SIZE, DIFFERENT BRANDS (per requirement)
@@ -2677,6 +2880,166 @@ def page_detail_locale(lang_code, slug):
         conn.close()
 
     abort(404)
+
+
+_BUY_TYRE_SEARCH_CACHE = {}
+
+def _format_wheel_api_vehicles_html(items):
+    """Formats Wheel-API vehicle match objects into HTML matching the compatibility drawer design."""
+    import html as html_lib
+    if not items:
+        return ""
+
+    by_make = {}
+    for it in items:
+        m_name = (it.get("make_name") or "Other").strip()
+        m_slug = (it.get("make_slug") or m_name.lower().replace(" ", "-")).strip()
+        if m_name not in by_make:
+            by_make[m_name] = {
+                "name": m_name,
+                "slug": m_slug,
+                "logo": f"https://wheel-api.klever.ae/logos/{m_slug}.png",
+                "models": {}
+            }
+
+        mod_name = (it.get("model_name") or "").strip()
+        mod_slug = (it.get("model_slug") or mod_name.lower().replace(" ", "-")).strip()
+        if not mod_name:
+            continue
+
+        yr_raw = it.get("year_ranges")
+        years = []
+        if yr_raw:
+            try:
+                years = json.loads(yr_raw) if isinstance(yr_raw, str) else yr_raw
+            except Exception:
+                years = [str(yr_raw)]
+
+        if mod_name not in by_make[m_name]["models"]:
+            by_make[m_name]["models"][mod_name] = {
+                "name": mod_name,
+                "slug": mod_slug,
+                "years": set(years)
+            }
+        else:
+            by_make[m_name]["models"][mod_name]["years"].update(years)
+
+    rows = []
+    for m_name in sorted(by_make.keys()):
+        minfo = by_make[m_name]
+        logo_url = minfo["logo"]
+        m_slug = minfo["slug"]
+
+        model_pills = []
+        for mod_name in sorted(minfo["models"].keys()):
+            mod = minfo["models"][mod_name]
+            mod_slug = mod["slug"]
+            sorted_years = sorted(list(mod["years"]))
+            year_spans = "".join([f'<span class="text-xs text-gray-500 block">{html_lib.escape(y)}</span>' for y in sorted_years])
+
+            model_pills.append(f'''<a class="brand-info" href="/en/tyres/cars/{html_lib.escape(m_slug)}/{html_lib.escape(mod_slug)}">
+                <div class="model-year font-semibold text-gray-900 text-sm hover:text-theme-blue transition-colors text-center">
+                    <span>{html_lib.escape(mod_name)}</span>{year_spans}
+                </div>
+            </a>''')
+
+        models_html = "\n".join(model_pills)
+
+        row_html = f'''<div class="flex justify-between items-start mb-3 pb-3 border-b border-dashed border-theme-blue gap-3">
+            <div class="modal-name-cotent" style="flex:0 0 auto;">
+                <div class="left-content">
+                    <div class="brand-image flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-[6px] px-3 py-1 border border-blue-200 group-hover:border-blue-300 transition-colors">
+                        <img class="w-8 h-auto object-contain" src="{html_lib.escape(logo_url)}" alt="{html_lib.escape(m_name)}" onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{html_lib.escape(m_slug)}.png';" />
+                        <p class="ml-2 text-xs font-semibold uppercase text-gray-800 tracking-wide">{html_lib.escape(m_name)}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-results-content">
+                <div class="brand-info-content flex gap-2 flex-wrap justify-end">
+                    {models_html}
+                </div>
+            </div>
+        </div>'''
+        rows.append(row_html)
+
+    return "\n".join(rows)
+
+
+@site_bp.route('/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
+@site_bp.route('/api/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
+def ajax_buy_tyre_search():
+    """Fetches compatible vehicles for a tyre size from Wheel-API using POST, with TyresCart fallback."""
+    import urllib.request
+    import urllib.parse
+
+    width = str(request.values.get('width', '')).strip()
+    height = str(request.values.get('height', '')).strip()
+    rim = str(request.values.get('rim', '')).strip()
+
+    # Extract clean numeric values
+    w_match = re.search(r'\d+', width)
+    w_clean = w_match.group(0) if w_match else '175'
+
+    h_match = re.search(r'\d+', height)
+    h_clean = h_match.group(0) if h_match else ''
+
+    r_match = re.search(r'\d+', rim)
+    r_clean = r_match.group(0) if r_match else '14'
+
+    cache_key = (w_clean, h_clean, r_clean)
+    if cache_key in _BUY_TYRE_SEARCH_CACHE:
+        return jsonify({'status': 'success', 'html': _BUY_TYRE_SEARCH_CACHE[cache_key]})
+
+    # 1. Primary data source: Wheel-API (via POST method as requested)
+    wheel_api_url = f"https://wheel-api.klever.ae/search.php?api_key=f9030340bff3fbffd0208256549f9984940fe536fec8ae7d8c2f1681b8ed3da2&width={w_clean}&height={h_clean}&rim={r_clean}"
+    try:
+        req_wheel = urllib.request.Request(
+            wheel_api_url,
+            data=b"",
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'X-Client-Domain': 'tyrescart-scrapping.klever.ae',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+        )
+        with urllib.request.urlopen(req_wheel, timeout=8) as resp:
+            wheel_data = json.loads(resp.read().decode('utf-8'))
+            vehicle_items = wheel_data.get('data', [])
+            if vehicle_items:
+                html_rendered = _format_wheel_api_vehicles_html(vehicle_items)
+                if html_rendered:
+                    _BUY_TYRE_SEARCH_CACHE[cache_key] = html_rendered
+                    return jsonify({'status': 'success', 'html': html_rendered, 'source': 'wheel-api', 'count': len(vehicle_items)})
+    except Exception as e:
+        current_app.logger.warning(f"Wheel-API request failed for {w_clean}/{h_clean}R{r_clean}: {e}")
+
+    # 2. Seamless Fallback: TyresCart upstream service if Wheel-API had 0 results or timed out
+    upstream_url = 'https://www.tyrescart.ae/en/tyrefinder/ajax/buytyresearch'
+    post_payload = urllib.parse.urlencode({
+        'width': w_clean,
+        'height': h_clean or 'None',
+        'rim': r_clean,
+        'uenc': 'aHR0cHM6Ly93d3cudHlyZXNjYXJ0LmFlL3R5cmVz'
+    }).encode('utf-8')
+
+    req = urllib.request.Request(upstream_url, data=post_payload, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': 'https://www.tyrescart.ae/tyres'
+    })
+
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            html = data.get('html', '')
+            if html:
+                _BUY_TYRE_SEARCH_CACHE[cache_key] = html
+                return jsonify({'status': 'success', 'html': html, 'source': 'tyrescart'})
+            return jsonify({'status': 'error', 'message': 'No compatible vehicles found for this size.'})
+    except Exception as e:
+        current_app.logger.warning(f"Error fetching vehicle compatibility from upstream: {e}")
+        return jsonify({'status': 'error', 'message': 'Unable to load compatible vehicles at this time.'})
 
 
 @site_bp.route('/page/<slug>')

@@ -126,6 +126,46 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       return false;
     },
 
+    getMultiselectValues(code) {
+      if (!this.form || !this.form.dynamic_attributes) return [];
+      const cur = this.form.dynamic_attributes[code];
+      if (cur === undefined || cur === null || cur === '') return [];
+      if (Array.isArray(cur)) {
+        return cur.map(v => String(v).trim()).filter(Boolean);
+      }
+      return String(cur).split(',').map(s => s.trim()).filter(Boolean);
+    },
+
+    toggleMultiselectValue(code, val) {
+      if (!this.form.dynamic_attributes) this.form.dynamic_attributes = {};
+      const current = this.getMultiselectValues(code);
+      const strVal = String(val).trim();
+      const idx = current.indexOf(strVal);
+      if (idx > -1) {
+        current.splice(idx, 1);
+      } else {
+        current.push(strVal);
+      }
+      const joined = current.join(',');
+      this.form.dynamic_attributes[code] = joined;
+      this.syncDynamicField(code, joined);
+    },
+
+    selectAllMultiselect(code, options) {
+      if (!this.form.dynamic_attributes) this.form.dynamic_attributes = {};
+      if (!options || !Array.isArray(options)) return;
+      const allVals = options.map(o => String(o.value || '').trim()).filter(Boolean);
+      const joined = allVals.join(',');
+      this.form.dynamic_attributes[code] = joined;
+      this.syncDynamicField(code, joined);
+    },
+
+    clearMultiselect(code) {
+      if (!this.form.dynamic_attributes) this.form.dynamic_attributes = {};
+      this.form.dynamic_attributes[code] = '';
+      this.syncDynamicField(code, '');
+    },
+
     isMultiselectSelected(code, val) {
       const cur = this.form.dynamic_attributes ? this.form.dynamic_attributes[code] : undefined;
       if (cur === undefined || cur === null || cur === '') return false;
@@ -233,10 +273,28 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       speed_rating: '',
       country_of_origin: '',
       year: '',
+      oem_tyres: [],
       attr_code: '',
       attr_value: ''
     },
     filterAttributesList: [],
+    oemFilterOptions: [
+      { value: 'Audi', label: 'Audi' },
+      { value: 'BMW', label: 'BMW (*)' },
+      { value: 'Mercedes-Benz', label: 'Mercedes-Benz (MO)' },
+      { value: 'Porsche', label: 'Porsche (N0)' },
+      { value: 'Tesla', label: 'Tesla' },
+      { value: 'Volvo', label: 'Volvo' },
+      { value: 'Bentley', label: 'Bentley' },
+      { value: 'Genesis,Hyundai', label: 'Genesis / Hyundai' },
+      { value: 'Jaguar', label: 'Jaguar' },
+      { value: 'Land Rover', label: 'Land Rover' },
+      { value: 'Jaguar,Land Rover', label: 'Jaguar & Land Rover' },
+      { value: 'Maserati', label: 'Maserati' },
+      { value: 'Alfa Romeo', label: 'Alfa Romeo (AR)' },
+      { value: 'ContiSeal', label: 'ContiSeal' },
+      { value: 'B Silent', label: 'B Silent' }
+    ],
 
     formDragAttr: null,
     formDragFromGroupId: null,
@@ -681,6 +739,10 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         if (this.filters.speed_rating) params.append('speed_rating', this.filters.speed_rating);
         if (this.filters.country_of_origin) params.append('country_of_origin', this.filters.country_of_origin);
         if (this.filters.year) params.append('year', this.filters.year);
+        if (this.filters.oem_tyres && this.filters.oem_tyres.length) {
+          const oemVal = Array.isArray(this.filters.oem_tyres) ? this.filters.oem_tyres.join(',') : this.filters.oem_tyres;
+          params.append('oem_tyres', oemVal);
+        }
         if (this.filters.attr_code && this.filters.attr_value) {
           params.append('attr_code', this.filters.attr_code);
           params.append('attr_value', this.filters.attr_value);
@@ -733,9 +795,33 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         speed_rating: '',
         country_of_origin: '',
         year: '',
+        oem_tyres: [],
         attr_code: '',
         attr_value: ''
       };
+      this.currentPage = 1;
+      this.fetchProducts();
+    },
+
+    isOemFilterSelected(val) {
+      if (!this.filters.oem_tyres) return false;
+      return this.filters.oem_tyres.includes(val);
+    },
+
+    toggleOemFilter(val) {
+      if (!this.filters.oem_tyres) this.filters.oem_tyres = [];
+      const idx = this.filters.oem_tyres.indexOf(val);
+      if (idx > -1) {
+        this.filters.oem_tyres.splice(idx, 1);
+      } else {
+        this.filters.oem_tyres.push(val);
+      }
+      this.currentPage = 1;
+      this.fetchProducts();
+    },
+
+    clearOemFilter() {
+      this.filters.oem_tyres = [];
       this.currentPage = 1;
       this.fetchProducts();
     },
@@ -889,6 +975,8 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       if (p.run_flat !== undefined && dynAttrs.run_flat === undefined) dynAttrs.run_flat = Boolean(p.run_flat);
       if (p.ev_rated !== undefined && dynAttrs.ev_rated === undefined) dynAttrs.ev_rated = Boolean(p.ev_rated);
       if (p.width && !dynAttrs.width) dynAttrs.width = String(parseInt(p.width, 10));
+      if (p.oem_brand && !dynAttrs.oem_tyres) dynAttrs.oem_tyres = p.oem_brand;
+      if (p.oem_approved !== undefined && dynAttrs.oem_approved === undefined) dynAttrs.oem_approved = Boolean(p.oem_approved);
 
       this.form = {
         id: p.id,
@@ -1090,6 +1178,9 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         }
         if (this.form.dynamic_attributes && this.form.dynamic_attributes.price) {
           payload.price = this.form.dynamic_attributes.price;
+        }
+        if (this.form.dynamic_attributes && this.form.dynamic_attributes.oem_tyres) {
+          payload.oem_brand = this.form.dynamic_attributes.oem_tyres;
         }
 
         payload.website_ids = this.form.website_ids || [1];

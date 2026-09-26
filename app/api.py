@@ -4625,6 +4625,7 @@ def register_visionadmin_api_routes(app):
         speed_rating = request.args.get('speed_rating')
         country_of_origin = request.args.get('country_of_origin')
         year = request.args.get('year')
+        oem_tyres = request.args.get('oem_tyres')
         attr_code = request.args.get('attr_code')
         attr_value = request.args.get('attr_value')
 
@@ -4653,6 +4654,7 @@ def register_visionadmin_api_routes(app):
             speed_rating=speed_rating if speed_rating else None,
             country_of_origin=country_of_origin if country_of_origin else None,
             year=year if year else None,
+            oem_tyres=oem_tyres if oem_tyres else None,
             attr_code=attr_code if attr_code else None,
             attr_value=attr_value if attr_value not in (None, '') else None
         )

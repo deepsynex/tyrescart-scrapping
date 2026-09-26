@@ -1293,12 +1293,12 @@ function createProductCardHTML(p) {
               </div>
             </div>
 
+            ${(p.oem_logos && p.oem_logos.length > 0) ? `
             <div class="car-brand-logos">
-              <img src="/static/assets/images/bmw.png" alt="Brand Image">
-              <img src="/static/assets/images/mercedes-benz.png" alt="Brand Image">
-            </div>
+              ${p.oem_logos.map(l => `<img src="${l.image_url}" alt="${l.name || 'Brand Image'}" title="${l.name || 'Brand Image'} Approved OEM Tyre">`).join('')}
+            </div>` : ''}
 
-            <div class="tyre-type-icons">
+            <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
               <span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
                      <g id="Group_243" data-name="Group 243" transform="translate(0)">
@@ -1341,16 +1341,25 @@ function createProductCardHTML(p) {
 
               <!-- 4. USA __ Runflat __ premium -->
               <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-country" title="Origin">
+                <span class="tv-meta-item tv-meta-country" title="Origin: ${originVal}">
                   <span>${originVal}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
                 </span>
 
                 <span class="tv-meta-item tv-meta-runflat" title="Technology">
                   ${runflatContent}
                 </span>
 
-                <span class="tv-meta-item tv-meta-premium" title="Category">
+                <span class="tv-meta-item tv-meta-premium" title="Category: ${categoryVal}">
                   <span>${categoryVal}</span>
+                  ${categoryVal ? `
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>` : ''}
                 </span>
               </div>
             </div>
@@ -1447,7 +1456,7 @@ function addToCartWithCard(btn, title, basePrice) {
 
 function handleProductCardClick(e, slug) {
   if (!slug) return;
-  if (e.target.closest('button, select, input, a, .tv-btn-quickview, .tv-btn-card-add, .tv-card-price-note, .tv-spec-info-btn, .tv-fitted-info-btn')) {
+  if (e.target.closest('button, select, input, a, .tv-btn-quickview, .tv-btn-card-add, .tv-card-price-note, .tv-spec-info-btn, .tv-fitted-info-btn, .tyre-type-icons')) {
     return;
   }
   window.location.href = '/' + encodeURIComponent(slug).replace(/%2F/g, '/');
@@ -4599,6 +4608,127 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   window.handleDrawerPlaceOrder = handleDrawerPlaceOrder;
   window.resetDrawerAndContinue = resetDrawerAndContinue;
   window.addTyreToCart = addTyreToCart;
+
+  /* ==========================================================================
+     Vehicle Compatibility Overlay Modal (Matching TyresCart Design)
+     ========================================================================== */
+  function ItemSizeClose() {
+    var modal = document.getElementById("item-size");
+    var overlay = document.getElementById("item-size-overlay");
+    if (modal) modal.classList.add("translate-y-full");
+    if (overlay) overlay.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  function filterTyrePopupContent(query) {
+    var container = document.querySelector('#item-size .tyre-popup-content');
+    if (!container) return;
+    var items = container.querySelectorAll(':scope > div');
+    var q = (query || '').toLowerCase().trim();
+    items.forEach(function(item) {
+      var text = item.textContent.toLowerCase();
+      item.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+    });
+  }
+
+  function openTyreVehicleModal(width, height, rim, productName) {
+    // If passed a DOM element, extract attributes from closest product card
+    if (width && typeof width === 'object' && width.nodeType) {
+      var card = width.closest('.tv-product-card') || width.closest('[data-width]') || width.closest('.tv-rel-carousel-card') || width.closest('[data-slug]');
+      if (card) {
+        productName = card.getAttribute('data-full-title') || card.getAttribute('data-title') || card.querySelector('.tv-card-pattern')?.textContent?.trim() || '';
+        width = card.getAttribute('data-width') || '';
+        height = card.getAttribute('data-profile') || card.getAttribute('data-height') || '';
+        rim = card.getAttribute('data-rim') || '';
+
+        // Robust fallback: parse from data-size, data-full-spec, or productName if any dimension missing
+        if (!width || !height || !rim) {
+          var sizeStr = card.getAttribute('data-size') || card.getAttribute('data-full-spec') || productName || '';
+          var match = sizeStr.match(/(\d{3})(?:[\/\s-](\d{2,3}))?\s*(?:R|Z|ZR|r)?\s*(\d{2})/i);
+          if (match) {
+            if (!width) width = match[1];
+            if (!height) height = match[2] || '';
+            if (!rim) rim = match[3];
+          }
+        }
+      }
+    }
+
+    var modal = document.getElementById("item-size");
+    var overlay = document.getElementById("item-size-overlay");
+    var loader = document.getElementById("item-size-loader");
+    var contentEl = document.querySelector("#item-size .tyre-popup-content");
+    var titleEl = document.querySelector("#item-size .product-name");
+    var searchInput = document.getElementById("item-size-search");
+
+    if (titleEl && productName) {
+      titleEl.textContent = productName;
+    }
+    if (searchInput) searchInput.value = '';
+    if (contentEl) contentEl.innerHTML = '';
+    if (loader) loader.classList.remove('hidden');
+
+    if (modal) modal.classList.remove("translate-y-full");
+    if (overlay) overlay.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+
+    var wClean = (String(width || '').match(/\d+/) || ['175'])[0];
+    var hClean = (String(height || '').match(/\d+/) || ['65'])[0];
+    var rClean = (String(rim || '').match(/\d+/) || ['14'])[0];
+
+    var params = new URLSearchParams();
+    params.append('width', wClean);
+    params.append('height', hClean);
+    params.append('rim', rClean);
+
+    fetch('/tyrefinder/ajax/buytyresearch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: params.toString()
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (loader) loader.classList.add('hidden');
+      if (data.status === 'success' && data.html) {
+        if (contentEl) {
+          contentEl.innerHTML = data.html;
+        }
+      } else {
+        if (contentEl) {
+          contentEl.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 font-medium">' + (data.message || 'No vehicle fitment data found for this size.') + '</div>';
+        }
+      }
+    })
+    .catch(function(err) {
+      if (loader) loader.classList.add('hidden');
+      if (contentEl) {
+        contentEl.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 font-medium">Unable to load compatible vehicles. Please try again.</div>';
+      }
+    });
+  }
+
+  // Delegated capturing click listener so clicking the car icon anywhere ALWAYS opens the modal
+  document.addEventListener('click', function(e) {
+    var iconBtn = e.target.closest('.tyre-type-icons');
+    if (iconBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      openTyreVehicleModal(iconBtn);
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var modal = document.getElementById("item-size");
+      if (modal && !modal.classList.contains("translate-y-full")) {
+        ItemSizeClose();
+      }
+    }
+  });
+
+  window.openTyreVehicleModal = openTyreVehicleModal;
+  window.filterTyrePopupContent = filterTyrePopupContent;
+  window.ItemSizeClose = ItemSizeClose;
 
   // Initialize on load
   document.addEventListener('DOMContentLoaded', function() {

@@ -223,7 +223,7 @@
 
       <div x-show="attrFiltersExpanded" class="space-y-3">
         <!-- Row 1: Common Tyre / Catalog Specific Attributes -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2.5">
           <!-- Tyres Category Filter -->
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tyres Category</label>
@@ -324,6 +324,71 @@
               placeholder="e.g. Japan, Germany..." 
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             />
+          </div>
+
+          <!-- OEM Tyres Multi-Select Filter -->
+          <div class="relative" x-data="{ oemFilterOpen: false, oemSearch: '' }" @click.outside="oemFilterOpen = false">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">OEM Tyres</label>
+            <div 
+              @click="oemFilterOpen = !oemFilterOpen" 
+              class="w-full min-h-[33px] px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 hover:border-slate-300 focus:bg-white focus:border-[#4B237B] cursor-pointer flex items-center justify-between gap-1 transition select-none shadow-2xs"
+              :class="filters.oem_tyres && filters.oem_tyres.length ? 'border-[#4B237B] bg-[#f7f4fd] text-[#4B237B]' : 'text-slate-700'"
+            >
+              <span class="truncate text-[11px]" x-text="filters.oem_tyres && filters.oem_tyres.length ? (filters.oem_tyres.length + ' OEM selected') : 'All OEM Tyres'"></span>
+              <svg class="w-3 h-3 text-slate-500 shrink-0 transition-transform duration-200" :class="oemFilterOpen ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </div>
+
+            <!-- Popover dropdown -->
+            <div 
+              x-show="oemFilterOpen" 
+              x-transition:enter="transition ease-out duration-150"
+              x-transition:enter-start="opacity-0 translate-y-1 scale-98"
+              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+              x-transition:leave="transition ease-in duration-100"
+              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+              x-transition:leave-end="opacity-0 translate-y-1 scale-98"
+              class="absolute left-0 top-full mt-1.5 w-60 bg-white border border-slate-200 rounded-xl shadow-xl p-2.5 z-50 text-xs" 
+              style="display: none;"
+              @click.stop
+            >
+              <!-- Search inside filter -->
+              <div class="relative mb-2">
+                <input 
+                  type="text" 
+                  x-model="oemSearch" 
+                  placeholder="Search OEM brands..." 
+                  class="w-full pl-7 pr-2.5 py-1 text-xs rounded-lg border border-slate-200 focus:border-[#4B237B] outline-none" 
+                />
+                <svg class="w-3 h-3 text-slate-400 absolute left-2 top-2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+
+              <!-- Options list -->
+              <div class="max-h-48 overflow-y-auto space-y-0.5 pr-1">
+                <template x-for="opt in oemFilterOptions.filter(o => !oemSearch || o.label.toLowerCase().includes(oemSearch.toLowerCase()) || o.value.toLowerCase().includes(oemSearch.toLowerCase()))" :key="opt.value">
+                  <label 
+                    class="flex items-center justify-between px-2 py-1 rounded-lg hover:bg-slate-50 cursor-pointer transition select-none"
+                    :class="isOemFilterSelected(opt.value) ? 'bg-[#f7f4fd] font-bold text-[#4B237B]' : 'text-slate-700'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        :value="opt.value" 
+                        :checked="isOemFilterSelected(opt.value)" 
+                        @change="toggleOemFilter(opt.value)" 
+                        class="rounded-xs text-[#4B237B] focus:ring-[#4B237B] w-3.5 h-3.5 cursor-pointer accent-[#4B237B]" 
+                      />
+                      <span class="text-[11px]" x-text="opt.label"></span>
+                    </div>
+                  </label>
+                </template>
+              </div>
+
+              <!-- Footer -->
+              <div class="flex items-center justify-between pt-2 mt-1.5 border-t border-slate-100 text-[11px]">
+                <button type="button" @click="clearOemFilter()" class="text-slate-500 hover:text-rose-600 font-medium cursor-pointer">Clear</button>
+                <button type="button" @click="oemFilterOpen = false" class="px-2.5 py-0.5 rounded-md bg-[#4B237B] text-white font-bold cursor-pointer">Done</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -509,6 +574,12 @@
                         <span x-text="p.tire_speed_rating ? 'Speed ' + p.tire_speed_rating : ''"></span>
                         <span x-show="p.run_flat" class="px-1.5 py-0.2 rounded-xs bg-amber-100 text-amber-800 font-bold text-[9px]">RFT</span>
                         <span x-show="p.ev_rated" class="px-1.5 py-0.2 rounded-xs bg-blue-100 text-blue-800 font-bold text-[9px]">EV</span>
+                        <template x-if="p.attributes_json && p.attributes_json.oem_tyres">
+                          <span class="px-1.5 py-0.2 rounded-xs bg-purple-100 text-[#4B237B] font-bold text-[9px]" x-text="'OEM: ' + p.attributes_json.oem_tyres" :title="'OEM: ' + p.attributes_json.oem_tyres"></span>
+                        </template>
+                        <template x-if="(!p.attributes_json || !p.attributes_json.oem_tyres) && p.oem_brand">
+                          <span class="px-1.5 py-0.2 rounded-xs bg-purple-100 text-[#4B237B] font-bold text-[9px]" x-text="'OEM: ' + p.oem_brand" :title="'OEM: ' + p.oem_brand"></span>
+                        </template>
                         <template x-if="p.tyres_category || (p.attributes_json && p.attributes_json.tyres_category)">
                           <span 
                             class="px-1.5 py-0.2 rounded-xs font-bold text-[9px] uppercase tracking-wider"

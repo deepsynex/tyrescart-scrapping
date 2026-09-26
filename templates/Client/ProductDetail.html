@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>
   window.pdpProductPrice = {{ product.price }};
-  window.pdpProductOffer = "{{ (product.offer_banner or 'BUY 3 GET 1 FREE')|escape }}";
+  window.pdpProductOffer = "{{ (product.offer_banner or '')|escape }}";
   window.pdpInitialQty = 4;
 </script>
 <style>
@@ -1662,11 +1662,12 @@
   display: none;
 }
 
-/* Carousel Product Card: Exactly like Product List Page Card */
+/* Carousel Product Card: Minimum 4 cards visible in slider on desktop */
 .tv-rel-carousel-card {
-  flex: 0 0 310px;
-  width: 310px;
-  max-width: 310px;
+  flex: 0 0 calc((100% - 48px) / 4);
+  width: calc((100% - 48px) / 4);
+  max-width: calc((100% - 48px) / 4);
+  min-width: 0;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -1675,6 +1676,7 @@
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
   display: flex;
   flex-direction: column;
+  scroll-snap-align: start;
 }
 
 .tv-rel-carousel-card:hover {
@@ -1683,11 +1685,27 @@
   border-color: #cbd5e1;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
+  .tv-rel-carousel-card {
+    flex: 0 0 calc((100% - 32px) / 3);
+    width: calc((100% - 32px) / 3);
+    max-width: calc((100% - 32px) / 3);
+  }
+}
+
+@media (max-width: 768px) {
+  .tv-rel-carousel-card {
+    flex: 0 0 calc((100% - 16px) / 2);
+    width: calc((100% - 16px) / 2);
+    max-width: calc((100% - 16px) / 2);
+  }
+}
+
+@media (max-width: 540px) {
   .tv-rel-carousel-card {
     flex: 0 0 280px;
     width: 280px;
-    max-width: 280px;
+    max-width: 85vw;
   }
 }
 
@@ -2200,20 +2218,15 @@
 
 
 
-          <!-- Badges Row: Promotional Message -->
+          <!-- Badges Row: Promotional Message (Only when product has an offer) -->
+          {% if product.offer_banner %}
           <div class="tv-ref-badges-row">
-            {% if product.offer_banner %}
-              <span class="tv-ref-badge-promo">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10.42 4.95 12.97 5.25 15.42C5.62 18.39 7.82 20.84 10.74 21.42C13.95 22.06 17.08 20.65 18.45 17.77C19.46 15.61 19.25 13.06 17.66 11.2Z"/></svg>
-                {{ product.offer_banner }}
-              </span>
-            {% else %}
-              <span class="tv-ref-badge-promo">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10.42 4.95 12.97 5.25 15.42C5.62 18.39 7.82 20.84 10.74 21.42C13.95 22.06 17.08 20.65 18.45 17.77C19.46 15.61 19.25 13.06 17.66 11.2Z"/></svg>
-                BUY 3 GET 1 FREE
-              </span>
-            {% endif %}
+            <span class="tv-ref-badge-promo">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10.42 4.95 12.97 5.25 15.42C5.62 18.39 7.82 20.84 10.74 21.42C13.95 22.06 17.08 20.65 18.45 17.77C19.46 15.61 19.25 13.06 17.66 11.2Z"/></svg>
+              {{ product.offer_banner }}
+            </span>
           </div>
+          {% endif %}
 
           <!-- Price Row (Price of 1 Tyre) -->
           <div class="tv-ref-price-block">
@@ -2224,7 +2237,7 @@
 
               <!-- Set price inline, next to the per-tyre price -->
               <span class="tv-ref-set4-subtext">
-                <span id="pdp-set-label">Set of 4:</span> <span class="currency-dirham tv-ref-curr-sub">&#xe900;</span> <strong id="pdp-set4-disp-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</strong>
+                <span id="pdp-set-label">Set of 4:</span> <span class="currency-dirham tv-ref-curr-sub">&#xe900;</span> <strong id="pdp-set4-disp-price">{{ product.price_set4_formatted or "%.2f"|format(product.price_set4 or (product.price * 4)) }}</strong>
               </span>
             </div>
 
@@ -2716,12 +2729,15 @@
               </div>
             </div>
 
+            {% if rp.oem_logos and rp.oem_logos|length > 0 %}
             <div class="car-brand-logos">
-              <img src="{{ url_for('static', filename='assets/images/bmw.png') }}" alt="Brand Image">
-              <img src="{{ url_for('static', filename='assets/images/mercedes-benz.png') }}" alt="Brand Image">
+              {% for logo in rp.oem_logos %}
+              <img src="{{ logo.image_url }}" alt="{{ logo.name }}" title="{{ logo.name }} Approved OEM Tyre">
+              {% endfor %}
             </div>
+            {% endif %}
 
-            <div class="tyre-type-icons">
+            <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
               <span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
                      <g id="Group_243" data-name="Group 243" transform="translate(0)">
@@ -2764,8 +2780,13 @@
 
               <!-- 4. USA __ Runflat __ premium -->
               <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-country" title="Origin">
+                <span class="tv-meta-item tv-meta-country" title="Origin: {{ rp.country_of_origin or 'USA' }}">
                   <span>{{ rp.country_of_origin or 'USA' }}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
                 </span>
 
                 <span class="tv-meta-item tv-meta-runflat" title="Technology">
@@ -2774,8 +2795,13 @@
                   {% endif %}
                 </span>
 
-                <span class="tv-meta-item tv-meta-premium" title="Category">
+                <span class="tv-meta-item tv-meta-premium" title="Category: {{ rp.tyres_category or 'Budget' }}">
                   <span>{{ rp.tyres_category or '' }}</span>
+                  {% if rp.tyres_category %}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  {% endif %}
                 </span>
               </div>
             </div>
@@ -3193,7 +3219,10 @@ function addRelToCart(btn, title, price) {
 function scrollRelated(direction) {
   var carousel = document.getElementById('related-products-carousel');
   if (!carousel) return;
-  var scrollAmount = 326 * direction; // Scroll width of one card + gap
+  var card = carousel.querySelector('.tv-rel-carousel-card');
+  var gap = 16;
+  var cardWidth = card ? card.getBoundingClientRect().width : 286;
+  var scrollAmount = (cardWidth + gap) * direction;
   carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 }
 
