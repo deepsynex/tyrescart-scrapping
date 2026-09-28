@@ -57,6 +57,7 @@ from models.page_section import PageSection
 from models.product import Product
 from models.brand import Brand
 from models.category import Category
+from models.storelocator import StoreLocator
 from services.store_context import StoreContext
 from i18n import get_locale, localize_value, translate, is_rtl, get_translated_value
 from services.audit_service import log_activity, get_activity_logs, get_current_admin_user_id
@@ -3416,6 +3417,190 @@ def register_visionadmin_api_routes(app):
             conn.close()
 
     # =========================================================================
+    # STORE LOCATOR API (Management of tyre fitting centers, mobile vans, etc.)
+    # =========================================================================
+
+    @app.route('/visionadmin/api/storelocator', methods=['GET'])
+    def visionadmin_api_list_storelocator():
+        query = request.args.get('query') or request.args.get('q') or ''
+        status = request.args.get('status')
+        city = request.args.get('city')
+        is_deleted = 1 if request.args.get('trash') in ('1', 'true', 'yes') or request.args.get('is_deleted') in ('1', 'true') else 0
+        try:
+            page = max(1, int(request.args.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        try:
+            per_page = min(100, max(1, int(request.args.get('per_page', 20))))
+        except (ValueError, TypeError):
+            per_page = 20
+
+        data = StoreLocator.search_and_paginate(
+            query=query,
+            status=status,
+            city=city,
+            is_deleted=is_deleted,
+            page=page,
+            per_page=per_page
+        )
+        data['metrics'] = StoreLocator.get_metrics()
+        data['cities'] = StoreLocator.get_unique_cities()
+        data['success'] = True
+        return jsonify(data)
+
+    @app.route('/visionadmin/api/storelocator/<int:locator_id>', methods=['GET'])
+    def visionadmin_api_get_storelocator(locator_id):
+        item = StoreLocator.get_by_id(locator_id)
+        if not item:
+            return jsonify({'success': False, 'error': 'Store locator not found.'}), 404
+        return jsonify({'success': True, 'item': item})
+
+    @app.route('/visionadmin/api/storelocator', methods=['POST'])
+    def visionadmin_api_create_storelocator():
+        payload = request.get_json(silent=True) or request.form.to_dict()
+        if not payload:
+            return jsonify({'success': False, 'error': 'No data payload provided.'}), 400
+
+        name = (payload.get('name') or '').strip()
+        if not name:
+            return jsonify({'success': False, 'error': 'Store Name is required.'}), 400
+
+        latitude = str(payload.get('latitude') or '').strip()
+        longitude = str(payload.get('longitude') or '').strip()
+        if not latitude or not longitude:
+            return jsonify({'success': False, 'error': 'Latitude and Longitude are required coordinates.'}), 400
+
+        try:
+            new_id = StoreLocator.create(payload)
+            user_id = session.get('admin_user_id') or session.get('user_id')
+            log_activity('create', 'storelocator', new_id, None, payload, actor_user_id=user_id)
+            return jsonify({
+                'success': True,
+                'id': new_id,
+                'message': f"Store locator '{name}' created successfully.",
+                'redirect': '/visionadmin/storelocator'
+            }), 201
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/visionadmin/api/storelocator/<int:locator_id>', methods=['PUT', 'POST'])
+    def visionadmin_api_update_storelocator(locator_id):
+        existing = StoreLocator.get_by_id(locator_id)
+        if not existing:
+            return jsonify({'success': False, 'error': 'Store locator not found.'}), 404
+
+        payload = request.get_json(silent=True) or request.form.to_dict()
+        if not payload:
+            return jsonify({'success': False, 'error': 'No data payload provided.'}), 400
+
+        name = (payload.get('name') or existing.get('name') or '').strip()
+        if not name:
+            return jsonify({'success': False, 'error': 'Store Name is required.'}), 400
+
+        latitude = str(payload.get('latitude') if 'latitude' in payload else existing.get('latitude') or '').strip()
+        longitude = str(payload.get('longitude') if 'longitude' in payload else existing.get('longitude') or '').strip()
+        if not latitude or not longitude:
+            return jsonify({'success': False, 'error': 'Latitude and Longitude are required coordinates.'}), 400
+
+        try:
+            merged = dict(existing)
+            merged.update(payload)
+            StoreLocator.update(locator_id, merged)
+            user_id = session.get('admin_user_id') or session.get('user_id')
+            log_activity('update', 'storelocator', locator_id, existing, merged, actor_user_id=user_id)
+            return jsonify({
+                'success': True,
+                'message': f"Store locator '{name}' updated successfully.",
+                'redirect': '/visionadmin/storelocator'
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/visionadmin/api/storelocator/<int:locator_id>', methods=['DELETE'])
+    def visionadmin_api_delete_storelocator(locator_id):
+        existing = StoreLocator.get_by_id(locator_id)
+        if not existing:
+            return jsonify({'success': False, 'error': 'Store locator not found.'}), 404
+
+        user_id = session.get('admin_user_id') or session.get('user_id')
+        if request.args.get('purge') == '1' or existing.get('is_deleted') == 1:
+            StoreLocator.purge(locator_id)
+            log_activity('purge', 'storelocator', locator_id, existing, {'purged': True}, actor_user_id=user_id)
+            return jsonify({'success': True, 'message': f"Store locator '{existing['name']}' permanently deleted."})
+        else:
+            StoreLocator.soft_delete(locator_id)
+            log_activity('delete', 'storelocator', locator_id, existing, {'deleted': True}, actor_user_id=user_id)
+            return jsonify({'success': True, 'message': f"Store locator '{existing['name']}' moved to trash."})
+
+    @app.route('/visionadmin/api/storelocator/<int:locator_id>/restore', methods=['POST'])
+    def visionadmin_api_restore_storelocator(locator_id):
+        existing = StoreLocator.get_by_id(locator_id)
+        if not existing:
+            return jsonify({'success': False, 'error': 'Store locator not found.'}), 404
+
+        StoreLocator.restore(locator_id)
+        user_id = session.get('admin_user_id') or session.get('user_id')
+        log_activity('restore', 'storelocator', locator_id, {'deleted': True}, {'deleted': False}, actor_user_id=user_id)
+        return jsonify({'success': True, 'message': f"Store locator '{existing['name']}' restored successfully."})
+
+    @app.route('/visionadmin/api/storelocator/upload-image', methods=['POST'])
+    def visionadmin_api_upload_storelocator_image():
+        file = request.files.get('file') or request.files.get('image')
+        if not file or not file.filename:
+            return jsonify({'success': False, 'error': 'No image file provided.'}), 400
+
+        allowed_extensions = {'.png', '.jpg', '.jpeg', '.webp', '.svg', '.gif', '.avif'}
+        orig_filename = secure_filename(file.filename)
+        _, ext = os.path.splitext(orig_filename)
+        ext = ext.lower()
+        if ext not in allowed_extensions:
+            return jsonify({'success': False, 'error': f'Invalid image format "{ext}". Allowed formats: PNG, JPG, JPEG, WEBP, SVG, GIF, AVIF'}), 400
+
+        upload_dir = os.path.join(BASE_DIR, 'static', 'uploads', 'storelocator')
+        os.makedirs(upload_dir, exist_ok=True)
+        unique_name = f"storelocator_{int(time.time())}_{uuid.uuid4().hex[:8]}{ext}"
+        save_path = os.path.join(upload_dir, unique_name)
+        file.save(save_path)
+
+        url = f"/static/uploads/storelocator/{unique_name}"
+        return jsonify({
+            'success': True,
+            'url': url,
+            'filename': unique_name,
+            'message': 'Image uploaded successfully.'
+        })
+
+    @app.route('/visionadmin/api/storelocator/store-views-tree', methods=['GET'])
+    def visionadmin_api_storelocator_views_tree():
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, name, code FROM websites WHERE deleted_at IS NULL ORDER BY id ASC")
+                websites = cur.fetchall() or []
+                cur.execute("SELECT id, website_id, name, code FROM stores WHERE deleted_at IS NULL ORDER BY sort_order ASC, id ASC")
+                stores = cur.fetchall() or []
+                cur.execute("SELECT id, store_id, website_id, name, code, locale FROM store_views WHERE deleted_at IS NULL ORDER BY sort_order ASC, id ASC")
+                views = cur.fetchall() or []
+
+                tree = []
+                for w in websites:
+                    w_stores = []
+                    for s in [st for st in stores if st['website_id'] == w['id']]:
+                        s_views = [v for v in views if v['store_id'] == s['id']]
+                        s_name = s['name']
+                        if isinstance(s_name, str) and s_name.startswith('{'):
+                            try:
+                                s_name = json.loads(s_name).get('en', s['code'])
+                            except Exception:
+                                pass
+                        w_stores.append({'id': s['id'], 'name': s_name, 'code': s['code'], 'views': s_views})
+                    tree.append({'id': w['id'], 'name': w['name'], 'code': w['code'], 'stores': w_stores})
+
+                return jsonify({'success': True, 'tree': tree})
+        finally:
+            conn.close()
+
+    # =========================================================================
     # 8. DYNAMIC ATTRIBUTES & ATTRIBUTE SETS API
     # =========================================================================
 
@@ -5053,6 +5238,12 @@ def register_client_api_routes(app):
         into the existing `hdweb_enquiry` table.
         """
         data = request.get_json(silent=True) or request.form.to_dict() or {}
+        if not data and request.data:
+            try:
+                import json
+                data = json.loads(request.data.decode('utf-8'))
+            except Exception:
+                pass
 
         tyre_size = (data.get('tyre_size') or data.get('tyreSize') or '').strip()
         vehicle_raw = (data.get('vehicle') or data.get('carMake') or data.get('car_make') or '').strip()

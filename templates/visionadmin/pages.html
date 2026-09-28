@@ -210,6 +210,16 @@
 
 </div>
 
+<style>
+  @keyframes vaModalSlideLeft {
+    from { transform: translateX(-60px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .animate-slide-left {
+    animation: vaModalSlideLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+</style>
+
 <!-- ========================================================================= -->
 <!-- SLIDE-OVER / MODAL PAGE EDITOR FORM -->
 <!-- ========================================================================= -->
@@ -217,7 +227,7 @@
   <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" id="modal-backdrop"></div>
 
   <div class="min-h-full flex items-center justify-center p-4 sm:p-6">
-    <div class="relative w-full max-w-[89rem] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]" style="max-width: 89rem;">
+    <div class="relative w-full max-w-[89rem] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-slide-left" style="max-width: 89rem;">
       
       <!-- Modal Header -->
       <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
@@ -349,18 +359,42 @@
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     if (window.CKEDITOR) {
+      // Allow ALL HTML tags, attributes, styles, and classes so CKEditor NEVER strips CSS classes or structure
+      CKEDITOR.config.allowedContent = true;
+      CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+      CKEDITOR.config.autoParagraph = false;
+      CKEDITOR.config.fillEmptyBlocks = false;
+      CKEDITOR.config.basicEntities = false;
+      CKEDITOR.config.entities = false;
+      CKEDITOR.config.entities_latin = false;
+      CKEDITOR.config.entities_greek = false;
+      if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
+      CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
+      CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
       CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
       CKEDITOR.config.versionCheck = false;
       
+      const editorConfig = {
+        minHeight: 250,
+        height: 380,
+        allowedContent: true,
+        extraAllowedContent: '*(*);*{*};*[*];*<*>',
+        autoParagraph: false,
+        fillEmptyBlocks: false,
+        basicEntities: false,
+        entities: false,
+        contentsCss: [
+          '/static/css/client.css',
+          '/static/css/page.css'
+        ],
+        removePlugins: 'exportpdf,cloudservices,easyimage',
+        removeButtons: 'About',
+        versionCheck: false
+      };
+
       if (document.getElementById('content_en') && !CKEDITOR.instances['content_en']) {
         try {
-          CKEDITOR.replace('content_en', {
-            minHeight: 200,
-            height: 250,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('content_en', editorConfig);
         } catch (e) {
           console.warn('CKEditor content_en init:', e);
         }
@@ -368,14 +402,9 @@
 
       if (document.getElementById('content_ar') && !CKEDITOR.instances['content_ar']) {
         try {
-          CKEDITOR.replace('content_ar', {
-            minHeight: 200,
-            height: 250,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            contentsLangDirection: 'rtl',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('content_ar', Object.assign({}, editorConfig, {
+            contentsLangDirection: 'rtl'
+          }));
         } catch (e) {
           console.warn('CKEditor content_ar init:', e);
         }

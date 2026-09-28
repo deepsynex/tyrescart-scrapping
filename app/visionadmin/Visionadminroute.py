@@ -654,6 +654,44 @@ def register_visionadmin_routes(app):
     def visionadmin_stores():
         return render_template('visionadmin/stores.html', page='stores')
 
+    # ========================================================================
+    # STORE LOCATOR ROUTES (Full-page management, NOT a modal)
+    # ========================================================================
+    @app.route('/visionadmin/storelocator', methods=['GET'])
+    @app.route('/visionadmin/stores/locator', methods=['GET'])
+    @app.route('/visonadmin/storelocator', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_storelocator():
+        return render_template('visionadmin/storelocator.html', page='storelocator', section='stores')
+
+    @app.route('/visionadmin/storelocator/new', methods=['GET'])
+    @app.route('/visionadmin/storelocator/create', methods=['GET'])
+    @app.route('/visionadmin/stores/locator/new', methods=['GET'])
+    @app.route('/visonadmin/storelocator/new', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_storelocator_create():
+        return render_template(
+            'visionadmin/storelocator_form.html',
+            page='storelocator_form',
+            section='stores',
+            initial_mode='create',
+            initial_id=None
+        )
+
+    @app.route('/visionadmin/storelocator/<int:locator_id>/edit', methods=['GET'])
+    @app.route('/visionadmin/storelocator/edit/<int:locator_id>', methods=['GET'])
+    @app.route('/visionadmin/stores/locator/<int:locator_id>/edit', methods=['GET'])
+    @app.route('/visonadmin/storelocator/<int:locator_id>/edit', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_storelocator_edit(locator_id):
+        return render_template(
+            'visionadmin/storelocator_form.html',
+            page='storelocator_form',
+            section='stores',
+            initial_mode='edit',
+            initial_id=locator_id
+        )
+
     @app.route('/visionadmin/audit-logs', methods=['GET'])
     @app.route('/visionadmin/activity-logs', methods=['GET'])
     @login_required_visionadmin

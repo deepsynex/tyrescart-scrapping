@@ -452,18 +452,41 @@
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     if (window.CKEDITOR) {
+      CKEDITOR.config.allowedContent = true;
+      CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+      CKEDITOR.config.autoParagraph = false;
+      CKEDITOR.config.fillEmptyBlocks = false;
+      CKEDITOR.config.basicEntities = false;
+      CKEDITOR.config.entities = false;
+      CKEDITOR.config.entities_latin = false;
+      CKEDITOR.config.entities_greek = false;
+      if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
+      CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
+      CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
       CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
       CKEDITOR.config.versionCheck = false;
 
+      const blogEditorConfig = {
+        minHeight: 200,
+        height: 280,
+        allowedContent: true,
+        extraAllowedContent: '*(*);*{*};*[*];*<*>',
+        autoParagraph: false,
+        fillEmptyBlocks: false,
+        basicEntities: false,
+        entities: false,
+        contentsCss: [
+          '/static/css/client.css',
+          '/static/css/page.css'
+        ],
+        removePlugins: 'exportpdf,cloudservices,easyimage',
+        removeButtons: 'About',
+        versionCheck: false
+      };
+
       if (document.getElementById('blog_content_en') && !CKEDITOR.instances['blog_content_en']) {
         try {
-          CKEDITOR.replace('blog_content_en', {
-            minHeight: 200,
-            height: 250,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('blog_content_en', blogEditorConfig);
         } catch (e) {
           console.warn('CKEditor blog_content_en init:', e);
         }
@@ -471,14 +494,9 @@
 
       if (document.getElementById('blog_content_ar') && !CKEDITOR.instances['blog_content_ar']) {
         try {
-          CKEDITOR.replace('blog_content_ar', {
-            minHeight: 200,
-            height: 250,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            contentsLangDirection: 'rtl',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('blog_content_ar', Object.assign({}, blogEditorConfig, {
+            contentsLangDirection: 'rtl'
+          }));
         } catch (e) {
           console.warn('CKEditor blog_content_ar init:', e);
         }

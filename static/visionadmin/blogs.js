@@ -58,9 +58,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Hook change events to automatically sync to textarea
+  // Hook change events and disable ACF to preserve all HTML/CSS formatting
   if (window.CKEDITOR) {
+    CKEDITOR.config.allowedContent = true;
+    CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+    CKEDITOR.config.autoParagraph = false;
+    CKEDITOR.config.fillEmptyBlocks = false;
+    CKEDITOR.config.basicEntities = false;
+    CKEDITOR.config.entities = false;
+    CKEDITOR.config.entities_latin = false;
+    CKEDITOR.config.entities_greek = false;
+
     CKEDITOR.on('instanceReady', function(evt) {
+      try {
+        if (evt.editor && evt.editor.filter) {
+          evt.editor.filter.disabled = true;
+        }
+      } catch (err) {}
       evt.editor.on('change', function() {
         this.updateElement();
       });

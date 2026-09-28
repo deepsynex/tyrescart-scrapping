@@ -1,48 +1,51 @@
 /* visionadmin.css - VisionAdmin Executive Content Studio Design System */
 :root {
   /* ── Purple brand scale (50–950) ───────────────────────────── */
-  --brand-50:  #f7f4fd;
+  --brand-50: #f7f4fd;
   --brand-100: #ede5fa;
   --brand-200: #daccf5;
   --brand-300: #c0a8ed;
   --brand-400: #9f7dde;
-  --brand-500: #4B237B;   /* primary */
-  --brand-600: #3a1960;   /* primary-dark (hover) */
-  --brand-700: #2b1247;   /* deep */
+  --brand-500: #4B237B;
+  /* primary */
+  --brand-600: #3a1960;
+  /* primary-dark (hover) */
+  --brand-700: #2b1247;
+  /* deep */
   --brand-800: #3a1960;
   --brand-900: #2b1247;
   --brand-950: #1c0b30;
 
   /* ── Semantic aliases (used by components) ──────────────────── */
-  --green:              var(--brand-500);
-  --green-bright:       var(--brand-400);
-  --green-deep:         var(--brand-700);
-  --green-tint:         var(--brand-50);
-  --ink:                #0E1108;
-  --slate:              #4C5548;
-  --line:               #E3E7DE;
-  --bg:                 #FFFFFF;
-  --bg-soft:            #F6F8F3;
-  --radius:             14px;
+  --green: var(--brand-500);
+  --green-bright: var(--brand-400);
+  --green-deep: var(--brand-700);
+  --green-tint: var(--brand-50);
+  --ink: #0E1108;
+  --slate: #4C5548;
+  --line: #E3E7DE;
+  --bg: #FFFFFF;
+  --bg-soft: #F6F8F3;
+  --radius: 14px;
 
-  --brand-green:        var(--brand-500);
+  --brand-green: var(--brand-500);
   --brand-green-bright: var(--brand-400);
-  --brand-green-deep:   var(--brand-700);
-  --brand-green-tint:   var(--brand-50);
+  --brand-green-deep: var(--brand-700);
+  --brand-green-tint: var(--brand-50);
   --brand-green-subtle: var(--brand-100);
-  --brand-ink:          #0E1108;
-  --brand-ink-light:    #1E293B;
-  --brand-slate:        #64748B;
-  --brand-slate-light:  #94A3B8;
-  --brand-line:         #E8EDE4;
-  --brand-line-light:   #F1F5F0;
-  --brand-bg:           #F8FAF7;
-  --brand-card-bg:      #FFFFFF;
-  --brand-radius-sm:    12px;
-  --brand-radius:       18px;
-  --brand-radius-lg:    24px;
-  --brand-shadow-sm:    0 1px 3px rgba(75, 35, 123, 0.06);
-  --brand-shadow:       0 10px 30px -10px rgba(75, 35, 123, 0.08), 0 0 0 1px rgba(232, 237, 228, 0.8);
+  --brand-ink: #0E1108;
+  --brand-ink-light: #1E293B;
+  --brand-slate: #64748B;
+  --brand-slate-light: #94A3B8;
+  --brand-line: #E8EDE4;
+  --brand-line-light: #F1F5F0;
+  --brand-bg: #F8FAF7;
+  --brand-card-bg: #FFFFFF;
+  --brand-radius-sm: 12px;
+  --brand-radius: 18px;
+  --brand-radius-lg: 24px;
+  --brand-shadow-sm: 0 1px 3px rgba(75, 35, 123, 0.06);
+  --brand-shadow: 0 10px 30px -10px rgba(75, 35, 123, 0.08), 0 0 0 1px rgba(232, 237, 228, 0.8);
   --brand-shadow-hover: 0 18px 40px -12px rgba(75, 35, 123, 0.18), 0 0 0 1px rgba(75, 35, 123, 0.3);
 }
 
@@ -61,6 +64,50 @@ body {
 .va-nav-active {
   background-color: var(--brand-green-tint) !important;
   color: var(--brand-ink) !important;
+}
+
+.logo:hover .swoosh {
+  transform: rotate(15deg) scale(1.08);
+}
+
+.group .word {
+  font-size: 1.24rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -.02em;
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.group .t1 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--text-heading, #0F172A);
+}
+
+.group .t2 {
+  color: var(--primary, #4B237B);
+  letter-spacing: -.03em;
+}
+
+.group .oring {
+  display: inline-block;
+  width: .72em;
+  height: .72em;
+  border-radius: 50%;
+  border: .13em solid var(--primary, #4B237B);
+  position: relative;
+  margin: 0 .02em;
+  transform: translateY(-.02em);
+}
+
+.group .oring::after {
+  content: "";
+  position: absolute;
+  inset: .14em;
+  border-radius: 50%;
+  background: var(--sky-blue, #9f7dde);
 }
 
 /* Status Badges */
@@ -351,7 +398,7 @@ body {
   outline: none;
   color: #0E1108;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .dataTables_wrapper .dataTables_filter input {
@@ -441,7 +488,7 @@ select:not(.no-va-select):not(.hidden) {
   cursor: pointer !important;
   outline: none !important;
   transition: all 0.2s ease !important;
-  background-image: 
+  background-image:
     radial-gradient(circle 3.5px, #4B237B 100%, transparent 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%231D4ED8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat, no-repeat !important;
@@ -493,6 +540,3 @@ select:not(.no-va-select):not(.hidden):focus {
 .va-option-btn {
   font-family: inherit;
 }
-
-
-

@@ -1,0 +1,1074 @@
+{% extends "visionadmin/base.html" %}
+
+{% block title %}{% if initial_id %}Edit Store Locator - VisionAdmin{% else %}New Store Locator - VisionAdmin{% endif %}{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl mx-auto pb-16" x-data="visionStoreLocatorFormApp('{{ initial_mode | default('create', true) }}', {{ initial_id | default('null', true) }})" x-init="initData()">
+
+  <!-- Top Action Header Matching Screenshot Style -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+        <a href="/visionadmin/stores" class="hover:text-[#2b1247] transition">Stores</a>
+        <span>/</span>
+        <a href="/visionadmin/storelocator" class="hover:text-[#2b1247] transition">Store Locator</a>
+        <span>/</span>
+        <span class="text-[#2b1247] font-bold" x-text="form.id ? 'Edit: ' + (form.name || 'Store #' + form.id) : 'New Store Locator'"></span>
+      </div>
+      <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1" x-text="form.id ? ('Edit Store Locator: ' + form.name) : 'New Store Locator'"></h1>
+      <p class="text-xs text-slate-500 font-medium mt-0.5" x-text="form.id ? ('City: ' + (form.city || 'N/A') + ' • Coordinates: ' + form.latitude + ', ' + form.longitude) : 'Fill in the store identity, geographical coordinates, contact info, and operating hours schedule.'"></p>
+    </div>
+
+    <!-- Top Action Buttons (NO MODAL: Full Page Form) -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      <a 
+        href="/visionadmin/storelocator" 
+        class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs active:scale-95"
+      >
+        <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+        <span>Back to Store Locator</span>
+      </a>
+
+      <button 
+        type="button" 
+        @click="resetForm()" 
+        class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs active:scale-95"
+      >
+        Reset
+      </button>
+
+      <button 
+        type="button" 
+        @click="saveStoreLocator(false)" 
+        :disabled="saving"
+        class="px-5 py-2.5 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs disabled:opacity-50 active:scale-95"
+      >
+        <span x-text="saving ? 'Saving...' : 'Save & Continue Edit'"></span>
+      </button>
+
+      <button 
+        type="button" 
+        @click="saveStoreLocator(true)" 
+        :disabled="saving"
+        class="px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
+      >
+        <span x-text="saving ? 'Saving...' : 'Save Store Locator'"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <template x-if="loading">
+    <div class="bg-white p-16 rounded-3xl border border-[#E8EDE4] text-center text-slate-400">
+      <div class="inline-flex items-center gap-3">
+        <svg class="animate-spin h-6 w-6 text-[#4B237B]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+        <span class="font-bold text-sm text-slate-600">Loading store locator details...</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- FORM CONTAINER (Full page, matching screenshot) -->
+  <form @submit.prevent="saveStoreLocator(true)" x-show="!loading" class="space-y-6">
+
+    <!-- 1. GENERAL / TOP BASIC FIELDS (Direct on form, matching screenshot) -->
+    <div class="bg-white p-6 sm:p-8 rounded-3xl border border-[#E8EDE4] shadow-xs space-y-6">
+      
+      <!-- Name (English) -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Name <span class="text-rose-500">*</span>
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="text" 
+            x-model="form.name" 
+            @input="if (!form.id && !form.url_key) generateUrlKey()"
+            required 
+            placeholder="Tyres and Wheels - Ras Al-Khaimah"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/15"
+          />
+          <p class="text-[11px] text-slate-400 mt-1">Enter full store name here</p>
+        </div>
+      </div>
+
+      <!-- Name Arabic -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Name Arabic
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="text" 
+            dir="rtl"
+            x-model="form.name_ar" 
+            placeholder="الإطارات والعجلات - رأس الخيمة"
+            class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/15 font-arabic text-right"
+          />
+          <p class="text-[11px] text-slate-400 mt-1">Enter store name in Arabic</p>
+        </div>
+      </div>
+
+      <!-- Status Toggle (Yes / No) -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Status
+        </label>
+        <div class="md:col-span-3 flex items-center gap-3">
+          <button 
+            type="button" 
+            @click="form.status = form.status ? 0 : 1" 
+            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+            :class="form.status ? 'bg-emerald-500' : 'bg-slate-300'"
+          >
+            <span 
+              class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+              :class="form.status ? 'translate-x-5' : 'translate-x-0'"
+            ></span>
+          </button>
+          <span class="text-xs font-bold" :class="form.status ? 'text-emerald-600' : 'text-slate-400'" x-text="form.status ? 'Yes' : 'No'"></span>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Category
+        </label>
+        <div class="md:col-span-3">
+          <select 
+            x-model="form.category" 
+            class="w-full sm:w-80 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+          >
+            <option value="">-- Please Select --</option>
+            <option value="Standard Installer">Standard Installer</option>
+            <option value="Mobile Van Service">Mobile Van Service</option>
+            <option value="Premium Fitment Center">Premium Fitment Center</option>
+            <option value="Express Workshop">Express Workshop</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Is Mobile Van -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Is Mobile Van
+        </label>
+        <div class="md:col-span-3">
+          <select 
+            x-model="form.is_mobile_van" 
+            class="w-full sm:w-48 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+          >
+            <option :value="0">No</option>
+            <option :value="1">Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Shipping Amount -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Shipping Amount
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="number" 
+            step="0.01" 
+            x-model="form.shipping_amount" 
+            placeholder="0.00"
+            class="w-full sm:w-80 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+          />
+        </div>
+      </div>
+
+      <!-- Installer Sort Order -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Installer Sort Order
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="number" 
+            x-model="form.installer_sort_order" 
+            placeholder="16"
+            class="w-full sm:w-80 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+          />
+        </div>
+      </div>
+
+      <!-- Skip Days -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Skip Days
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="number" 
+            x-model="form.skip_days" 
+            placeholder="2"
+            class="w-full sm:w-80 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+          />
+          <p class="text-[11px] text-slate-400 mt-1">Number of days to skip from today. 0 = today available, 1 = earliest is tomorrow.</p>
+        </div>
+      </div>
+
+      <!-- Cutoff Time -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Cutoff Time
+        </label>
+        <div class="md:col-span-3">
+          <select 
+            x-model="form.cutoff_time" 
+            class="w-full sm:w-80 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+          >
+            <option value="">-- No Cutoff --</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="12:00">12:00 PM (Noon)</option>
+            <option value="14:00">02:00 PM</option>
+            <option value="16:00">04:00 PM</option>
+            <option value="18:00">06:00 PM</option>
+            <option value="20:00">08:00 PM</option>
+          </select>
+          <p class="text-[11px] text-slate-400 mt-1">If current time passes this cutoff, today becomes unavailable. Only applies when Skip Days = 0.</p>
+        </div>
+      </div>
+
+      <!-- Skip Hours -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Skip Hours
+        </label>
+        <div class="md:col-span-3">
+          <select 
+            x-model="form.skip_hours" 
+            class="w-full sm:w-80 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+          >
+            <option value="0">-- None --</option>
+            <option value="1 Hour">1 Hour</option>
+            <option value="2 Hours">2 Hours</option>
+            <option value="3 Hours">3 Hours</option>
+            <option value="4 Hours">4 Hours</option>
+            <option value="6 Hours">6 Hours</option>
+            <option value="12 Hours">12 Hours</option>
+            <option value="24 Hours">24 Hours</option>
+            <option value="48 Hours">48 Hours</option>
+          </select>
+          <p class="text-[11px] text-slate-400 mt-1">Minimum hours from now before a time slot is available. Only applies for today when Skip Days = 0.</p>
+        </div>
+      </div>
+
+      <!-- Comming Soon -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Comming Soon
+        </label>
+        <div class="md:col-span-3">
+          <select 
+            x-model="form.coming_soon" 
+            class="w-full sm:w-48 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+          >
+            <option :value="0">No</option>
+            <option :value="1">Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Opening Hours One -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Opening Hours One
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="text" 
+            x-model="form.opening_hours_one" 
+            placeholder="09:00 - 13:00"
+            class="w-full sm:w-96 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+          />
+        </div>
+      </div>
+
+      <!-- Opening Hours Two -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+        <label class="block text-xs font-bold text-slate-700 md:text-right">
+          Opening Hours Two
+        </label>
+        <div class="md:col-span-3">
+          <input 
+            type="text" 
+            x-model="form.opening_hours_two" 
+            placeholder="16:00 - 22:00"
+            class="w-full sm:w-96 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+          />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. SECTION: ADDRESS (Collapsible Accordion) -->
+    <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+      <!-- Section Header -->
+      <button 
+        type="button" 
+        @click="toggleSection('address')" 
+        class="w-full px-6 sm:px-8 py-5 flex items-center justify-between bg-white hover:bg-slate-50/50 transition cursor-pointer text-left border-b border-[#E8EDE4]"
+      >
+        <span class="text-base font-black text-[#0E1108]">Address</span>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="isSectionOpen('address') ? 'rotate-180' : ''" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        ><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- Section Body -->
+      <div x-show="isSectionOpen('address')" class="p-6 sm:p-8 space-y-6">
+        
+        <!-- Longitude -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Longitude <span class="text-rose-500">*</span>
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.longitude" 
+              required
+              placeholder="55.9727251"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-mono"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Example for Silicon Roundabout, London: -0.088302</p>
+          </div>
+        </div>
+
+        <!-- Latitude -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Latitude <span class="text-rose-500">*</span>
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.latitude" 
+              required
+              placeholder="25.7565826"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-mono"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Example for Silicon Roundabout, London: 51.525127</p>
+          </div>
+        </div>
+
+        <!-- Address Arabic -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Address Arabic
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              dir="rtl"
+              x-model="form.address_ar" 
+              placeholder="379 شارع الظيتة - القصيدات"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-arabic text-right"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Enter store address in Arabic</p>
+          </div>
+        </div>
+
+        <!-- City Arabic -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            City Arabic
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              dir="rtl"
+              x-model="form.city_ar" 
+              placeholder="رأس الخيمة"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-arabic text-right"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Enter city name in Arabic</p>
+          </div>
+        </div>
+
+        <!-- Postcode -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Postcode
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.postcode" 
+              placeholder="00000"
+              class="w-full sm:w-80 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Country -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Country
+          </label>
+          <div class="md:col-span-3">
+            <select 
+              x-model="form.country" 
+              class="w-full sm:w-80 px-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-[#4B237B]"
+            >
+              <option value="United Arab Emirates">United Arab Emirates</option>
+              <option value="Saudi Arabia">Saudi Arabia</option>
+              <option value="Oman">Oman</option>
+              <option value="Qatar">Qatar</option>
+              <option value="Bahrain">Bahrain</option>
+              <option value="Kuwait">Kuwait</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Region -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Region
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.region" 
+              placeholder="Ras Al Khaimah"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- City -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            City
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.city" 
+              placeholder="Ras Al Khaimah"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Address
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.address" 
+              placeholder="379 Al Thiba St - Al Qussaidat"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. SECTION: CONTACT (Collapsible Accordion) -->
+    <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+      <!-- Section Header -->
+      <button 
+        type="button" 
+        @click="toggleSection('contact')" 
+        class="w-full px-6 sm:px-8 py-5 flex items-center justify-between bg-white hover:bg-slate-50/50 transition cursor-pointer text-left border-b border-[#E8EDE4]"
+      >
+        <span class="text-base font-black text-[#0E1108]">Contact</span>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="isSectionOpen('contact') ? 'rotate-180' : ''" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        ><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- Section Body -->
+      <div x-show="isSectionOpen('contact')" class="p-6 sm:p-8 space-y-6">
+        
+        <!-- External Link -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            External Link
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="url" 
+              x-model="form.external_link" 
+              placeholder="https://maps.app.goo.gl/sGWKjzcG8q2Sc1EeA"
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">If your store has an individual store details page and it is on a different website, enter it here. Format: http://...</p>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Phone
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.phone" 
+              placeholder="+971 50 506 9575"
+              class="w-full sm:w-96 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Email
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="email" 
+              x-model="form.email" 
+              placeholder="info@tyrescart.ae"
+              class="w-full sm:w-96 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Google Map (iframe embed) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Google Map
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="3" 
+              x-model="form.google_map" 
+              placeholder='<iframe src="https://www.google.com/maps/embed?...'
+              class="w-full px-4 py-2.5 text-xs font-mono border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Image (Main Image) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Image
+          </label>
+          <div class="md:col-span-3 space-y-2">
+            <div class="flex items-center gap-3">
+              <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-2xs cursor-pointer active:scale-95 transition">
+                <span>Upload</span>
+                <input type="file" accept="image/*" class="hidden" @change="uploadImage('image', $event.target)" />
+              </label>
+              <span class="text-xs text-slate-400" x-show="uploading.image">Uploading...</span>
+            </div>
+
+            <!-- Preview Card Matching Screenshot -->
+            <div x-show="form.image" class="inline-block p-2 border border-slate-200 rounded-2xl bg-white shadow-2xs max-w-xs">
+              <div class="w-24 h-24 rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100 p-1 mb-2">
+                <img :src="form.image" alt="Store Main Image" class="max-w-full max-h-full object-contain" />
+              </div>
+              <div class="flex items-center justify-between gap-2 px-1">
+                <span class="text-[10px] text-slate-400 font-mono truncate max-w-[140px]" x-text="form.image"></span>
+                <button type="button" @click="removeImage('image')" class="text-rose-500 hover:text-rose-700 p-1 transition cursor-pointer" title="Delete Image">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Images 1 to 5 -->
+        <template x-for="idx in [1, 2, 3, 4, 5]" :key="idx">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+            <label class="block text-xs font-bold text-slate-700 md:text-right pt-2" x-text="'Image ' + idx"></label>
+            <div class="md:col-span-3 space-y-2">
+              <div class="flex items-center gap-3">
+                <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-2xs cursor-pointer active:scale-95 transition">
+                  <span>Upload</span>
+                  <input type="file" accept="image/*" class="hidden" @change="uploadImage('image_' + idx, $event.target)" />
+                </label>
+                <span class="text-xs text-slate-400" x-show="uploading['image_' + idx]">Uploading...</span>
+              </div>
+
+              <!-- Preview Card -->
+              <div x-show="form['image_' + idx]" class="inline-block p-2 border border-slate-200 rounded-2xl bg-white shadow-2xs max-w-xs">
+                <div class="w-20 h-20 rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100 p-1 mb-2">
+                  <img :src="form['image_' + idx]" :alt="'Image ' + idx" class="max-w-full max-h-full object-contain" />
+                </div>
+                <div class="flex items-center justify-between gap-2 px-1">
+                  <span class="text-[10px] text-slate-400 font-mono truncate max-w-[120px]" x-text="form['image_' + idx]"></span>
+                  <button type="button" @click="removeImage('image_' + idx)" class="text-rose-500 hover:text-rose-700 p-1 transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+
+      </div>
+    </div>
+
+    <!-- 4. SECTION: STORE DETAILS (Collapsible Accordion) -->
+    <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+      <!-- Section Header -->
+      <button 
+        type="button" 
+        @click="toggleSection('storeDetails')" 
+        class="w-full px-6 sm:px-8 py-5 flex items-center justify-between bg-white hover:bg-slate-50/50 transition cursor-pointer text-left border-b border-[#E8EDE4]"
+      >
+        <span class="text-base font-black text-[#0E1108]">Store Details</span>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="isSectionOpen('storeDetails') ? 'rotate-180' : ''" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        ><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- Section Body -->
+      <div x-show="isSectionOpen('storeDetails')" class="p-6 sm:p-8 space-y-6">
+        
+        <!-- Intro -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Intro
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="3" 
+              x-model="form.intro" 
+              placeholder="Certified tyre workshop and fitting center..."
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Description
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="3" 
+              x-model="form.description" 
+              placeholder="Complete overview of tyres, installation bay capacity, wheel alignment, battery replacement..."
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Distance -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Distance
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.distance" 
+              placeholder="5 km"
+              class="w-full sm:w-80 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Nearest Station -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Nearest Station
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.nearest_station" 
+              placeholder="Ras Al Khaimah Bus Station"
+              class="w-full sm:w-96 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+          </div>
+        </div>
+
+        <!-- Url Key -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Url Key
+          </label>
+          <div class="md:col-span-3">
+            <div class="flex items-center gap-2">
+              <input 
+                type="text" 
+                x-model="form.url_key" 
+                placeholder="tyres-and-wheels-ras-al-khaimah"
+                class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-mono"
+              />
+              <button 
+                type="button" 
+                @click="generateUrlKey()" 
+                class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold shadow-2xs whitespace-nowrap"
+              >
+                Generate
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">If you want a store details page on the same website enter your url here. If the final url is www.website.com/storelocator/waterloo then you need to enter only waterloo.</p>
+          </div>
+        </div>
+
+        <!-- Store Details Image -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Store Details Image
+          </label>
+          <div class="md:col-span-3 space-y-2">
+            <div class="flex items-center gap-3">
+              <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-2xs cursor-pointer active:scale-95 transition">
+                <span>Upload</span>
+                <input type="file" accept="image/*" class="hidden" @change="uploadImage('store_details_image', $event.target)" />
+              </label>
+              <span class="text-xs text-slate-400" x-show="uploading.store_details_image">Uploading...</span>
+            </div>
+
+            <!-- Preview Card -->
+            <div x-show="form.store_details_image" class="inline-block p-2 border border-slate-200 rounded-2xl bg-white shadow-2xs max-w-xs">
+              <div class="w-20 h-20 rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100 p-1 mb-2">
+                <img :src="form.store_details_image" alt="Store Details Image" class="max-w-full max-h-full object-contain" />
+              </div>
+              <div class="flex items-center justify-between gap-2 px-1">
+                <span class="text-[10px] text-slate-400 font-mono truncate max-w-[120px]" x-text="form.store_details_image"></span>
+                <button type="button" @click="removeImage('store_details_image')" class="text-rose-500 hover:text-rose-700 p-1 transition cursor-pointer">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Included (HTML snippets) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Service Included
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="4" 
+              x-model="form.service_included" 
+              placeholder='<div class="bg-white"><p class="text-base md:text-lg mb-3 font-medium">Wheel Alignment, Wheel Balancing, Tyre Fitting, Nitrogen Air</p></div>'
+              class="w-full px-4 py-2.5 text-xs font-mono border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Meta Title -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Meta Title
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              x-model="form.meta_title" 
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Browser title and search engine title for the store details page. Leave empty to use the store name.</p>
+          </div>
+        </div>
+
+        <!-- Meta Description -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Meta Description
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="2" 
+              x-model="form.meta_description" 
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B]"
+            ></textarea>
+            <p class="text-[11px] text-slate-400 mt-1">Around 150-160 characters. Leave empty to use the intro field.</p>
+          </div>
+        </div>
+
+        <!-- Meta Title Arabic -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <label class="block text-xs font-bold text-slate-700 md:text-right">
+            Meta Title Arabic
+          </label>
+          <div class="md:col-span-3">
+            <input 
+              type="text" 
+              dir="rtl"
+              x-model="form.meta_title_ar" 
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-arabic text-right"
+            />
+            <p class="text-[11px] text-slate-400 mt-1">Used on the Arabic store views. Leave empty to fall back to the English Meta Title.</p>
+          </div>
+        </div>
+
+        <!-- Meta Description Arabic -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Meta Description Arabic
+          </label>
+          <div class="md:col-span-3">
+            <textarea 
+              rows="2" 
+              dir="rtl"
+              x-model="form.meta_description_ar" 
+              class="w-full px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-[#4B237B] font-arabic text-right"
+            ></textarea>
+            <p class="text-[11px] text-slate-400 mt-1">Used on the Arabic store views. Leave empty to fall back to the English Meta Description.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5. SECTION: MANAGE STORE VIEWS (Collapsible Accordion) -->
+    <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+      <!-- Section Header -->
+      <button 
+        type="button" 
+        @click="toggleSection('storeViews')" 
+        class="w-full px-6 sm:px-8 py-5 flex items-center justify-between bg-white hover:bg-slate-50/50 transition cursor-pointer text-left border-b border-[#E8EDE4]"
+      >
+        <span class="text-base font-black text-[#0E1108]">Manage Store views</span>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="isSectionOpen('storeViews') ? 'rotate-180' : ''" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        ><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- Section Body -->
+      <div x-show="isSectionOpen('storeViews')" class="p-6 sm:p-8 space-y-4">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+          <label class="block text-xs font-bold text-slate-700 md:text-right pt-2">
+            Store View <span class="text-rose-500">*</span>
+          </label>
+          
+          <div class="md:col-span-3">
+            <!-- Magento Multi-Select Box Representation -->
+            <div class="w-full sm:w-80 border border-slate-300 rounded-xl overflow-hidden bg-white shadow-2xs divide-y divide-slate-100 text-xs">
+              
+              <!-- All Store Views Option -->
+              <div 
+                @click="toggleAllStoreViews()" 
+                class="px-3 py-2 cursor-pointer transition select-none flex items-center justify-between font-bold"
+                :class="isAllStoreViewsSelected() ? 'bg-slate-200/90 text-slate-900' : 'hover:bg-slate-50 text-slate-700'"
+              >
+                <span>All Store Views</span>
+                <span x-show="isAllStoreViewsSelected()" class="text-[#4B237B] font-black">✓</span>
+              </div>
+
+              <!-- Hierarchy Tree Rendered Dynamically -->
+              <template x-for="website in storeViewsTree" :key="website.id">
+                <div class="bg-white">
+                  <!-- Website Level -->
+                  <div class="px-3 py-1.5 font-black text-slate-800 bg-slate-50/70 border-t border-slate-100 text-[11px] tracking-wide" x-text="website.name"></div>
+                  
+                  <!-- Stores Level -->
+                  <template x-for="st in website.stores" :key="st.id">
+                    <div>
+                      <div class="pl-6 pr-3 py-1 font-bold text-slate-600 text-[11px]" x-text="st.name"></div>
+                      
+                      <!-- Views Level (Indented) -->
+                      <template x-for="view in st.views" :key="view.id">
+                        <div 
+                          @click="toggleStoreView(view.id)" 
+                          class="pl-9 pr-3 py-1.5 cursor-pointer transition select-none flex items-center justify-between font-medium"
+                          :class="isStoreViewSelected(view.id) ? 'bg-[#f7f4fd] text-[#4B237B] font-bold' : 'hover:bg-slate-50 text-slate-700'"
+                        >
+                          <span x-text="view.name + ' (' + view.code + ')'"></span>
+                          <span x-show="isStoreViewSelected(view.id)" class="text-[#4B237B] font-black">✓</span>
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+            
+            <p class="text-[11px] text-slate-400 mt-2">Click to select specific store views or 'All Store Views'.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 6. SECTION: OPENING HOURS (Collapsible Accordion with Interactive Visual Slider) -->
+    <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+      <!-- Section Header -->
+      <button 
+        type="button" 
+        @click="toggleSection('openingHours')" 
+        class="w-full px-6 sm:px-8 py-5 flex items-center justify-between bg-white hover:bg-slate-50/50 transition cursor-pointer text-left border-b border-[#E8EDE4]"
+      >
+        <div class="flex items-center gap-2">
+          <span class="text-base font-black text-[#0E1108]">Opening Hours</span>
+          <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <svg 
+          class="w-5 h-5 text-slate-400 transition-transform duration-200" 
+          :class="isSectionOpen('openingHours') ? 'rotate-180' : ''" 
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        ><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <!-- Section Body -->
+      <div x-show="isSectionOpen('openingHours')" class="p-6 sm:p-8 space-y-8">
+        
+        <!-- Instruction Banner Matching Screenshot -->
+        <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
+          <div class="flex items-center gap-2 text-slate-600 font-bold">
+            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-200 text-slate-700 text-xs">?</span>
+            <span>Double-click on an opening hour range to delete it. Drag blocks to move, drag edges to resize.</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button 
+              type="button" 
+              @click="setStandardWeekHours(true)" 
+              class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-[11px] shadow-2xs transition"
+            >
+              Set 9 AM - 6 PM (Mon-Sat)
+            </button>
+            <button 
+              type="button" 
+              @click="clearAllHours()" 
+              class="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[11px] shadow-2xs transition"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- 7 Days Interactive Timeline Sliders -->
+        <div class="space-y-7">
+          <template x-for="day in daysList" :key="day.key">
+            <div class="space-y-2">
+              
+              <!-- Day Header & Summary Label Matching Screenshot -->
+              <div class="flex items-center justify-between text-xs pt-2">
+                <div class="flex items-baseline gap-2">
+                  <span class="font-bold text-slate-800 text-sm" x-text="day.label"></span>
+                  <span class="font-normal text-slate-500 text-xs" x-show="(form.schedule_json[day.key] || []).length > 0" x-text="formatDayHours(day.key)"></span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button 
+                    type="button" 
+                    @click="addTimeSlot(day.key)" 
+                    class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-[11px] shadow-2xs transition cursor-pointer"
+                  >
+                    + Add Slot
+                  </button>
+                  <button 
+                    type="button" 
+                    x-show="(form.schedule_json[day.key] || []).length > 0" 
+                    @click="clearDayHours(day.key)" 
+                    class="px-2 py-1 rounded-lg text-rose-500 hover:bg-rose-50 font-bold text-[11px] transition cursor-pointer"
+                  >
+                    Close Day
+                  </button>
+                </div>
+              </div>
+
+              <!-- Visual Slider Track Container Matching User Screenshot -->
+              <div class="relative pt-1 select-none pb-2">
+                
+                <!-- 3-Hour Marker Ticks Above the Timeline (Matching Screenshot exactly) -->
+                <div class="relative h-6 select-none">
+                  <template x-for="(tick, tIdx) in ticks" :key="'tick_' + tIdx">
+                    <div 
+                      class="absolute flex flex-col items-center -translate-x-1/2 text-[10px] text-slate-400 font-mono"
+                      :style="'left: ' + tick.percent + '%;'"
+                    >
+                      <span x-text="'&quot;' + tick.label + '&quot;'"></span>
+                      <span class="w-px h-1.5 bg-slate-300 mt-0.5"></span>
+                    </div>
+                  </template>
+                </div>
+
+                <!-- The 24h Track Bar Matching Screenshot -->
+                <div 
+                  class="va-hours-track relative h-3 bg-white border border-slate-300 rounded-full cursor-pointer shadow-inner"
+                  @click="onTrackClick(day.key, $event)"
+                >
+                  <!-- Active Orange/Coral Range Blocks with White/Silver Cap Handles -->
+                  <template x-for="(range, idx) in (form.schedule_json[day.key] || [])" :key="'range_' + idx">
+                    <div 
+                      class="va-hours-range absolute -top-1 -bottom-1 bg-[#EA580C] rounded-full shadow-sm cursor-grab flex items-center justify-between text-white text-[10px] font-bold z-10"
+                      :style="getRangeStyle(range)"
+                      @dblclick.stop="removeTimeSlot(day.key, idx)"
+                      @pointerdown.stop="onRangePointerDown(day.key, idx, $event)"
+                      :title="range.start + ' - ' + range.end + ' (Double click to delete)'"
+                    >
+                      <!-- Left Resize Handle Cap -->
+                      <div 
+                        class="va-range-handle va-range-handle-left w-3 h-5 bg-white border border-slate-400 rounded-sm shadow-xs cursor-ew-resize flex items-center justify-center -ml-1 hover:bg-slate-100"
+                        @pointerdown.stop="onHandlePointerDown(day.key, idx, 'left', $event)"
+                      >
+                        <span class="w-0.5 h-2.5 bg-slate-400 rounded-full"></span>
+                      </div>
+
+                      <!-- Range Time Label -->
+                      <span class="va-range-label px-1 truncate select-none text-[9px] font-mono tracking-tight" x-text="range.start + ' - ' + range.end"></span>
+
+                      <!-- Right Resize Handle Cap -->
+                      <div 
+                        class="va-range-handle va-range-handle-right w-3 h-5 bg-white border border-slate-400 rounded-sm shadow-xs cursor-ew-resize flex items-center justify-center -mr-1 hover:bg-slate-100"
+                        @pointerdown.stop="onHandlePointerDown(day.key, idx, 'right', $event)"
+                      >
+                        <span class="w-0.5 h-2.5 bg-slate-400 rounded-full"></span>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+
+              </div>
+
+            </div>
+          </template>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Action Header -->
+    <div class="flex items-center justify-end gap-3 pt-4">
+      <a 
+        href="/visionadmin/storelocator" 
+        class="px-5 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs"
+      >
+        Cancel
+      </a>
+      <button 
+        type="button" 
+        @click="saveStoreLocator(false)" 
+        :disabled="saving"
+        class="px-5 py-2.5 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs disabled:opacity-50"
+      >
+        <span x-text="saving ? 'Saving...' : 'Save & Continue Edit'"></span>
+      </button>
+      <button 
+        type="submit" 
+        :disabled="saving"
+        class="px-7 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
+      >
+        <span x-text="saving ? 'Saving...' : 'Save Store Locator'"></span>
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- Load Store Locator Form Controller Script -->
+<script src="/static/visionadmin/storelocator_form.js"></script>
+{% endblock %}

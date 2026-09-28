@@ -97,66 +97,38 @@
           {% endfor %}
         </div>
 
-        <!-- 1. Warranty Period -->
+        <!-- 1. Tyres Category -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
-              <span>Warranty Period</span>
+              <span>Tyres Category</span>
             </div>
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
-          <div class="tv-filter-list" id="filter-warranty-list">
-            {% if filter_warranties|length == 0 %}
-            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No warranty options available</span>
+          <div class="tv-filter-list" id="filter-tyres-category-list">
+            {% if filter_tyres_categories|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No categories available</span>
             {% endif %}
-            {% for w in filter_warranties %}
-            {% set is_active_w = active_warranties and (w.warranty in active_warranties or (w.warranty|lower) in active_warranties) %}
-            <label class="tv-filter-item {% if w.count == 0 and not is_active_w %}tv-filter-empty{% endif %}" data-filter-name="{{ w.warranty }}">
+            {% for tc in filter_tyres_categories %}
+            {% set is_active_tc = active_tyres_categories and (tc.category in active_tyres_categories or (tc.category|lower) in active_tyres_categories or (tc.category|capitalize) in active_tyres_categories) %}
+            <label class="tv-filter-item {% if tc.count == 0 and not is_active_tc %}tv-filter-empty{% endif %}" data-filter-name="{{ tc.category }}">
               <span class="tv-filter-item-left">
-                <input type="checkbox" name="warranty" value="{{ w.warranty }}" {% if is_active_w %}checked{% endif %} onchange="filterProducts()">
-                <span>{{ w.warranty }}</span>
+                <input type="checkbox" name="tyres_category" value="{{ tc.category }}" {% if is_active_tc %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ tc.category }}</span>
               </span>
-              <span class="tv-filter-count">{{ "{:,}".format(w.count) }}</span>
+              <span class="tv-filter-count">{{ "{:,}".format(tc.count) }}</span>
             </label>
             {% endfor %}
           </div>
         </div>
 
-        <!-- 2. Year -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
-            <div class="tv-filter-header-title">
-              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>Year</span>
-            </div>
-            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-          </div>
-          <div class="tv-filter-list" id="filter-year-list">
-            {% if filter_years|length == 0 %}
-            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No years available</span>
-            {% endif %}
-            {% for y in filter_years %}
-            {% set is_active_y = active_years and (y.year|string in active_years) %}
-            <label class="tv-filter-item {% if y.count == 0 and not is_active_y %}tv-filter-empty{% endif %}" data-filter-name="{{ y.year }}">
-              <span class="tv-filter-item-left">
-                <input type="checkbox" name="year" value="{{ y.year }}" {% if is_active_y %}checked{% endif %} onchange="filterProducts()">
-                <span>{{ y.year }}</span>
-              </span>
-              <span class="tv-filter-count">{{ "{:,}".format(y.count) }}</span>
-            </label>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- 3. Brand -->
+        <!-- 2. Brand -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
@@ -186,7 +158,7 @@
           </div>
         </div>
 
-        <!-- 4. Pattern -->
+        <!-- 3. Pattern -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
@@ -215,6 +187,35 @@
                 <span>{{ p.pattern }}</span>
               </span>
               <span class="tv-filter-count">{{ "{:,}".format(p.count) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 4. Tyre Marking -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>Tyre Marking</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <input type="text" class="tv-search-filter-box" placeholder="Search Tyre Marking..." oninput="searchFilterList(this, '#filter-marking-list')">
+          <div class="tv-filter-list tv-filter-scroll-list" id="filter-marking-list">
+            {% if filter_tyre_markings|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No tyre markings available</span>
+            {% endif %}
+            {% for tm in filter_tyre_markings %}
+            {% set is_active_tm = active_tyre_markings and (tm.marking in active_tyre_markings or (tm.marking|lower) in active_tyre_markings) %}
+            <label class="tv-filter-item {% if tm.count == 0 and not is_active_tm %}tv-filter-empty{% endif %}" data-filter-name="{{ tm.marking }}">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="tyre_marking" value="{{ tm.marking }}" {% if is_active_tm %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ tm.marking }}</span>
+              </span>
+              <span class="tv-filter-count">{{ "{:,}".format(tm.count) }}</span>
             </label>
             {% endfor %}
           </div>
@@ -250,65 +251,7 @@
           </div>
         </div>
 
-        <!-- 6. Run Flat -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
-            <div class="tv-filter-header-title">
-              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="4"></circle>
-                <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
-                <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
-                <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
-                <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
-              </svg>
-              <span>Run Flat</span>
-            </div>
-            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-          </div>
-          <div class="tv-filter-list" id="filter-runflat-list">
-            <label class="tv-filter-item {% if (filter_runflat_count or 0) == 0 and not active_runflat %}tv-filter-empty{% endif %}" data-filter-name="Run Flat">
-              <span class="tv-filter-item-left">
-                <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
-                <span>Run Flat</span>
-              </span>
-              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 0) }}</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 7. Origin -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
-            <div class="tv-filter-header-title">
-              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span>Origin</span>
-            </div>
-            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-          </div>
-          <input type="text" class="tv-search-filter-box" placeholder="Search Origin..." oninput="searchFilterList(this, '#filter-origin-list')">
-          <div class="tv-filter-list tv-filter-scroll-list" id="filter-origin-list">
-            {% if filter_origins|length == 0 %}
-            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No origins available</span>
-            {% endif %}
-            {% for org in filter_origins %}
-            {% set is_active_org = active_origins and (org.origin in active_origins or (org.origin|lower) in active_origins or (org.origin|lower|replace(' ', '-')) in active_origins or (org.origin|lower|replace('-', ' ')) in active_origins) %}
-            <label class="tv-filter-item {% if org.count == 0 and not is_active_org %}tv-filter-empty{% endif %}" data-filter-name="{{ org.origin }}">
-              <span class="tv-filter-item-left">
-                <input type="checkbox" name="origin" value="{{ org.origin }}" {% if is_active_org %}checked{% endif %} onchange="filterProducts()">
-                <span>{{ org.origin }}</span>
-              </span>
-              <span class="tv-filter-count">{{ "{:,}".format(org.count) }}</span>
-            </label>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- 7. Promotion -->
+        <!-- 6. Promotion -->
         <div class="tv-filter-group is-collapsed">
           <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
@@ -335,6 +278,145 @@
                 <span>{{ pr.label }}</span>
               </span>
               <span class="tv-filter-count">{{ "{:,}".format(pr.count) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 7. RunFlat -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+                <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+                <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+                <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+                <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+              </svg>
+              <span>RunFlat</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <div class="tv-filter-list" id="filter-runflat-list">
+            <label class="tv-filter-item {% if (filter_runflat_count or 0) == 0 and not active_runflat %}tv-filter-empty{% endif %}" data-filter-name="Run Flat">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
+                <span>RunFlat</span>
+              </span>
+              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 0) }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 8. EV Tyre -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              <span>EV Tyre</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <div class="tv-filter-list" id="filter-ev-list">
+            <label class="tv-filter-item {% if (filter_ev_tyre_count or 0) == 0 and not active_ev_tyre %}tv-filter-empty{% endif %}" data-filter-name="EV Tyre">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="ev_tyre" value="ev" {% if active_ev_tyre %}checked{% endif %} onchange="filterProducts()">
+                <span>EV Tyre</span>
+              </span>
+              <span class="tv-filter-count" id="tv-filter-count-ev">{{ "{:,}".format(filter_ev_tyre_count or 0) }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 9. Warranty Period -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>Warranty Period</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <div class="tv-filter-list" id="filter-warranty-list">
+            {% if filter_warranties|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No warranty options available</span>
+            {% endif %}
+            {% for w in filter_warranties %}
+            {% set is_active_w = active_warranties and (w.warranty in active_warranties or (w.warranty|lower) in active_warranties) %}
+            <label class="tv-filter-item {% if w.count == 0 and not is_active_w %}tv-filter-empty{% endif %}" data-filter-name="{{ w.warranty }}">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="warranty" value="{{ w.warranty }}" {% if is_active_w %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ w.warranty }}</span>
+              </span>
+              <span class="tv-filter-count">{{ "{:,}".format(w.count) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 10. Year -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Year</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <div class="tv-filter-list" id="filter-year-list">
+            {% if filter_years|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No years available</span>
+            {% endif %}
+            {% for y in filter_years %}
+            {% set is_active_y = active_years and (y.year|string in active_years) %}
+            <label class="tv-filter-item {% if y.count == 0 and not is_active_y %}tv-filter-empty{% endif %}" data-filter-name="{{ y.year }}">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="year" value="{{ y.year }}" {% if is_active_y %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ y.year }}</span>
+              </span>
+              <span class="tv-filter-count">{{ "{:,}".format(y.count) }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 11. Origin -->
+        <div class="tv-filter-group is-collapsed">
+          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+            <div class="tv-filter-header-title">
+              <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>Origin</span>
+            </div>
+            <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </div>
+          <input type="text" class="tv-search-filter-box" placeholder="Search Origin..." oninput="searchFilterList(this, '#filter-origin-list')">
+          <div class="tv-filter-list tv-filter-scroll-list" id="filter-origin-list">
+            {% if filter_origins|length == 0 %}
+            <span style="font-size: 0.85rem; color: #94A3B8; padding: 4px 0;">No origins available</span>
+            {% endif %}
+            {% for org in filter_origins %}
+            {% set is_active_org = active_origins and (org.origin in active_origins or (org.origin|lower) in active_origins or (org.origin|lower|replace(' ', '-')) in active_origins or (org.origin|lower|replace('-', ' ')) in active_origins) %}
+            <label class="tv-filter-item {% if org.count == 0 and not is_active_org %}tv-filter-empty{% endif %}" data-filter-name="{{ org.origin }}">
+              <span class="tv-filter-item-left">
+                <input type="checkbox" name="origin" value="{{ org.origin }}" {% if is_active_org %}checked{% endif %} onchange="filterProducts()">
+                <span>{{ org.origin }}</span>
+              </span>
+              <span class="tv-filter-count">{{ "{:,}".format(org.count) }}</span>
             </label>
             {% endfor %}
           </div>
@@ -671,6 +753,7 @@
               </div>
             </div>
 
+            {#
             <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '{{ p.pattern_name or p.display_name }}', {{ p.price }});" aria-label="Add to cart">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1"></circle>
@@ -679,6 +762,21 @@
               </svg>
               <span>Add to Cart</span>
             </button>
+            #}
+            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')') | urlencode }}" 
+               target="_blank" 
+               rel="noopener" 
+               class="tv-btn-card-wa" 
+               data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+               data-enquiry-for="Product Enquiry: {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+               data-form-type="product_card_whatsapp"
+               data-tyre-size="{{ p.tire_size_label or '' }}"
+               data-brand="{{ p.brand_name or '' }}"
+               onclick="event.stopPropagation()" 
+               aria-label="Inquire on WhatsApp">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              <span>WhatsApp</span>
+            </a>
           </div>
           </div>
           <!-- /product-bottom-detail -->
@@ -812,6 +910,13 @@
                 <span class="tv-qv-stock-badge">
                   <span class="tv-qv-stock-dot"></span> In Stock
                 </span>
+                <!-- Top brand & action buttons (Wishlist & Share) -->
+            <div class="tv-qv-meta-top">
+              <div class="tv-qv-brand-main">
+                <img id="tv-qv-brand-logo" src="" alt="Brand Logo" class="tv-qv-brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <span id="tv-qv-brand-fallback" class="tv-qv-brand-fallback" style="display:none;">WINDFORCE</span>
+              </div>
+            </div>
               </div>
 
               <!-- Center Stage with Radial Glow and Tyre Image (No arrows) -->
@@ -825,13 +930,7 @@
 
           <!-- Right Column: Brand, Title, Subtitle, Specifications, Price, Trust, Tabs -->
           <div class="tv-qv-right-col">
-            <!-- Top brand & action buttons (Wishlist & Share) -->
-            <div class="tv-qv-meta-top">
-              <div class="tv-qv-brand-main">
-                <img id="tv-qv-brand-logo" src="" alt="Brand Logo" class="tv-qv-brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                <span id="tv-qv-brand-fallback" class="tv-qv-brand-fallback" style="display:none;">WINDFORCE</span>
-              </div>
-            </div>
+            
 
             <!-- Product Title & Subtitle -->
             <h3 id="tv-qv-title" class="tv-qv-product-title">Windforce 155 R12C 8GQ Mile Max 2025</h3>
@@ -986,6 +1085,7 @@
 
               <!-- Controls on the right: Stepper + Add to Cart + Contact Us -->
               <div class="tv-qv-cta-group">
+                {#
                 <div class="tv-qv-cta-top-row">
                   <div class="tv-qv-stepper">
                     <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(-1)" aria-label="Decrease quantity">&minus;</button>
@@ -997,6 +1097,11 @@
                     <span>Add to Cart</span>
                   </button>
                 </div>
+                #}
+                <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20inquire%20about%20tyres" id="tv-qv-wa-btn" target="_blank" rel="noopener" class="tv-qv-wa-btn" aria-label="Inquire on WhatsApp">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                  <span>WhatsApp Enquiry</span>
+                </a>
                 <a href="/contact-us" id="tv-qv-contact-btn" class="tv-qv-contact-outline-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                   <span>Contact Us</span>

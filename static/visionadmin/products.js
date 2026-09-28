@@ -255,6 +255,19 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         this.form.ev_rated = Boolean(val);
       } else if (code === 'warranty_period' || code === 'warranty_months') {
         if (val || !this.form.warranty_months) this.form.warranty_months = val;
+      } else if (code === 'oem_tyres' || code === 'oem_brand') {
+        let cleanVal = '';
+        if (Array.isArray(val)) {
+          cleanVal = val.map(v => String(v).trim()).filter(Boolean).join(',');
+        } else if (val) {
+          cleanVal = String(val).trim();
+        }
+        this.form.oem_brand = cleanVal;
+        this.form.oem_approved = Boolean(cleanVal);
+        if (this.form.dynamic_attributes) {
+          this.form.dynamic_attributes['oem_tyres'] = cleanVal;
+          this.form.dynamic_attributes['oem_approved'] = Boolean(cleanVal);
+        }
       }
     },
 
@@ -353,10 +366,40 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       await Promise.all([this.fetchBrands(), this.fetchCategories(), this.fetchAttributeSets(), this.fetchWebsites(), this.fetchFilterAttributes()]);
       await this.fetchProducts();
 
-      // Listen to filter search debounce
-      this.$watch('filters.search', () => {
-        this.currentPage = 1;
-        this.fetchProducts();
+      // Listen to filter changes to reset page to 1 and fetch
+      const filterWatchKeys = [
+        'filters.search',
+        'filters.brand_id',
+        'filters.category_id',
+        'filters.vehicle_type',
+        'filters.stock_status',
+        'filters.attribute_set_id',
+        'filters.tyres_category',
+        'filters.parts_category',
+        'filters.run_flat',
+        'filters.ev_rated',
+        'filters.rim_size',
+        'filters.speed_rating',
+        'filters.country_of_origin',
+        'filters.year'
+      ];
+      filterWatchKeys.forEach(k => {
+        this.$watch(k, () => {
+          this.currentPage = 1;
+          this.fetchProducts();
+        });
+      });
+      this.$watch('filters.attr_value', () => {
+        if (this.filters.attr_code) {
+          this.currentPage = 1;
+          this.fetchProducts();
+        }
+      });
+      this.$watch('filters.attr_code', () => {
+        if (this.filters.attr_value) {
+          this.currentPage = 1;
+          this.fetchProducts();
+        }
       });
 
       // Check URL and initialView parameters to determine whether to open full-page form
@@ -772,6 +815,11 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       }
     },
 
+    onFilterChange() {
+      this.currentPage = 1;
+      this.fetchProducts();
+    },
+
     setTab(tab) {
       this.currentTab = tab;
       this.currentPage = 1;
@@ -1179,8 +1227,19 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         if (this.form.dynamic_attributes && this.form.dynamic_attributes.price) {
           payload.price = this.form.dynamic_attributes.price;
         }
-        if (this.form.dynamic_attributes && this.form.dynamic_attributes.oem_tyres) {
-          payload.oem_brand = this.form.dynamic_attributes.oem_tyres;
+
+        const oemVal = this.form.dynamic_attributes ? this.form.dynamic_attributes.oem_tyres : this.form.oem_brand;
+        let finalOem = '';
+        if (Array.isArray(oemVal)) {
+          finalOem = oemVal.map(v => String(v).trim()).filter(Boolean).join(',');
+        } else if (oemVal && String(oemVal).trim()) {
+          finalOem = String(oemVal).trim();
+        }
+        payload.oem_brand = finalOem || null;
+        payload.oem_approved = Boolean(finalOem);
+        if (payload.dynamic_attributes) {
+          payload.dynamic_attributes.oem_tyres = finalOem;
+          payload.dynamic_attributes.oem_approved = Boolean(finalOem);
         }
 
         payload.website_ids = this.form.website_ids || [1];

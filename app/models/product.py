@@ -348,16 +348,53 @@ class Product:
 
                 if search:
                     s = f"%{search.strip()}%"
-                    where_clauses.append("(p.sku LIKE %s OR p.display_name LIKE %s OR p.tire_size_label LIKE %s OR p.slug LIKE %s)")
-                    params.extend([s, s, s, s])
+                    where_clauses.append("""(
+                        p.sku LIKE %s 
+                        OR p.display_name LIKE %s 
+                        OR p.tire_size_label LIKE %s 
+                        OR p.slug LIKE %s
+                        OR p.tire_pattern LIKE %s
+                        OR EXISTS (SELECT 1 FROM brands b2 WHERE b2.id = p.brand_id AND b2.name LIKE %s)
+                    )""")
+                    params.extend([s, s, s, s, s, s])
 
                 if brand_id:
                     where_clauses.append("p.brand_id = %s")
                     params.append(brand_id)
 
                 if category_id:
-                    where_clauses.append("(p.category_id = %s OR EXISTS (SELECT 1 FROM product_categories pc WHERE pc.product_id = p.id AND pc.category_id = %s))")
-                    params.extend([category_id, category_id])
+                    try:
+                        cat_id_int = int(category_id)
+                        cursor.execute("SELECT id, parent_id FROM categories WHERE deleted_at IS NULL")
+                        all_cats = cursor.fetchall() or []
+                        parent_map = {}
+                        for c in all_cats:
+                            pid = c.get('parent_id')
+                            cid = c.get('id')
+                            if pid:
+                                parent_map.setdefault(pid, []).append(cid)
+                        
+                        target_ids = {cat_id_int}
+                        to_visit = [cat_id_int]
+                        while to_visit:
+                            curr = to_visit.pop()
+                            children = parent_map.get(curr, [])
+                            for child in children:
+                                if child not in target_ids:
+                                    target_ids.add(child)
+                                    to_visit.append(child)
+                        
+                        placeholders = ', '.join(['%s'] * len(target_ids))
+                        where_clauses.append(f"""(
+                            p.category_id IN ({placeholders}) 
+                            OR EXISTS (SELECT 1 FROM product_categories pc WHERE pc.product_id = p.id AND pc.category_id IN ({placeholders}))
+                        )""")
+                        cat_id_list = list(target_ids)
+                        params.extend(cat_id_list)
+                        params.extend(cat_id_list)
+                    except Exception:
+                        where_clauses.append("(p.category_id = %s OR EXISTS (SELECT 1 FROM product_categories pc WHERE pc.product_id = p.id AND pc.category_id = %s))")
+                        params.extend([category_id, category_id])
 
                 if attribute_set_id:
                     where_clauses.append("p.attribute_set_id = %s")
@@ -372,28 +409,81 @@ class Product:
                     params.append(stock_status)
 
                 if vehicle_type:
-                    where_clauses.append("p.vehicle_type = %s")
-                    params.append(vehicle_type)
+                    vt = str(vehicle_type).strip().lower()
+                    if vt == 'suv':
+                        where_clauses.append("(p.vehicle_type = 'suv' OR LOWER(p.display_name) LIKE %s OR LOWER(p.tire_pattern) LIKE %s OR JSON_EXTRACT(p.attributes_json, '$.vehicle_type') LIKE %s)")
+                        params.extend(['%suv%', '%suv%', '%suv%'])
+                    elif vt in ('4x4', '4wd', 'offroad', 'off_road'):
+                        where_clauses.append("(p.vehicle_type = '4x4' OR LOWER(p.display_name) LIKE %s OR LOWER(p.tire_pattern) LIKE %s OR JSON_EXTRACT(p.attributes_json, '$.vehicle_type') LIKE %s)")
+                        params.extend(['%4x4%', '%4x4%', '%4x4%'])
+                    elif vt in ('van', 'commercial', 'truck'):
+                        where_clauses.append("(p.vehicle_type = 'van' OR LOWER(p.display_name) LIKE %s OR LOWER(p.tire_pattern) LIKE %s OR JSON_EXTRACT(p.attributes_json, '$.vehicle_type') LIKE %s)")
+                        params.extend(['%van%', '%van%', '%van%'])
+                    elif vt in ('ev', 'electric'):
+                        where_clauses.append("""(
+                            p.vehicle_type = 'ev' 
+                            OR p.ev_rated = 1 
+                            OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev')) IN ('1', 'yes', 'true') 
+                            OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_tyre')) IN ('1', 'yes', 'true') 
+                            OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_rated')) IN ('1', 'yes', 'true') 
+                            OR LOWER(p.display_name) LIKE %s 
+                            OR LOWER(p.display_name) LIKE %s 
+                            OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE %s 
+                            OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE %s
+                        )""")
+                        params.extend(['% ev %', '%elect%', '%Elect%', '%EV%'])
+                    elif vt in ('bike', 'motorcycle'):
+                        where_clauses.append("(p.vehicle_type = 'bike' OR LOWER(p.display_name) LIKE %s OR LOWER(p.display_name) LIKE %s)")
+                        params.extend(['%bike%', '%moto%'])
+                    elif vt == 'car':
+                        where_clauses.append("(p.vehicle_type = 'car' OR p.vehicle_type IS NULL)")
+                    else:
+                        where_clauses.append("p.vehicle_type = %s")
+                        params.append(vt)
 
                 if tyres_category:
                     tc_val = str(tyres_category).strip()
-                    where_clauses.append("(p.tyres_category = %s OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyres_category')) = %s)")
+                    where_clauses.append("(LOWER(p.tyres_category) = LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyres_category'))) = LOWER(%s))")
                     params.extend([tc_val, tc_val])
 
                 if parts_category:
                     pc_val = str(parts_category).strip()
-                    where_clauses.append("(p.parts_category = %s OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.parts_category')) = %s)")
+                    where_clauses.append("(LOWER(p.parts_category) = LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.parts_category'))) = LOWER(%s))")
                     params.extend([pc_val, pc_val])
 
                 if run_flat is not None and str(run_flat).strip() != '':
-                    rf_val = 1 if str(run_flat).strip().lower() in ('1', 'true', 'yes') else 0
-                    where_clauses.append("p.run_flat = %s")
-                    params.append(rf_val)
+                    is_rf = 1 if str(run_flat).strip().lower() in ('1', 'true', 'yes') else 0
+                    rf_cond = """(
+                        p.run_flat = 1 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IN ('yes', '1', 'true', 'rft', 'RunFlat', 'runflat') 
+                        OR LOWER(p.display_name) LIKE %s 
+                        OR LOWER(p.display_name) LIKE %s
+                    )"""
+                    if is_rf:
+                        where_clauses.append(rf_cond)
+                        params.extend(['%runflat%', '%run flat%'])
+                    else:
+                        where_clauses.append(f"NOT {rf_cond}")
+                        params.extend(['%runflat%', '%run flat%'])
 
                 if ev_rated is not None and str(ev_rated).strip() != '':
-                    ev_val = 1 if str(ev_rated).strip().lower() in ('1', 'true', 'yes') else 0
-                    where_clauses.append("p.ev_rated = %s")
-                    params.append(ev_val)
+                    is_ev = 1 if str(ev_rated).strip().lower() in ('1', 'true', 'yes') else 0
+                    ev_cond = """(
+                        p.ev_rated = 1 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev')) IN ('1', 'yes', 'true') 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_tyre')) IN ('1', 'yes', 'true') 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_rated')) IN ('1', 'yes', 'true') 
+                        OR LOWER(p.display_name) LIKE %s 
+                        OR LOWER(p.display_name) LIKE %s 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE %s 
+                        OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE %s
+                    )"""
+                    if is_ev:
+                        where_clauses.append(ev_cond)
+                        params.extend(['% ev %', '%elect%', '%Elect%', '%EV%'])
+                    else:
+                        where_clauses.append(f"NOT {ev_cond}")
+                        params.extend(['% ev %', '%elect%', '%Elect%', '%EV%'])
 
                 if rim_size:
                     clean_rim = str(rim_size).strip().upper().replace('R', '').replace('"', '')
@@ -416,11 +506,11 @@ class Product:
                 if country_of_origin:
                     co = str(country_of_origin).strip()
                     where_clauses.append("""
-                        (p.country_of_origin = %s 
-                         OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.country')) = %s 
-                         OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.country_of_origin')) = %s)
+                        (p.country_of_origin LIKE %s 
+                         OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.country')) LIKE %s 
+                         OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.country_of_origin')) LIKE %s)
                     """)
-                    params.extend([co, co, co])
+                    params.extend([f"%{co}%", f"%{co}%", f"%{co}%"])
 
                 if year:
                     try:
@@ -495,6 +585,10 @@ class Product:
                 cursor.execute(count_sql, tuple(params))
                 total_items = cursor.fetchone()['cnt']
 
+                total_pages = max(1, (total_items + per_page - 1) // per_page)
+                if page > total_pages and total_items > 0:
+                    page = 1
+
                 # Paginated items with brand, category and attribute set names joined
                 offset = max(0, (page - 1) * per_page)
                 items_sql = f"""
@@ -516,8 +610,6 @@ class Product:
                 page_params = list(params) + [per_page, offset]
                 cursor.execute(items_sql, tuple(page_params))
                 rows = cursor.fetchall() or []
-
-                total_pages = max(1, (total_items + per_page - 1) // per_page)
                 return {
                     'items': [cls.to_dict(r) for r in rows],
                     'total': total_items,
@@ -987,8 +1079,14 @@ class Product:
                 for spec_col in ['tire_speed_rating', 'tire_load_index', 'tire_pattern',
                                  'oem_brand', 'country_of_origin']:
                     if spec_col in data:
+                        val = (str(data[spec_col]).strip()) if data[spec_col] else None
                         fields.append(f"{spec_col} = %s")
-                        params.append(data[spec_col] or None)
+                        params.append(val)
+
+                if 'oem_brand' in data and not (data['oem_brand'] and str(data['oem_brand']).strip()):
+                    if 'oem_approved' not in data:
+                        fields.append("oem_approved = %s")
+                        params.append(0)
 
                 for bool_col in ['run_flat', 'ev_rated', 'oem_approved', 'is_featured', 'is_new', 'manage_stock', 'pay_later_eligible']:
                     if bool_col in data:
@@ -1150,20 +1248,28 @@ class Product:
                 # Sync dynamic attributes into EAV product_attribute_values
                 if dyn_attrs is not None:
                     for attr_code, attr_val in dyn_attrs.items():
-                        if attr_val is None or attr_val == '':
-                            continue
                         cursor.execute("SELECT id FROM attributes WHERE code = %s AND deleted_at IS NULL", (attr_code,))
                         attr_row = cursor.fetchone()
                         if attr_row:
-                            try:
-                                AttributeService.save_product_scoped_attribute(
-                                    product_id=product_id,
-                                    attribute_id=attr_row['id'],
-                                    value=attr_val,
-                                    user_id=user_id
-                                )
-                            except Exception:
-                                pass
+                            if attr_val is None or attr_val == '':
+                                cursor.execute("DELETE FROM product_attribute_values WHERE product_id = %s AND attribute_id = %s", (product_id, attr_row['id']))
+                            else:
+                                try:
+                                    AttributeService.save_product_scoped_attribute(
+                                        product_id=product_id,
+                                        attribute_id=attr_row['id'],
+                                        value=attr_val,
+                                        user_id=user_id
+                                    )
+                                except Exception:
+                                    pass
+
+                    # If oem_brand is cleared or oem_tyres is empty, ensure stale oem_tyres EAV record is deleted
+                    if ('oem_brand' in data and not data['oem_brand']) or (dyn_attrs and not dyn_attrs.get('oem_tyres')):
+                        cursor.execute("SELECT id FROM attributes WHERE code = 'oem_tyres' AND deleted_at IS NULL")
+                        oem_attr = cursor.fetchone()
+                        if oem_attr:
+                            cursor.execute("DELETE FROM product_attribute_values WHERE product_id = %s AND attribute_id = %s", (product_id, oem_attr['id']))
 
                 # Sync product websites
                 if 'website_ids' in data or 'website_id' in data:

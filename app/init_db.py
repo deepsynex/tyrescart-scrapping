@@ -216,6 +216,65 @@ CREATE TABLE IF NOT EXISTS `blogs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 """
 
+CREATE_STORELOCATOR_TBL = """
+CREATE TABLE IF NOT EXISTS `storelocator` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `name_ar` VARCHAR(255) NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 1,
+  `category` VARCHAR(100) NULL,
+  `is_mobile_van` TINYINT(1) NOT NULL DEFAULT 0,
+  `shipping_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `installer_sort_order` INT NOT NULL DEFAULT 0,
+  `skip_days` INT NOT NULL DEFAULT 0,
+  `cutoff_time` VARCHAR(50) NULL,
+  `skip_hours` VARCHAR(50) NULL,
+  `coming_soon` TINYINT(1) NOT NULL DEFAULT 0,
+  `opening_hours_one` VARCHAR(255) NULL,
+  `opening_hours_two` VARCHAR(255) NULL,
+  `longitude` VARCHAR(50) NOT NULL,
+  `latitude` VARCHAR(50) NOT NULL,
+  `address_ar` VARCHAR(500) NULL,
+  `city_ar` VARCHAR(255) NULL,
+  `postcode` VARCHAR(50) NULL,
+  `country` VARCHAR(100) NOT NULL DEFAULT 'United Arab Emirates',
+  `region` VARCHAR(255) NULL,
+  `city` VARCHAR(255) NULL,
+  `address` VARCHAR(500) NULL,
+  `external_link` VARCHAR(500) NULL,
+  `phone` VARCHAR(100) NULL,
+  `email` VARCHAR(255) NULL,
+  `google_map` TEXT NULL,
+  `image` VARCHAR(500) NULL,
+  `image_1` VARCHAR(500) NULL,
+  `image_2` VARCHAR(500) NULL,
+  `image_3` VARCHAR(500) NULL,
+  `image_4` VARCHAR(500) NULL,
+  `image_5` VARCHAR(500) NULL,
+  `intro` TEXT NULL,
+  `description` LONGTEXT NULL,
+  `distance` VARCHAR(100) NULL,
+  `nearest_station` VARCHAR(255) NULL,
+  `url_key` VARCHAR(255) NULL,
+  `store_details_image` VARCHAR(500) NULL,
+  `service_included` LONGTEXT NULL,
+  `meta_title` VARCHAR(255) NULL,
+  `meta_description` TEXT NULL,
+  `meta_title_ar` VARCHAR(255) NULL,
+  `meta_description_ar` TEXT NULL,
+  `store_views` JSON NULL,
+  `schedule_json` JSON NULL,
+  `is_deleted` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` TIMESTAMP NULL DEFAULT NULL,
+  KEY `idx_storelocator_status` (`status`),
+  KEY `idx_storelocator_city` (`city`),
+  KEY `idx_storelocator_url_key` (`url_key`),
+  KEY `idx_storelocator_deleted` (`is_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"""
+
 NEW_BLOG_COLUMNS = {
     "category_id": "ALTER TABLE blogs ADD COLUMN category_id BIGINT UNSIGNED NULL AFTER image",
     "deleted_by": "ALTER TABLE blogs ADD COLUMN deleted_by BIGINT UNSIGNED NULL AFTER updated_by",
@@ -1359,6 +1418,7 @@ def main():
             cursor.execute(CREATE_PAGES_TBL)
             cursor.execute(CREATE_PAGE_SECTIONS_TBL)
             cursor.execute(CREATE_BLOGS_TBL)
+            cursor.execute(CREATE_STORELOCATOR_TBL)
             add_missing_columns(cursor)
             cleanup_deprecated_tables(cursor)
             add_missing_indexes(cursor)

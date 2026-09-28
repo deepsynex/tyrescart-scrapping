@@ -924,6 +924,43 @@
   transform: scale(0.99);
 }
 
+.tv-pdp-wa-action-wrap {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.tv-pdp-wa-btn {
+  background: #25D366;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tv-pdp-wa-btn:hover {
+  background: #1eb956;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+}
+
+.tv-pdp-wa-btn:active {
+  transform: scale(0.99);
+}
+
 .tv-ref-buy-now-wrap {
   margin-bottom: 24px;
 }
@@ -2244,7 +2281,8 @@
             <div class="tv-ref-tax-note">Inclusive of all taxes</div>
           </div>
 
-          <!-- Quantity + Add to Cart Row (Side-by-Side per user request) -->
+          <!-- Quantity + Add to Cart Row (Commented out per request; showing WhatsApp Enquiry button) -->
+          {#
           <div class="tv-ref-qty-cart-row">
             <div class="tv-ref-qty-col">
               <label class="tv-ref-qty-label" for="pdp-qty-select">Quantity</label>
@@ -2314,6 +2352,24 @@
                 <span id="pdp-btn-label"><span class="tv-ref-btn-label-text">Add to Cart &bull; </span><span class="currency-dirham">&#xe900;</span> <span id="pdp-btn-price">{{ product.price_set4_formatted or "%.2f"|format(product.price * 3) }}</span></span>
               </button>
             </div>
+          </div>
+          #}
+
+          <!-- WhatsApp Enquiry Button -->
+          <div class="tv-pdp-wa-action-wrap">
+            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (product.display_name or product.title or '') ~ ' (Size: ' ~ (product.tire_size_label or product.size or '') ~ ', Price: AED ' ~ (product.price or '') ~ ')') | urlencode }}" 
+               target="_blank" 
+               rel="noopener" 
+               class="tv-pdp-wa-btn" 
+               data-product-name="{{ (product.display_name or product.title or '')|escape }}"
+               data-enquiry-for="PDP Enquiry: {{ (product.display_name or product.title or '')|escape }}"
+               data-form-type="pdp_whatsapp"
+               data-tyre-size="{{ product.tire_size_label or product.size or '' }}"
+               data-brand="{{ product.brand_name or '' }}"
+               aria-label="Inquire on WhatsApp">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              <span>WhatsApp Enquiry</span>
+            </a>
           </div>
 
           <!-- Split in 4 Payment with Tabby & Tamara (Below Buy Now) -->
@@ -2841,6 +2897,7 @@
                 </div>
               </div>
 
+              {#
               <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '{{ rp.pattern_name or rp.display_name }}', {{ rp.price }});" aria-label="Add to cart">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="9" cy="21" r="1"></circle>
@@ -2849,6 +2906,21 @@
                 </svg>
                 <span>Add to Cart</span>
               </button>
+              #}
+              <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (rp.display_name or rp.name_en or rp.pattern_name or '') ~ ' (Size: ' ~ (rp.tire_size_label or '') ~ ', Price: AED ' ~ (rp.price or '') ~ ')') | urlencode }}" 
+                 target="_blank" 
+                 rel="noopener" 
+                 class="tv-btn-card-wa" 
+                 data-product-name="{{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
+                 data-enquiry-for="Related Product Enquiry: {{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
+                 data-form-type="related_product_whatsapp"
+                 data-tyre-size="{{ rp.tire_size_label or '' }}"
+                 data-brand="{{ rp.brand_name or '' }}"
+                 onclick="event.stopPropagation()" 
+                 aria-label="Inquire on WhatsApp">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                <span>WhatsApp</span>
+              </a>
             </div>
           </div>
           <!-- /product-bottom-detail -->
@@ -3605,6 +3677,7 @@ function openPaymentModal() {
 
               <!-- Controls on the right: Stepper + Add to Cart + Contact Us -->
               <div class="tv-qv-cta-group">
+                {#
                 <div class="tv-qv-cta-top-row">
                   <div class="tv-qv-stepper">
                     <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(-1)" aria-label="Decrease quantity">&minus;</button>
@@ -3616,6 +3689,11 @@ function openPaymentModal() {
                     <span>Add to Cart</span>
                   </button>
                 </div>
+                #}
+                <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20inquire%20about%20tyres" id="tv-qv-wa-btn" target="_blank" rel="noopener" class="tv-qv-wa-btn" aria-label="Inquire on WhatsApp">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                  <span>WhatsApp Enquiry</span>
+                </a>
                 <a href="/contact-us" id="tv-qv-contact-btn" class="tv-qv-contact-outline-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                   <span>Contact Us</span>

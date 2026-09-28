@@ -1,0 +1,383 @@
+{% extends "visionadmin/base.html" %}
+
+{% block title %}Store Locator - VisionAdmin{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="visionStoreLocatorApp()" x-init="initData()">
+
+  <!-- Top Action Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+        <a href="/visionadmin/stores" class="hover:text-[#2b1247] transition">Stores</a>
+        <span>/</span>
+        <span class="text-[#2b1247] font-bold">Store Locator</span>
+      </div>
+      <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1">Store Locator &amp; Fitment Centers</h1>
+      <p class="text-xs text-slate-500 font-medium mt-0.5">Manage physical tyre fitment workshops, mobile vans, partner garages, and operating schedules.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <button 
+        type="button" 
+        @click="loadData(currentPage)" 
+        class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs tracking-wide transition cursor-pointer shadow-2xs active:scale-95"
+      >
+        <svg class="w-4 h-4 text-slate-500" :class="loading ? 'animate-spin' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+        <span>Refresh</span>
+      </button>
+
+      <!-- IMPORTANT: Direct full-page link (NO MODAL) -->
+      <a 
+        href="/visionadmin/storelocator/new" 
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white font-bold text-xs tracking-wide transition cursor-pointer shadow-xs active:scale-95"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add Store Locator</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Badges Matrix -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="p-5 rounded-3xl bg-white border border-[#E8EDE4] shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total Locations</span>
+        <h3 class="text-2xl font-black text-[#0E1108] mt-0.5" x-text="metrics.total || 0">0</h3>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-[#f7f4fd] text-[#4B237B] flex items-center justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+    </div>
+
+    <div class="p-5 rounded-3xl bg-white border border-[#E8EDE4] shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Active Centers</span>
+        <h3 class="text-2xl font-black text-emerald-600 mt-0.5" x-text="metrics.active || 0">0</h3>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+    </div>
+
+    <div class="p-5 rounded-3xl bg-white border border-[#E8EDE4] shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Inactive</span>
+        <h3 class="text-2xl font-black text-amber-500 mt-0.5" x-text="metrics.inactive || 0">0</h3>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+    </div>
+
+    <div class="p-5 rounded-3xl bg-white border border-[#E8EDE4] shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Trash Bin</span>
+        <h3 class="text-2xl font-black text-rose-500 mt-0.5" x-text="metrics.trash || 0">0</h3>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs: Active vs Trash -->
+  <div class="flex items-center gap-2">
+    <button 
+      type="button" 
+      @click="activeTab = 'active'; isTrash = 0; loadData(1)" 
+      :class="activeTab === 'active' ? 'bg-[#4B237B] text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-50 border border-[#E8EDE4]'"
+      class="px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-2"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Active Locations</span>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-black" :class="activeTab === 'active' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'" x-text="metrics.total || 0"></span>
+    </button>
+
+    <button 
+      type="button" 
+      @click="activeTab = 'trash'; isTrash = 1; loadData(1)" 
+      :class="activeTab === 'trash' ? 'bg-[#FFF1F2] text-[#E11D48] border border-[#FECDD3] shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-50 border border-[#E8EDE4]'"
+      class="px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-2"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <span>Trash Bin</span>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-black" :class="activeTab === 'trash' ? 'bg-[#FFE4E6] text-[#E11D48]' : 'bg-slate-100 text-slate-600'" x-text="metrics.trash || 0"></span>
+    </button>
+  </div>
+
+  <!-- Search & Filter Controls Card -->
+  <div class="bg-white p-5 rounded-3xl border border-[#E8EDE4] shadow-xs flex flex-col md:flex-row items-center gap-3">
+    <!-- Text Search input -->
+    <div class="relative flex-1 w-full">
+      <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <input 
+        type="text" 
+        x-model="searchQuery" 
+        @input.debounce.300ms="loadData(1)"
+        @keydown.enter="loadData(1)"
+        placeholder="Search by store name, Arabic name, address, city, phone..." 
+        class="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-medium border border-slate-200 rounded-2xl focus:outline-none focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/15 transition bg-slate-50/50 hover:bg-white"
+      />
+      <button 
+        type="button" 
+        x-show="searchQuery" 
+        @click="searchQuery = ''; loadData(1)" 
+        class="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold"
+      >&times;</button>
+    </div>
+
+    <!-- Filters: City & Status -->
+    <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+      <select 
+        x-model="selectedCity" 
+        @change="loadData(1)" 
+        class="py-2.5 px-3.5 text-xs font-bold border border-slate-200 rounded-2xl bg-white focus:outline-none focus:border-[#4B237B] text-slate-700 cursor-pointer"
+      >
+        <option value="all">All Emirates / Cities</option>
+        <template x-for="c in cities" :key="c">
+          <option :value="c" x-text="c"></option>
+        </template>
+      </select>
+
+      <select 
+        x-model="statusFilter" 
+        @change="loadData(1)" 
+        class="py-2.5 px-3.5 text-xs font-bold border border-slate-200 rounded-2xl bg-white focus:outline-none focus:border-[#4B237B] text-slate-700 cursor-pointer"
+      >
+        <option value="all">All Status</option>
+        <option value="1">Active Only</option>
+        <option value="0">Inactive Only</option>
+      </select>
+
+      <button 
+        type="button" 
+        @click="resetFilters()" 
+        class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs transition cursor-pointer shadow-2xs active:scale-95"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Locations Table Card -->
+  <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#E8EDE4] bg-[#fbfbfb] text-[11px] font-black uppercase tracking-wider text-slate-500">
+            <th class="py-4 px-5">STORE / CENTER</th>
+            <th class="py-4 px-4">LOCATION &amp; CITY</th>
+            <th class="py-4 px-4">CONTACT &amp; MAP</th>
+            <th class="py-4 px-4 text-center">ORDER</th>
+            <th class="py-4 px-4 text-center">STATUS</th>
+            <th class="py-4 px-5 text-right">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#F0F4EC] text-xs font-medium text-slate-700">
+          <!-- Loading State -->
+          <template x-if="loading">
+            <tr>
+              <td colspan="6" class="py-14 text-center text-slate-400 font-bold">
+                <div class="inline-flex items-center gap-3">
+                  <svg class="animate-spin h-5 w-5 text-[#4B237B]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                  <span>Loading store locations...</span>
+                </div>
+              </td>
+            </tr>
+          </template>
+
+          <!-- Empty State -->
+          <template x-if="!loading && items.length === 0">
+            <tr>
+              <td colspan="6" class="py-14 text-center text-slate-400">
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xl font-bold">
+                    📍
+                  </div>
+                  <p class="font-bold text-slate-700">No store locations found</p>
+                  <p class="text-xs text-slate-400" x-text="isTrash ? 'Trash bin is currently empty.' : 'Try adjusting your search filters or click Add Store Locator.'"></p>
+                </div>
+              </td>
+            </tr>
+          </template>
+
+          <!-- Rows List -->
+          <template x-for="item in items" :key="item.id">
+            <tr class="hover:bg-[#F9FAF8] transition duration-150">
+              <!-- Store & Details -->
+              <td class="py-4 px-5">
+                <div class="flex items-start gap-3">
+                  <!-- Thumbnail preview -->
+                  <div class="w-12 h-12 rounded-xl border border-slate-200 bg-white p-1 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-2xs">
+                    <template x-if="item.image">
+                      <img :src="item.image" :alt="item.name" class="w-full h-full object-contain" />
+                    </template>
+                    <template x-if="!item.image">
+                      <span class="text-slate-300 text-lg">🏪</span>
+                    </template>
+                  </div>
+
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <a :href="'/visionadmin/storelocator/' + item.id + '/edit'" class="font-black text-slate-900 text-sm hover:text-[#4B237B] transition" x-text="item.name"></a>
+                      <template x-if="item.is_mobile_van">
+                        <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded-full bg-amber-50 text-amber-700 border border-amber-200">Mobile Van</span>
+                      </template>
+                      <template x-if="item.coming_soon">
+                        <span class="px-2 py-0.5 text-[9px] font-black uppercase rounded-full bg-purple-50 text-purple-700 border border-purple-200">Coming Soon</span>
+                      </template>
+                    </div>
+
+                    <div class="text-[11px] text-slate-500 font-arabic mt-0.5" dir="rtl" x-show="item.name_ar" x-text="item.name_ar"></div>
+                    
+                    <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-400 font-semibold">
+                      <span class="text-slate-500">ID: #<span x-text="item.id"></span></span>
+                      <span>•</span>
+                      <span x-text="item.category || 'Standard Installer'"></span>
+                      <template x-if="item.url_key">
+                        <span>• <span class="font-mono text-slate-400" x-text="item.url_key"></span></span>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Location & City -->
+              <td class="py-4 px-4">
+                <div class="font-bold text-slate-800" x-text="item.city || item.region || 'UAE'"></div>
+                <div class="text-[11px] text-slate-500 line-clamp-1 max-w-xs" :title="item.address" x-text="item.address || '—'"></div>
+                <div class="text-[10px] font-mono text-slate-400 mt-0.5">
+                  <span x-text="item.latitude"></span>, <span x-text="item.longitude"></span>
+                </div>
+              </td>
+
+              <!-- Contact & Map -->
+              <td class="py-4 px-4">
+                <div class="text-xs font-semibold text-slate-800" x-text="item.phone || 'No phone'"></div>
+                <div class="text-[11px] text-slate-400 truncate max-w-[180px]" x-text="item.email || '—'"></div>
+                <template x-if="item.external_link">
+                  <a :href="item.external_link" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-[#4B237B] hover:underline mt-0.5">
+                    <span>Google Maps Link</span>
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </template>
+              </td>
+
+              <!-- Sort Order -->
+              <td class="py-4 px-4 text-center font-bold text-slate-700" x-text="item.installer_sort_order || 0"></td>
+
+              <!-- Status Toggle -->
+              <td class="py-4 px-4 text-center">
+                <template x-if="!isTrash">
+                  <button 
+                    type="button" 
+                    @click="toggleStatus(item)" 
+                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                    :class="item.status ? 'bg-emerald-500' : 'bg-slate-300'"
+                    :title="item.status ? 'Active (Click to disable)' : 'Inactive (Click to enable)'"
+                  >
+                    <span 
+                      class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                      :class="item.status ? 'translate-x-5' : 'translate-x-0'"
+                    ></span>
+                  </button>
+                </template>
+                <template x-if="isTrash">
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-rose-50 text-rose-600 border border-rose-200">
+                    Deleted
+                  </span>
+                </template>
+              </td>
+
+              <!-- Actions -->
+              <td class="py-4 px-5 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <template x-if="!isTrash">
+                    <div class="flex items-center gap-1.5">
+                      <!-- IMPORTANT: Full page edit link (NO MODAL) -->
+                      <a 
+                        :href="'/visionadmin/storelocator/' + item.id + '/edit'" 
+                        class="p-2 rounded-xl text-slate-600 hover:text-[#4B237B] hover:bg-[#f7f4fd] transition cursor-pointer"
+                        title="Edit Store Locator"
+                      >
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </a>
+                      <button 
+                        type="button" 
+                        @click="moveToTrash(item)" 
+                        class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                        title="Move to Trash"
+                      >
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </div>
+                  </template>
+
+                  <template x-if="isTrash">
+                    <div class="flex items-center gap-1.5">
+                      <button 
+                        type="button" 
+                        @click="restoreItem(item)" 
+                        class="px-3 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition cursor-pointer shadow-2xs"
+                      >
+                        Restore
+                      </button>
+                      <button 
+                        type="button" 
+                        @click="purgeItem(item)" 
+                        class="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition cursor-pointer shadow-2xs"
+                      >
+                        Delete Permanently
+                      </button>
+                    </div>
+                  </template>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="p-5 border-t border-[#E8EDE4] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 bg-white">
+      <div>
+        Showing <span class="font-bold text-slate-900" x-text="items.length > 0 ? (currentPage - 1) * perPage + 1 : 0"></span>
+        to <span class="font-bold text-slate-900" x-text="Math.min(currentPage * perPage, totalItems)"></span>
+        of <span class="font-bold text-slate-900" x-text="totalItems"></span> locations
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button 
+          type="button" 
+          :disabled="currentPage <= 1" 
+          @click="loadData(currentPage - 1)" 
+          class="px-3.5 py-2 rounded-xl border border-slate-200 disabled:opacity-40 hover:bg-slate-50 transition font-bold cursor-pointer text-slate-700"
+        >
+          Previous
+        </button>
+
+        <span class="px-3 py-2 text-xs font-bold text-slate-600">
+          Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>
+        </span>
+
+        <button 
+          type="button" 
+          :disabled="currentPage >= totalPages" 
+          @click="loadData(currentPage + 1)" 
+          class="px-3.5 py-2 rounded-xl border border-slate-200 disabled:opacity-40 hover:bg-slate-50 transition font-bold cursor-pointer text-slate-700"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Store Locator List Controller Script -->
+<script src="/static/visionadmin/storelocator.js"></script>
+{% endblock %}

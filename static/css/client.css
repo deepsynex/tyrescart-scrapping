@@ -2258,12 +2258,12 @@ details .body a:hover {
 .notice-modal {
   border: 0;
   padding: 16px;
-  background: rgba(8, 12, 5, .75) !important;
+  background: #8600ff0d !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 99999; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2283,10 +2283,23 @@ details .body a:hover {
   max-height: calc(100dvh - 100px);
   margin: auto;
   position: relative;
-  z-index: 100000;
+  animation: tvModalSlideLeftToRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tvModalSlideLeftToRight {
+  from {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+  /* z-index: 100000;
   display: flex;
   flex-direction: column;
-}
+} */
 
 .notice-modal .sheet,
 .notice-modal-overlay .sheet,
@@ -10103,6 +10116,53 @@ body.filter-open .float-wa {
   }
 }
 
+/* WhatsApp Enquiry Button on Card */
+.tv-btn-card-wa {
+  background: #25D366;
+  color: #FFFFFF !important;
+  border: none;
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.28);
+}
+
+.tv-btn-card-wa:hover {
+  background: #1eb956;
+  color: #FFFFFF !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+.tv-btn-card-wa:active {
+  transform: translateY(0);
+}
+
+.tv-btn-card-wa svg {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+@media screen and (max-width: 1600px) {
+  .tv-btn-card-wa {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
 /* Warranty Badge (tyre image area, bottom-right) */
 .tv-card-warranty-badge {
   position: absolute;
@@ -10292,8 +10352,8 @@ body.tv-modal-active {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -10306,28 +10366,34 @@ body.tv-modal-active {
 
 .tv-fitted-modal-container {
   width: 100%;
-  max-width: 100%;
+  max-width: 680px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
   background: #ffffff;
-  border-top: 5px solid var(--tv-blue-brand, #4A0787);
+  border-left: 5px solid var(--tv-blue-brand, #4A0787);
+  border-top: none;
+  border-right: none;
   border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.28);
-  transform: translateY(100%);
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90vh;
+  border-bottom-left-radius: 24px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: -14px 0 48px rgba(0, 0, 0, 0.28);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .tv-fitted-modal-overlay.open .tv-fitted-modal-container {
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .tv-fitted-modal-card {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 32px 36px 36px 36px;
   overflow-y: auto;
   box-sizing: border-box;
@@ -10459,8 +10525,25 @@ body.tv-modal-active {
 }
 
 @media (max-width: 768px) {
+  .tv-fitted-modal-overlay {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+
+  .tv-fitted-modal-container {
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    border-radius: 0;
+    border-left-width: 4px;
+    border-right-width: 0;
+    border-top-width: 0;
+  }
+
   .tv-fitted-modal-card {
     padding: 24px 20px 32px 20px;
+    max-height: 100vh;
   }
 
   .tv-fitted-modal-title {
@@ -10479,7 +10562,7 @@ body.tv-modal-active {
 
 /* ============================================================
    TYREVISION UAE — QUICK VIEW MODAL
-   Full Width Bottom Drawer Mode (Same open style as Fitted Price Modal)
+   Right-side Drawer Animation (Matching Cart Modal)
    ============================================================ */
 .tv-qv-modal-overlay {
   position: fixed;
@@ -10489,9 +10572,8 @@ body.tv-modal-active {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   display: flex;
-  align-items: flex-end;
-  /* Slides up from bottom full width like fitted price modal */
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -10504,32 +10586,38 @@ body.tv-modal-active {
 
 .tv-qv-modal-container {
   width: 100%;
-  max-width: 100%;
+  max-width: 880px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
   background: #ffffff;
-  border-top: 5px solid var(--tv-blue-brand, #4A0787);
+  border-left: 5px solid var(--tv-blue-brand, #4A0787);
+  border-top: none;
+  border-right: none;
   border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  box-shadow: 0 -14px 48px rgba(0, 0, 0, 0.26);
-  transform: translateY(100%);
+  border-bottom-left-radius: 24px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: -14px 0 48px rgba(0, 0, 0, 0.26);
+  transform: translateX(100%);
   transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 94vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .tv-qv-modal-overlay.open .tv-qv-modal-container {
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .tv-qv-modal-card {
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   padding: 24px 32px 36px 32px;
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(94vh - 10px);
+  max-height: 100vh;
 }
 
 /* Modal Header Bar */
@@ -10593,7 +10681,7 @@ body.tv-modal-active {
 }
 
 .tv-qv-main-grid {
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 390px 1fr;
   gap: 32px;
   align-items: start;
@@ -10825,8 +10913,8 @@ body.tv-modal-active {
 }
 
 .tv-qv-brand-logo {
-  max-height: 26px;
-  max-width: 140px;
+  max-height: 37px;
+  max-width: 142px;
   object-fit: contain;
 }
 
@@ -11180,6 +11268,34 @@ body.tv-modal-active {
   box-shadow: 0 6px 16px rgba(58, 25, 96, 0.3);
 }
 
+.tv-qv-wa-btn {
+  width: 100%;
+  height: 42px;
+  background: #25D366;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
+.tv-qv-wa-btn:hover {
+  background: #1eb956;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+}
+
 .tv-qv-contact-outline-btn {
   width: 100%;
   height: 38px;
@@ -11320,19 +11436,24 @@ body.tv-modal-active {
 
 @media (max-width: 768px) {
   .tv-qv-modal-overlay {
-    align-items: flex-end;
+    align-items: stretch;
+    justify-content: flex-end;
   }
 
   .tv-qv-modal-container {
-    max-height: 92vh;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-top-width: 4px;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    border-radius: 0;
+    border-left-width: 4px;
+    border-right-width: 0;
+    border-top-width: 0;
   }
 
   .tv-qv-modal-card {
     padding: 14px 14px 28px 14px;
-    max-height: calc(92vh - 6px);
+    max-height: 100vh;
   }
 
   .tv-qv-modal-header {
@@ -14043,6 +14164,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 .tv-drawer-side-tab {
   position: fixed;
   right: 0;
+  left: auto;
   top: 50%;
   transform: translateY(-50%);
   z-index: 9980;
@@ -14142,6 +14264,8 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 .tv-overview-drawer-panel.tv-cart-drawer {
   position: fixed;
   inset: 0 0 0 auto;
+  right: 0;
+  left: auto;
   width: 100%;
   max-width: 440px;
   background: #ffffff;
@@ -15984,29 +16108,47 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 }
 
 /* ==========================================================================
-   Vehicle Compatibility Overlay Modal (Matching Reference Design)
+   Vehicle Compatibility Overlay Modal (Right Drawer - Matching Cart Drawer)
    ========================================================================== */
 #item-size {
   position: fixed;
-  left: 0;
+  top: 0;
   right: 0;
   bottom: 0;
+  left: auto;
+  width: 100%;
+  max-width: 680px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
   background: #ffffff;
   z-index: 99999;
-  max-height: 85vh;
-  height: 85vh;
   display: flex;
   flex-direction: column;
-  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.22);
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
-}
-
-#item-size.translate-y-full {
-  transform: translateY(100%);
+  box-shadow: -14px 0 50px rgba(0, 0, 0, 0.28);
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
   visibility: hidden;
   pointer-events: none;
+}
+
+#item-size.is-open,
+#item-size:not(.translate-y-full):not(.translate-x-full):not(.-translate-x-full) {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#item-size.translate-y-full,
+#item-size.translate-x-full,
+#item-size.-translate-x-full {
+  transform: translateX(100%) !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 #item-size-overlay {
@@ -16153,8 +16295,17 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
     column-gap: 0;
   }
   #item-size {
-    max-height: 90vh;
-    height: 90vh;
+    max-width: 90vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+  }
+}
+
+@media (max-width: 640px) {
+  #item-size {
+    max-width: 100vw;
+    border-radius: 0;
   }
 }
 
@@ -16168,6 +16319,10 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   padding-bottom: 0.85rem !important;
   border-bottom: 1px dashed #22c55e !important;
   gap: 1rem !important;
+}
+
+.tyre-popup-content > div.hidden {
+  display: none !important;
 }
 
 .tyre-popup-content .brand-image {

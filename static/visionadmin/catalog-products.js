@@ -255,6 +255,19 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         this.form.ev_rated = Boolean(val);
       } else if (code === 'warranty_period' || code === 'warranty_months') {
         if (val || !this.form.warranty_months) this.form.warranty_months = val;
+      } else if (code === 'oem_tyres' || code === 'oem_brand') {
+        let cleanVal = '';
+        if (Array.isArray(val)) {
+          cleanVal = val.map(v => String(v).trim()).filter(Boolean).join(',');
+        } else if (val) {
+          cleanVal = String(val).trim();
+        }
+        this.form.oem_brand = cleanVal;
+        this.form.oem_approved = Boolean(cleanVal);
+        if (this.form.dynamic_attributes) {
+          this.form.dynamic_attributes['oem_tyres'] = cleanVal;
+          this.form.dynamic_attributes['oem_approved'] = Boolean(cleanVal);
+        }
       }
     },
 
@@ -1179,8 +1192,19 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         if (this.form.dynamic_attributes && this.form.dynamic_attributes.price) {
           payload.price = this.form.dynamic_attributes.price;
         }
-        if (this.form.dynamic_attributes && this.form.dynamic_attributes.oem_tyres) {
-          payload.oem_brand = this.form.dynamic_attributes.oem_tyres;
+
+        const oemVal = this.form.dynamic_attributes ? this.form.dynamic_attributes.oem_tyres : this.form.oem_brand;
+        let finalOem = '';
+        if (Array.isArray(oemVal)) {
+          finalOem = oemVal.map(v => String(v).trim()).filter(Boolean).join(',');
+        } else if (oemVal && String(oemVal).trim()) {
+          finalOem = String(oemVal).trim();
+        }
+        payload.oem_brand = finalOem || null;
+        payload.oem_approved = Boolean(finalOem);
+        if (payload.dynamic_attributes) {
+          payload.dynamic_attributes.oem_tyres = finalOem;
+          payload.dynamic_attributes.oem_approved = Boolean(finalOem);
         }
 
         payload.website_ids = this.form.website_ids || [1];

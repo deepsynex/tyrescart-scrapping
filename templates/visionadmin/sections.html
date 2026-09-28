@@ -715,18 +715,41 @@
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     if (window.CKEDITOR) {
+      CKEDITOR.config.allowedContent = true;
+      CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+      CKEDITOR.config.autoParagraph = false;
+      CKEDITOR.config.fillEmptyBlocks = false;
+      CKEDITOR.config.basicEntities = false;
+      CKEDITOR.config.entities = false;
+      CKEDITOR.config.entities_latin = false;
+      CKEDITOR.config.entities_greek = false;
+      if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
+      CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
+      CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
       CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
       CKEDITOR.config.versionCheck = false;
 
+      const sectionEditorConfig = {
+        minHeight: 160,
+        height: 220,
+        allowedContent: true,
+        extraAllowedContent: '*(*);*{*};*[*];*<*>',
+        autoParagraph: false,
+        fillEmptyBlocks: false,
+        basicEntities: false,
+        entities: false,
+        contentsCss: [
+          '/static/css/client.css',
+          '/static/css/page.css'
+        ],
+        removePlugins: 'exportpdf,cloudservices,easyimage',
+        removeButtons: 'About',
+        versionCheck: false
+      };
+
       if (document.getElementById('form-content-en') && !CKEDITOR.instances['form-content-en']) {
         try {
-          CKEDITOR.replace('form-content-en', {
-            minHeight: 160,
-            height: 180,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('form-content-en', sectionEditorConfig);
         } catch (e) {
           console.warn('CKEditor form-content-en init:', e);
         }
@@ -734,14 +757,9 @@
 
       if (document.getElementById('form-content-ar') && !CKEDITOR.instances['form-content-ar']) {
         try {
-          CKEDITOR.replace('form-content-ar', {
-            minHeight: 160,
-            height: 180,
-            removePlugins: 'exportpdf,cloudservices,easyimage',
-            contentsLangDirection: 'rtl',
-            removeButtons: 'About',
-            versionCheck: false
-          });
+          CKEDITOR.replace('form-content-ar', Object.assign({}, sectionEditorConfig, {
+            contentsLangDirection: 'rtl'
+          }));
         } catch (e) {
           console.warn('CKEditor form-content-ar init:', e);
         }

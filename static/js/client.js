@@ -18,7 +18,7 @@
       var fittingEl = document.getElementById('fitting');
       var fitting = fittingEl ? fittingEl.value : '';
 
-      var lines = ["Hi Online Tyre Shop, I'd like a tyre quote.", "Tyre size: " + size];
+      var lines = ["Hi TyresVision, I'd like a tyre quote.", "Tyre size: " + size];
       if(make) lines.push("Car: " + make);
       if(emirate) lines.push("Emirate: " + emirate);
       if(fitting) lines.push("Fitting: " + fitting);
@@ -174,9 +174,46 @@
     });
   }
 
-  /* ---------- Global .btn-wa & WhatsApp Click Capture ---------- */
+  /* ---------- Helper to save enquiry directly to hdweb_enquiry ---------- */
+  function trackEnquiry(data) {
+    if (!data) return;
+    var payload = {
+      enquiry_for: data.enquiry_for || 'WhatsApp Tyre Enquiry',
+      form_type: data.form_type || 'whatsapp_button_click',
+      message: data.message || 'WhatsApp Enquiry Click',
+      tyre_size: data.tyre_size || '',
+      vehicle: data.vehicle || '',
+      spec: data.spec || '',
+      city: data.city || 'UAE'
+    };
+    try {
+      if (navigator.sendBeacon) {
+        var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        navigator.sendBeacon('/api/v1/enquiry', blob);
+      } else {
+        fetch('/api/v1/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(function(e) { console.warn('Enquiry fetch error:', e); });
+      }
+    } catch (err) {
+      try {
+        fetch('/api/v1/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        }).catch(function() {});
+      } catch (e) {}
+    }
+  }
+  window.trackEnquiry = trackEnquiry;
+
+  /* ---------- Global WhatsApp & Enquiry Button Click Capture (Capture Phase) ---------- */
   document.addEventListener('click', function(e) {
-    var target = e.target && e.target.closest ? e.target.closest('.btn-wa, .float-wa, a[href*="wa.me"], button[data-wa]') : null;
+    var target = e.target && e.target.closest ? e.target.closest('.btn-wa, .float-wa, .tv-btn-card-wa, .tv-qv-wa-btn, .tv-pdp-wa-btn, a[href*="wa.me"], button[data-wa]') : null;
     if (!target) return;
 
     // If it's the submit button inside quoteForm, let the form submit event handle it with full input values
@@ -207,18 +244,33 @@
       formType = 'header_nav_whatsapp';
     } else if (target.closest && (target.closest('.mobile-sticky-cta') || target.closest('.mobile-nav-cta'))) {
       formType = 'mobile_whatsapp_bar';
+    } else if (target.classList && (target.classList.contains('tv-btn-card-wa') || target.closest('.tv-btn-card-wa'))) {
+      formType = 'product_card_whatsapp';
+    } else if (target.classList && (target.classList.contains('tv-qv-wa-btn') || target.closest('.tv-qv-wa-btn') || target.id === 'tv-qv-wa-btn')) {
+      formType = 'quick_view_whatsapp';
+    } else if (target.classList && (target.classList.contains('tv-pdp-wa-btn') || target.closest('.tv-pdp-wa-btn'))) {
+      formType = 'pdp_whatsapp';
     }
 
-    // Extract structured tyre size, vehicle, and brand from element or ancestors
+    // Extract structured tyre size, vehicle, brand, product name from element or ancestors
+    var prodName = target.getAttribute('data-product-name') || (target.closest && target.closest('[data-product-name]') ? target.closest('[data-product-name]').getAttribute('data-product-name') : '') || '';
     var tyreSize = target.getAttribute('data-tyre-size') || (target.closest && target.closest('[data-tyre-size]') ? target.closest('[data-tyre-size]').getAttribute('data-tyre-size') : '') || '';
     var vehicle = target.getAttribute('data-vehicle') || (target.closest && target.closest('[data-vehicle]') ? target.closest('[data-vehicle]').getAttribute('data-vehicle') : '') || '';
     var brand = target.getAttribute('data-brand') || (target.closest && target.closest('[data-brand]') ? target.closest('[data-brand]').getAttribute('data-brand') : '') || '';
     var customFormType = target.getAttribute('data-form-type') || (target.closest && target.closest('[data-form-type]') ? target.closest('[data-form-type]').getAttribute('data-form-type') : '') || '';
     var customEnquiryFor = target.getAttribute('data-enquiry-for') || (target.closest && target.closest('[data-enquiry-for]') ? target.closest('[data-enquiry-for]').getAttribute('data-enquiry-for') : '') || '';
 
+    // Quick View context enhancement
+    if ((formType === 'quick_view_whatsapp' || target.id === 'tv-qv-wa-btn') && window.currentQuickViewProduct) {
+      var qp = window.currentQuickViewProduct;
+      if (!tyreSize) tyreSize = qp.size || qp.width || '';
+      if (!brand) brand = qp.brandName || '';
+      if (!prodName) prodName = qp.fullTitle || qp.pattern || 'Tyre';
+    }
+
     // Intelligent regex parsing fallback from messageText
     if (!tyreSize && messageText) {
-      var sm = messageText.match(/\b([1-3]\d{2}\s*\/\s*\d{2}\s*(?:R|ZR|r|zr)?\s*\d{2})\b/);
+      var sm = messageText.match(/(?:Size:?\s*)?([1-3]\d{2}\s*\/\s*\d{2}\s*(?:R|ZR|r|zr)?\s*\d{2})/i);
       if (sm && sm[1]) tyreSize = sm[1].trim();
     }
     if (!vehicle && messageText) {
@@ -232,6 +284,8 @@
 
     if (customFormType) {
       formType = customFormType;
+    } else if (prodName) {
+      // Keep formType as resolved above
     } else if (tyreSize) {
       formType = 'shop_by_size';
     } else if (vehicle) {
@@ -241,6 +295,7 @@
     }
 
     var enquiryFor = customEnquiryFor || (
+      prodName ? ('Product Enquiry: ' + prodName) :
       tyreSize ? ('Tyre Size Lead (' + tyreSize + ')') :
       vehicle ? ('Vehicle Tyre Lead (' + vehicle + ')') :
       brand ? ('Brand Tyre Lead (' + brand + ')') :
@@ -256,29 +311,16 @@
       resolvedCity = locationAttr || cityAttr;
     }
 
-    try {
-      fetch('/api/v1/enquiry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          enquiry_for: enquiryFor,
-          form_type: formType,
-          message: messageText + '\nSource Page: ' + pageUrl,
-          tyre_size: tyreSize || '',
-          vehicle: vehicle || '',
-          spec: brand || '',
-          city: resolvedCity
-        })
-      }).catch(function(err) {
-        console.warn('Enquiry tracking error:', err);
-      });
-    } catch (err) {
-      console.warn(err);
-    }
-  });
+    trackEnquiry({
+      enquiry_for: enquiryFor,
+      form_type: formType,
+      message: messageText + (pageUrl ? ('\nSource Page: ' + pageUrl) : ''),
+      tyre_size: tyreSize || '',
+      vehicle: vehicle || '',
+      spec: brand || '',
+      city: resolvedCity
+    });
+  }, true);
 
   /* ---------- Dynamic Nav Active State (Mobile Drawer) & ScrollSpy ---------- */
   function initNavActiveState() {
@@ -1386,7 +1428,7 @@ function createProductCardHTML(p) {
               </div>
             </div>
 
-            <!-- 4. Price & Add to Cart Line -->
+            <!-- 4. Price & WhatsApp Line -->
             <div class="tv-card-price-action-row">
               <div class="tv-card-pricing-left">
                 <div class="tv-card-main-price-line">
@@ -1399,14 +1441,21 @@ function createProductCardHTML(p) {
                 </div>
               </div>
 
-              <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '${cleanTitle}', ${priceVal});" aria-label="Add to cart">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"></circle>
-                  <circle cx="20" cy="21" r="1"></circle>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span>Add to Cart</span>
-              </button>
+              <!-- WhatsApp Enquiry Button -->
+              <a href="https://wa.me/971505069575?text=${encodeURIComponent('Hi TyresVision, I would like to inquire about ' + (p.display_name || p.name_en || p.pattern_name || patternTitle || '') + (sizeSpec ? ' (Size: ' + sizeSpec + ', Price: AED ' + displayPrice + ')' : ' (Price: AED ' + displayPrice + ')'))}" 
+                 target="_blank" 
+                 rel="noopener" 
+                 class="tv-btn-card-wa" 
+                 data-product-name="${cleanTitle}"
+                 data-enquiry-for="Product Enquiry: ${cleanTitle}"
+                 data-form-type="product_card_whatsapp"
+                 data-tyre-size="${escapeHtml(p.tire_size_label || sizeSpec || '')}"
+                 data-brand="${brandName}"
+                 onclick="event.stopPropagation()" 
+                 aria-label="Inquire on WhatsApp">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                <span>WhatsApp</span>
+              </a>
             </div>
           </div>
           <!-- /product-bottom-detail -->
@@ -1456,7 +1505,7 @@ function addToCartWithCard(btn, title, basePrice) {
 
 function handleProductCardClick(e, slug) {
   if (!slug) return;
-  if (e.target.closest('button, select, input, a, .tv-btn-quickview, .tv-btn-card-add, .tv-card-price-note, .tv-spec-info-btn, .tv-fitted-info-btn, .tyre-type-icons')) {
+  if (e.target.closest('button, select, input, a, .tv-btn-quickview, .tv-btn-card-add, .tv-btn-card-wa, .tv-card-price-note, .tv-spec-info-btn, .tv-fitted-info-btn, .tyre-type-icons')) {
     return;
   }
   window.location.href = '/' + encodeURIComponent(slug).replace(/%2F/g, '/');
@@ -1573,8 +1622,20 @@ function openQuickView(btn) {
   // 7. Contact Us Button
   const contactBtn = document.getElementById('tv-qv-contact-btn');
   if (contactBtn) {
-    const msg = encodeURIComponent(`Hi, I am interested in ${fullTitle} (${sku}) priced at AED ${price.toFixed(2)}.`);
+    const msg = encodeURIComponent(`Hi TyresVision, I am interested in ${fullTitle} (${sku}) priced at AED ${price.toFixed(2)}.`);
     contactBtn.href = `/contact-us?subject=Inquiry+${encodeURIComponent(sku)}&message=${msg}`;
+  }
+
+  // 7b. WhatsApp Enquiry Button
+  const waBtn = document.getElementById('tv-qv-wa-btn');
+  if (waBtn) {
+    const waMsg = encodeURIComponent(`Hi TyresVision, I would like to inquire about ${fullTitle} (SKU: ${sku}, Size: ${size}, Price: AED ${price.toFixed(2)}).`);
+    waBtn.href = `https://wa.me/971505069575?text=${waMsg}`;
+    waBtn.setAttribute('data-product-name', fullTitle);
+    waBtn.setAttribute('data-enquiry-for', `Quick View Enquiry: ${fullTitle}`);
+    waBtn.setAttribute('data-tyre-size', size);
+    waBtn.setAttribute('data-brand', brandName);
+    waBtn.setAttribute('data-form-type', 'quick_view_whatsapp');
   }
 
   // 8. Description Tab
@@ -1888,8 +1949,10 @@ async function fetchProducts(page = 1, scrollUp = true) {
   renderSkeletons(perPage);
 
   // 2. Gather filter parameters
+  const selectedTyresCategories = Array.from(document.querySelectorAll('input[name="tyres_category"]:checked')).map(cb => cb.value.trim());
   const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value.trim());
   const selectedPatterns = Array.from(document.querySelectorAll('input[name="pattern"]:checked')).map(cb => cb.value.trim());
+  const selectedMarkings = Array.from(document.querySelectorAll('input[name="tyre_marking"]:checked')).map(cb => cb.value.trim());
   const selectedOems = Array.from(document.querySelectorAll('input[name="oem"]:checked')).map(cb => cb.value.trim());
   const selectedWarranties = Array.from(document.querySelectorAll('input[name="warranty"]:checked')).map(cb => cb.value.trim());
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
@@ -1910,8 +1973,10 @@ async function fetchProducts(page = 1, scrollUp = true) {
   params.set('per_page', perPage);
   params.set('sort', sortVal || 'price-asc');
 
+  selectedTyresCategories.forEach(tc => params.append('tyres_category', tc));
   selectedBrands.forEach(b => params.append('brand', b));
   selectedPatterns.forEach(p => params.append('pattern', p));
+  selectedMarkings.forEach(tm => params.append('tyre_marking', tm));
   selectedOems.forEach(o => params.append('oem', o));
   selectedWarranties.forEach(w => params.append('warranty', w));
   selectedYears.forEach(y => params.append('year', y));
@@ -1923,6 +1988,10 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const activeRunflatCb = document.querySelector('input[name="runflat"]:checked');
   if (activeRunflatCb) {
     params.set('runflat', 'runflat');
+  }
+  const activeEvCb = document.querySelector('input[name="ev_tyre"]:checked');
+  if (activeEvCb) {
+    params.set('ev_tyre', 'ev');
   }
   if (minPrice && parseFloat(minPrice) > parseFloat(minPriceSlider?.min || 0)) {
     params.set('min_price', minPrice);
@@ -2126,6 +2195,9 @@ function updateSidebarFacetCounts(facets) {
     }
   }
 
+  // 0. Tyres Category
+  updateGroupItems('tyres_category', facets.tyres_categories, true);
+
   // 1. Warranty
   updateGroupItems('warranty', facets.warranties, false);
 
@@ -2137,6 +2209,9 @@ function updateSidebarFacetCounts(facets) {
 
   // 4. Pattern
   updateGroupItems('pattern', facets.patterns, false);
+
+  // 4b. Tyre Marking
+  updateGroupItems('tyre_marking', facets.tyre_markings, false);
 
   // 5. OEM Tyres
   updateGroupItems('oem', facets.oems, false);
@@ -2169,6 +2244,32 @@ function updateSidebarFacetCounts(facets) {
         rfGroup.classList.add('tv-group-empty');
       } else {
         rfGroup.classList.remove('tv-group-empty');
+      }
+    }
+  }
+
+  // 9. EV Tyre
+  if (facets.ev_tyre !== undefined) {
+    const evCount = facets.ev_tyre;
+    const evEl = document.getElementById('tv-filter-count-ev');
+    if (evEl) evEl.textContent = Number(evCount).toLocaleString();
+    const evCb = document.querySelector('input[name="ev_tyre"]');
+    const evItem = evCb ? evCb.closest('.tv-filter-item') : null;
+    if (evItem) {
+      if (evCount === 0 && (!evCb || !evCb.checked)) {
+        evItem.classList.add('tv-filter-empty');
+        evItem.style.display = 'none';
+      } else {
+        evItem.classList.remove('tv-filter-empty');
+        evItem.style.display = '';
+      }
+    }
+    const evGroup = evCb ? evCb.closest('.tv-filter-group') : null;
+    if (evGroup) {
+      if (evCount === 0 && (!evCb || !evCb.checked)) {
+        evGroup.classList.add('tv-group-empty');
+      } else {
+        evGroup.classList.remove('tv-group-empty');
       }
     }
   }
@@ -2559,13 +2660,16 @@ function updateActiveFilterBadges() {
   const selectedTypes = document.querySelectorAll('input[name="tire_type"]:checked').length;
   const selectedPromotions = document.querySelectorAll('input[name="promotion"]:checked').length;
   const selectedRunflat = document.querySelectorAll('input[name="runflat"]:checked').length;
+  const selectedTyresCategories = document.querySelectorAll('input[name="tyres_category"]:checked').length;
+  const selectedMarkings = document.querySelectorAll('input[name="tyre_marking"]:checked').length;
+  const selectedEv = document.querySelectorAll('input[name="ev_tyre"]:checked').length;
   
   const minSlider = document.getElementById('min-price-slider');
   const maxSlider = document.getElementById('max-price-slider');
   const isPriceActive = (minSlider && parseFloat(minSlider.value) > parseFloat(minSlider.min || 0)) ||
                         (maxSlider && parseFloat(maxSlider.value) < parseFloat(maxSlider.max || 2000));
   const priceActive = isPriceActive ? 1 : 0;
-  const totalActive = selectedBrands + selectedPatterns + selectedOems + selectedWarranties + selectedYears + selectedOrigins + selectedSizes + selectedVehicles + selectedTypes + selectedPromotions + selectedRunflat + priceActive;
+  const totalActive = selectedBrands + selectedPatterns + selectedOems + selectedWarranties + selectedYears + selectedOrigins + selectedSizes + selectedVehicles + selectedTypes + selectedPromotions + selectedRunflat + selectedTyresCategories + selectedMarkings + selectedEv + priceActive;
 
   const btnBadge = document.getElementById('tv-filter-badge');
   const drawerBadge = document.getElementById('tv-drawer-badge');
@@ -4615,7 +4719,10 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   function ItemSizeClose() {
     var modal = document.getElementById("item-size");
     var overlay = document.getElementById("item-size-overlay");
-    if (modal) modal.classList.add("translate-y-full");
+    if (modal) {
+      modal.classList.add("translate-x-full", "-translate-x-full", "translate-y-full");
+      modal.classList.remove("is-open");
+    }
     if (overlay) overlay.classList.add("hidden");
     document.body.classList.remove("overflow-hidden");
   }
@@ -4627,8 +4734,102 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var q = (query || '').toLowerCase().trim();
     items.forEach(function(item) {
       var text = item.textContent.toLowerCase();
-      item.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+      var matches = (!q || text.indexOf(q) !== -1);
+      if (matches) {
+        item.style.removeProperty('display');
+        item.classList.remove('hidden');
+      } else {
+        item.style.setProperty('display', 'none', 'important');
+        item.classList.add('hidden');
+      }
     });
+  }
+
+  function renderWheelApiVehicleItems(items) {
+    if (!items || !items.length) {
+      return '<div class="col-span-full py-12 text-center text-gray-500 font-medium">No vehicle fitment data found for this size.</div>';
+    }
+    var byMake = {};
+    items.forEach(function(it) {
+      var mName = (it.make_name || 'Other').trim();
+      var mSlug = (it.make_slug || mName.toLowerCase().replace(/\s+/g, '-')).trim();
+      if (!byMake[mName]) {
+        // As documented in Wheel-API developer reference (https://wheel-api.klever.ae/docs.html under Makes: /v1/makes.php),
+        // make logos are served at https://wheel-api.klever.ae/logos/{make_slug}.png
+        var logoUrl = it.logo || ('https://wheel-api.klever.ae/logos/' + encodeURIComponent(mSlug) + '.png');
+        byMake[mName] = {
+          name: mName,
+          slug: mSlug,
+          logo: logoUrl,
+          models: {}
+        };
+      }
+      var modName = (it.model_name || '').trim();
+      var modSlug = (it.model_slug || modName.toLowerCase().replace(/\s+/g, '-')).trim();
+      if (!modName) return;
+
+      var years = [];
+      if (it.year_ranges) {
+        try {
+          years = typeof it.year_ranges === 'string' ? JSON.parse(it.year_ranges) : it.year_ranges;
+        } catch (e) {
+          years = [String(it.year_ranges)];
+        }
+      }
+      if (!byMake[mName].models[modName]) {
+        byMake[mName].models[modName] = {
+          name: modName,
+          slug: modSlug,
+          years: new Set(years)
+        };
+      } else {
+        years.forEach(function(y) { byMake[mName].models[modName].years.add(y); });
+      }
+    });
+
+    var rows = [];
+    Object.keys(byMake).sort().forEach(function(mName) {
+      var minfo = byMake[mName];
+      var mSlug = minfo.slug;
+      var logoUrl = minfo.logo;
+
+      var modelPills = [];
+      Object.keys(minfo.models).sort().forEach(function(modName) {
+        var mod = minfo.models[modName];
+        var sortedYears = Array.from(mod.years).sort();
+        var yearSpans = sortedYears.map(function(y) {
+          return '<span class="text-xs text-gray-500 block">' + escapeHtml(y) + '</span>';
+        }).join('');
+
+        modelPills.push(
+          '<a class="brand-info" href="/tyres/cars/' + escapeHtml(mSlug) + '/' + escapeHtml(mod.slug) + '">' +
+            '<div class="model-year font-semibold text-gray-900 text-sm hover:text-theme-blue transition-colors text-center">' +
+              '<span>' + escapeHtml(modName) + '</span>' + yearSpans +
+            '</div>' +
+          '</a>'
+        );
+      });
+
+      var rowHtml =
+        '<div class="flex justify-between items-start mb-3 pb-3 border-b border-dashed border-theme-blue gap-3">' +
+          '<div class="modal-name-cotent" style="flex:0 0 auto;">' +
+            '<div class="left-content">' +
+              '<div class="brand-image flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-[6px] px-3 py-1 border border-blue-200 group-hover:border-blue-300 transition-colors">' +
+                '<img class="w-8 h-auto object-contain" src="' + escapeHtml(logoUrl) + '" alt="' + escapeHtml(mName) + '" onerror="this.onerror=null; this.src=\'/static/assets/images/cars-logo/' + escapeHtml(mSlug) + '.png\';" />' +
+                '<p class="ml-2 text-xs font-semibold uppercase text-gray-800 tracking-wide">' + escapeHtml(mName) + '</p>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="modal-results-content">' +
+            '<div class="brand-info-content flex gap-2 flex-wrap justify-end">' +
+              modelPills.join('\n') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      rows.push(rowHtml);
+    });
+
+    return rows.join('\n');
   }
 
   function openTyreVehicleModal(width, height, rim, productName) {
@@ -4668,20 +4869,26 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     if (contentEl) contentEl.innerHTML = '';
     if (loader) loader.classList.remove('hidden');
 
-    if (modal) modal.classList.remove("translate-y-full");
+    if (modal) {
+      modal.classList.remove("translate-x-full", "-translate-x-full", "translate-y-full");
+      modal.classList.add("is-open");
+    }
     if (overlay) overlay.classList.remove("hidden");
     document.body.classList.add("overflow-hidden");
 
-    var wClean = (String(width || '').match(/\d+/) || ['175'])[0];
-    var hClean = (String(height || '').match(/\d+/) || ['65'])[0];
-    var rClean = (String(rim || '').match(/\d+/) || ['14'])[0];
+    var wClean = (String(width || '').match(/\d+/) || ['205'])[0];
+    var hClean = (String(height || '').match(/\d+/) || ['55'])[0];
+    var rClean = (String(rim || '').match(/\d+/) || ['16'])[0];
 
+    // Primary Wheel-API endpoint using POST method as requested:
+    // https://wheel-api.klever.ae/search.php?api_key=f9030340bff3fbffd0208256549f9984940fe536fec8ae7d8c2f1681b8ed3da2&width=${width}&height=${height}&rim=${rim}
+    // Dispatched via local POST proxy to bypass browser cross-origin CORS limitations & domain auth:
     var params = new URLSearchParams();
     params.append('width', wClean);
     params.append('height', hClean);
     params.append('rim', rClean);
 
-    fetch('/tyrefinder/ajax/buytyresearch', {
+    fetch('/api/wheel-search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
       body: params.toString()
@@ -4689,13 +4896,20 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (loader) loader.classList.add('hidden');
-      if (data.status === 'success' && data.html) {
-        if (contentEl) {
-          contentEl.innerHTML = data.html;
+      if (data && data.status === 'success') {
+        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          // Render with car logos from Wheel-API reference: https://wheel-api.klever.ae/logos/{make_slug}.png
+          if (contentEl) contentEl.innerHTML = renderWheelApiVehicleItems(data.data);
+        } else if (data.html) {
+          if (contentEl) contentEl.innerHTML = data.html;
+        } else {
+          if (contentEl) {
+            contentEl.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 font-medium">No vehicle fitment data found for this size.</div>';
+          }
         }
       } else {
         if (contentEl) {
-          contentEl.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 font-medium">' + (data.message || 'No vehicle fitment data found for this size.') + '</div>';
+          contentEl.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 font-medium">' + ((data && data.message) || 'No vehicle fitment data found for this size.') + '</div>';
         }
       }
     })
@@ -4720,7 +4934,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       var modal = document.getElementById("item-size");
-      if (modal && !modal.classList.contains("translate-y-full")) {
+      if (modal && (modal.classList.contains("is-open") || !modal.classList.contains("translate-x-full") || !modal.classList.contains("-translate-x-full") || !modal.classList.contains("translate-y-full"))) {
         ItemSizeClose();
       }
     }

@@ -265,6 +265,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Hook change events and disable ACF to preserve all HTML/CSS formatting
+  if (window.CKEDITOR) {
+    CKEDITOR.config.allowedContent = true;
+    CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+    CKEDITOR.config.autoParagraph = false;
+    CKEDITOR.config.fillEmptyBlocks = false;
+    CKEDITOR.config.basicEntities = false;
+    CKEDITOR.config.entities = false;
+
+    CKEDITOR.on('instanceReady', function(evt) {
+      try {
+        if (evt.editor && evt.editor.filter) {
+          evt.editor.filter.disabled = true;
+        }
+      } catch (err) {}
+      evt.editor.on('change', function() {
+        this.updateElement();
+      });
+      evt.editor.on('mode', function() {
+        if (this.mode === 'source') {
+          const editable = this.editable();
+          editable.attachListener(editable, 'input', () => {
+            this.updateElement();
+          });
+        }
+      });
+    });
+  }
+
   function showToast(msg, type = 'success') {
     const toast = document.getElementById('va-toast');
     if (!toast) return;

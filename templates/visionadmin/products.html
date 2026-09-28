@@ -140,7 +140,7 @@
       <!-- Attribute Set Filter -->
       <select 
         x-model="filters.attribute_set_id" 
-        @change="fetchProducts()"
+        @change="onFilterChange()"
         class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
       >
         <option value="">All Attribute Sets</option>
@@ -152,7 +152,7 @@
       <!-- Brand Filter -->
       <select 
         x-model="filters.brand_id" 
-        @change="fetchProducts()"
+        @change="onFilterChange()"
         class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
       >
         <option value="">All Brands</option>
@@ -164,7 +164,7 @@
       <!-- Category Filter -->
       <select 
         x-model="filters.category_id" 
-        @change="fetchProducts()"
+        @change="onFilterChange()"
         class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
       >
         <option value="">All Categories</option>
@@ -176,7 +176,7 @@
       <!-- Vehicle Type Filter -->
       <select 
         x-model="filters.vehicle_type" 
-        @change="fetchProducts()"
+        @change="onFilterChange()"
         class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
       >
         <option value="">All Vehicle Types</option>
@@ -223,13 +223,13 @@
 
       <div x-show="attrFiltersExpanded" class="space-y-3">
         <!-- Row 1: Common Tyre / Catalog Specific Attributes -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2.5">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2.5">
           <!-- Tyres Category Filter -->
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tyres Category</label>
             <select 
               x-model="filters.tyres_category" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All Categories</option>
@@ -244,7 +244,7 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Parts Category</label>
             <select 
               x-model="filters.parts_category" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All Parts</option>
@@ -261,7 +261,7 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Run Flat (RFT)</label>
             <select 
               x-model="filters.run_flat" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All Types</option>
@@ -275,7 +275,7 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">EV Rated</label>
             <select 
               x-model="filters.ev_rated" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All EV Types</option>
@@ -289,7 +289,7 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rim Size</label>
             <select 
               x-model="filters.rim_size" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All Rims</option>
@@ -304,12 +304,27 @@
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Speed Rating</label>
             <select 
               x-model="filters.speed_rating" 
-              @change="fetchProducts()"
+              @change="onFilterChange()"
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">All Ratings</option>
               <template x-for="sr in ['H', 'T', 'V', 'W', 'Y', 'ZR']" :key="sr">
                 <option :value="sr" x-text="sr"></option>
+              </template>
+            </select>
+          </div>
+
+          <!-- Year Filter -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Year</label>
+            <select 
+              x-model="filters.year" 
+              @change="onFilterChange()"
+              class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
+            >
+              <option value="">All Years</option>
+              <template x-for="y in ['2026', '2025', '2024', '2023', '2022', '2021', '2020']" :key="y">
+                <option :value="y" x-text="y"></option>
               </template>
             </select>
           </div>
@@ -320,7 +335,7 @@
             <input 
               type="text" 
               x-model.debounce.400ms="filters.country_of_origin" 
-              @input="fetchProducts()"
+              @input="onFilterChange()"
               placeholder="e.g. Japan, Germany..." 
               class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             />
@@ -403,7 +418,7 @@
           <div class="sm:w-64 shrink-0">
             <select 
               x-model="filters.attr_code" 
-              @change="if (filters.attr_value) fetchProducts()"
+              @change="if (filters.attr_value) onFilterChange()"
               class="w-full px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
             >
               <option value="">-- Select Any Attribute --</option>
@@ -418,7 +433,7 @@
             <input 
               type="text" 
               x-model.debounce.400ms="filters.attr_value" 
-              @input="if (filters.attr_code) fetchProducts()"
+              @input="if (filters.attr_code) onFilterChange()"
               :placeholder="filters.attr_code ? ('Enter ' + filters.attr_code + ' value to filter...') : 'First select an attribute on the left...'" 
               :disabled="!filters.attr_code"
               class="w-full px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition disabled:bg-slate-100 disabled:text-slate-400"
@@ -429,7 +444,7 @@
           <button 
             type="button" 
             x-show="filters.attr_code || filters.attr_value" 
-            @click="filters.attr_code = ''; filters.attr_value = ''; fetchProducts()" 
+            @click="filters.attr_code = ''; filters.attr_value = ''; onFilterChange()" 
             class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition cursor-pointer shrink-0"
           >
             Clear Dynamic Filter
