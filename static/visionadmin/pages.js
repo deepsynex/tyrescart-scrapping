@@ -58,6 +58,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Pasted content (Word docs, web pages, etc.) arrives carrying inline
+  // style="" attributes and Office markup. ACF is disabled below so admins
+  // can hand-edit arbitrary markup in Source view, which means nothing else
+  // filters a paste automatically — strip it here instead, so saved content
+  // relies on .article-prose classes only (same convention enforced at
+  // render time by app/siteapp/clientroute.py's _strip_inline_styles).
+  function cleanPastedHtml(html) {
+    if (!html) return html;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+
+    Array.from(wrapper.getElementsByTagName('font')).forEach((el) => {
+      el.replaceWith(...el.childNodes);
+    });
+    Array.from(wrapper.getElementsByTagName('o:p')).forEach((el) => {
+      el.replaceWith(...el.childNodes);
+    });
+
+    Array.from(wrapper.querySelectorAll('*')).forEach((el) => {
+      el.removeAttribute('style');
+      el.removeAttribute('lang');
+      if (/^Mso/i.test(el.className || '')) el.removeAttribute('class');
+      Array.from(el.attributes).forEach((attr) => {
+        if (/^(xmlns|o:|v:|w:)/i.test(attr.name)) el.removeAttribute(attr.name);
+      });
+    });
+
+    Array.from(wrapper.querySelectorAll('span,font')).forEach((el) => {
+      if (!el.attributes.length) el.replaceWith(...el.childNodes);
+    });
+
+    return wrapper.innerHTML;
+  }
+
   // Hook change events and completely disable ACF to preserve all HTML/CSS structure
   if (window.CKEDITOR) {
     CKEDITOR.config.allowedContent = true;
@@ -78,6 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
           evt.editor.filter.disabled = true;
         }
       } catch (err) {}
+      evt.editor.on('paste', function(evtPaste) {
+        if (evtPaste.data && typeof evtPaste.data.dataValue === 'string') {
+          evtPaste.data.dataValue = cleanPastedHtml(evtPaste.data.dataValue);
+        }
+      });
       evt.editor.on('change', function() {
         this.updateElement();
       });

@@ -458,12 +458,83 @@
   // with no error anywhere. Poll for CKEDITOR instead of assuming it's
   // there, and expose the init function so the modal-open handler in
   // blogs.js can also call it defensively.
+
+  // Blog copy is usually pasted from Google Docs / Word, which wraps every
+  // paragraph in inline styles (Calibri, 12pt, justify, line-height:1.38,
+  // black 1px table borders...). Those override .article-prose on the
+  // storefront, so strip them and keep only semantic HTML. Runs on paste,
+  // on load (setData) and on save (getData), so older posts get cleaned too.
+  const PRESENTATIONAL_ATTRS = ['style', 'lang', 'align', 'valign', 'bgcolor', 'border',
+    'cellpadding', 'cellspacing', 'width', 'height', 'face', 'size', 'color'];
+
+  function cleanBlogHtml(html) {
+    if (!html || html.indexOf('<') === -1) return html;
+    // <template> content is inert: pasted <img onerror> etc. never runs here.
+    const tpl = document.createElement('template');
+    tpl.innerHTML = html;
+    const root = tpl.content;
+    const doc = root.ownerDocument;
+    const unwrap = (el) => el.replaceWith(...el.childNodes);
+    const rename = (el, tag) => {
+      const n = doc.createElement(tag);
+      while (el.firstChild) n.appendChild(el.firstChild);
+      el.replaceWith(n);
+    };
+    const styleOf = (el) => (el.getAttribute('style') || '').toLowerCase();
+    const isBold = (s) => /font-weight\s*:\s*(bold|[6-9]00)/.test(s);
+    const isNormalWeight = (s) => /font-weight\s*:\s*(normal|[1-4]00)/.test(s);
+
+    // Google Docs wraps the whole paste in <b style="font-weight:normal" id="docs-internal-guid-...">
+    root.querySelectorAll('b, strong').forEach((el) => {
+      if (/^docs-internal-guid/.test(el.id || '') || isNormalWeight(styleOf(el))) unwrap(el);
+    });
+    // Keep the meaning of styled bold/italic text before the styles are dropped.
+    root.querySelectorAll('span').forEach((el) => {
+      const s = styleOf(el);
+      if (isBold(s)) rename(el, 'strong');
+      else if (/font-style\s*:\s*italic/.test(s)) rename(el, 'em');
+    });
+    root.querySelectorAll('*').forEach((el) => {
+      Array.from(el.attributes).forEach((attr) => {
+        const name = attr.name.toLowerCase();
+        if (PRESENTATIONAL_ATTRS.includes(name)
+            || /^(xmlns|o:|v:|w:)/.test(name)
+            || (name === 'id' && /^docs-internal-guid/.test(attr.value))
+            || (name === 'class' && /^mso/i.test(attr.value))
+            || (name === 'dir' && attr.value.toLowerCase() === 'ltr')) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    root.querySelectorAll('span, font, o\\:p').forEach((el) => {
+      if (!el.attributes.length) unwrap(el);
+    });
+
+    const out = document.createElement('template');
+    out.content.appendChild(root);
+    return out.innerHTML;
+  }
+
+  function attachBlogHtmlCleaner(editor) {
+    const clean = (evt) => {
+      if (evt.data && typeof evt.data.dataValue === 'string') {
+        evt.data.dataValue = cleanBlogHtml(evt.data.dataValue);
+      }
+    };
+    // Priority 1 runs before CKEditor's own paste filter, which would otherwise
+    // drop Google Docs' bold/italic <span>s before they become <strong>/<em>;
+    // priority 1000 runs after it to catch anything its Docs/Word filters add.
+    editor.on('paste', clean, null, null, 1);
+    editor.on('paste', clean, null, null, 1000);
+    editor.on('setData', clean, null, null, 1000);
+    editor.on('getData', clean, null, null, 1000);
+  }
+  window.cleanBlogHtml = cleanBlogHtml;
+
   function initBlogCkeditor() {
     if (!window.CKEDITOR) return false;
 
-    CKEDITOR.config.allowedContent = true;
-    CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
-    CKEDITOR.config.autoParagraph = false;
+    CKEDITOR.config.allowedContent = true;  
     CKEDITOR.config.fillEmptyBlocks = false;
     CKEDITOR.config.basicEntities = false;
     CKEDITOR.config.entities = false;
@@ -472,25 +543,26 @@
     if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
     CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
     CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
-    CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
     CKEDITOR.config.versionCheck = false;
 
     const blogEditorConfig = {
       minHeight: 200,
       height: 280,
       allowedContent: true,
-      extraAllowedContent: '*(*);*{*};*[*];*<*>',
-      autoParagraph: false,
       fillEmptyBlocks: false,
       basicEntities: false,
+      autoParagraph: true,
       entities: false,
       contentsCss: [
         '/static/css/client.css',
         '/static/css/page.css'
       ],
-      removePlugins: 'exportpdf,cloudservices,easyimage',
+      removePlugins: 'exportpdf,cloudservices,easyimage,font,color,justify',
       removeButtons: 'About',
-      versionCheck: false
+      versionCheck: false,
+      on: {
+        instanceReady: function(evt) { attachBlogHtmlCleaner(evt.editor); }
+      }
     };
 
     if (document.getElementById('blog_content_en') && !CKEDITOR.instances['blog_content_en']) {

@@ -4023,7 +4023,7 @@ footer .tagline {
 }
 
 .article-prose h2 {
-  font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+  font-size: clamp(1.4rem, 2.6vw, 0.95rem);
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -.02em;
@@ -4042,12 +4042,24 @@ footer .tagline {
 
 .article-prose p {
   margin: 0 0 20px;
+  line-height: 1.4;
 }
 
 .article-prose strong,
 .article-prose b {
   font-weight: 700;
   color: var(--ink);
+}
+
+.article-prose a {
+  color: var(--primary, #4B237B);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-prose a:hover {
+  color: var(--primary-hover, #3a1960);
 }
 
 .article-prose img {
