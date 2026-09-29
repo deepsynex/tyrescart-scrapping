@@ -369,6 +369,10 @@
           faqItems.forEach(item => {
             const btn = item.querySelector('.faq-question-btn');
             if (!btn) return;
+            // client.js initFaqAccordion() runs after this and would bind a second
+            // toggle to the same button, cancelling this one out; this flag makes it skip.
+            btn._faqBound = true;
+            btn.dataset.bound = 'true';
 
             btn.addEventListener('click', function() {
               const isOpen = item.classList.contains('active');
