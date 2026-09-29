@@ -3168,6 +3168,79 @@ def _format_wheel_api_vehicles_html(items, make_logos=None):
     return "\n".join(rows)
 
 
+@site_bp.route('/api/tyre-sizes', methods=['GET'])
+def api_tyre_sizes_cascade():
+    """
+    Public JSON API: cascading tyre-size options (width -> profile -> rim)
+    sourced from real product inventory (attributes_json.width/height/rim),
+    not a static list -- so the hero search widget only ever offers a
+    combination that actually has matching products in stock.
+
+    - no params:            distinct widths
+    - ?width=X:              distinct profiles (aspect ratio) for that width
+    - ?width=X&profile=Y:    distinct rims for that width+profile
+    """
+    width = (request.args.get('width') or '').strip()
+    profile = (request.args.get('profile') or '').strip()
+
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            base_where = (
+                "deleted_at IS NULL AND status = 'active' "
+                "AND attributes_json IS NOT NULL"
+            )
+
+            if not width:
+                cur.execute(f"""
+                    SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) AS val
+                    FROM products
+                    WHERE {base_where}
+                      AND JSON_EXTRACT(attributes_json, '$.width') IS NOT NULL
+                """)
+                step = 'width'
+            elif not profile:
+                cur.execute(f"""
+                    SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.height')) AS val
+                    FROM products
+                    WHERE {base_where}
+                      AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) = %s
+                      AND JSON_EXTRACT(attributes_json, '$.height') IS NOT NULL
+                """, [width])
+                step = 'profile'
+            else:
+                cur.execute(f"""
+                    SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.rim')) AS val
+                    FROM products
+                    WHERE {base_where}
+                      AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) = %s
+                      AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.height')) = %s
+                      AND JSON_EXTRACT(attributes_json, '$.rim') IS NOT NULL
+                """, [width, profile])
+                step = 'rim'
+
+            raw_vals = [r['val'].strip() for r in cur.fetchall() if r.get('val') and r['val'].strip()]
+    finally:
+        conn.close()
+
+    if step == 'rim':
+        # attributes_json.rim stores just digits ("19"), but the size
+        # filter matches against tire_size_label verbatim (e.g.
+        # "235/55 R19" -> "235-55-R19"), so the "R" has to be added back
+        # here for the value this API returns to actually match anything.
+        def rim_key(v):
+            digits = ''.join(ch for ch in v if ch.isdigit())
+            return int(digits) if digits else 0
+        seen = sorted(set(raw_vals), key=rim_key)
+        options = [v if v.upper().startswith('R') else f'R{v}' for v in seen]
+    else:
+        numeric_vals = [v for v in raw_vals if v.isdigit()]
+        options = sorted(set(numeric_vals), key=int)
+
+    return jsonify({'success': True, 'step': step, 'options': options})
+
+
 @site_bp.route('/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
 @site_bp.route('/api/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
 @site_bp.route('/api/wheel-search', methods=['GET', 'POST'])

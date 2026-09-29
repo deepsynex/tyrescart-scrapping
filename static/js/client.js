@@ -4730,32 +4730,72 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   function filterTyrePopupContent(query) {
     var container = document.querySelector('#item-size .tyre-popup-content');
     if (!container) return;
-    var items = container.querySelectorAll(':scope > div');
+    var cards = container.querySelectorAll('.tv-vehicle-make-card');
     var q = (query || '').toLowerCase().trim();
-    items.forEach(function(item) {
-      var text = item.textContent.toLowerCase();
-      var matches = (!q || text.indexOf(q) !== -1);
-      if (matches) {
-        item.style.removeProperty('display');
-        item.classList.remove('hidden');
+    var visibleCardCount = 0;
+
+    cards.forEach(function(card) {
+      var makeName = (card.getAttribute('data-make') || '').toLowerCase();
+      var chips = card.querySelectorAll('.tv-vehicle-model-chip');
+      var makeMatches = q && makeName.indexOf(q) !== -1;
+      var matchingChipsCount = 0;
+
+      chips.forEach(function(chip) {
+        var chipText = chip.textContent.toLowerCase();
+        if (!q || makeMatches || chipText.indexOf(q) !== -1) {
+          chip.style.removeProperty('display');
+          matchingChipsCount++;
+        } else {
+          chip.style.setProperty('display', 'none', 'important');
+        }
+      });
+
+      if (!q || makeMatches || matchingChipsCount > 0) {
+        card.style.removeProperty('display');
+        visibleCardCount++;
       } else {
-        item.style.setProperty('display', 'none', 'important');
-        item.classList.add('hidden');
+        card.style.setProperty('display', 'none', 'important');
       }
     });
+
+    var emptyEl = container.querySelector('.tv-vehicle-no-results');
+    if (visibleCardCount === 0 && q) {
+      if (!emptyEl) {
+        emptyEl = document.createElement('div');
+        emptyEl.className = 'tv-vehicle-no-results col-span-full';
+        container.appendChild(emptyEl);
+      }
+      emptyEl.innerHTML =
+        '<div class="py-12 px-4 text-center">' +
+          '<div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center text-[#7C3AED]">' +
+            '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+          '</div>' +
+          '<h5 class="text-sm font-bold text-slate-800 mb-1">No matching vehicles found</h5>' +
+          '<p class="text-xs text-slate-500">No make or model found for "' + escapeHtml(q) + '". Try searching for another brand or model name.</p>' +
+        '</div>';
+      emptyEl.style.removeProperty('display');
+    } else if (emptyEl) {
+      emptyEl.style.setProperty('display', 'none', 'important');
+    }
   }
 
   function renderWheelApiVehicleItems(items) {
     if (!items || !items.length) {
-      return '<div class="col-span-full py-12 text-center text-gray-500 font-medium">No vehicle fitment data found for this size.</div>';
+      var summaryEl = document.getElementById('item-size-summary');
+      if (summaryEl) summaryEl.classList.add('hidden');
+      return '<div class="py-16 px-4 text-center col-span-full">' +
+        '<div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center text-[#7C3AED]">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>' +
+        '</div>' +
+        '<h5 class="text-sm font-bold text-slate-800 mb-1">No vehicle fitment data found</h5>' +
+        '<p class="text-xs text-slate-500 max-w-sm mx-auto">We could not find specific vehicle fitments for this tyre size in our database.</p>' +
+      '</div>';
     }
     var byMake = {};
     items.forEach(function(it) {
       var mName = (it.make_name || 'Other').trim();
       var mSlug = (it.make_slug || mName.toLowerCase().replace(/\s+/g, '-')).trim();
       if (!byMake[mName]) {
-        // As documented in Wheel-API developer reference (https://wheel-api.klever.ae/docs.html under Makes: /v1/makes.php),
-        // make logos are served at https://wheel-api.klever.ae/logos/{make_slug}.png
         var logoUrl = it.logo || ('https://wheel-api.klever.ae/logos/' + encodeURIComponent(mSlug) + '.png');
         byMake[mName] = {
           name: mName,
@@ -4787,49 +4827,73 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       }
     });
 
-    var rows = [];
-    Object.keys(byMake).sort().forEach(function(mName) {
+    var makesList = Object.keys(byMake).sort();
+    var totalModelsCount = 0;
+    makesList.forEach(function(m) {
+      totalModelsCount += Object.keys(byMake[m].models).length;
+    });
+
+    var summaryEl = document.getElementById('item-size-summary');
+    if (summaryEl) {
+      summaryEl.innerHTML =
+        '<div class="flex items-center justify-between text-xs text-purple-950 font-medium w-full flex-wrap gap-2">' +
+          '<div class="flex items-center gap-2">' +
+            '<span class="w-2.5 h-2.5 rounded-full bg-[#7C3AED] ring-4 ring-purple-200/60 shrink-0"></span>' +
+            '<span>Verified for <strong class="text-[#4B237B] font-extrabold">' + makesList.length + ' ' + (makesList.length === 1 ? 'Make' : 'Makes') + '</strong> and <strong class="text-[#4B237B] font-extrabold">' + totalModelsCount + ' ' + (totalModelsCount === 1 ? 'Vehicle Model' : 'Vehicle Models') + '</strong></span>' +
+          '</div>' +
+          '<span class="text-[11px] font-bold text-[#7C3AED] bg-white border border-[#DDD6FE] px-2.5 py-0.5 rounded-full shadow-2xs">OEM Fitment</span>' +
+        '</div>';
+      summaryEl.classList.remove('hidden');
+    }
+
+    var cards = [];
+    makesList.forEach(function(mName) {
       var minfo = byMake[mName];
       var mSlug = minfo.slug;
       var logoUrl = minfo.logo;
+      var modelKeys = Object.keys(minfo.models).sort();
+      var modelCount = modelKeys.length;
 
-      var modelPills = [];
-      Object.keys(minfo.models).sort().forEach(function(modName) {
+      var modelChips = [];
+      modelKeys.forEach(function(modName) {
         var mod = minfo.models[modName];
         var sortedYears = Array.from(mod.years).sort();
-        var yearSpans = sortedYears.map(function(y) {
-          return '<span class="text-xs text-gray-500 block">' + escapeHtml(y) + '</span>';
-        }).join('');
+        var yearText = sortedYears.join(', ');
 
-        modelPills.push(
-          '<a class="brand-info" href="/tyres/cars/' + escapeHtml(mSlug) + '/' + escapeHtml(mod.slug) + '">' +
-            '<div class="model-year font-semibold text-gray-900 text-sm hover:text-theme-blue transition-colors text-center">' +
-              '<span>' + escapeHtml(modName) + '</span>' + yearSpans +
+        modelChips.push(
+          '<a class="tv-vehicle-model-chip group" href="/tyres/cars/' + escapeHtml(mSlug) + '/' + escapeHtml(mod.slug) + '" title="View tyres for ' + escapeHtml(mName) + ' ' + escapeHtml(modName) + '">' +
+            '<div class="tv-model-chip-content">' +
+              '<span class="tv-model-chip-name">' + escapeHtml(modName) + '</span>' +
+              (yearText ? '<span class="tv-model-chip-year">' + escapeHtml(yearText) + '</span>' : '') +
             '</div>' +
+            '<svg class="tv-model-chip-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M5 12h14M12 5l7 7-7 7"/>' +
+            '</svg>' +
           '</a>'
         );
       });
 
-      var rowHtml =
-        '<div class="flex justify-between items-start mb-3 pb-3 border-b border-dashed border-theme-blue gap-3">' +
-          '<div class="modal-name-cotent" style="flex:0 0 auto;">' +
-            '<div class="left-content">' +
-              '<div class="brand-image flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-[6px] px-3 py-1 border border-blue-200 group-hover:border-blue-300 transition-colors">' +
-                '<img class="w-8 h-auto object-contain" src="' + escapeHtml(logoUrl) + '" alt="' + escapeHtml(mName) + '" onerror="this.onerror=null; this.src=\'/static/assets/images/cars-logo/' + escapeHtml(mSlug) + '.png\';" />' +
-                '<p class="ml-2 text-xs font-semibold uppercase text-gray-800 tracking-wide">' + escapeHtml(mName) + '</p>' +
+      var cardHtml =
+        '<div class="tv-vehicle-make-card" data-make="' + escapeHtml(mName.toLowerCase()) + '">' +
+          '<div class="tv-make-card-header">' +
+            '<div class="tv-make-brand-wrap">' +
+              '<div class="tv-make-logo-box">' +
+                '<img src="' + escapeHtml(logoUrl) + '" alt="' + escapeHtml(mName) + '" onerror="this.onerror=null; this.src=\'/static/assets/images/cars-logo/' + escapeHtml(mSlug) + '.png\';" />' +
+              '</div>' +
+              '<div class="tv-make-name-wrap">' +
+                '<h4 class="tv-make-title">' + escapeHtml(mName) + '</h4>' +
               '</div>' +
             '</div>' +
+            '<span class="tv-make-count-pill">' + modelCount + ' ' + (modelCount === 1 ? 'Model' : 'Models') + '</span>' +
           '</div>' +
-          '<div class="modal-results-content">' +
-            '<div class="brand-info-content flex gap-2 flex-wrap justify-end">' +
-              modelPills.join('\n') +
-            '</div>' +
+          '<div class="tv-make-models-grid">' +
+            modelChips.join('\n') +
           '</div>' +
         '</div>';
-      rows.push(rowHtml);
+      cards.push(cardHtml);
     });
 
-    return rows.join('\n');
+    return cards.join('\n');
   }
 
   function openTyreVehicleModal(width, height, rim, productName) {
@@ -4858,6 +4922,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var modal = document.getElementById("item-size");
     var overlay = document.getElementById("item-size-overlay");
     var loader = document.getElementById("item-size-loader");
+    var summaryEl = document.getElementById("item-size-summary");
     var contentEl = document.querySelector("#item-size .tyre-popup-content");
     var titleEl = document.querySelector("#item-size .product-name");
     var searchInput = document.getElementById("item-size-search");
@@ -4867,6 +4932,10 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     }
     if (searchInput) searchInput.value = '';
     if (contentEl) contentEl.innerHTML = '';
+    if (summaryEl) {
+      summaryEl.classList.add('hidden');
+      summaryEl.innerHTML = '';
+    }
     if (loader) loader.classList.remove('hidden');
 
     if (modal) {

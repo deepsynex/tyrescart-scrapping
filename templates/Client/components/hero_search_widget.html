@@ -1,0 +1,867 @@
+{# =========================================================================
+   HERO SEARCH WIDGET
+   Cards open a slide-in modal overlay (no dropdowns, chip/card-based)
+   ========================================================================= #}
+
+{# ── Inline styles for the modal overlay ── #}
+<style>
+/* Overlay backdrop */
+#tvHeroModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(15, 10, 30, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: tvModalBdIn 0.22s ease;
+}
+@keyframes tvModalBdIn { from { opacity: 0; } to { opacity: 1; } }
+#tvHeroModal.open { display: flex; align-items: flex-start; justify-content: flex-end; }
+
+/* Side panel */
+.tvhm-panel {
+  width: min(500px, 95vw);
+  height: 100dvh;
+  background: #fff;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -12px 0 48px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: tvPanelIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: right center;
+}
+@keyframes tvPanelIn { from { transform: translateX(100%); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+
+/* Header */
+.tvhm-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 22px 16px;
+  border-bottom: 1.5px solid #F3F4F6;
+  flex-shrink: 0;
+}
+.tvhm-header-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #EDE9FE;
+  color: #7C3AED;
+  flex-shrink: 0;
+}
+.tvhm-title-wrap { flex: 1; min-width: 0; }
+.tvhm-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #7C3AED;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 2px;
+}
+.tvhm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+  margin: 0;
+}
+.tvhm-close {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #E5E7EB;
+  background: #F9FAFB;
+  color: #6B7280;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.tvhm-close:hover { background: #FEE2E2; border-color: #FECACA; color: #DC2626; }
+
+/* Body scroll area */
+.tvhm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 22px 32px;
+  scroll-behavior: smooth;
+}
+.tvhm-body::-webkit-scrollbar { width: 5px; }
+.tvhm-body::-webkit-scrollbar-track { background: transparent; }
+.tvhm-body::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
+
+/* Section label */
+.tvhm-section-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 10px;
+}
+/* Step indicator (e.g. Step 1 of 3) */
+.tvhm-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.tvhm-step-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #E5E7EB;
+  transition: background 0.2s;
+}
+.tvhm-step-dot.active { background: #7C3AED; transform: scale(1.3); }
+.tvhm-step-dot.done   { background: #16A34A; }
+
+/* Chip grid */
+.tvhm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.tvhm-chip {
+  padding: 7px 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  background: #F9FAFB;
+  cursor: pointer;
+  transition: all 0.18s;
+  user-select: none;
+}
+.tvhm-chip:hover { border-color: #A78BFA; color: #7C3AED; background: #F5F3FF; }
+.tvhm-chip.selected { border-color: #7C3AED; background: #7C3AED; color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,0.25); }
+
+.tvhm-chips-loading {
+  padding: 18px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9CA3AF;
+  margin-bottom: 22px;
+}
+.tvhm-empty-note {
+  padding: 14px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9CA3AF;
+  margin-bottom: 22px;
+}
+
+/* Brand cards */
+.tvhm-brands-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.tvhm-brand-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 8px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  background: #F9FAFB;
+  cursor: pointer;
+  text-decoration: none;
+  color: #374151;
+  transition: all 0.18s;
+}
+.tvhm-brand-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
+.tvhm-brand-card img { width: 64px; height: 36px; object-fit: contain; filter: grayscale(0.3); }
+.tvhm-brand-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; }
+
+/* Vehicle search input */
+.tvhm-search-input-wrap {
+  position: relative;
+  margin-bottom: 18px;
+}
+.tvhm-search-input-wrap svg {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  pointer-events: none;
+}
+.tvhm-search-input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.18s;
+  box-sizing: border-box;
+}
+.tvhm-search-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+
+/* Make cards (vehicle) */
+.tvhm-make-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.tvhm-make-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 10px;
+  background: #F9FAFB;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.18s;
+}
+.tvhm-make-card:hover  { border-color: #A78BFA; background: #F5F3FF; color: #7C3AED; }
+.tvhm-make-card.selected { border-color: #7C3AED; background: #7C3AED; color: #fff; }
+.tvhm-make-card svg { flex-shrink: 0; opacity: 0.6; }
+
+/* EV option cards */
+.tvhm-ev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.tvhm-ev-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  background: #F9FAFB;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.18s;
+}
+.tvhm-ev-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
+.tvhm-ev-card-label { font-size: 10px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
+.tvhm-ev-card-name  { font-size: 14px; font-weight: 700; color: #111827; }
+.tvhm-ev-card-sub   { font-size: 11px; color: #6B7280; }
+
+/* Primary action button */
+.tvhm-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7C3AED, #9333EA);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+  margin-top: 6px;
+}
+.tvhm-action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.tvhm-action-btn:active { transform: translateY(0); }
+.tvhm-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* All-brands link */
+.tvhm-all-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1.5px dashed #C4B5FD;
+  color: #7C3AED;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s;
+}
+.tvhm-all-link:hover { background: #F5F3FF; }
+
+/* Size step display */
+.tvhm-selected-size {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.tvhm-size-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  background: #F5F3FF;
+  border: 1.5px solid #C4B5FD;
+  border-radius: 10px;
+  min-width: 64px;
+}
+.tvhm-size-badge-lbl { font-size: 9px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
+.tvhm-size-badge-val { font-size: 17px; font-weight: 800; color: #7C3AED; }
+</style>
+
+{# ── Modal overlay ── #}
+<div id="tvHeroModal" aria-modal="true" role="dialog" onclick="tvHeroModalClose(event)">
+  <div class="tvhm-panel" id="tvhmPanel">
+    <div class="tvhm-header">
+      <div class="tvhm-header-icon" id="tvhmHeaderIcon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="tvhm-title-wrap">
+        <span class="tvhm-badge" id="tvhmBadge">SEARCH BY</span>
+        <h2 class="tvhm-title" id="tvhmTitle">Size</h2>
+      </div>
+      <button type="button" class="tvhm-close" onclick="tvHeroModalClose(null,true)" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="tvhm-body" id="tvhmBody"></div>
+  </div>
+</div>
+
+{# ── Widget card ── #}
+{#<div class="tv-hero-search-card" id="heroSearchWidget">
+
+  <div class="tv-hsearch-tabs" role="tablist">
+    <button type="button" class="tv-hsearch-tab active" data-tab="car-tyres" role="tab" aria-selected="true" onclick="switchHeroSearchTab('car-tyres')">
+      <svg class="tv-hsearch-tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+        <line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/>
+      </svg>
+      <span>Car Tyres</span>
+    </button>
+    <button type="button" class="tv-hsearch-tab" data-tab="car-wheels" role="tab" aria-selected="false" onclick="switchHeroSearchTab('car-wheels')">
+      <svg class="tv-hsearch-tab-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2.5"/>
+        <line x1="12" y1="9.5" x2="12" y2="2"/><line x1="14.65" y1="10.35" x2="20.2" y2="6.8"/>
+        <line x1="14.65" y1="13.65" x2="20.2" y2="17.2"/><line x1="12" y1="14.5" x2="12" y2="22"/>
+        <line x1="9.35" y1="13.65" x2="3.8" y2="17.2"/><line x1="9.35" y1="10.35" x2="3.8" y2="6.8"/>
+      </svg>
+      <span>Car Wheels</span>
+    </button>
+    <button type="button" class="tv-hsearch-tab" data-tab="motorbike" role="tab" aria-selected="false" onclick="switchHeroSearchTab('motorbike')">
+      <svg class="tv-hsearch-tab-icon" width="22" height="20" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5" cy="14" r="5"/><circle cx="25" cy="14" r="5"/>
+        <path d="M10 14h10M17 14L14 5h4l3 5"/><path d="M14 5l-2-3h-4"/>
+      </svg>
+      <span>Motorbike Tyres</span>
+    </button>
+  </div>#}
+
+  <div class="tv-hsearch-body">
+
+    {# Car Tyres: 4 cards #}
+    <div class="tv-hsearch-panel active" id="tv-hsearch-panel-car-tyres">
+      <div class="tv-hsoption-grid">
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('size','car-tyres')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Size</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('vehicle','car-tyres')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Vehicle</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('brands','car-tyres')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">Brands</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('ev','car-tyres')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">EV Tyres</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+      </div>
+    </div>
+
+    {# Car Wheels: 2 cards #}
+    <div class="tv-hsearch-panel" id="tv-hsearch-panel-car-wheels" style="display:none;">
+      <div class="tv-hsoption-grid tv-hsoption-grid--2col">
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('size','car-wheels')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Size</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('vehicle','car-wheels')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Vehicle</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+      </div>
+    </div>
+
+    {# Motorbike Tyres: 1 card #}
+    <div class="tv-hsearch-panel" id="tv-hsearch-panel-motorbike" style="display:none;">
+      <div class="tv-hsoption-grid tv-hsoption-grid--1col">
+        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('size','motorbike')">
+          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Size</span></div>
+          <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   MODAL PORTAL
+   #tvHeroModal is authored inside .hero-grid, which sets its own
+   `position: relative; z-index: 2`. That gives .hero-grid its own
+   stacking context, so the modal's z-index:9000 only ever gets
+   compared against its siblings *inside* that context -- at the page
+   level the whole .hero-grid subtree (modal included, no matter how
+   high its own z-index is set) still only counts as z-index 2, which
+   loses to header's z-index:100. Moving the modal to be a direct
+   child of <body> takes it out of that trap so its z-index is finally
+   compared against header directly.
+══════════════════════════════════════════════════════ */
+(function() {
+  var modal = document.getElementById('tvHeroModal');
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+})();
+
+/* ══════════════════════════════════════════════════════
+   TAB SWITCH
+══════════════════════════════════════════════════════ */
+function switchHeroSearchTab(tabKey) {
+  document.querySelectorAll('.tv-hsearch-tab').forEach(function(t) {
+    var isTarget = t.getAttribute('data-tab') === tabKey;
+    t.classList.toggle('active', isTarget);
+    t.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+  });
+  ['car-tyres','car-wheels','motorbike'].forEach(function(p) {
+    var el = document.getElementById('tv-hsearch-panel-' + p);
+    if (el) { el.style.display = p === tabKey ? '' : 'none'; el.classList.toggle('active', p === tabKey); }
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   MODAL STATE
+══════════════════════════════════════════════════════ */
+var _tvState = { type: null, tab: null, step: 1, width: null, profile: null, rim: null, make: null, model: null };
+
+var _tyreWidths   = ['145','155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325'];
+var _tyreProfiles = ['25','30','35','40','45','50','55','60','65','70','75','80','85'];
+var _tyreRims     = ['R13','R14','R15','R16','R17','R18','R19','R20','R21','R22','R23','R24'];
+var _wheelRims    = ['R15','R16','R17','R18','R19','R20','R21','R22','R23','R24'];
+var _wheelWidths  = ['6.5J','7.0J','7.5J','8.0J','8.5J','9.0J','9.5J','10.0J','10.5J'];
+var _mbWidths     = ['80','90','100','110','120','130','140','150','160','170','180'];
+var _mbProfiles   = ['50','55','60','65','70','75','80','85','90'];
+var _mbRims       = ['R10','R12','R14','R16','R17','R18','R19'];
+
+var _carMakes = {
+  'Toyota':    ['Land Cruiser','Prado','Hilux','Camry','Corolla','RAV4','Fortuner','Yaris'],
+  'Nissan':    ['Patrol','Altima','Sunny','X-Trail','Pathfinder','Kicks','Navara'],
+  'Lexus':     ['LX570','LX600','GX460','RX350','ES350','IS300','LS500'],
+  'Ford':      ['F-150','Explorer','Expedition','Mustang','Ranger','EcoSport'],
+  'BMW':       ['X5','X6','X7','3 Series','5 Series','7 Series','M4','M5'],
+  'Mercedes':  ['C-Class','E-Class','S-Class','G-Class','GLE','GLC','A-Class'],
+  'Land Rover':['Range Rover','Defender','Sport','Velar','Discovery'],
+  'Porsche':   ['Cayenne','Macan','Panamera','911','Taycan'],
+  'Hyundai':   ['Tucson','Santa Fe','Elantra','Sonata','Palisade'],
+  'Kia':       ['Sportage','Sorento','Telluride','Cerato','Carnival'],
+  'Audi':      ['Q7','Q8','Q5','A6','A4','e-tron','RS6'],
+  'Honda':     ['Accord','Civic','CR-V','Pilot','HR-V'],
+  'Mitsubishi':['Pajero','Outlander','Montero Sport','ASX','Eclipse Cross'],
+  'Tesla':     ['Model 3','Model Y','Model S','Model X','Cybertruck']
+};
+
+var _brands = [
+  {name:'Michelin',  img:'/static/uploads/brands/brand_884b41a82943de82_1789467748.png'},
+  {name:'Bridgestone',img:'/static/uploads/brands/brand_cb7761b3ead4b59d_1789390038.png'},
+  {name:'Continental',img:'/static/uploads/brands/brand_24bed4da10cda88d_1789390087.png'},
+  {name:'Pirelli',   img:'/static/uploads/brands/brand_fdb78675dade1522_1789467868.png'},
+  {name:'Goodyear',  img:'/static/uploads/brands/brand_5efb86debe60281a_1789467079.png'},
+  {name:'Dunlop',    img:'/static/uploads/brands/brand_412e791c7f963968_1789466881.png'},
+  {name:'Yokohama',  img:'/static/uploads/brands/brand_02bc8d77485a6734_1789468342.png'},
+  {name:'Hankook',   img:'/static/uploads/brands/brand_1553b44568a70852_1789467181.png'},
+  {name:'Toyo Tires',img:'/static/uploads/brands/brand_dff9a65a86a92fc0_1789468102.png'},
+  {name:'Nitto',     img:'/static/uploads/brands/brand_5ae04c0e3f78eee9_1789467696.png'},
+  {name:'Falken',    img:'/static/uploads/brands/brand_3756e7c7b08f3d02_1789466948.png'},
+  {name:'Cooper',    img:'/static/uploads/brands/brand_2ea72ccd3da38c87_1789466730.png'}
+];
+
+/* ══════════════════════════════════════════════════════
+   OPEN MODAL
+══════════════════════════════════════════════════════ */
+var _tvScrollY = 0;
+
+function tvHeroOpenModal(type, tab) {
+  _tvState = { type: type, tab: tab, step: 1, width: null, profile: null, rim: null, make: null, model: null };
+  var modal = document.getElementById('tvHeroModal');
+  modal.classList.add('open');
+
+  // Lock the background page in place. Just setting overflow:hidden on
+  // body isn't enough -- iOS Safari still lets a touch-drag scroll the
+  // page underneath a fixed overlay. Pinning body to its current scroll
+  // offset via position:fixed is what actually stops that, and we
+  // restore the exact scroll position on close.
+  //
+  // Switching body to position:fixed also removes the page's scrollbar,
+  // which makes body (and the sticky header inside it) a few pixels
+  // wider than a moment ago -- that's the layout/content jump. Adding
+  // that same width back as padding-right keeps body's content box the
+  // exact same size across the lock, so nothing shifts.
+  var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  _tvScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.position = 'fixed';
+  document.body.style.top = (-_tvScrollY) + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.overflow = 'hidden';
+  if (scrollbarWidth > 0) {
+    document.body.style.paddingRight = scrollbarWidth + 'px';
+  }
+
+  _tvRenderModal();
+}
+
+function tvHeroModalClose(e, force) {
+  if (force || (e && e.target === document.getElementById('tvHeroModal'))) {
+    document.getElementById('tvHeroModal').classList.remove('open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    window.scrollTo(0, _tvScrollY);
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') tvHeroModalClose(null, true);
+});
+
+/* ══════════════════════════════════════════════════════
+   RENDER MODAL CONTENT
+══════════════════════════════════════════════════════ */
+function _tvRenderModal() {
+  var t = _tvState.type;
+  var tab = _tvState.tab;
+  var badge = document.getElementById('tvhmBadge');
+  var title = document.getElementById('tvhmTitle');
+  var body  = document.getElementById('tvhmBody');
+  var icon  = document.getElementById('tvhmHeaderIcon');
+
+  if (t === 'size') {
+    badge.textContent = 'SEARCH BY';
+    title.textContent = tab === 'car-wheels' ? 'Wheel Size' : tab === 'motorbike' ? 'Motorbike Tyre Size' : 'Tyre Size';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>';
+    _tvRenderSizePanel(body, tab);
+  } else if (t === 'vehicle') {
+    badge.textContent = 'SEARCH BY';
+    title.textContent = tab === 'car-wheels' ? 'Vehicle (Wheels)' : 'Vehicle';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>';
+    _tvRenderVehiclePanel(body, tab);
+  } else if (t === 'brands') {
+    badge.textContent = 'BROWSE BY';
+    title.textContent = 'Tyre Brands';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg>';
+    _tvRenderBrandsPanel(body);
+  } else if (t === 'ev') {
+    badge.textContent = 'BROWSE BY';
+    title.textContent = 'EV Tyres';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M13 7l-3 5h4l-2 5"/></svg>';
+    _tvRenderEVPanel(body);
+  }
+}
+
+/* ── Tyre/Wheel Size Panel ── */
+/* Cascading tyre-size options (car-tyres tab only) sourced live from real
+   inventory via /api/tyre-sizes, so users only ever see width/profile/rim
+   combinations that actually exist in stock instead of a fixed list that
+   can lead to a size with zero matching products. Cached per selection so
+   going back a step doesn't re-fetch. Wheels/motorbike tabs still use the
+   static arrays above -- their data isn't stored the same structured way. */
+var _tvTyreSizeCache = { widths: null, profiles: {}, rims: {} };
+
+function _tvFetchTyreSizeOptions(width, profile) {
+  var url = '/api/tyre-sizes';
+  var params = [];
+  if (width) params.push('width=' + encodeURIComponent(width));
+  if (profile) params.push('profile=' + encodeURIComponent(profile));
+  if (params.length) url += '?' + params.join('&');
+
+  return fetch(url, { headers: { 'Accept': 'application/json' } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) { return (data && data.success && data.options) ? data.options : []; })
+    .catch(function() { return []; });
+}
+
+function _tvRenderSizePanel(body, tab) {
+  var s = _tvState;
+  var isWheel = tab === 'car-wheels';
+  var isMoto  = tab === 'motorbike';
+  var isTyre  = !isWheel && !isMoto;
+  var totalSteps = isWheel ? 2 : 3;
+
+  var step1Label = isWheel ? 'Rim Size (inches)' : (isMoto ? 'Tyre Width (mm)' : 'Tyre Width (mm)');
+  var step2Label = isWheel ? 'Wheel Width' : (isMoto ? 'Aspect Ratio' : 'Aspect Ratio');
+  var step3Label = isMoto ? 'Rim Size' : 'Rim Size';
+
+  function renderHeader() {
+    var html = '<div class="tvhm-step-indicator">';
+    for (var i = 1; i <= totalSteps; i++) {
+      var cls = i === s.step ? 'active' : (i < s.step ? 'done' : '');
+      html += '<div class="tvhm-step-dot ' + cls + '"></div>';
+    }
+    html += '</div>';
+
+    if (s.width || s.profile || s.rim) {
+      html += '<div class="tvhm-selected-size">';
+      if (s.width) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step1Label + '</span><span class="tvhm-size-badge-val">' + s.width + '</span></div>';
+      if (s.profile) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step2Label + '</span><span class="tvhm-size-badge-val">' + s.profile + '</span></div>';
+      if (s.rim) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step3Label + '</span><span class="tvhm-size-badge-val">' + s.rim + '</span></div>';
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function renderChipsStep(label, options, onclickFn, extraHtml) {
+    var html = '<p class="tvhm-section-lbl">Select ' + label + '</p>';
+    if (!options.length) {
+      html += '<p class="tvhm-empty-note">No options found for this selection.</p>';
+      body.innerHTML = renderHeader() + html;
+      return;
+    }
+    html += '<div class="tvhm-chips">';
+    options.forEach(function(o) {
+      html += '<button class="tvhm-chip" onclick="' + onclickFn + '(\'' + o + '\')">' + o + '</button>';
+    });
+    html += '</div>';
+    body.innerHTML = renderHeader() + html + (extraHtml || '');
+  }
+
+  function renderLoading(label) {
+    body.innerHTML = renderHeader()
+      + '<p class="tvhm-section-lbl">Select ' + label + '</p>'
+      + '<div class="tvhm-chips-loading">Loading available sizes…</div>';
+  }
+
+  if (!isTyre) {
+    // Wheels / motorbike: unchanged static-array behavior.
+    var widths   = isMoto ? _mbWidths : _wheelRims;
+    var profiles = isMoto ? _mbProfiles : [];
+    var rims     = isMoto ? _mbRims : _wheelWidths;
+
+    if (s.step === 1) {
+      renderChipsStep(step1Label, widths, 'tvSizeStep1');
+    } else if (s.step === 2 && !isWheel) {
+      renderChipsStep(step2Label, profiles, 'tvSizeStep2');
+    } else if (s.step === 3 || (s.step === 2 && isWheel)) {
+      var searchBtn = '<button class="tvhm-action-btn" id="tvSizeSearchBtn" onclick="tvSizeSearch()" disabled>'
+        + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+        + 'Search Tyres</button>';
+      renderChipsStep(isWheel ? step2Label : step3Label, rims, 'tvSizeStep3', searchBtn);
+    }
+    return;
+  }
+
+  // Tyre tab: cascading, DB-backed options.
+  if (s.step === 1) {
+    if (_tvTyreSizeCache.widths) {
+      renderChipsStep(step1Label, _tvTyreSizeCache.widths, 'tvSizeStep1');
+    } else {
+      renderLoading(step1Label);
+      _tvFetchTyreSizeOptions().then(function(opts) {
+        _tvTyreSizeCache.widths = opts;
+        if (_tvState.step === 1) renderChipsStep(step1Label, opts, 'tvSizeStep1');
+      });
+    }
+  } else if (s.step === 2) {
+    var cached = _tvTyreSizeCache.profiles[s.width];
+    if (cached) {
+      renderChipsStep(step2Label, cached, 'tvSizeStep2');
+    } else {
+      renderLoading(step2Label);
+      _tvFetchTyreSizeOptions(s.width).then(function(opts) {
+        _tvTyreSizeCache.profiles[s.width] = opts;
+        if (_tvState.step === 2 && _tvState.width === s.width) renderChipsStep(step2Label, opts, 'tvSizeStep2');
+      });
+    }
+  } else if (s.step === 3) {
+    var searchBtn2 = '<button class="tvhm-action-btn" id="tvSizeSearchBtn" onclick="tvSizeSearch()" disabled>'
+      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + 'Search Tyres</button>';
+    var rimKey = s.width + '|' + s.profile;
+    var cachedRims = _tvTyreSizeCache.rims[rimKey];
+    if (cachedRims) {
+      renderChipsStep(step3Label, cachedRims, 'tvSizeStep3', searchBtn2);
+    } else {
+      renderLoading(step3Label);
+      _tvFetchTyreSizeOptions(s.width, s.profile).then(function(opts) {
+        _tvTyreSizeCache.rims[rimKey] = opts;
+        if (_tvState.step === 3 && _tvState.width === s.width && _tvState.profile === s.profile) {
+          renderChipsStep(step3Label, opts, 'tvSizeStep3', searchBtn2);
+        }
+      });
+    }
+  }
+}
+
+function tvSizeStep1(val) {
+  _tvState.width = val;
+  _tvState.step = 2;
+  if (_tvState.tab === 'car-wheels') { _tvState.step = 2; }
+  _tvRenderModal();
+}
+function tvSizeStep2(val) {
+  _tvState.profile = val;
+  _tvState.step = 3;
+  _tvRenderModal();
+}
+function tvSizeStep3(val) {
+  _tvState.rim = val;
+  var btn = document.getElementById('tvSizeSearchBtn');
+  if (btn) btn.removeAttribute('disabled');
+  // Mark chip as selected
+  document.querySelectorAll('.tvhm-chip').forEach(function(c) {
+    c.classList.toggle('selected', c.textContent.trim() === val);
+  });
+}
+function tvSizeSearch() {
+  var s = _tvState;
+  if (s.tab === 'car-wheels') {
+    window.location.href = '/wheels?rim=' + encodeURIComponent(s.width || '') + '&width=' + encodeURIComponent(s.rim || '');
+  } else {
+    var size = (s.width || '') + '-' + (s.profile || '') + '-' + (s.rim || '');
+    // Path-filter segments use the "key-value" convention everywhere else
+    // in the catalog (brand-pirelli, pattern-x, etc.) -- _parse_filter_path
+    // on the backend matches "size-<...>", not "size=<...>", so this must
+    // stay a hyphen or the size filter is silently never applied.
+    window.location.href = '/tyres/size-' + encodeURIComponent(size);
+  }
+}
+
+/* ── Vehicle Panel ── */
+function _tvRenderVehiclePanel(body, tab) {
+  var s = _tvState;
+  var dest = tab === 'car-wheels' ? '/wheels' : '/tyres';
+
+  var html = '';
+  html += '<div class="tvhm-search-input-wrap">'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+        + '<input id="tvVehSearch" class="tvhm-search-input" type="text" placeholder="Search by Make or Model (e.g. Toyota, BMW, Land Rover)..." oninput="tvVehFilter(this.value)" autocomplete="off">'
+        + '</div>';
+
+  if (!s.make) {
+    html += '<p class="tvhm-section-lbl">Select Make</p>';
+    html += '<div class="tvhm-make-grid" id="tvMakeGrid">';
+    Object.keys(_carMakes).forEach(function(make) {
+      html += '<button class="tvhm-make-card" onclick="tvSelectMake(\'' + make + '\')">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>'
+            + make + '</button>';
+    });
+    html += '</div>';
+  } else {
+    // Show make badge + model chips
+    html += '<div class="tvhm-selected-size"><div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">Make</span><span class="tvhm-size-badge-val" style="font-size:13px">' + s.make + '</span></div></div>';
+    html += '<p class="tvhm-section-lbl">Select Model</p>';
+    html += '<div class="tvhm-chips">';
+    (_carMakes[s.make] || []).forEach(function(model) {
+      html += '<button class="tvhm-chip' + (s.model === model ? ' selected' : '') + '" onclick="tvSelectModel(\'' + model.replace(/'/g,"\\'" ) + '\')">' + model + '</button>';
+    });
+    html += '</div>';
+    html += '<button class="tvhm-action-btn" id="tvVehSearchBtn" onclick="tvVehSearch(\'' + dest + '\')"'
+          + (s.model ? '' : ' disabled') + '>'
+          + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+          + 'Find Tyres</button>';
+  }
+
+  body.innerHTML = html;
+  if (!s.make) {
+    var inp = document.getElementById('tvVehSearch');
+    if (inp) inp.focus();
+  }
+}
+
+function tvVehFilter(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.tvhm-make-card').forEach(function(c) {
+    c.style.display = c.textContent.trim().toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function tvSelectMake(make) {
+  _tvState.make = make;
+  _tvState.model = null;
+  _tvRenderModal();
+}
+function tvSelectModel(model) {
+  _tvState.model = model;
+  document.querySelectorAll('.tvhm-chip').forEach(function(c) {
+    c.classList.toggle('selected', c.textContent.trim() === model);
+  });
+  var btn = document.getElementById('tvVehSearchBtn');
+  if (btn) btn.removeAttribute('disabled');
+}
+function tvVehSearch(dest) {
+  var s = _tvState;
+  if (!s.make) return;
+  var slug = function(str) { return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); };
+  window.location.href = dest + '/cars/' + encodeURIComponent(slug(s.make)) + (s.model ? '/' + encodeURIComponent(slug(s.model)) : '');
+}
+
+/* ── Brands Panel ── */
+function _tvRenderBrandsPanel(body) {
+  var html = '<p class="tvhm-section-lbl">Popular Brands</p><div class="tvhm-brands-grid">';
+  _brands.forEach(function(b) {
+    html += '<a href="/tyres/brand/' + b.name.toLowerCase().replace(/\s+/g,'-') + '" class="tvhm-brand-card">'
+          + '<img src="' + b.img + '" alt="' + b.name + '" onerror="this.style.display=\'none\'">'
+          + '<span>' + b.name + '</span></a>';
+  });
+  html += '</div>';
+  html += '<a href="/tyres" class="tvhm-all-link">'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+        + 'Browse All 60+ Tyre Brands</a>';
+  body.innerHTML = html;
+}
+
+/* ── EV Panel ── */
+function _tvRenderEVPanel(body) {
+  var evModels = [
+    {label:'Tesla', name:'Model 3 / Y', sub:'Performance & Long Range', q:'Tesla'},
+    {label:'Tesla', name:'Model S / X', sub:'Plaid & Standard', q:'Tesla+Model+S'},
+    {label:'Porsche', name:'Taycan', sub:'4S · GTS · Turbo S', q:'Porsche+Taycan'},
+    {label:'BMW', name:'i4 / iX', sub:'eDrive40 · M50', q:'BMW+i4'},
+    {label:'Mercedes', name:'EQS / EQE', sub:'AMG · Standard', q:'Mercedes+EQS'},
+    {label:'Audi', name:'e-tron / Q8', sub:'55 Quattro · S line', q:'Audi+e-tron'},
+    {label:'Hyundai', name:'IONIQ 6', sub:'AWD · RWD', q:'Hyundai+IONIQ'},
+    {label:'Kia', name:'EV6 / EV9', sub:'Wind · GT Line', q:'Kia+EV6'},
+    {label:'BYD', name:'Seal / Atto 3', sub:'Standard · Performance', q:'BYD'},
+    {label:'Lucid', name:'Air', sub:'Grand Touring · Pure', q:'Lucid+Air'}
+  ];
+  var html = '<p class="tvhm-section-lbl">Choose your EV Model</p>';
+  html += '<div class="tvhm-ev-grid">';
+  evModels.forEach(function(m) {
+    html += '<a href="/tyres?q=' + m.q + '" class="tvhm-ev-card">'
+          + '<span class="tvhm-ev-card-label">' + m.label + '</span>'
+          + '<span class="tvhm-ev-card-name">' + m.name + '</span>'
+          + '<span class="tvhm-ev-card-sub">' + m.sub + '</span>'
+          + '</a>';
+  });
+  html += '</div>';
+  html += '<a href="/tyres?category=ev" class="tvhm-all-link">'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+        + 'Browse All EV Tyres</a>';
+  body.innerHTML = html;
+}
+</script>

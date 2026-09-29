@@ -5,10 +5,18 @@
     <div class="w-full flex flex-col overflow-hidden h-full py-4 lg:py-6 px-4 sm:px-6">
       
       <!-- Top Title & Close Button -->
-      <div class="flex-shrink-0 tv-modal-header">
-        <h3 id="item-size-title" class="tv-modal-title">
-          <span class="product-name block [direction:ltr]">Compatible Vehicles</span>
-        </h3>
+      <div class="flex-shrink-0 tv-modal-header mb-3">
+        <div class="flex-1 pr-3">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FAF5FF] text-[#7C3AED] border border-[#DDD6FE]">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+              Vehicle Fitment Guide
+            </span>
+          </div>
+          <h3 id="item-size-title" class="tv-modal-title">
+            <span class="product-name block [direction:ltr]">Compatible Vehicles</span>
+          </h3>
+        </div>
         <button type="button" onclick="ItemSizeClose()" aria-label="Close" class="tv-modal-close-btn">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -16,21 +24,25 @@
         </button>
       </div>
 
-      <!-- Search Input -->
+      <!-- Search Input with Purple Accent -->
       <div class="flex-shrink-0 tv-modal-search-wrap">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
-        <input type="text" id="item-size-search" placeholder="Search by Make or Model..." oninput="filterTyrePopupContent(this.value)">
+        <input type="text" id="item-size-search" placeholder="Search by Make or Model (e.g. Mercedes, Honda, C-Class)..." oninput="filterTyrePopupContent(this.value)">
       </div>
+
+      <!-- Live Summary Bar -->
+      <div id="item-size-summary" class="tv-vehicle-summary-bar hidden flex-shrink-0"></div>
 
       <!-- Loading State Indicator -->
-      <div id="item-size-loader" class="hidden">
+      <div id="item-size-loader" class="hidden py-16 flex flex-col items-center justify-center text-center">
         <div class="tv-vehicle-spinner"></div>
-        <p style="font-size: 14px; font-weight: 600; color: #475569; margin: 0;">Finding compatible vehicles...</p>
+        <p class="text-sm font-extrabold text-[#4B237B] m-0">Finding compatible vehicles...</p>
+        <span class="text-xs text-slate-400 mt-1">Cross-referencing TyreVision fitment database</span>
       </div>
 
-      <!-- Compatibility Results Grid (2 Columns on Desktop) -->
+      <!-- Compatibility Results List -->
       <div class="tyre-popup-content flex-1 overflow-y-auto drawer-scrollbar">
         <!-- Loaded dynamically via AJAX -->
       </div>
