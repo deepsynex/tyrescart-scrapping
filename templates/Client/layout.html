@@ -591,11 +591,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="nav-links">
       <!-- 1. Tyres Dropdown -->
       <div class="nav-item-dropdown" x-data="{ open: false }" @mouseleave="open = false" @keydown.escape="open = false">
-        <button type="button" 
-                class="nav-link-btn" 
-                :class="{ 'is-active': open }" 
-                @mouseenter="open = true" 
-                @click="open = !open" 
+        <button type="button"
+                class="nav-link-btn"
+                :class="{ 'is-active': open }"
+                @mouseenter="open = true"
+                @click="open = true"
                 aria-haspopup="true" 
                 :aria-expanded="open.toString()">
           <span>{{ _('Tyres') }}</span>
@@ -670,11 +670,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <!-- 2. Services Dropdown -->
       <div class="nav-item-dropdown" x-data="{ open: false }" @mouseleave="open = false" @keydown.escape="open = false">
-        <button type="button" 
-                class="nav-link-btn" 
-                :class="{ 'is-active': open }" 
-                @mouseenter="open = true" 
-                @click="open = !open" 
+        <button type="button"
+                class="nav-link-btn"
+                :class="{ 'is-active': open }"
+                @mouseenter="open = true"
+                @click="open = true"
                 aria-haspopup="true" 
                 :aria-expanded="open.toString()">
           <span>{{ _('Services') }}</span>
