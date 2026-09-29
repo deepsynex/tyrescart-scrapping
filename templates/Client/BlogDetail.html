@@ -65,12 +65,6 @@
 
         <!-- Article Prose Content -->
         <div class="article-prose">
-          
-          <div id="overview">
-            <p class="lead" style="font-size:1.15rem; line-height:1.75; color:var(--ink); font-weight:500; margin-bottom:24px;">
-              {{ post.short_description }}
-            </p>
-          </div>
 
           {% if post.content %}
             {{ post.content | safe }}
@@ -221,13 +215,7 @@
             {% else %}
               <!-- Fallback related items -->
               <a href="/blog" class="related-blog-row">
-                <div class="related-blog-thumb">
-                  <img src="/static/assets/images/online-tyres-shop-dubai.png" alt="Tyre Guide">
-                </div>
-                <div class="related-blog-content">
-                  <h4 class="related-blog-title">How to Choose the Right Tyres in UAE</h4>
-                  <span class="related-blog-date">August 24, 2026</span>
-                </div>
+                <P>{{ _('No related blogs found. Explore our blog for more tyre care tips and guides.') }}</P>
               </a>
             {% endif %}
           </div>
