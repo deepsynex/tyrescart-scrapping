@@ -188,6 +188,18 @@ def blog_detail_default(slug):
     return _render_blog_detail(slug, locale)
 
 
+_INLINE_STYLE_ATTR_RE = re.compile(r'''\s+style\s*=\s*(?:"[^"]*"|'[^']*')''', re.IGNORECASE)
+
+
+def _strip_inline_styles(html):
+    """Drop author-carried style="..." attributes from blog content so
+    rendered articles rely only on .article-prose in client.css, matching
+    the no-inline-CSS convention used for Page.html/page.css."""
+    if not html:
+        return html
+    return _INLINE_STYLE_ATTR_RE.sub('', html)
+
+
 def _render_blog_detail(slug, locale):
     blog = Blog.find_by_slug(slug)
     if not blog:
@@ -262,7 +274,7 @@ def _render_blog_detail(slug, locale):
         'id': blog.id,
         'slug': blog.slug,
         'title': blog.get_title(locale),
-        'content': blog.get_content(locale),
+        'content': _strip_inline_styles(blog.get_content(locale)),
         'short_description': blog.get_short_desc(locale),
         'category': cat_name,
         'cover_image_url': blog.image or '/static/assets/images/online-tyres-shop-dubai.png',
