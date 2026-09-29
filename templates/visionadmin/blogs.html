@@ -450,58 +450,80 @@
 <!-- Flask-CKEditor JS -->
 {{ ckeditor.load() }}
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    if (window.CKEDITOR) {
-      CKEDITOR.config.allowedContent = true;
-      CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
-      CKEDITOR.config.autoParagraph = false;
-      CKEDITOR.config.fillEmptyBlocks = false;
-      CKEDITOR.config.basicEntities = false;
-      CKEDITOR.config.entities = false;
-      CKEDITOR.config.entities_latin = false;
-      CKEDITOR.config.entities_greek = false;
-      if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
-      CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
-      CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
-      CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
-      CKEDITOR.config.versionCheck = false;
+  // The CDN <script src="cdn.ckeditor.com/..."> tag from ckeditor.load() can
+  // still be mid-download when DOMContentLoaded fires (slower connections,
+  // production CDN latency) -- a single one-shot "if (window.CKEDITOR)"
+  // check at that moment silently does nothing if it's not ready yet, and
+  // nothing else ever retries, so the textarea is left as a plain textarea
+  // with no error anywhere. Poll for CKEDITOR instead of assuming it's
+  // there, and expose the init function so the modal-open handler in
+  // blogs.js can also call it defensively.
+  function initBlogCkeditor() {
+    if (!window.CKEDITOR) return false;
 
-      const blogEditorConfig = {
-        minHeight: 200,
-        height: 280,
-        allowedContent: true,
-        extraAllowedContent: '*(*);*{*};*[*];*<*>',
-        autoParagraph: false,
-        fillEmptyBlocks: false,
-        basicEntities: false,
-        entities: false,
-        contentsCss: [
-          '/static/css/client.css',
-          '/static/css/page.css'
-        ],
-        removePlugins: 'exportpdf,cloudservices,easyimage',
-        removeButtons: 'About',
-        versionCheck: false
-      };
+    CKEDITOR.config.allowedContent = true;
+    CKEDITOR.config.extraAllowedContent = '*(*);*{*};*[*];*<*>';
+    CKEDITOR.config.autoParagraph = false;
+    CKEDITOR.config.fillEmptyBlocks = false;
+    CKEDITOR.config.basicEntities = false;
+    CKEDITOR.config.entities = false;
+    CKEDITOR.config.entities_latin = false;
+    CKEDITOR.config.entities_greek = false;
+    if (!CKEDITOR.config.protectedSource) CKEDITOR.config.protectedSource = [];
+    CKEDITOR.config.protectedSource.push(/<script[\s\S]*?<\/script>/gi);
+    CKEDITOR.config.protectedSource.push(/<style[\s\S]*?<\/style>/gi);
+    CKEDITOR.config.removePlugins = 'exportpdf,cloudservices,easyimage';
+    CKEDITOR.config.versionCheck = false;
 
-      if (document.getElementById('blog_content_en') && !CKEDITOR.instances['blog_content_en']) {
-        try {
-          CKEDITOR.replace('blog_content_en', blogEditorConfig);
-        } catch (e) {
-          console.warn('CKEditor blog_content_en init:', e);
-        }
-      }
+    const blogEditorConfig = {
+      minHeight: 200,
+      height: 280,
+      allowedContent: true,
+      extraAllowedContent: '*(*);*{*};*[*];*<*>',
+      autoParagraph: false,
+      fillEmptyBlocks: false,
+      basicEntities: false,
+      entities: false,
+      contentsCss: [
+        '/static/css/client.css',
+        '/static/css/page.css'
+      ],
+      removePlugins: 'exportpdf,cloudservices,easyimage',
+      removeButtons: 'About',
+      versionCheck: false
+    };
 
-      if (document.getElementById('blog_content_ar') && !CKEDITOR.instances['blog_content_ar']) {
-        try {
-          CKEDITOR.replace('blog_content_ar', Object.assign({}, blogEditorConfig, {
-            contentsLangDirection: 'rtl'
-          }));
-        } catch (e) {
-          console.warn('CKEditor blog_content_ar init:', e);
-        }
+    if (document.getElementById('blog_content_en') && !CKEDITOR.instances['blog_content_en']) {
+      try {
+        CKEDITOR.replace('blog_content_en', blogEditorConfig);
+      } catch (e) {
+        console.warn('CKEditor blog_content_en init:', e);
       }
     }
+
+    if (document.getElementById('blog_content_ar') && !CKEDITOR.instances['blog_content_ar']) {
+      try {
+        CKEDITOR.replace('blog_content_ar', Object.assign({}, blogEditorConfig, {
+          contentsLangDirection: 'rtl'
+        }));
+      } catch (e) {
+        console.warn('CKEditor blog_content_ar init:', e);
+      }
+    }
+    return true;
+  }
+  window.initBlogCkeditor = initBlogCkeditor;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (initBlogCkeditor()) return;
+    // CKEDITOR wasn't ready yet -- poll for up to ~10s instead of giving up.
+    let attempts = 0;
+    const pollId = setInterval(() => {
+      attempts += 1;
+      if (initBlogCkeditor() || attempts > 50) {
+        clearInterval(pollId);
+      }
+    }, 200);
   });
 </script>
 <script src="/static/visionadmin/blogs.js?v={{ range(10000, 99999) | random }}"></script>
