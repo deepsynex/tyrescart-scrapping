@@ -10,7 +10,7 @@
 <span id="top"></span>
 
 <!-- ================= MAIN CONTAINER ================= -->
-<section style="padding-top:24px; padding-bottom:72px;">
+<section class="blog-detail-section">
   <div class="wrap">
     
     <!-- Breadcrumb: Home > Blog > Category > Title -->
@@ -21,7 +21,7 @@
       <span class="sep">&rsaquo;</span>
       <a href="/blog?category={{ post.category | urlencode }}">{{ post.category }}</a>
       <span class="sep">&rsaquo;</span>
-      <span class="current" style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:bottom;">{{ post.title }}</span>
+      <span class="current">{{ post.title }}</span>
     </nav>
 
     <!-- 2-Column Grid (Main Article Column + Right Sidebar Widgets) -->
@@ -159,7 +159,7 @@
             </div>
           </a>
           {% else %}
-          <div class="prev-next-item" style="opacity:.6;">
+          <div class="prev-next-item is-disabled">
             <div class="prev-next-text">
               <span class="prev-next-sub">{{ _('Start of Blog') }}</span>
               <p class="prev-next-title">{{ _('You are at the first article') }}</p>
@@ -179,7 +179,7 @@
             </div>
           </a>
           {% else %}
-          <div class="prev-next-item next" style="opacity:.6;">
+          <div class="prev-next-item next is-disabled">
             <div class="prev-next-text">
               <span class="prev-next-sub">{{ _('End of Blog') }}</span>
               <p class="prev-next-title">{{ _('Latest article published') }}</p>
