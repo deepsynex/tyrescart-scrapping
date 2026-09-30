@@ -1410,21 +1410,34 @@ header {
   padding: 24px 0;
 }
 
-/* Responsive: 2 columns on mobile */
-@media (max-width: 600px) {
+/* Responsive: 2 columns on tablet/smaller desktop (e.g. 1024px) */
+@media (max-width: 1180px) {
   .tv-hsoption-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
+}
+@media (max-width: 480px) {
+  .tv-hsoption-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .tv-hsoption-card {
+    padding: 10px 8px;
+  }
   .tv-hsoption-label {
-    font-size: 9px;
+    font-size: 8.5px;
   }
   .tv-hsoption-name {
-    font-size: 13px;
+    font-size: 12px;
   }
   .tv-hsoption-icon-wrap {
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
+  }
+  .tv-hsoption-arrow {
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -4041,7 +4054,7 @@ footer .tagline {
 }
 
 .article-prose p {
-  margin: 0 0 20px;
+  margin: 0 0 7px;
   line-height: 1.4;
 }
 

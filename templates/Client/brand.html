@@ -1,0 +1,399 @@
+{% extends 'Client/layout.html' %}
+
+{% block title %}All Tyre Brands in UAE | TyresVision{% endblock %}
+
+{% block meta_description %}Browse 80+ official tyre brands in Dubai, Abu Dhabi & UAE. Compare genuine tyres from Michelin, Pirelli, Continental, Bridgestone and more with free doorstep fitting.{% endblock %}
+
+{% block canonical_url %}https://www.tyresvision.com/brand{% endblock %}
+
+{% block content %}
+<main class="min-h-screen bg-slate-50 text-slate-900 pb-20">
+
+  {# ── 1. HERO SECTION (Brandhero.png Background & UAE Trust Stats) ── #}
+  <section class="relative bg-[#1c0b30] text-white pt-12 pb-20 sm:pb-24 overflow-hidden">
+    {# Background Image Container #}
+    <div class="absolute inset-0 z-0">
+      <img 
+        src="{{ url_for('static', filename='assets/images/Brandhero.png') }}" 
+        alt="TyresVision Brand Hero" 
+        class="w-full h-full object-cover object-right lg:object-center"
+        loading="eager"
+      />
+      {# Dark gradient overlay to ensure text readability on the left while keeping skyline and tyres visible on the right #}
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1c0b30]/95 via-[#1c0b30]/85 to-[#1c0b30]/40 lg:to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1c0b30] via-transparent to-transparent"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {# Breadcrumbs #}
+      <nav class="flex items-center gap-2 text-xs font-semibold text-purple-200/80 mb-6" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-white transition-colors">Home</a>
+        <span class="text-purple-300/50">/</span>
+        <span class="text-white">Brands</span>
+      </nav>
+
+      <div class="max-w-3xl">
+        {# Kicker Badge #}
+        <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-white/10 text-purple-200 border border-white/15 backdrop-blur-md mb-4 shadow-sm">
+          <svg class="w-3.5 h-3.5 text-purple-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Authorised UAE Retailer • Official Brand Directory
+        </span>
+
+        {# Title #}
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
+          Explore 80+ Official <br class="hidden sm:inline">Tyre Brands in the UAE
+        </h1>
+
+        {# Description #}
+        <p class="text-base sm:text-lg text-purple-100 font-normal leading-relaxed mb-8 max-w-2xl">
+          Find genuine, date-fresh tyres from the world’s leading manufacturers. Fitted at your doorstep by our mobile service vans or at trusted workshop centres across Dubai, Abu Dhabi, and Sharjah.
+        </p>
+
+        {# Trust Stat Badges #}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
+            <span class="block text-2xl sm:text-3xl font-black text-white">{{ total_brands or brands|length or 83 }}</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Tyre Brands</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
+            <span class="block text-2xl sm:text-3xl font-black text-white">{{ "{:,}".format(total_tyres or 6447) }}+</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Tyres In Stock</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
+            <span class="block text-2xl sm:text-3xl font-black text-emerald-300">100%</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">GCC Authentic</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
+            <span class="block text-2xl sm:text-3xl font-black text-white">5 Years</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Official Warranty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ── 2. SEARCH & FILTER TOOLBAR (Elevated Card Overlapping Hero) ── #}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-7 mb-8 transition-all">
+      
+      {# Search Row & Live Counter #}
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        {# Search Input #}
+        <div class="relative flex-1 max-w-xl">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            id="tvBrandSearchInput" 
+            placeholder="Search tyre brands (e.g. Michelin, Pirelli, Dunlop)..." 
+            class="w-full pl-10 pr-10 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:bg-white focus:border-transparent transition-all placeholder:text-slate-400 font-medium text-slate-900"
+            autocomplete="off"
+          >
+          <button 
+            type="button" 
+            id="tvBrandClearBtn" 
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden"
+            aria-label="Clear Search"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="18" x2="6" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        {# Counter Badge #}
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7C3AED] font-extrabold text-xs border border-purple-200/80">
+            <span class="w-2 h-2 rounded-full bg-[#7C3AED] animate-pulse"></span>
+            <span id="tvBrandMatchCount">{{ brands|length }}</span> of {{ brands|length }} Brands
+          </span>
+          <span class="text-xs text-slate-300 hidden sm:inline">•</span>
+          <span class="text-xs font-semibold text-slate-500 hidden sm:inline">100% Genuine GCC Specs</span>
+        </div>
+      </div>
+
+      {# Tier Filter Tabs #}
+      <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 hidden sm:inline">Tier:</span>
+        <button type="button" class="tv-brand-tier-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="all">
+          All Brands ({{ brands|length }})
+        </button>
+        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="popular">
+          ★ Popular
+        </button>
+        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="premium">
+          Premium
+        </button>
+        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="mid-range">
+          Mid-Range
+        </button>
+        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="budget">
+          Budget &amp; Economy
+        </button>
+      </div>
+
+      {# Alphabet Bar #}
+      <div class="mt-3 flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1" id="tvBrandAlphabetBar">
+        <button type="button" class="tv-brand-letter-btn active px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all" data-letter="all">ALL</button>
+        {% for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+        <button type="button" class="tv-brand-letter-btn px-2 py-1 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-[#7C3AED] hover:bg-purple-50" data-letter="{{ letter }}">{{ letter }}</button>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    {# ── 3. BRANDS GRID CONTAINER ── #}
+    <div>
+    <div 
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4.5" 
+      id="tvBrandGridContainer"
+    >
+      {% for b in brands %}
+      <div 
+        class="tv-brand-card group bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-xl hover:border-[#7C3AED] hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between text-left relative overflow-hidden"
+        data-name="{{ b.name|lower }}"
+        data-tier="{{ b.tier }}"
+        data-letter="{{ b.name[:1]|upper }}"
+        data-featured="{{ '1' if b.is_featured or b.tier == 'premium' else '0' }}"
+      >
+        {# Top Badges #}
+        <div class="flex items-center justify-between gap-1 mb-2">
+          {% if b.is_featured or b.tier == 'premium' %}
+          <span class="inline-flex items-center text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-50 text-[#7C3AED] border border-purple-200/80">
+            ★ Top
+          </span>
+          {% else %}
+          <span></span>
+          {% endif %}
+
+          {% if b.tyre_count and b.tyre_count > 0 %}
+          <span class="text-[11px] font-bold text-slate-500 bg-slate-100 group-hover:bg-purple-100 group-hover:text-[#7C3AED] px-2 py-0.5 rounded-full transition-colors whitespace-nowrap">
+            {{ b.tyre_count }} Tyres
+          </span>
+          {% else %}
+          <span class="text-[10px] font-semibold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded-full">In Stock</span>
+          {% endif %}
+        </div>
+
+        {# Logo Area #}
+        <div class="h-16 flex items-center justify-center my-1.5 px-2">
+          {% if b.logo %}
+          <img 
+            src="{{ b.logo }}" 
+            alt="{{ b.name }} Tyres" 
+            loading="lazy" 
+            class="max-h-12 max-w-full object-contain filter group-hover:scale-105 transition-transform duration-200"
+            onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+          />
+          <div class="tv-brand-monogram hidden w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-xl items-center justify-center shadow-xs">
+            {{ b.name[:1]|upper }}
+          </div>
+          {% else %}
+          <div class="tv-brand-monogram w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-xl flex items-center justify-center shadow-xs">
+            {{ b.name[:1]|upper }}
+          </div>
+          {% endif %}
+        </div>
+
+        {# Brand Name & Tier #}
+        <div class="mt-2 text-center">
+          <h3 class="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-[#7C3AED] transition-colors truncate">
+            {{ b.name }}
+          </h3>
+          <p class="text-[11px] font-medium text-slate-400 mt-0.5 capitalize">
+            {{ b.tier|replace('-', ' ') }}
+          </p>
+        </div>
+
+        {# Direct Link to Brand Catalog #}
+        <div class="mt-3 pt-2.5 border-t border-slate-100 text-center">
+          <a 
+            href="/tyres/brand/{{ b.slug }}" 
+            class="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-[#7C3AED] text-slate-700 hover:text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 transition-all shadow-2xs group-hover:bg-[#7C3AED] group-hover:text-white"
+            title="Browse all {{ b.name }} tyres"
+          >
+            <span>View Tyres</span>
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    {# No Results State #}
+    <div 
+      id="tvBrandNoResults" 
+      class="hidden py-16 px-4 text-center bg-white rounded-3xl border border-slate-200 mt-6 shadow-sm"
+    >
+      <div class="w-16 h-16 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">No brands matching your search</h3>
+      <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">
+        We couldn't find any tyre brands matching "<span id="tvBrandNoResultsQuery" class="font-semibold text-slate-800"></span>".
+      </p>
+      <button 
+        type="button" 
+        id="tvBrandResetFilterBtn"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-sm transition-colors shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Reset Filters
+      </button>
+    </div>
+
+  </section>
+
+</main>
+
+<style>
+.tv-brand-tier-btn {
+  background: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+.tv-brand-tier-btn:hover {
+  background: #FAF5FF;
+  color: #7C3AED;
+  border-color: #DDD6FE;
+}
+.tv-brand-tier-btn.active {
+  background: #7C3AED;
+  color: #FFFFFF;
+  border-color: #7C3AED;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+.tv-brand-letter-btn.active {
+  background: #4B237B;
+  color: #FFFFFF !important;
+  font-weight: 800;
+}
+</style>
+
+<script>
+(function() {
+  var searchInput = document.getElementById('tvBrandSearchInput');
+  var clearBtn    = document.getElementById('tvBrandClearBtn');
+  var cards       = document.querySelectorAll('.tv-brand-card');
+  var matchCount  = document.getElementById('tvBrandMatchCount');
+  var noResults   = document.getElementById('tvBrandNoResults');
+  var noResQuery  = document.getElementById('tvBrandNoResultsQuery');
+  var resetBtn    = document.getElementById('tvBrandResetFilterBtn');
+  var tierBtns    = document.querySelectorAll('.tv-brand-tier-btn');
+  var letterBtns  = document.querySelectorAll('.tv-brand-letter-btn');
+
+  var currentTier = 'all';
+  var currentLetter = 'all';
+
+  function applyFilters() {
+    var query = (searchInput.value || '').trim().toLowerCase();
+    var visible = 0;
+
+    if (query.length > 0) {
+      clearBtn.classList.remove('hidden');
+    } else {
+      clearBtn.classList.add('hidden');
+    }
+
+    cards.forEach(function(card) {
+      var name = card.getAttribute('data-name') || '';
+      var tier = card.getAttribute('data-tier') || '';
+      var letter = card.getAttribute('data-letter') || '';
+      var featured = card.getAttribute('data-featured') || '0';
+
+      var matchQuery = !query || name.indexOf(query) !== -1;
+      
+      var matchTier = true;
+      if (currentTier === 'popular') {
+        matchTier = featured === '1';
+      } else if (currentTier !== 'all') {
+        matchTier = tier === currentTier;
+      }
+
+      var matchLetter = (currentLetter === 'all') || (letter === currentLetter);
+
+      if (matchQuery && matchTier && matchLetter) {
+        card.style.display = '';
+        visible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (matchCount) matchCount.textContent = visible;
+
+    if (visible === 0) {
+      noResults.classList.remove('hidden');
+      if (noResQuery) noResQuery.textContent = query || 'selected filters';
+    } else {
+      noResults.classList.add('hidden');
+    }
+  }
+
+  if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      applyFilters();
+      searchInput.focus();
+    });
+  }
+
+  tierBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      tierBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentTier = btn.getAttribute('data-tier') || 'all';
+      applyFilters();
+    });
+  });
+
+  letterBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      letterBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentLetter = btn.getAttribute('data-letter') || 'all';
+      applyFilters();
+    });
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      if (searchInput) searchInput.value = '';
+      currentTier = 'all';
+      currentLetter = 'all';
+
+      tierBtns.forEach(function(b) { 
+        if (b.getAttribute('data-tier') === 'all') b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      letterBtns.forEach(function(b) { 
+        if (b.getAttribute('data-letter') === 'all') b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      applyFilters();
+    });
+  }
+
+})();
+</script>
+{% endblock %}

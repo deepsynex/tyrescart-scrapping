@@ -11,75 +11,257 @@
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: rgba(15, 10, 30, 0.45);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   animation: tvModalBdIn 0.22s ease;
 }
 @keyframes tvModalBdIn { from { opacity: 0; } to { opacity: 1; } }
-#tvHeroModal.open { display: flex; align-items: flex-start; justify-content: flex-end; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#tvHeroModal.open {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
 
-/* Side panel */
+/* Make logo grid */
+.tvhm-make-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.tvhm-make-logo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  background: #F9FAFB;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.tvhm-make-logo-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
+.tvhm-make-logo-card img { width: 64px; height: 34px; object-fit: contain; }
+.tvhm-make-logo-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; line-height: 1.2; }
+
+/* Engine cards */
+.tvhm-engine-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  background: #F9FAFB;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+  width: 100%;
+}
+.tvhm-engine-card:hover { border-color: #A78BFA; background: #F5F3FF; }
+.tvhm-engine-card-left { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tvhm-engine-name { font-size: 14px; font-weight: 700; color: #111827; }
+.tvhm-engine-spec { font-size: 12px; color: #6B7280; }
+.tvhm-engine-fuel { font-size: 12px; color: #7C3AED; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+/* Tyre Size Option Cards */
+.tvhm-size-option-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 14px;
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tvhm-size-option-card:hover {
+  border-color: #7C3AED;
+  background: #F5F3FF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1);
+}
+.tvhm-size-option-card.stock {
+  border-color: #C4B5FD;
+  background: linear-gradient(135deg, #FAFAFE 0%, #F5F3FF 100%);
+}
+.tvhm-size-option-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.tvhm-rim-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #EDE9FE;
+  color: #7C3AED;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.tvhm-rim-badge-sub {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+.tvhm-size-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.tvhm-size-main {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.01em;
+}
+.tvhm-size-staggered {
+  font-size: 12px;
+  color: #6B7280;
+  font-weight: 600;
+}
+.tvhm-fitment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+.tvhm-fitment-badge.stock {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.tvhm-fitment-badge.optional {
+  background: #F3F4F6;
+  color: #4B5563;
+}
+.tvhm-size-option-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #16A34A;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.18s, background 0.18s;
+}
+.tvhm-size-option-card:hover .tvhm-size-option-arrow {
+  transform: translateX(3px);
+  background: #15803D;
+}
+.tvhm-size-badge-btn {
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+.tvhm-size-badge-btn:hover {
+  filter: brightness(0.95);
+  transform: scale(0.98);
+}
+
+/* Right-to-Left Slide-In Drawer */
 .tvhm-panel {
-  width: min(500px, 95vw);
+  width: min(600px, 100vw);
+  height: 100vh;
   height: 100dvh;
-  background: #fff;
-  border-radius: 20px 0 0 20px;
-  box-shadow: -12px 0 48px rgba(0,0,0,0.18);
+  max-height: 100dvh;
+  background: #FFFFFF;
+  border-radius: 28px 0 0 28px;
+  box-shadow: -25px 0 70px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: tvPanelIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: tvDrawerSlideLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: right center;
+  position: relative;
 }
-@keyframes tvPanelIn { from { transform: translateX(100%); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+@keyframes tvDrawerSlideLeft {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@media (max-width: 640px) {
+  .tvhm-panel {
+    width: 100vw;
+    border-radius: 0;
+    animation: tvDrawerSlideLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
 
 /* Header */
 .tvhm-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 20px 22px 16px;
-  border-bottom: 1.5px solid #F3F4F6;
+  gap: 14px;
+  padding: 20px 24px 16px;
+  border-bottom: 1.5px solid #F1F5F9;
   flex-shrink: 0;
 }
 .tvhm-header-icon {
   display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px;
+  width: 44px; height: 44px;
   border-radius: 50%;
   background: #EDE9FE;
-  color: #7C3AED;
+  color: #6320EE;
   flex-shrink: 0;
 }
 .tvhm-title-wrap { flex: 1; min-width: 0; }
 .tvhm-badge {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: #7C3AED;
+  color: #6320EE;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   display: block;
   margin-bottom: 2px;
 }
 .tvhm-title {
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 800;
-  color: #111827;
+  color: #0F172A;
   line-height: 1.2;
   margin: 0;
+  letter-spacing: -0.015em;
 }
 .tvhm-close {
-  width: 34px; height: 34px;
+  width: 36px; height: 36px;
   border-radius: 50%;
-  border: 1.5px solid #E5E7EB;
-  background: #F9FAFB;
-  color: #6B7280;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #64748B;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  transition: all 0.18s;
 }
-.tvhm-close:hover { background: #FEE2E2; border-color: #FECACA; color: #DC2626; }
+.tvhm-close:hover { background: #FEE2E2; border-color: #FECACA; color: #DC2626; transform: scale(1.05); }
 
 /* Body scroll area */
 .tvhm-body {
@@ -165,6 +347,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   padding: 12px 8px;
   border: 1.5px solid #E5E7EB;
@@ -174,10 +357,138 @@
   text-decoration: none;
   color: #374151;
   transition: all 0.18s;
+  min-height: 84px;
+  box-sizing: border-box;
 }
 .tvhm-brand-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
-.tvhm-brand-card img { width: 64px; height: 36px; object-fit: contain; filter: grayscale(0.3); }
-.tvhm-brand-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; }
+.tvhm-brand-card img { width: 64px; height: 36px; object-fit: contain; filter: grayscale(0.2); transition: filter 0.18s; }
+.tvhm-brand-card:hover img { filter: grayscale(0); }
+.tvhm-brand-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; line-height: 1.2; word-break: break-word; }
+.tvhm-brand-placeholder {
+  width: 64px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: #7C3AED;
+  background: #EDE9FE;
+  border-radius: 8px;
+}
+
+/* Brand Product Cards in Drawer */
+.tvhm-brand-prod-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 14px;
+  background: #FFFFFF;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.18s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tvhm-brand-prod-card:hover {
+  border-color: #7C3AED;
+  background: #F5F3FF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1);
+}
+.tvhm-brand-prod-img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: #F9FAFB;
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid #F3F4F6;
+}
+.tvhm-brand-prod-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.tvhm-brand-prod-pattern {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7C3AED;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tvhm-brand-prod-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tvhm-brand-prod-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.tvhm-brand-prod-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #F3F4F6;
+  color: #4B5563;
+}
+.tvhm-brand-prod-badge.rf {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.tvhm-brand-prod-badge.ev {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+.tvhm-brand-prod-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.tvhm-brand-prod-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+.tvhm-brand-prod-price span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6B7280;
+}
+.tvhm-brand-prod-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #EDE9FE;
+  color: #7C3AED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+.tvhm-brand-prod-card:hover .tvhm-brand-prod-arrow {
+  background: #7C3AED;
+  color: #FFFFFF;
+  transform: translateX(2px);
+}
 
 /* Vehicle search input */
 .tvhm-search-input-wrap {
@@ -308,6 +619,342 @@
 }
 .tvhm-size-badge-lbl { font-size: 9px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
 .tvhm-size-badge-val { font-size: 17px; font-weight: 800; color: #7C3AED; }
+
+/* ══════════════════════════════════════════════════════
+   REDESIGNED TYRE SIZE WIZARD (Image Sep 30 Ref)
+   ══════════════════════════════════════════════════════ */
+.tvhm-step-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tvhm-step-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tvhm-step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tvhm-step-dot.active {
+  background: #6320EE;
+  width: 22px;
+  border-radius: 10px;
+}
+.tvhm-step-dot.done {
+  background: #10B981;
+}
+.tvhm-step-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #6320EE;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 2-Column Hero */
+.tvhm-size-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: stretch;
+}
+@media (max-width: 580px) {
+  .tvhm-size-hero {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+.tvhm-hero-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tvhm-step-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+.tvhm-step-sub {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+/* Tip Box */
+.tvhm-tip-box {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-left: 3.5px solid #6320EE;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tvhm-tip-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #EDE9FE;
+  color: #6320EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.tvhm-tip-content {
+  flex: 1;
+  min-width: 0;
+}
+.tvhm-tip-heading {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 2px;
+}
+.tvhm-tip-desc {
+  font-size: 11px;
+  color: #64748B;
+  line-height: 1.38;
+  margin: 0;
+}
+
+/* 3D Visual Container */
+.tvhm-tyre-visual {
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F1F5F9 100%);
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 165px;
+  padding: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+}
+.tvhm-tyre-img {
+  max-height: 140px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.12));
+}
+.tvhm-tyre-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tvhm-tyre-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(99, 32, 238, 0.95);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(99, 32, 238, 0.38);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
+}
+.tvhm-tyre-badge strong {
+  font-weight: 800;
+}
+
+/* Selector Bar (Search + Label) */
+.tvhm-selector-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tvhm-selector-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+.tvhm-search-box {
+  position: relative;
+  width: 170px;
+}
+@media (max-width: 480px) {
+  .tvhm-selector-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .tvhm-search-box {
+    width: 100%;
+  }
+}
+.tvhm-search-box svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+}
+.tvhm-search-box input {
+  width: 100%;
+  padding: 6px 10px 6px 30px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0F172A;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+.tvhm-search-box input:focus {
+  border-color: #6320EE;
+  box-shadow: 0 0 0 2px rgba(99, 32, 238, 0.15);
+}
+
+/* Chips Grid */
+.tvhm-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-height: clamp(240px, 35vh, 340px);
+  overflow-y: auto;
+  padding: 2px 2px 6px;
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .tvhm-chips-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 400px) {
+  .tvhm-chips-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.tvhm-chips-grid::-webkit-scrollbar { width: 5px; }
+.tvhm-chips-grid::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; }
+
+.tvhm-size-chip {
+  padding: 9px 4px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.tvhm-size-chip:hover {
+  border-color: #6320EE;
+  background: #F5F3FF;
+  color: #6320EE;
+  transform: translateY(-1px);
+}
+.tvhm-size-chip.selected {
+  border-color: #6320EE;
+  background: #6320EE;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(99, 32, 238, 0.35);
+  font-weight: 800;
+}
+
+/* Modal Footer */
+.tvhm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-top: 1.5px solid #F1F5F9;
+  background: #FFFFFF;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.tvhm-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #F1F5F9;
+  border: 1.5px solid #E2E8F0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tvhm-back-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+.tvhm-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 10px;
+  background: #6320EE;
+  border: none;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(99, 32, 238, 0.3);
+  margin-left: auto;
+}
+.tvhm-next-btn:hover {
+  background: #4F13D1;
+  box-shadow: 0 6px 18px rgba(99, 32, 238, 0.4);
+  transform: translateY(-1px);
+}
+.tvhm-next-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.tvhm-search-action-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+.tvhm-search-action-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
 </style>
 
 {# ── Modal overlay ── #}
@@ -326,6 +973,7 @@
       </button>
     </div>
     <div class="tvhm-body" id="tvhmBody"></div>
+    <div class="tvhm-footer" id="tvhmFooter" style="display:none;"></div>
   </div>
 </div>
 
@@ -374,16 +1022,16 @@
           <div class="tv-hsoption-text"><span class="tv-hsoption-label">SEARCH BY</span><span class="tv-hsoption-name">Vehicle</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </button>
-        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('brands','car-tyres')">
+        <a href="/brands" class="tv-hsoption-card">
           <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg></div>
-          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">Brands</span></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">Tyre Brands</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </button>
-        <button type="button" class="tv-hsoption-card" onclick="tvHeroOpenModal('ev','car-tyres')">
+        </a>
+        <a href="/tyres/ev" class="tv-hsoption-card">
           <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
           <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">EV Tyres</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </button>
+        </a>
       </div>
     </div>
 
@@ -483,20 +1131,7 @@ var _carMakes = {
   'Tesla':     ['Model 3','Model Y','Model S','Model X','Cybertruck']
 };
 
-var _brands = [
-  {name:'Michelin',  img:'/static/uploads/brands/brand_884b41a82943de82_1789467748.png'},
-  {name:'Bridgestone',img:'/static/uploads/brands/brand_cb7761b3ead4b59d_1789390038.png'},
-  {name:'Continental',img:'/static/uploads/brands/brand_24bed4da10cda88d_1789390087.png'},
-  {name:'Pirelli',   img:'/static/uploads/brands/brand_fdb78675dade1522_1789467868.png'},
-  {name:'Goodyear',  img:'/static/uploads/brands/brand_5efb86debe60281a_1789467079.png'},
-  {name:'Dunlop',    img:'/static/uploads/brands/brand_412e791c7f963968_1789466881.png'},
-  {name:'Yokohama',  img:'/static/uploads/brands/brand_02bc8d77485a6734_1789468342.png'},
-  {name:'Hankook',   img:'/static/uploads/brands/brand_1553b44568a70852_1789467181.png'},
-  {name:'Toyo Tires',img:'/static/uploads/brands/brand_dff9a65a86a92fc0_1789468102.png'},
-  {name:'Nitto',     img:'/static/uploads/brands/brand_5ae04c0e3f78eee9_1789467696.png'},
-  {name:'Falken',    img:'/static/uploads/brands/brand_3756e7c7b08f3d02_1789466948.png'},
-  {name:'Cooper',    img:'/static/uploads/brands/brand_2ea72ccd3da38c87_1789466730.png'}
-];
+var _allBrandsCache = null;
 
 /* ══════════════════════════════════════════════════════
    OPEN MODAL
@@ -504,7 +1139,18 @@ var _brands = [
 var _tvScrollY = 0;
 
 function tvHeroOpenModal(type, tab) {
-  _tvState = { type: type, tab: tab, step: 1, width: null, profile: null, rim: null, make: null, model: null };
+  if (type === 'brands') {
+    window.location.href = '/brands';
+    return;
+  }
+  if (type === 'ev') {
+    window.location.href = '/tyres/ev';
+    return;
+  }
+  _tvState = { type: type, tab: tab, step: 1, width: null, profile: null, rim: null,
+               makeSlug: null, makeName: null, modelSlug: null, modelName: null, year: null,
+               engineSlug: null, engineTrim: null,
+               brandSlug: null, brandName: null, brandLogo: null };
   var modal = document.getElementById('tvHeroModal');
   modal.classList.add('open');
 
@@ -560,11 +1206,16 @@ function _tvRenderModal() {
   var title = document.getElementById('tvhmTitle');
   var body  = document.getElementById('tvhmBody');
   var icon  = document.getElementById('tvhmHeaderIcon');
+  var footer = document.getElementById('tvhmFooter');
+
+  if (footer && t !== 'size') {
+    footer.style.display = 'none';
+  }
 
   if (t === 'size') {
     badge.textContent = 'SEARCH BY';
     title.textContent = tab === 'car-wheels' ? 'Wheel Size' : tab === 'motorbike' ? 'Motorbike Tyre Size' : 'Tyre Size';
-    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>';
+    icon.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>';
     _tvRenderSizePanel(body, tab);
   } else if (t === 'vehicle') {
     badge.textContent = 'SEARCH BY';
@@ -572,9 +1223,17 @@ function _tvRenderModal() {
     icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>';
     _tvRenderVehiclePanel(body, tab);
   } else if (t === 'brands') {
-    badge.textContent = 'BROWSE BY';
-    title.textContent = 'Tyre Brands';
-    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg>';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg>';
+    if (!_tvState.brandSlug) {
+      badge.textContent = 'BROWSE BY';
+      title.textContent = 'Tyre Brands';
+    } else if (!_tvState.rim) {
+      badge.textContent = 'SELECT TYRE SIZE';
+      title.textContent = (_tvState.brandName || 'Brand') + ' Tyres';
+    } else {
+      badge.textContent = 'TYRES FOUND';
+      title.textContent = (_tvState.brandName || '') + ' ' + _tvState.width + '/' + _tvState.profile + ' ' + _tvState.rim;
+    }
     _tvRenderBrandsPanel(body);
   } else if (t === 'ev') {
     badge.textContent = 'BROWSE BY';
@@ -585,12 +1244,6 @@ function _tvRenderModal() {
 }
 
 /* ── Tyre/Wheel Size Panel ── */
-/* Cascading tyre-size options (car-tyres tab only) sourced live from real
-   inventory via /api/tyre-sizes, so users only ever see width/profile/rim
-   combinations that actually exist in stock instead of a fixed list that
-   can lead to a size with zero matching products. Cached per selection so
-   going back a step doesn't re-fetch. Wheels/motorbike tabs still use the
-   static arrays above -- their data isn't stored the same structured way. */
 var _tvTyreSizeCache = { widths: null, profiles: {}, rims: {} };
 
 function _tvFetchTyreSizeOptions(width, profile) {
@@ -613,227 +1266,1045 @@ function _tvRenderSizePanel(body, tab) {
   var isTyre  = !isWheel && !isMoto;
   var totalSteps = isWheel ? 2 : 3;
 
-  var step1Label = isWheel ? 'Rim Size (inches)' : (isMoto ? 'Tyre Width (mm)' : 'Tyre Width (mm)');
-  var step2Label = isWheel ? 'Wheel Width' : (isMoto ? 'Aspect Ratio' : 'Aspect Ratio');
-  var step3Label = isMoto ? 'Rim Size' : 'Rim Size';
+  var footer = document.getElementById('tvhmFooter');
+  if (footer) footer.style.display = 'flex';
 
-  function renderHeader() {
-    var html = '<div class="tvhm-step-indicator">';
+  var stepTitle = '';
+  var stepSub = '';
+  var tipHeading = '';
+  var tipDesc = '';
+  var badgeLabel = '';
+  var badgeUnit = '';
+  var defaultVal = '';
+  var currentSelectedVal = '';
+  var selectorLabel = '';
+  var searchPlaceholder = '';
+
+  if (s.step === 1) {
+    stepTitle = isWheel ? 'Select Wheel Diameter' : (isMoto ? 'Select Tyre Width' : 'Select Tyre Width');
+    stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyres in millimeters.';
+    tipHeading = isWheel ? 'What is wheel diameter?' : 'What is tyre width?';
+    tipDesc = isWheel
+      ? 'It is the diameter of the wheel rim in inches measured from bead seat to bead seat.'
+      : 'It\'s the width of the tyre from sidewall to sidewall in millimeters. Found as the first number on your tyre, e.g., 195/65 R15.';
+    badgeLabel = isWheel ? 'Wheel Rim' : 'Tyre Width';
+    badgeUnit = isWheel ? '"' : ' mm';
+    defaultVal = isWheel ? '17' : '195';
+    if (!s.width && isTyre) s.width = '195';
+    currentSelectedVal = s.width || (isTyre ? '195' : defaultVal);
+    selectorLabel = isWheel ? 'SELECT RIM SIZE (INCHES)' : 'SELECT TYRE WIDTH (MM)';
+    searchPlaceholder = isWheel ? 'Search rim...' : 'Search width...';
+  } else if (s.step === 2) {
+    stepTitle = isWheel ? 'Select Wheel Width' : (isMoto ? 'Select Aspect Ratio' : 'Select Tyre Height');
+    stepSub = isWheel ? 'Choose the rim width in inches (J).' : 'Choose the aspect ratio (height as % of width).';
+    tipHeading = isWheel ? 'What is wheel width?' : 'What is tyre height?';
+    tipDesc = isWheel
+      ? 'The width of the wheel rim between the inner bead seat and outer bead seat.'
+      : 'The aspect ratio indicates the sidewall height as a percentage of the width. Found as the second number, e.g., 195/65 R15.';
+    badgeLabel = isWheel ? 'Wheel Width' : 'Tyre Height';
+    badgeUnit = isWheel ? '' : '%';
+    defaultVal = isWheel ? '7.5J' : '55';
+    if (!s.profile && isTyre) s.profile = '55';
+    currentSelectedVal = s.profile || (isTyre ? '55' : defaultVal);
+    selectorLabel = isWheel ? 'SELECT WHEEL WIDTH' : 'SELECT TYRE HEIGHT (%)';
+    searchPlaceholder = isWheel ? 'Search width...' : 'Search height...';
+  } else if (s.step === 3) {
+    stepTitle = 'Select Rim Size';
+    stepSub = 'Choose the diameter of the wheel rim in inches.';
+    tipHeading = 'What is rim diameter?';
+    tipDesc = 'The diameter of the wheel rim in inches that the tyre is designed to fit. Found after the letter \'R\', e.g., 195/65 R15.';
+    badgeLabel = 'Rim Size';
+    badgeUnit = '';
+    defaultVal = 'R16';
+    if (!s.rim && isTyre) s.rim = 'R16';
+    currentSelectedVal = s.rim || (isTyre ? 'R16' : defaultVal);
+    selectorLabel = 'SELECT RIM SIZE (INCHES)';
+    searchPlaceholder = 'Search rim...';
+  }
+
+  // Visual SVG Guides
+  var svgGuides = '';
+  if (s.step === 1) {
+    svgGuides = '<g>'
+      + '<path d="M 86 42 Q 126 30 168 36 L 195 72 Q 155 60 112 78 Z" fill="rgba(99, 32, 238, 0.22)" stroke="#6320EE" stroke-width="1.5" stroke-dasharray="3,3" />'
+      + '<line x1="86" y1="26" x2="86" y2="48" stroke="#6320EE" stroke-width="2" />'
+      + '<line x1="168" y1="20" x2="168" y2="42" stroke="#6320EE" stroke-width="2" />'
+      + '<line x1="88" y1="36" x2="166" y2="30" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '</g>';
+  } else if (s.step === 2) {
+    svgGuides = '<g>'
+      + '<ellipse cx="168" cy="105" rx="76" ry="60" fill="none" stroke="#6320EE" stroke-width="9" stroke-opacity="0.32" />'
+      + '<line x1="110" y1="120" x2="124" y2="136" stroke="#6320EE" stroke-width="2" />'
+      + '<line x1="72" y1="142" x2="88" y2="158" stroke="#6320EE" stroke-width="2" />'
+      + '<line x1="116" y1="128" x2="82" y2="148" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '</g>';
+  } else if (s.step === 3) {
+    svgGuides = '<g>'
+      + '<ellipse cx="168" cy="105" rx="52" ry="42" fill="rgba(99, 32, 238, 0.18)" stroke="#6320EE" stroke-width="2" stroke-dasharray="4,4" />'
+      + '<line x1="124" y1="78" x2="212" y2="132" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '</g>';
+  }
+
+  function renderView(options, isLoading) {
+    var stepDotsHtml = '';
     for (var i = 1; i <= totalSteps; i++) {
-      var cls = i === s.step ? 'active' : (i < s.step ? 'done' : '');
-      html += '<div class="tvhm-step-dot ' + cls + '"></div>';
+      var dotCls = i === s.step ? 'active' : (i < s.step ? 'done' : '');
+      stepDotsHtml += '<div class="tvhm-step-dot ' + dotCls + '"></div>';
     }
-    html += '</div>';
 
-    if (s.width || s.profile || s.rim) {
-      html += '<div class="tvhm-selected-size">';
-      if (s.width) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step1Label + '</span><span class="tvhm-size-badge-val">' + s.width + '</span></div>';
-      if (s.profile) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step2Label + '</span><span class="tvhm-size-badge-val">' + s.profile + '</span></div>';
-      if (s.rim) html += '<div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">' + step3Label + '</span><span class="tvhm-size-badge-val">' + s.rim + '</span></div>';
-      html += '</div>';
+    var chipsHtml = '';
+    if (isLoading) {
+      chipsHtml = '<div class="tvhm-chips-loading" style="grid-column: 1 / -1; text-align: center; padding: 24px;">Loading available sizes…</div>';
+    } else if (!options || !options.length) {
+      chipsHtml = '<div class="tvhm-empty-note" style="grid-column: 1 / -1; text-align: center; padding: 24px;">No options found for this selection.</div>';
+    } else {
+      if (options.indexOf(currentSelectedVal) === -1) {
+        currentSelectedVal = options[0];
+        if (s.step === 1) s.width = currentSelectedVal;
+        else if (s.step === 2) s.profile = currentSelectedVal;
+        else if (s.step === 3) s.rim = currentSelectedVal;
+      }
+      options.forEach(function(opt) {
+        var isSel = opt === currentSelectedVal;
+        chipsHtml += '<button type="button" class="tvhm-size-chip"'
+          + 'data-val="' + opt + '" '
+          + 'onclick="tvSelectSizeChip(\'' + opt + '\')" '
+          + 'ondblclick="tvSelectSizeChip(\'' + opt + '\', true)" '
+          + 'onmouseenter="tvHoverSizeChip(\'' + opt + '\')" '
+          + 'onmouseleave="tvLeaveSizeChip()">'
+          + opt
+          + '</button>';
+      });
     }
-    return html;
+
+    var html = ''
+      + '<div class="tvhm-step-row">'
+      + '  <div class="tvhm-step-dots">' + stepDotsHtml + '</div>'
+      + '  <span class="tvhm-step-text">STEP ' + s.step + ' OF ' + totalSteps + '</span>'
+      + '</div>'
+      + '<div class="tvhm-size-hero">'
+      + '  <div class="tvhm-hero-info">'
+      + '    <h3 class="tvhm-step-title">' + stepTitle + '</h3>'
+      + '    <p class="tvhm-step-sub">' + stepSub + '</p>'
+      + '    <div class="tvhm-tip-box">'
+      + '      <div class="tvhm-tip-icon">'
+      + '        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+      + '          <path d="M12 2a6 6 0 0 0-6 6c0 2.22 1.21 4.16 3 5.2V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-3.8c1.79-1.04 3-2.98 3-5.2a6 6 0 0 0-6-6zM9 21h6"/>'
+      + '        </svg>'
+      + '      </div>'
+      + '      <div class="tvhm-tip-content">'
+      + '        <h4 class="tvhm-tip-heading">' + tipHeading + '</h4>'
+      + '        <p class="tvhm-tip-desc">' + tipDesc + '</p>'
+      + '      </div>'
+      + '    </div>'
+      + '  </div>'
+      + '  <div class="tvhm-tyre-visual">'
+      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge">'
+      + '      <span id="tvBadgeLabel">' + badgeLabel + '</span>'
+      + '      <strong id="tvBadgeVal">' + (currentSelectedVal ? currentSelectedVal + badgeUnit : '') + '</strong>'
+      + '    </div>'
+      + '    <img src="/static/assets/images/products/tyre_1.jpg" alt="Tyre Visual" class="tvhm-tyre-img" />'
+      + '    <svg class="tvhm-tyre-overlay" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">'
+      + '      <defs>'
+      + '        <marker id="tvArrEnd" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+      + '          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6320EE" />'
+      + '        </marker>'
+      + '        <marker id="tvArrStart" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto">'
+      + '          <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#6320EE" />'
+      + '        </marker>'
+      + '      </defs>'
+      +        svgGuides
+      + '    </svg>'
+      + '  </div>'
+      + '</div>'
+      + '<div class="tvhm-selector-bar">'
+      + '  <p class="tvhm-selector-lbl">' + selectorLabel + '</p>'
+      + '  <div class="tvhm-search-box">'
+      + '    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+      + '      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'
+      + '    </svg>'
+      + '    <input type="text" id="tvSizeSearchInput" placeholder="' + searchPlaceholder + '" oninput="tvFilterSizeChips(this.value)" autocomplete="off" />'
+      + '  </div>'
+      + '</div>'
+      + '<div class="tvhm-chips-grid" id="tvSizeChipsGrid">'
+      +    chipsHtml
+      + '</div>';
+
+    body.innerHTML = html;
+
+    if (footer) {
+      var backBtnHtml = s.step > 1
+        ? '<button type="button" class="tvhm-back-btn" onclick="tvSizeBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>'
+        : '<div></div>';
+
+      var nextBtnHtml = '';
+      if (s.step === 1) {
+        var hasWidth = Boolean(s.width);
+        nextBtnHtml = '<button type="button" class="tvhm-next-btn" id="tvSizeNextBtn" onclick="tvSizeNext()" ' + (hasWidth ? '' : 'disabled') + '>Next: Tyre Height <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+      } else if (s.step === 2 && !isWheel) {
+        var hasProfile = Boolean(s.profile);
+        nextBtnHtml = '<button type="button" class="tvhm-next-btn" id="tvSizeNextBtn" onclick="tvSizeNext()" ' + (hasProfile ? '' : 'disabled') + '>Next: Rim Size <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+      } else {
+        var hasRim = isWheel ? Boolean(s.profile) : Boolean(s.rim);
+        nextBtnHtml = '<button type="button" class="tvhm-next-btn tvhm-search-action-btn" id="tvSizeNextBtn" onclick="tvSizeSearch()" ' + (hasRim ? '' : 'disabled') + '>Search Tyres <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>';
+      }
+
+      footer.innerHTML = backBtnHtml + nextBtnHtml;
+    }
   }
 
-  function renderChipsStep(label, options, onclickFn, extraHtml) {
-    var html = '<p class="tvhm-section-lbl">Select ' + label + '</p>';
-    if (!options.length) {
-      html += '<p class="tvhm-empty-note">No options found for this selection.</p>';
-      body.innerHTML = renderHeader() + html;
-      return;
-    }
-    html += '<div class="tvhm-chips">';
-    options.forEach(function(o) {
-      html += '<button class="tvhm-chip" onclick="' + onclickFn + '(\'' + o + '\')">' + o + '</button>';
-    });
-    html += '</div>';
-    body.innerHTML = renderHeader() + html + (extraHtml || '');
-  }
-
-  function renderLoading(label) {
-    body.innerHTML = renderHeader()
-      + '<p class="tvhm-section-lbl">Select ' + label + '</p>'
-      + '<div class="tvhm-chips-loading">Loading available sizes…</div>';
-  }
-
+  // Load options based on current step and tab
   if (!isTyre) {
-    // Wheels / motorbike: unchanged static-array behavior.
     var widths   = isMoto ? _mbWidths : _wheelRims;
-    var profiles = isMoto ? _mbProfiles : [];
-    var rims     = isMoto ? _mbRims : _wheelWidths;
-
-    if (s.step === 1) {
-      renderChipsStep(step1Label, widths, 'tvSizeStep1');
-    } else if (s.step === 2 && !isWheel) {
-      renderChipsStep(step2Label, profiles, 'tvSizeStep2');
-    } else if (s.step === 3 || (s.step === 2 && isWheel)) {
-      var searchBtn = '<button class="tvhm-action-btn" id="tvSizeSearchBtn" onclick="tvSizeSearch()" disabled>'
-        + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-        + 'Search Tyres</button>';
-      renderChipsStep(isWheel ? step2Label : step3Label, rims, 'tvSizeStep3', searchBtn);
-    }
+    var profiles = isMoto ? _mbProfiles : _wheelWidths;
+    var rims     = isMoto ? _mbRims : [];
+    if (s.step === 1) renderView(widths, false);
+    else if (s.step === 2) renderView(profiles, false);
+    else if (s.step === 3) renderView(rims, false);
     return;
   }
 
-  // Tyre tab: cascading, DB-backed options.
+  // Tyre tab: fetch cascading options
   if (s.step === 1) {
     if (_tvTyreSizeCache.widths) {
-      renderChipsStep(step1Label, _tvTyreSizeCache.widths, 'tvSizeStep1');
+      renderView(_tvTyreSizeCache.widths, false);
     } else {
-      renderLoading(step1Label);
+      renderView([], true);
       _tvFetchTyreSizeOptions().then(function(opts) {
         _tvTyreSizeCache.widths = opts;
-        if (_tvState.step === 1) renderChipsStep(step1Label, opts, 'tvSizeStep1');
+        if (_tvState.type === 'size' && _tvState.step === 1) {
+          renderView(opts, false);
+        }
       });
     }
   } else if (s.step === 2) {
-    var cached = _tvTyreSizeCache.profiles[s.width];
-    if (cached) {
-      renderChipsStep(step2Label, cached, 'tvSizeStep2');
+    var cachedProf = _tvTyreSizeCache.profiles[s.width];
+    if (cachedProf) {
+      renderView(cachedProf, false);
     } else {
-      renderLoading(step2Label);
+      renderView([], true);
       _tvFetchTyreSizeOptions(s.width).then(function(opts) {
         _tvTyreSizeCache.profiles[s.width] = opts;
-        if (_tvState.step === 2 && _tvState.width === s.width) renderChipsStep(step2Label, opts, 'tvSizeStep2');
+        if (_tvState.type === 'size' && _tvState.step === 2 && _tvState.width === s.width) {
+          renderView(opts, false);
+        }
       });
     }
   } else if (s.step === 3) {
-    var searchBtn2 = '<button class="tvhm-action-btn" id="tvSizeSearchBtn" onclick="tvSizeSearch()" disabled>'
-      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-      + 'Search Tyres</button>';
     var rimKey = s.width + '|' + s.profile;
     var cachedRims = _tvTyreSizeCache.rims[rimKey];
     if (cachedRims) {
-      renderChipsStep(step3Label, cachedRims, 'tvSizeStep3', searchBtn2);
+      renderView(cachedRims, false);
     } else {
-      renderLoading(step3Label);
+      renderView([], true);
       _tvFetchTyreSizeOptions(s.width, s.profile).then(function(opts) {
         _tvTyreSizeCache.rims[rimKey] = opts;
-        if (_tvState.step === 3 && _tvState.width === s.width && _tvState.profile === s.profile) {
-          renderChipsStep(step3Label, opts, 'tvSizeStep3', searchBtn2);
+        if (_tvState.type === 'size' && _tvState.step === 3 && _tvState.width === s.width && _tvState.profile === s.profile) {
+          renderView(opts, false);
         }
       });
     }
   }
 }
 
-function tvSizeStep1(val) {
-  _tvState.width = val;
-  _tvState.step = 2;
-  if (_tvState.tab === 'car-wheels') { _tvState.step = 2; }
-  _tvRenderModal();
+function tvSelectSizeChip(val, autoAdvance) {
+  var s = _tvState;
+  var isWheel = s.tab === 'car-wheels';
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+
+  if (s.step === 1) {
+    s.width = val;
+  } else if (s.step === 2) {
+    s.profile = val;
+  } else if (s.step === 3) {
+    s.rim = val;
+  }
+
+  var grid = document.getElementById('tvSizeChipsGrid');
+  if (grid) {
+    grid.querySelectorAll('.tvhm-size-chip').forEach(function(c) {
+      var isTarget = c.getAttribute('data-val') === val;
+      c.classList.toggle('selected', isTarget);
+    });
+  }
+
+  var badgeVal = document.getElementById('tvBadgeVal');
+  if (badgeVal) {
+    badgeVal.textContent = val + badgeUnit;
+  }
+
+  var nextBtn = document.getElementById('tvSizeNextBtn');
+  if (nextBtn) {
+    nextBtn.removeAttribute('disabled');
+  }
+
+  if (autoAdvance) {
+    if (s.step === 3 || (s.step === 2 && isWheel)) {
+      tvSizeSearch();
+    } else {
+      tvSizeNext();
+    }
+  }
 }
-function tvSizeStep2(val) {
-  _tvState.profile = val;
-  _tvState.step = 3;
-  _tvRenderModal();
+
+function tvHoverSizeChip(val) {
+  var s = _tvState;
+  var isWheel = s.tab === 'car-wheels';
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+  var badgeVal = document.getElementById('tvBadgeVal');
+  if (badgeVal) {
+    badgeVal.textContent = val + badgeUnit;
+  }
 }
-function tvSizeStep3(val) {
-  _tvState.rim = val;
-  var btn = document.getElementById('tvSizeSearchBtn');
-  if (btn) btn.removeAttribute('disabled');
-  // Mark chip as selected
-  document.querySelectorAll('.tvhm-chip').forEach(function(c) {
-    c.classList.toggle('selected', c.textContent.trim() === val);
+
+function tvLeaveSizeChip() {
+  var s = _tvState;
+  var isWheel = s.tab === 'car-wheels';
+  var currentVal = s.step === 1 ? s.width : (s.step === 2 ? s.profile : s.rim);
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+  var badgeVal = document.getElementById('tvBadgeVal');
+  if (badgeVal && currentVal) {
+    badgeVal.textContent = currentVal + badgeUnit;
+  }
+}
+
+function tvFilterSizeChips(q) {
+  var term = (q || '').trim().toLowerCase();
+  var grid = document.getElementById('tvSizeChipsGrid');
+  if (!grid) return;
+  var chips = grid.querySelectorAll('.tvhm-size-chip');
+  chips.forEach(function(chip) {
+    var txt = (chip.getAttribute('data-val') || chip.textContent).trim().toLowerCase();
+    chip.style.display = (!term || txt.indexOf(term) !== -1) ? '' : 'none';
   });
 }
+
+function tvSizeNext() {
+  var s = _tvState;
+  var isWheel = s.tab === 'car-wheels';
+  if (s.step === 1) {
+    s.step = 2;
+  } else if (s.step === 2) {
+    if (isWheel) {
+      tvSizeSearch();
+      return;
+    }
+    s.step = 3;
+  }
+  _tvRenderModal();
+}
+
+function tvSizeBack() {
+  var s = _tvState;
+  if (s.step > 1) {
+    s.step--;
+    _tvRenderModal();
+  }
+}
+
 function tvSizeSearch() {
   var s = _tvState;
   if (s.tab === 'car-wheels') {
-    window.location.href = '/wheels?rim=' + encodeURIComponent(s.width || '') + '&width=' + encodeURIComponent(s.rim || '');
+    window.location.href = '/wheels?rim=' + encodeURIComponent(s.width || '') + '&width=' + encodeURIComponent(s.profile || '');
   } else {
     var size = (s.width || '') + '-' + (s.profile || '') + '-' + (s.rim || '');
-    // Path-filter segments use the "key-value" convention everywhere else
-    // in the catalog (brand-pirelli, pattern-x, etc.) -- _parse_filter_path
-    // on the backend matches "size-<...>", not "size=<...>", so this must
-    // stay a hyphen or the size filter is silently never applied.
     window.location.href = '/tyres/size-' + encodeURIComponent(size);
   }
 }
 
-/* ── Vehicle Panel ── */
+/* ── Vehicle Panel — API-driven wizard ─────────────────────────────────────
+   Flow: Make → Model → Year → Engine → Navigate to /tyres/cars/make/model
+   ─────────────────────────────────────────────────────────────────────────── */
+function _esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+var _vsMakesCache   = null;   // [{slug,name,logo}]
+var _vsModelsCache  = {};     // make_slug → [{slug,name,years}]
+var _vsYearsCache   = {};     // make|model → [year strings]
+var _vsEnginesCache = {};     // make|model|year → [{slug,trim,engine,fuel,display}]
+var _vsTyresCache   = {};     // make|model|year|engineSlug → [tyre size options]
+
 function _tvRenderVehiclePanel(body, tab) {
   var s = _tvState;
-  var dest = tab === 'car-wheels' ? '/wheels' : '/tyres';
 
-  var html = '';
-  html += '<div class="tvhm-search-input-wrap">'
-        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-        + '<input id="tvVehSearch" class="tvhm-search-input" type="text" placeholder="Search by Make or Model (e.g. Toyota, BMW, Land Rover)..." oninput="tvVehFilter(this.value)" autocomplete="off">'
-        + '</div>';
-
-  if (!s.make) {
-    html += '<p class="tvhm-section-lbl">Select Make</p>';
-    html += '<div class="tvhm-make-grid" id="tvMakeGrid">';
-    Object.keys(_carMakes).forEach(function(make) {
-      html += '<button class="tvhm-make-card" onclick="tvSelectMake(\'' + make + '\')">'
-            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V9c0-.9.6-1.7 1.4-1.9L6 6h12l3.6 1.1A2 2 0 0 1 23 9v6a2 2 0 0 1-2 2h-2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>'
-            + make + '</button>';
-    });
-    html += '</div>';
-  } else {
-    // Show make badge + model chips
-    html += '<div class="tvhm-selected-size"><div class="tvhm-size-badge"><span class="tvhm-size-badge-lbl">Make</span><span class="tvhm-size-badge-val" style="font-size:13px">' + s.make + '</span></div></div>';
-    html += '<p class="tvhm-section-lbl">Select Model</p>';
-    html += '<div class="tvhm-chips">';
-    (_carMakes[s.make] || []).forEach(function(model) {
-      html += '<button class="tvhm-chip' + (s.model === model ? ' selected' : '') + '" onclick="tvSelectModel(\'' + model.replace(/'/g,"\\'" ) + '\')">' + model + '</button>';
-    });
-    html += '</div>';
-    html += '<button class="tvhm-action-btn" id="tvVehSearchBtn" onclick="tvVehSearch(\'' + dest + '\')"'
-          + (s.model ? '' : ' disabled') + '>'
-          + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-          + 'Find Tyres</button>';
+  // ── Breadcrumb badges ──
+  function makeBreadcrumb() {
+    if (!s.makeSlug && !s.model) return '';
+    var b = '<div class="tvhm-selected-size" style="flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+    if (s.makeSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'make\')" title="Change Make"><span class="tvhm-size-badge-lbl">Make</span>'
+      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.makeName || s.makeSlug) + ' ✕</span></button>';
+    if (s.modelSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'model\')" title="Change Model"><span class="tvhm-size-badge-lbl">Model</span>'
+      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.modelName || s.modelSlug) + ' ✕</span></button>';
+    if (s.year) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'year\')" title="Change Year"><span class="tvhm-size-badge-lbl">Year</span>'
+      + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.year) + ' ✕</span></button>';
+    if (s.engineTrim) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'engine\')" title="Change Engine"><span class="tvhm-size-badge-lbl">Engine</span>'
+      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.engineTrim) + ' ✕</span></button>';
+    return b + '</div>';
   }
 
-  body.innerHTML = html;
-  if (!s.make) {
-    var inp = document.getElementById('tvVehSearch');
-    if (inp) inp.focus();
+  function renderSpinner(msg) {
+    body.innerHTML = makeBreadcrumb()
+      + '<p class="tvhm-section-lbl">' + msg + '</p>'
+      + '<div style="display:flex;align-items:center;gap:10px;padding:20px 0;color:#9CA3AF;">'
+      + '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.6" style="animation:spin .9s linear infinite;transform-origin:center"/></svg>'
+      + '<span style="font-size:13px;color:#6B7280">Loading…</span>'
+      + '</div>';
+  }
+
+  function renderError(msg) {
+    body.innerHTML = makeBreadcrumb()
+      + '<div style="padding:20px;text-align:center;color:#EF4444;font-size:13px">⚠ ' + _esc(msg) + '</div>';
+  }
+
+  // ── STEP 1: Select Make ────────────────────────────────────────────────────
+  if (!s.makeSlug) {
+    if (_vsMakesCache) {
+      _renderMakeGrid(body, _vsMakesCache);
+    } else {
+      renderSpinner('Loading Makes…');
+      fetch('/api/vehicle-search/makes')
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.status !== 'success') throw new Error(d.message || 'Failed');
+          _vsMakesCache = d.data;
+          if (_tvState.type === 'vehicle' && !_tvState.makeSlug) _renderMakeGrid(body, d.data);
+        })
+        .catch(function(e){ renderError(e.message); });
+    }
+    return;
+  }
+
+  // ── STEP 2: Select Model ───────────────────────────────────────────────────
+  if (!s.modelSlug) {
+    var mk = s.makeSlug;
+    if (_vsModelsCache[mk]) {
+      _renderModelChips(body, _vsModelsCache[mk], makeBreadcrumb());
+    } else {
+      renderSpinner('Loading Models…');
+      fetch('/api/vehicle-search/models?make=' + encodeURIComponent(mk))
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.status !== 'success') throw new Error(d.message || 'Failed');
+          _vsModelsCache[mk] = d.data;
+          if (_tvState.type === 'vehicle' && _tvState.makeSlug === mk && !_tvState.modelSlug)
+            _renderModelChips(body, d.data, makeBreadcrumb());
+        })
+        .catch(function(e){ renderError(e.message); });
+    }
+    return;
+  }
+
+  // ── STEP 3: Select Year ────────────────────────────────────────────────────
+  if (!s.year) {
+    var yk = s.makeSlug + '|' + s.modelSlug;
+    if (_vsYearsCache[yk]) {
+      _renderYearChips(body, _vsYearsCache[yk], makeBreadcrumb());
+    } else {
+      renderSpinner('Loading Years…');
+      fetch('/api/vehicle-search/years?make=' + encodeURIComponent(s.makeSlug) + '&model=' + encodeURIComponent(s.modelSlug))
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.status !== 'success') throw new Error(d.message || 'Failed');
+          _vsYearsCache[yk] = d.data;
+          if (_tvState.type === 'vehicle' && _tvState.makeSlug === s.makeSlug && _tvState.modelSlug === s.modelSlug && !_tvState.year)
+            _renderYearChips(body, d.data, makeBreadcrumb());
+        })
+        .catch(function(e){ renderError(e.message); });
+    }
+    return;
+  }
+
+  // ── STEP 4: Select Engine / Trim ───────────────────────────────────────────
+  if (!s.engineSlug) {
+    var ek = s.makeSlug + '|' + s.modelSlug + '|' + s.year;
+    if (_vsEnginesCache[ek]) {
+      _renderEngineCards(body, _vsEnginesCache[ek], makeBreadcrumb(), tab);
+    } else {
+      renderSpinner('Loading Engine Options…');
+      fetch('/api/vehicle-search/engines?make=' + encodeURIComponent(s.makeSlug)
+           + '&model=' + encodeURIComponent(s.modelSlug) + '&year=' + encodeURIComponent(s.year))
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.status !== 'success') throw new Error(d.message || 'Failed');
+          _vsEnginesCache[ek] = d.data;
+          if (_tvState.type === 'vehicle' && _tvState.makeSlug === s.makeSlug && _tvState.year === s.year && !_tvState.engineSlug)
+            _renderEngineCards(body, d.data, makeBreadcrumb(), tab);
+        })
+        .catch(function(e){ renderError(e.message); });
+    }
+    return;
+  }
+
+  // ── STEP 5: Select Tyre Size ───────────────────────────────────────────────
+  var tk = s.makeSlug + '|' + s.modelSlug + '|' + s.year + '|' + (s.engineSlug || '');
+  if (_vsTyresCache[tk]) {
+    _renderTyreSizeOptions(body, _vsTyresCache[tk], makeBreadcrumb(), tab);
+  } else {
+    renderSpinner('Loading Tyre Sizes for ' + _esc(s.engineTrim || 'this vehicle') + '…');
+    fetch('/api/vehicle-search/tyres?make=' + encodeURIComponent(s.makeSlug)
+         + '&model=' + encodeURIComponent(s.modelSlug)
+         + '&year=' + encodeURIComponent(s.year)
+         + '&modification=' + encodeURIComponent(s.engineSlug || ''))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.status !== 'success') throw new Error(d.message || 'Failed');
+        _vsTyresCache[tk] = d.data;
+        if (_tvState.type === 'vehicle' && _tvState.engineSlug === s.engineSlug) {
+          _renderTyreSizeOptions(body, d.data, makeBreadcrumb(), tab);
+        }
+      })
+      .catch(function(e){ renderError(e.message); });
   }
 }
 
-function tvVehFilter(q) {
+/* Make grid with logos */
+function _renderMakeGrid(body, makes) {
+  var html = '<div class="tvhm-search-input-wrap">'
+    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    + '<input id="tvVehSearch" class="tvhm-search-input" type="text" placeholder="Search make (e.g. Toyota, BMW, Porsche)…" oninput="tvVehFilterMake(this.value)" autocomplete="off">'
+    + '</div>';
+  html += '<p class="tvhm-section-lbl">Select Make (' + makes.length + ' available)</p>';
+  html += '<div class="tvhm-make-logo-grid" id="tvMakeGrid">';
+  makes.forEach(function(m) {
+    html += '<button class="tvhm-make-logo-card" onclick="tvSelectMake(\'' + m.slug + '\',\'' + m.name.replace(/'/g,"\\'") + '\')">'
+      + '<img src="' + m.logo + '" alt="' + m.name + '" loading="lazy" onerror="this.style.opacity=0">'
+      + '<span>' + m.name + '</span></button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  var inp = document.getElementById('tvVehSearch');
+  if (inp) inp.focus();
+}
+
+/* Model chips */
+function _renderModelChips(body, models, breadcrumb) {
+  var html = breadcrumb;
+  html += '<div class="tvhm-search-input-wrap">'
+    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    + '<input id="tvModelSearch" class="tvhm-search-input" type="text" placeholder="Search model…" oninput="tvVehFilterModel(this.value)" autocomplete="off">'
+    + '</div>';
+  html += '<p class="tvhm-section-lbl">Select Model</p><div class="tvhm-chips" id="tvModelChips">';
+  models.forEach(function(m) {
+    html += '<button class="tvhm-chip" onclick="tvSelectModel(\'' + m.slug + '\',\'' + m.name.replace(/'/g,"\\'") + '\')">' + m.name + '</button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  var inp = document.getElementById('tvModelSearch');
+  if (inp) inp.focus();
+}
+
+/* Year chips */
+function _renderYearChips(body, years, breadcrumb) {
+  var html = breadcrumb;
+  html += '<p class="tvhm-section-lbl">Select Year</p><div class="tvhm-chips">';
+  years.forEach(function(y) {
+    html += '<button class="tvhm-chip" onclick="tvSelectYear(\'' + y + '\')">' + y + '</button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+/* Engine cards */
+function _renderEngineCards(body, engines, breadcrumb, tab) {
+  var dest = tab === 'car-wheels' ? '/wheels' : '/tyres';
+  var html = breadcrumb;
+  if (!engines.length) {
+    html += '<p style="color:#6B7280;font-size:13px;padding:16px 0">No specific engines listed. Browse all tyres for ' + _esc(_tvState.makeName) + ' ' + _esc(_tvState.modelName) + ':</p>';
+    html += '<a href="' + dest + '/cars/' + encodeURIComponent(_tvState.makeSlug) + '/' + encodeURIComponent(_tvState.modelSlug) + '" class="tvhm-action-btn" style="text-decoration:none;display:flex">'
+      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + 'Find Tyres</a>';
+    body.innerHTML = html;
+    return;
+  }
+  html += '<p class="tvhm-section-lbl">Select Engine / Trim</p><div style="display:flex;flex-direction:column;gap:10px;">';
+  engines.forEach(function(e) {
+    var fuelIcon = e.fuel === 'Electric' ? '⚡' : e.fuel === 'Diesel' ? '🛢' : '⛽';
+    html += '<button type="button" class="tvhm-engine-card" onclick="tvSelectEngine(\''
+      + e.slug + '\',\'' + e.trim.replace(/'/g,"\\'") + '\',\'' + dest + '\')">'
+      + '<div class="tvhm-engine-card-left">'
+      + '<span class="tvhm-engine-name">' + e.trim + '</span>'
+      + (e.engine ? '<span class="tvhm-engine-spec">' + e.engine + '</span>' : '')
+      + '</div>'
+      + '<span class="tvhm-engine-fuel">' + fuelIcon + ' ' + (e.fuel || '') + '</span>'
+      + '</button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+/* Step 5: Tyre Size Options cards */
+function _renderTyreSizeOptions(body, sizes, breadcrumb, tab) {
+  var dest = tab === 'car-wheels' ? '/wheels' : '/tyres';
+  var html = breadcrumb;
+  if (!sizes || !sizes.length) {
+    html += '<p style="color:#6B7280;font-size:13px;padding:16px 0">No tyre size specifications found for this trim. Browse all tyres for ' + _esc(_tvState.makeName) + ' ' + _esc(_tvState.modelName) + ':</p>';
+    html += '<a href="' + dest + '/cars/' + encodeURIComponent(_tvState.makeSlug) + '/' + encodeURIComponent(_tvState.modelSlug) + '" class="tvhm-action-btn" style="text-decoration:none;display:flex">'
+      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + 'Browse All Tyres</a>';
+    body.innerHTML = html;
+    return;
+  }
+
+  html += '<p class="tvhm-section-lbl">Select Tyre Size (' + sizes.length + ' compatible)</p><div style="display:flex;flex-direction:column;gap:10px;">';
+  sizes.forEach(function(sz) {
+    var isStock = sz.isFactory !== undefined ? sz.isFactory : sz.is_stock;
+    var badgeClass = isStock ? 'stock' : 'optional';
+    var badgeText = isStock ? '✓ Standard / OEM' : (sz.badge || (sz.rim ? sz.rim + '" Optional' : 'Optional Fitment'));
+    var cardClass = 'tvhm-size-option-card' + (isStock ? ' stock' : '');
+    var frontLabel = sz.label || sz.front_tire || (sz.width + '/' + sz.height + 'R' + sz.rim);
+    var isStaggered = Boolean(sz.rear || sz.is_staggered);
+    var rearLabel = (sz.rear ? (sz.rearLabel || (sz.rear.width + '/' + sz.rear.height + 'R' + sz.rear.rim)) : sz.rear_tire) || '';
+    var rimDia = sz.rim || sz.rim_diameter || '';
+    var rimSpec = sz.rim_spec || '';
+
+    html += '<button type="button" class="' + cardClass + '" onclick="tvSelectTyreSize(\''
+      + (sz.front_slug || '') + '\',\'' + (sz.rear_slug || '') + '\',\'' + dest + '\')">'
+      + '<div class="tvhm-size-option-left">'
+      + '<div class="tvhm-rim-badge">' + (rimDia ? rimDia + '"' : 'R') + '<span class="tvhm-rim-badge-sub">Rim</span></div>'
+      + '<div class="tvhm-size-details">'
+      + '<span class="tvhm-size-main">' + _esc(frontLabel) + (isStaggered ? ' <span style="font-weight:600;font-size:11px;color:#7C3AED">(Front)</span>' : '') + '</span>'
+      + (isStaggered ? '<span class="tvhm-size-staggered">Rear: <strong>' + _esc(rearLabel) + '</strong></span>' : '')
+      + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px;">'
+      + '<span class="tvhm-fitment-badge ' + badgeClass + '">' + badgeText + '</span>'
+      + (rimSpec ? '<span style="font-size:11px;color:#6B7280;font-weight:600;">• Rim: ' + _esc(rimSpec) + '</span>' : '')
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="tvhm-size-option-arrow">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+      + '</div>'
+      + '</button>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+/* ── Vehicle wizard step handlers ── */
+function tvVehFilterMake(q) {
   q = q.toLowerCase();
-  document.querySelectorAll('.tvhm-make-card').forEach(function(c) {
+  document.querySelectorAll('.tvhm-make-logo-card').forEach(function(c) {
+    c.style.display = c.querySelector('span').textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+function tvVehFilterModel(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('.tvhm-chip').forEach(function(c) {
     c.style.display = c.textContent.trim().toLowerCase().includes(q) ? '' : 'none';
   });
 }
-
-function tvSelectMake(make) {
-  _tvState.make = make;
-  _tvState.model = null;
+function tvSelectMake(slug, name) {
+  _tvState.makeSlug   = slug;
+  _tvState.makeName   = name;
+  _tvState.modelSlug  = null;
+  _tvState.modelName  = null;
+  _tvState.year       = null;
+  _tvState.engineSlug = null;
+  _tvState.engineTrim = null;
   _tvRenderModal();
 }
-function tvSelectModel(model) {
-  _tvState.model = model;
-  document.querySelectorAll('.tvhm-chip').forEach(function(c) {
-    c.classList.toggle('selected', c.textContent.trim() === model);
-  });
-  var btn = document.getElementById('tvVehSearchBtn');
-  if (btn) btn.removeAttribute('disabled');
+function tvSelectModel(slug, name) {
+  _tvState.modelSlug  = slug;
+  _tvState.modelName  = name;
+  _tvState.year       = null;
+  _tvState.engineSlug = null;
+  _tvState.engineTrim = null;
+  _tvRenderModal();
 }
-function tvVehSearch(dest) {
+function tvSelectYear(year) {
+  _tvState.year       = year;
+  _tvState.engineSlug = null;
+  _tvState.engineTrim = null;
+  _tvRenderModal();
+}
+function tvSelectEngine(slug, trim, dest) {
+  _tvState.engineSlug = slug;
+  _tvState.engineTrim = trim;
+  _tvRenderModal();
+}
+function tvSelectTyreSize(frontSlug, rearSlug, dest) {
   var s = _tvState;
-  if (!s.make) return;
-  var slug = function(str) { return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); };
-  window.location.href = dest + '/cars/' + encodeURIComponent(slug(s.make)) + (s.model ? '/' + encodeURIComponent(slug(s.model)) : '');
+  var url = dest;
+  if (frontSlug) {
+    url += '/size-' + encodeURIComponent(frontSlug);
+  }
+  var qParams = [];
+  if (s.makeSlug) qParams.push('make=' + encodeURIComponent(s.makeSlug));
+  if (s.modelSlug) qParams.push('model=' + encodeURIComponent(s.modelSlug));
+  if (s.year) qParams.push('year=' + encodeURIComponent(s.year));
+  if (s.engineTrim) qParams.push('trim=' + encodeURIComponent(s.engineTrim));
+  if (rearSlug) qParams.push('rear=' + encodeURIComponent(rearSlug));
+
+  if (qParams.length) {
+    url += '?' + qParams.join('&');
+  }
+  window.location.href = url;
+}
+function tvGoToStep(step) {
+  if (step === 'make') {
+    _tvState.makeSlug = null; _tvState.makeName = null;
+    _tvState.modelSlug = null; _tvState.modelName = null;
+    _tvState.year = null; _tvState.engineSlug = null; _tvState.engineTrim = null;
+  } else if (step === 'model') {
+    _tvState.modelSlug = null; _tvState.modelName = null;
+    _tvState.year = null; _tvState.engineSlug = null; _tvState.engineTrim = null;
+  } else if (step === 'year') {
+    _tvState.year = null; _tvState.engineSlug = null; _tvState.engineTrim = null;
+  } else if (step === 'engine') {
+    _tvState.engineSlug = null; _tvState.engineTrim = null;
+  }
+  _tvRenderModal();
 }
 
-/* ── Brands Panel ── */
+
+/* ── Brands Panel: Brand -> Width -> Height -> Rim -> Products ── */
+var _tvBrandSizesCache = { widths: {}, profiles: {}, rims: {}, products: {} };
+
 function _tvRenderBrandsPanel(body) {
-  var html = '<p class="tvhm-section-lbl">Popular Brands</p><div class="tvhm-brands-grid">';
-  _brands.forEach(function(b) {
-    html += '<a href="/tyres/brand/' + b.name.toLowerCase().replace(/\s+/g,'-') + '" class="tvhm-brand-card">'
-          + '<img src="' + b.img + '" alt="' + b.name + '" onerror="this.style.display=\'none\'">'
-          + '<span>' + b.name + '</span></a>';
+  var s = _tvState;
+
+  function makeBrandBreadcrumb() {
+    if (!s.brandSlug) return '';
+    var b = '<div class="tvhm-selected-size" style="flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+    if (s.brandSlug) {
+      b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'brand\')" title="Change Brand">'
+        + '<span class="tvhm-size-badge-lbl">Brand</span>'
+        + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.brandName || s.brandSlug) + ' ✕</span></button>';
+    }
+    if (s.width) {
+      b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'width\')" title="Change Width">'
+        + '<span class="tvhm-size-badge-lbl">Width</span>'
+        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.width) + ' ✕</span></button>';
+    }
+    if (s.profile) {
+      b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'profile\')" title="Change Profile">'
+        + '<span class="tvhm-size-badge-lbl">Profile</span>'
+        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.profile) + ' ✕</span></button>';
+    }
+    if (s.rim) {
+      b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'rim\')" title="Change Rim">'
+        + '<span class="tvhm-size-badge-lbl">Rim</span>'
+        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.rim) + ' ✕</span></button>';
+    }
+    b += '</div>';
+    return b;
+  }
+
+  function renderBrandSpinner(msg) {
+    body.innerHTML = makeBrandBreadcrumb()
+      + '<p class="tvhm-section-lbl">' + msg + '</p>'
+      + '<div style="display:flex;align-items:center;gap:10px;padding:24px 0;color:#9CA3AF;">'
+      + '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.6" style="animation:spin .9s linear infinite;transform-origin:center"/></svg>'
+      + '<span style="font-size:13px;font-weight:600;color:#6B7280">Loading…</span>'
+      + '</div>';
+  }
+
+  // STEP 1: Select Brand
+  if (!s.brandSlug) {
+    if (_allBrandsCache) {
+      _renderBrandsGrid(body, _allBrandsCache);
+      return;
+    }
+    renderBrandSpinner('Loading all brands…');
+    fetch('/api/brands')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.status !== 'success' || !d.data) throw new Error(d.message || 'Failed to load brands');
+        _allBrandsCache = d.data;
+        if (_tvState.type === 'brands' && !_tvState.brandSlug) {
+          _renderBrandsGrid(body, d.data);
+        }
+      })
+      .catch(function(e) {
+        body.innerHTML = '<div style="padding:24px;text-align:center;color:#EF4444;font-size:13px">'
+          + '<p style="margin-bottom:12px">⚠ Could not load tyre brands.</p>'
+          + '<button type="button" class="tvhm-chip" onclick="_allBrandsCache=null;_tvRenderBrandsPanel(document.getElementById(\'tvhmBody\'))">Retry</button>'
+          + '</div>';
+      });
+    return;
+  }
+
+  // STEP 2: Select Width
+  if (!s.width) {
+    var bSlug = s.brandSlug;
+    if (_tvBrandSizesCache.widths[bSlug]) {
+      _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Tyre Width (mm)', _tvBrandSizesCache.widths[bSlug], 'tvBrandSelectWidth');
+      return;
+    }
+    renderBrandSpinner('Loading available widths for ' + _esc(s.brandName) + '…');
+    fetch('/api/tyre-sizes?brand=' + encodeURIComponent(bSlug))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var opts = (d && d.options) ? d.options : [];
+        _tvBrandSizesCache.widths[bSlug] = opts;
+        if (_tvState.type === 'brands' && _tvState.brandSlug === bSlug && !_tvState.width) {
+          _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Tyre Width (mm)', opts, 'tvBrandSelectWidth');
+        }
+      })
+      .catch(function() {
+        _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Tyre Width (mm)', [], 'tvBrandSelectWidth');
+      });
+    return;
+  }
+
+  // STEP 3: Select Height / Aspect Ratio
+  if (!s.profile) {
+    var profKey = s.brandSlug + '|' + s.width;
+    if (_tvBrandSizesCache.profiles[profKey]) {
+      _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Aspect Ratio (Height)', _tvBrandSizesCache.profiles[profKey], 'tvBrandSelectProfile');
+      return;
+    }
+    renderBrandSpinner('Loading aspect ratios for ' + _esc(s.brandName) + ' ' + _esc(s.width) + '…');
+    fetch('/api/tyre-sizes?brand=' + encodeURIComponent(s.brandSlug) + '&width=' + encodeURIComponent(s.width))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var opts = (d && d.options) ? d.options : [];
+        _tvBrandSizesCache.profiles[profKey] = opts;
+        if (_tvState.type === 'brands' && _tvState.brandSlug === s.brandSlug && _tvState.width === s.width && !_tvState.profile) {
+          _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Aspect Ratio (Height)', opts, 'tvBrandSelectProfile');
+        }
+      })
+      .catch(function() {
+        _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Aspect Ratio (Height)', [], 'tvBrandSelectProfile');
+      });
+    return;
+  }
+
+  // STEP 4: Select Rim Size
+  if (!s.rim) {
+    var rimKey = s.brandSlug + '|' + s.width + '|' + s.profile;
+    if (_tvBrandSizesCache.rims[rimKey]) {
+      _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Rim Size', _tvBrandSizesCache.rims[rimKey], 'tvBrandSelectRim');
+      return;
+    }
+    renderBrandSpinner('Loading rim sizes for ' + _esc(s.brandName) + ' ' + _esc(s.width) + '/' + _esc(s.profile) + '…');
+    fetch('/api/tyre-sizes?brand=' + encodeURIComponent(s.brandSlug) + '&width=' + encodeURIComponent(s.width) + '&profile=' + encodeURIComponent(s.profile))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var opts = (d && d.options) ? d.options : [];
+        _tvBrandSizesCache.rims[rimKey] = opts;
+        if (_tvState.type === 'brands' && _tvState.brandSlug === s.brandSlug && _tvState.width === s.width && _tvState.profile === s.profile && !_tvState.rim) {
+          _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Rim Size', opts, 'tvBrandSelectRim');
+        }
+      })
+      .catch(function() {
+        _renderBrandChipsStep(body, makeBrandBreadcrumb(), 'Rim Size', [], 'tvBrandSelectRim');
+      });
+    return;
+  }
+
+  // STEP 5: Products for that Brand + Size
+  var prodKey = s.brandSlug + '|' + s.width + '|' + s.profile + '|' + s.rim;
+  if (_tvBrandSizesCache.products[prodKey]) {
+    _renderBrandProductsStep(body, makeBrandBreadcrumb(), _tvBrandSizesCache.products[prodKey]);
+    return;
+  }
+  renderBrandSpinner('Finding ' + _esc(s.brandName) + ' ' + _esc(s.width) + '/' + _esc(s.profile) + ' ' + _esc(s.rim) + ' tyres…');
+  fetch('/api/brand-size-products?brand=' + encodeURIComponent(s.brandSlug)
+       + '&width=' + encodeURIComponent(s.width)
+       + '&profile=' + encodeURIComponent(s.profile)
+       + '&rim=' + encodeURIComponent(s.rim))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.status !== 'success') throw new Error(d.message || 'No products');
+      _tvBrandSizesCache.products[prodKey] = d;
+      if (_tvState.type === 'brands' && _tvState.brandSlug === s.brandSlug && _tvState.width === s.width && _tvState.profile === s.profile && _tvState.rim === s.rim) {
+        _renderBrandProductsStep(body, makeBrandBreadcrumb(), d);
+      }
+    })
+    .catch(function(e){
+      body.innerHTML = makeBrandBreadcrumb()
+        + '<div style="padding:24px;text-align:center;color:#6B7280;font-size:13px">'
+        + '<p style="margin-bottom:12px">No specific tyres found for this size in stock.</p>'
+        + '<a href="/tyres/brand/' + encodeURIComponent(s.brandSlug) + '" class="tvhm-action-btn" style="text-decoration:none">Browse All ' + _esc(s.brandName) + ' Tyres</a>'
+        + '</div>';
+    });
+}
+
+function _renderBrandChipsStep(body, breadcrumb, label, options, onclickFn) {
+  var html = breadcrumb;
+  html += '<p class="tvhm-section-lbl">Select ' + label + '</p>';
+  if (!options || !options.length) {
+    html += '<p class="tvhm-empty-note">No ' + label.toLowerCase() + ' options found for this brand.</p>'
+      + '<a href="/tyres/brand/' + encodeURIComponent(_tvState.brandSlug) + '" class="tvhm-all-link">'
+      + 'Browse all tyres for ' + _esc(_tvState.brandName) + '</a>';
+    body.innerHTML = html;
+    return;
+  }
+  html += '<div class="tvhm-chips">';
+  options.forEach(function(o) {
+    html += '<button type="button" class="tvhm-chip" onclick="' + onclickFn + '(\'' + _esc(o) + '\')">' + _esc(o) + '</button>';
   });
   html += '</div>';
-  html += '<a href="/tyres" class="tvhm-all-link">'
-        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
-        + 'Browse All 60+ Tyre Brands</a>';
   body.innerHTML = html;
 }
+
+function _renderBrandProductsStep(body, breadcrumb, res) {
+  var prods = (res && res.data) ? res.data : [];
+  var catalogUrl = (res && res.catalog_url) ? res.catalog_url : ('/tyres/brand/' + encodeURIComponent(_tvState.brandSlug));
+  var html = breadcrumb;
+
+  if (!prods.length) {
+    html += '<div style="padding:24px;text-align:center;color:#6B7280;font-size:13px">'
+      + '<p style="margin-bottom:12px">No tyres currently in stock for this exact size.</p>'
+      + '<a href="' + catalogUrl + '" class="tvhm-action-btn" style="text-decoration:none">Browse All ' + _esc(_tvState.brandName) + ' Tyres</a>'
+      + '</div>';
+    body.innerHTML = html;
+    return;
+  }
+
+  html += '<p class="tvhm-section-lbl">' + prods.length + ' Tyre' + (prods.length > 1 ? 's' : '') + ' Available</p>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">';
+
+  prods.forEach(function(p) {
+    var priceDisplay = p.sale_price ? p.sale_price.toFixed(2) : p.price.toFixed(2);
+    var oldPriceHtml = p.sale_price ? '<span style="text-decoration:line-through;color:#9CA3AF;font-size:11px;margin-right:4px;">' + p.price.toFixed(2) + '</span>' : '';
+    var imgTag = p.image
+      ? '<img src="' + _esc(p.image) + '" alt="' + _esc(p.name) + '" class="tvhm-brand-prod-img" onerror="this.onerror=null;this.src=\'/static/assets/images/online-tyres-shop-dubai.png\';">'
+      : '<img src="/static/assets/images/online-tyres-shop-dubai.png" alt="Tyre" class="tvhm-brand-prod-img">';
+
+    html += '<a href="' + _esc(p.url) + '" class="tvhm-brand-prod-card">'
+      + imgTag
+      + '<div class="tvhm-brand-prod-details">'
+      + (p.pattern ? '<span class="tvhm-brand-prod-pattern">' + _esc(p.pattern) + '</span>' : '')
+      + '<span class="tvhm-brand-prod-name">' + _esc(p.name) + '</span>'
+      + '<div class="tvhm-brand-prod-tags">'
+      + '<span class="tvhm-brand-prod-badge">' + _esc(p.tire_size) + '</span>'
+      + (p.load_index || p.speed_rating ? '<span class="tvhm-brand-prod-badge">' + _esc(p.load_index) + _esc(p.speed_rating) + '</span>' : '')
+      + (p.run_flat ? '<span class="tvhm-brand-prod-badge rf">Run-Flat</span>' : '')
+      + (p.ev_rated ? '<span class="tvhm-brand-prod-badge ev">⚡ EV</span>' : '')
+      + '</div>'
+      + '</div>'
+      + '<div class="tvhm-brand-prod-right">'
+      + '<div class="tvhm-brand-prod-price">' + oldPriceHtml + '<span>AED </span>' + priceDisplay + '</div>'
+      + '<div class="tvhm-brand-prod-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>'
+      + '</div>'
+      + '</a>';
+  });
+
+  html += '</div>';
+
+  html += '<a href="' + catalogUrl + '" class="tvhm-action-btn" style="text-decoration:none;display:flex">'
+    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    + 'View All ' + prods.length + ' Tyres in Catalog</a>';
+
+  body.innerHTML = html;
+}
+
+function _renderBrandsGrid(body, brands) {
+  var html = '<div class="tvhm-search-input-wrap">'
+    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    + '<input id="tvBrandSearch" class="tvhm-search-input" type="text" placeholder="Search ' + brands.length + '+ tyre brands (e.g. Michelin, Pirelli)…" oninput="tvBrandFilter(this.value)" autocomplete="off">'
+    + '</div>';
+
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+    + '<p class="tvhm-section-lbl" id="tvBrandCountLbl" style="margin-bottom:0">All Brands (' + brands.length + ' available)</p>'
+    + '</div>';
+
+  html += '<div class="tvhm-brands-grid" id="tvBrandGrid">';
+  brands.forEach(function(b) {
+    var logoHtml = b.logo
+      ? '<img src="' + _esc(b.logo) + '" alt="' + _esc(b.name) + '" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\';var sib=this.nextElementSibling;if(sib)sib.style.display=\'flex\';">'
+        + '<div class="tvhm-brand-placeholder" style="display:none">' + _esc(b.name.charAt(0)) + '</div>'
+      : '<div class="tvhm-brand-placeholder">' + _esc(b.name.charAt(0)) + '</div>';
+
+    html += '<button type="button" class="tvhm-brand-card" onclick="tvSelectBrand(\'' + _esc(b.slug) + '\',\'' + _esc(b.name).replace(/'/g,"\\'") + '\',\'' + _esc(b.logo || '').replace(/'/g,"\\'") + '\')" data-name="' + _esc(b.name.toLowerCase()) + '" title="' + _esc(b.name) + '">'
+          + logoHtml
+          + '<span>' + _esc(b.name) + '</span></button>';
+  });
+  html += '</div>';
+
+  html += '<div id="tvBrandNoResults" style="display:none;padding:32px 16px;text-align:center;color:#6B7280;font-size:13px">'
+    + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" style="margin:0 auto 10px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>'
+    + 'No tyre brands found matching "<span id="tvBrandQuery" style="font-weight:700;color:#111827"></span>".'
+    + '</div>';
+
+  html += '<a href="/tyres" class="tvhm-all-link">'
+        + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+        + 'Browse All Tyres in Catalog</a>';
+
+  body.innerHTML = html;
+  var inp = document.getElementById('tvBrandSearch');
+  if (inp) inp.focus();
+}
+
+function tvBrandFilter(q) {
+  q = (q || '').trim().toLowerCase();
+  var cards = document.querySelectorAll('#tvBrandGrid .tvhm-brand-card');
+  var count = 0;
+  cards.forEach(function(c) {
+    var name = c.getAttribute('data-name') || c.querySelector('span').textContent.toLowerCase();
+    var match = !q || name.indexOf(q) !== -1;
+    c.style.display = match ? '' : 'none';
+    if (match) count++;
+  });
+  var lbl = document.getElementById('tvBrandCountLbl');
+  if (lbl) {
+    lbl.textContent = q ? 'Matching Brands (' + count + ' found)' : 'All Brands (' + cards.length + ' available)';
+  }
+  var noRes = document.getElementById('tvBrandNoResults');
+  if (noRes) {
+    noRes.style.display = (count === 0) ? 'block' : 'none';
+    var qSpan = document.getElementById('tvBrandQuery');
+    if (qSpan) qSpan.textContent = q;
+  }
+}
+
+function tvSelectBrand(slug, name, logo) {
+  _tvState.brandSlug = slug;
+  _tvState.brandName = name;
+  _tvState.brandLogo = logo || '';
+  _tvState.width = null;
+  _tvState.profile = null;
+  _tvState.rim = null;
+  _tvRenderModal();
+}
+
+function tvBrandSelectWidth(val) {
+  _tvState.width = val;
+  _tvState.profile = null;
+  _tvState.rim = null;
+  _tvRenderModal();
+}
+
+function tvBrandSelectProfile(val) {
+  _tvState.profile = val;
+  _tvState.rim = null;
+  _tvRenderModal();
+}
+
+function tvBrandSelectRim(val) {
+  _tvState.rim = val;
+  _tvRenderModal();
+}
+
+function tvBrandGoToStep(step) {
+  if (step === 'brand') {
+    _tvState.brandSlug = null;
+    _tvState.brandName = null;
+    _tvState.brandLogo = null;
+    _tvState.width = null;
+    _tvState.profile = null;
+    _tvState.rim = null;
+  } else if (step === 'width') {
+    _tvState.width = null;
+    _tvState.profile = null;
+    _tvState.rim = null;
+  } else if (step === 'profile') {
+    _tvState.profile = null;
+    _tvState.rim = null;
+  } else if (step === 'rim') {
+    _tvState.rim = null;
+  }
+  _tvRenderModal();
+}
+
+// Pre-fetch brands list for instant modal display
+try {
+  fetch('/api/brands').then(function(r){ return r.json(); }).then(function(d){
+    if (d && d.status === 'success' && d.data) _allBrandsCache = d.data;
+  }).catch(function(){});
+} catch(e) {}
 
 /* ── EV Panel ── */
 function _tvRenderEVPanel(body) {
@@ -859,7 +2330,7 @@ function _tvRenderEVPanel(body) {
           + '</a>';
   });
   html += '</div>';
-  html += '<a href="/tyres?category=ev" class="tvhm-all-link">'
+  html += '<a href="/tyres/ev" class="tvhm-all-link">'
         + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
         + 'Browse All EV Tyres</a>';
   body.innerHTML = html;

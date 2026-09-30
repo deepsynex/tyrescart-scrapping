@@ -1,0 +1,30 @@
+{
+  "name": "pitstoparabiascraping",
+  "version": "1.0.0",
+  "description": "A Flask web dashboard for scraping tyre product data from [pitstoparabia.com](https://www.pitstoparabia.com).\r Authenticated users start scraping jobs from the browser — by uploading a CSV/JSON\r file or pasting URLs directly — watch live per-URL progress, and download the\r resulting `.xlsx` report. The backend automatically detects which of three Scrapy\r spiders should handle each URL; the browser never chooses the scraper itself.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/tailwind.input.css -o ./static/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/tailwind.input.css -o ./static/css/tailwind.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepsynex/tyrescart-scrapping.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/deepsynex/tyrescart-scrapping/issues"
+  },
+  "homepage": "https://github.com/deepsynex/tyrescart-scrapping#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^3.4.17"
+  }
+}

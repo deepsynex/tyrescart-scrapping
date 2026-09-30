@@ -1022,7 +1022,7 @@ def _fetch_catalog_products(args, locale='en'):
                 for sz in sizes:
                     sz_clean = sz.strip()
                     sz_hyphen = sz_clean.replace('/', '-').replace(' ', '-')
-                    s_clauses.append("(p.tire_size_label = %s OR REPLACE(REPLACE(p.tire_size_label, '/', '-'), ' ', '-') = %s)")
+                    s_clauses.append("(LOWER(p.tire_size_label) = LOWER(%s) OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s))")
                     s_params.extend([sz_clean, sz_hyphen])
                 clauses['size'][0].append("(" + " OR ".join(s_clauses) + ")")
                 clauses['size'][1].extend(s_params)
@@ -1693,9 +1693,18 @@ def _render_product_listing(locale, filter_path=None):
     active_origins = [org.strip() for org in (combined_args.getlist('origin') or combined_args.getlist('country') or combined_args.getlist('origins'))]
     active_vehicles = [v.lower() for v in (combined_args.getlist('vehicle') or combined_args.getlist('vehicle_type'))]
     active_sizes = []
+    active_sizes_match = set()
     for s in (combined_args.getlist('size') or combined_args.getlist('sizes')):
-        active_sizes.append(s.strip())
-        active_sizes.append(s.strip().replace('/', '-').replace(' ', '-'))
+        s_c = s.strip()
+        if not s_c:
+            continue
+        s_slug = s_c.lower().replace('/', '-').replace(' ', '-')
+        if s_slug not in active_sizes:
+            active_sizes.append(s_slug)
+        active_sizes_match.add(s_c.lower())
+        active_sizes_match.add(s_slug)
+        active_sizes_match.add(s_c.upper())
+        active_sizes_match.add(s_slug.upper())
     active_types = [t.lower() for t in (combined_args.getlist('type') or combined_args.getlist('tire_type'))]
     active_runflat = [r.lower() for r in (combined_args.getlist('runflat') or combined_args.getlist('run_flat') or combined_args.getlist('is_runflat'))]
     filter_runflat_count = facets.get('runflat', 0)
@@ -2404,6 +2413,81 @@ def product_detail_locale(lang_code, slug):
     return _render_product_detail(slug, code)
 
 
+
+
+
+
+
+@site_bp.route('/brand', strict_slashes=False)
+@site_bp.route('/brands', strict_slashes=False)
+def brand_page():
+    """Client storefront Brands page rendering Client/brand.html with all active tyre brands."""
+    locale = _get_locale()
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT b.id, b.name, b.slug, b.logo, b.is_featured, b.sort_order, b.country,
+                       COUNT(p.id) as tyre_count
+                FROM brands b
+                LEFT JOIN products p ON p.brand_id = b.id AND p.deleted_at IS NULL AND (p.status = 'active' OR p.status = 1 OR p.status IS NULL)
+                WHERE b.deleted_at IS NULL AND (b.status = 'active' OR b.status = 1 OR b.status IS NULL)
+                GROUP BY b.id, b.name, b.slug, b.logo, b.is_featured, b.sort_order, b.country
+                ORDER BY 
+                    b.is_featured DESC,
+                    CASE 
+                        WHEN LOWER(TRIM(b.name)) IN ('michelin', 'bridgestone', 'continental', 'pirelli', 'goodyear', 'dunlop', 'yokohama', 'hankook', 'kumho', 'nexen') THEN 0
+                        ELSE 1
+                    END ASC,
+                    tyre_count DESC, 
+                    b.name ASC
+            """)
+            raw_brands = cur.fetchall()
+
+            premium_names = {'michelin', 'pirelli', 'continental', 'bridgestone', 'goodyear', 'dunlop', 'yokohama'}
+            mid_names = {'hankook', 'kumho', 'nexen', 'toyo', 'falken', 'cooper', 'bfgoodrich', 'firestone', 'general tire', 'maxxis'}
+            popular_names = {'michelin', 'pirelli', 'continental', 'bridgestone', 'goodyear', 'dunlop', 'yokohama', 'hankook', 'kumho', 'nexen'}
+
+            total_tyres = 0
+            brands = []
+            for b in raw_brands:
+                b_name_clean = (b.get('name') or '').strip().lower()
+                tyres_cnt = int(b.get('tyre_count') or 0)
+                total_tyres += tyres_cnt
+
+                tier = 'budget'
+                if b_name_clean in premium_names:
+                    tier = 'premium'
+                elif b_name_clean in mid_names:
+                    tier = 'mid-range'
+                
+                is_pop = b.get('is_featured') or (b_name_clean in popular_names)
+
+                brands.append({
+                    'id': b.get('id'),
+                    'name': b.get('name') or '',
+                    'slug': b.get('slug') or (b.get('name') or '').lower().replace(' ', '-'),
+                    'logo': b.get('logo') or '',
+                    'is_featured': 1 if is_pop else 0,
+                    'tyre_count': tyres_cnt,
+                    'tier': tier,
+                    'country': b.get('country') or ''
+                })
+
+            resp = make_response(render_template(
+                'Client/brand.html',
+                brands=brands,
+                total_brands=len(brands),
+                total_tyres=total_tyres,
+                locale=locale
+            ))
+            resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+            return resp
+    finally:
+        conn.close()
+
+
 @site_bp.route('/car-tyres', strict_slashes=False)
 @site_bp.route('/car-tyres/', strict_slashes=False)
 @site_bp.route('/tyres', strict_slashes=False)
@@ -2436,6 +2520,16 @@ def car_tyres_listing_slug(filter_path):
                 return _render_product_detail(clean_path, locale)
     finally:
         conn.close()
+
+    # If URL contains page-X or page-X-Y segment, 301 redirect to clean path without pagination in URL
+    raw_segments = [s.strip() for s in clean_path.split('/') if s.strip()]
+    has_page_segment = any(re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE) for s in raw_segments)
+    if has_page_segment:
+        cleaned_segments = [s for s in raw_segments if not re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE)]
+        prefix = '/car-tyres' if request.path.startswith('/car-tyres') else ('/products' if request.path.startswith('/products') else '/tyres')
+        query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
+        return redirect(clean_url, code=301)
 
     # If URL contains uppercase characters (e.g. /tyres/oem-Mercedes-Benz), 301 redirect to lowercase slug
     if clean_path != clean_path.lower():
@@ -2480,6 +2574,16 @@ def car_tyres_listing_locale_slug(lang_code, filter_path):
                 return _render_product_detail(clean_path, code)
     finally:
         conn.close()
+
+    # If URL contains page-X or page-X-Y segment, 301 redirect to clean path without pagination in URL
+    raw_segments = [s.strip() for s in clean_path.split('/') if s.strip()]
+    has_page_segment = any(re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE) for s in raw_segments)
+    if has_page_segment:
+        cleaned_segments = [s for s in raw_segments if not re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE)]
+        prefix = f'/{code}/car-tyres' if f'/{code}/car-tyres' in request.path else (f'/{code}/products' if f'/{code}/products' in request.path else f'/{code}/tyres')
+        query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
+        return redirect(clean_url, code=301)
 
     # If URL contains uppercase characters, 301 redirect to lowercase slug
     if clean_path != clean_path.lower():
@@ -3177,11 +3281,15 @@ def api_tyre_sizes_cascade():
     combination that actually has matching products in stock.
 
     - no params:            distinct widths
+    - ?brand=X:             distinct widths for brand X
     - ?width=X:              distinct profiles (aspect ratio) for that width
+    - ?brand=X&width=Y:      distinct profiles for brand X and width Y
     - ?width=X&profile=Y:    distinct rims for that width+profile
+    - ?brand=X&width=Y&profile=Z: distinct rims for brand X, width Y, profile Z
     """
+    brand = (request.args.get('brand') or '').strip().lower()
     width = (request.args.get('width') or '').strip()
-    profile = (request.args.get('profile') or '').strip()
+    profile = (request.args.get('profile') or request.args.get('height') or '').strip()
 
     import db
     conn = db.get_connection()
@@ -3191,33 +3299,38 @@ def api_tyre_sizes_cascade():
                 "deleted_at IS NULL AND status = 'active' "
                 "AND attributes_json IS NOT NULL"
             )
+            brand_filter = ""
+            brand_params = []
+            if brand:
+                brand_filter = " AND (brand_id = (SELECT id FROM brands WHERE (slug = %s OR LOWER(name) = %s) AND deleted_at IS NULL LIMIT 1))"
+                brand_params = [brand, brand]
 
             if not width:
                 cur.execute(f"""
                     SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) AS val
                     FROM products
-                    WHERE {base_where}
+                    WHERE {base_where}{brand_filter}
                       AND JSON_EXTRACT(attributes_json, '$.width') IS NOT NULL
-                """)
+                """, brand_params)
                 step = 'width'
             elif not profile:
                 cur.execute(f"""
                     SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.height')) AS val
                     FROM products
-                    WHERE {base_where}
+                    WHERE {base_where}{brand_filter}
                       AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) = %s
                       AND JSON_EXTRACT(attributes_json, '$.height') IS NOT NULL
-                """, [width])
+                """, brand_params + [width])
                 step = 'profile'
             else:
                 cur.execute(f"""
                     SELECT DISTINCT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.rim')) AS val
                     FROM products
-                    WHERE {base_where}
+                    WHERE {base_where}{brand_filter}
                       AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.width')) = %s
                       AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.height')) = %s
                       AND JSON_EXTRACT(attributes_json, '$.rim') IS NOT NULL
-                """, [width, profile])
+                """, brand_params + [width, profile])
                 step = 'rim'
 
             raw_vals = [r['val'].strip() for r in cur.fetchall() if r.get('val') and r['val'].strip()]
@@ -3239,6 +3352,321 @@ def api_tyre_sizes_cascade():
         options = sorted(set(numeric_vals), key=int)
 
     return jsonify({'success': True, 'step': step, 'options': options})
+
+
+@site_bp.route('/api/brand-size-products', methods=['GET'])
+def api_brand_size_products():
+    """Returns products matching a specific brand and tyre size (width, profile, rim)."""
+    brand = (request.args.get('brand') or '').strip().lower()
+    width = (request.args.get('width') or '').strip()
+    profile = (request.args.get('profile') or request.args.get('height') or '').strip()
+    rim = (request.args.get('rim') or '').strip()
+
+    if not brand or not width or not profile or not rim:
+        return jsonify({'status': 'error', 'message': 'brand, width, profile, and rim are required'}), 400
+
+    rim_digits = ''.join(c for c in rim if c.isdigit())
+    rim_with_r = f"R{rim_digits}" if not rim.upper().startswith('R') else rim.upper()
+
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT p.id, p.display_name, p.slug, p.sku, p.price, p.sale_price, p.currency, 
+                       p.image_path, p.tire_size_label, p.tire_pattern, p.tire_speed_rating, 
+                       p.tire_load_index, p.run_flat, p.ev_rated, p.stock_status, 
+                       b.name as brand_name, b.slug as brand_slug, b.logo as brand_logo
+                FROM products p
+                JOIN brands b ON p.brand_id = b.id
+                WHERE (b.slug = %s OR LOWER(b.name) = %s)
+                  AND JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.width')) = %s
+                  AND JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.height')) = %s
+                  AND (JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.rim')) = %s OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.rim')) = %s)
+                  AND p.deleted_at IS NULL AND p.status = 'active'
+                ORDER BY p.price ASC
+            """, [brand, brand, width, profile, rim_digits, rim_with_r])
+            rows = cur.fetchall()
+            products = []
+            brand_slug_res = brand
+            brand_name_res = brand.title()
+            for p in rows:
+                brand_slug_res = p.get('brand_slug') or brand_slug_res
+                brand_name_res = p.get('brand_name') or brand_name_res
+                price_f = float(p['price']) if p.get('price') is not None else 0.0
+                sale_price_f = float(p['sale_price']) if p.get('sale_price') is not None else None
+                products.append({
+                    'id': p['id'],
+                    'name': p['display_name'] or p['slug'],
+                    'slug': p['slug'],
+                    'sku': p['sku'] or '',
+                    'price': price_f,
+                    'sale_price': sale_price_f,
+                    'currency': p.get('currency') or 'AED',
+                    'image': p.get('image_path') or '',
+                    'tire_size': p.get('tire_size_label') or f"{width}/{profile} {rim_with_r}",
+                    'pattern': p.get('tire_pattern') or '',
+                    'speed_rating': p.get('tire_speed_rating') or '',
+                    'load_index': p.get('tire_load_index') or '',
+                    'run_flat': bool(p.get('run_flat')),
+                    'ev_rated': bool(p.get('ev_rated')),
+                    'brand_name': brand_name_res,
+                    'brand_slug': brand_slug_res,
+                    'url': f"/tyres/{p['slug']}"
+                })
+
+            catalog_url = f"/tyres/brand-{brand_slug_res}/size-{width}-{profile}-{rim_with_r}"
+            return jsonify({
+                'status': 'success',
+                'data': products,
+                'total': len(products),
+                'brand_name': brand_name_res,
+                'brand_slug': brand_slug_res,
+                'catalog_url': catalog_url
+            })
+    except Exception as e:
+        current_app.logger.warning(f"api_brand_size_products error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        conn.close()
+
+# ── Vehicle-first hero search proxy routes ────────────────────────────────────
+_WHEEL_API_KEY  = "f9030340bff3fbffd0208256549f9984940fe536fec8ae7d8c2f1681b8ed3da2"
+_WHEEL_API_BASE = "https://wheel-api.klever.ae/v1"
+_VS_CACHE = {}
+
+
+def _vs_wheel_get(path, params=None, timeout=8):
+    import urllib.request, urllib.parse
+    qs = urllib.parse.urlencode({**(params or {}), 'user_key': _WHEEL_API_KEY, 'limit': 500})
+    url = f"{_WHEEL_API_BASE}/{path}?{qs}"
+    if url in _VS_CACHE:
+        return _VS_CACHE[url]
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'X-Client-Domain': 'localhost', 'Origin': 'http://localhost'
+    })
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        data = json.loads(r.read().decode('utf-8'))
+    _VS_CACHE[url] = data
+    return data
+
+
+@site_bp.route('/api/vehicle-search/makes')
+def vs_makes():
+    try:
+        raw   = _vs_wheel_get('makes.php', {'region': 'medm'})
+        makes = [{'slug': m.get('slug',''), 'name': m.get('name_en') or m.get('name',''),
+                  'logo': m.get('logo') or f"https://wheel-api.klever.ae/logos/{m.get('slug','')}.png"}
+                 for m in raw.get('data', [])]
+        return jsonify({'status': 'success', 'data': makes})
+    except Exception as e:
+        current_app.logger.warning(f"vs_makes: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 502
+
+
+@site_bp.route('/api/vehicle-search/models')
+def vs_models():
+    make = request.args.get('make', '').strip()
+    if not make:
+        return jsonify({'status': 'error', 'message': 'make required'}), 400
+    try:
+        raw    = _vs_wheel_get('models.php', {'make': make, 'region': 'medm'})
+        models = [{'slug': m.get('slug',''), 'name': m.get('name_en') or m.get('name',''),
+                   'years': m.get('year_ranges', [])}
+                  for m in raw.get('data', [])]
+        return jsonify({'status': 'success', 'data': models})
+    except Exception as e:
+        current_app.logger.warning(f"vs_models: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 502
+
+
+@site_bp.route('/api/vehicle-search/years')
+def vs_years():
+    make  = request.args.get('make', '').strip()
+    model = request.args.get('model', '').strip()
+    if not make or not model:
+        return jsonify({'status': 'error', 'message': 'make and model required'}), 400
+    try:
+        raw   = _vs_wheel_get('years.php', {'make': make, 'model': model})
+        years = [str(y.get('slug') or y.get('name', '')) for y in raw.get('data', [])]
+        return jsonify({'status': 'success', 'data': years})
+    except Exception as e:
+        current_app.logger.warning(f"vs_years: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 502
+
+
+@site_bp.route('/api/vehicle-search/engines')
+def vs_engines():
+    make  = request.args.get('make', '').strip()
+    model = request.args.get('model', '').strip()
+    year  = request.args.get('year', '').strip()
+    if not make or not model or not year:
+        return jsonify({'status': 'error', 'message': 'make, model and year required'}), 400
+    try:
+        raw  = _vs_wheel_get('modifications.php', {'make': make, 'model': model, 'year': year})
+        seen, engines = set(), []
+        for m in raw.get('data', []):
+            trim = m.get('trim') or m.get('name', '')
+            if not trim or trim in seen:
+                continue
+            seen.add(trim)
+            eng   = m.get('engine') or {}
+            power = eng.get('power') or {}
+            parts = []
+            if eng.get('capacity'): parts.append(f"{eng['capacity']}L")
+            if eng.get('type'):     parts.append(eng['type'])
+            if power.get('hp'):     parts.append(f"{power['hp']}hp")
+            engine_str = ' · '.join(parts)
+            engines.append({
+                'slug':    m.get('slug', ''),
+                'trim':    trim,
+                'engine':  engine_str,
+                'fuel':    eng.get('fuel', ''),
+                'display': trim + (f'  —  {engine_str}' if engine_str else '')
+            })
+        return jsonify({'status': 'success', 'data': engines})
+    except Exception as e:
+        current_app.logger.warning(f"vs_engines: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 502
+
+
+@site_bp.route('/api/vehicle-search/tyres')
+def vs_tyres():
+    """Return tyre size options for make + model + year + modification from Wheel-API search/by_model."""
+    make = request.args.get('make', '').strip()
+    model = request.args.get('model', '').strip()
+    year = request.args.get('year', '').strip()
+    modification = request.args.get('modification', '').strip() or request.args.get('trim', '').strip()
+    if not make or not model or not year:
+        return jsonify({'status': 'error', 'message': 'make, model and year required'}), 400
+    try:
+        params = {'make': make, 'model': model, 'year': year}
+        if modification:
+            params['modification'] = modification
+        raw = _vs_wheel_get('search/by_model/', params)
+        items = raw.get('data', [])
+        if not items and modification:
+            params_fallback = {'make': make, 'model': model, 'year': year}
+            raw = _vs_wheel_get('search/by_model/', params_fallback)
+            items = raw.get('data', [])
+
+        if not items:
+            return jsonify({'status': 'success', 'data': []})
+
+        wheels = items[0].get('wheels', [])
+        options = []
+        seen = set()
+
+        def extract_size(t_obj):
+            if not t_obj:
+                return None, None, None, None, None
+            w = str(t_obj.get('tire_width') or '')
+            h = str(t_obj.get('tire_aspect_ratio') or '')
+            rim = str(t_obj.get('rim_diameter') or '')
+            if not w or not h or not rim:
+                raw = t_obj.get('tire') or ''
+                m = re.search(r'(\d{2,3})[/\s](\d{2,3})\s*(?:[A-Za-z]+)?\s*(\d{2})', raw)
+                if m:
+                    w, h, rim = m.group(1), m.group(2), m.group(3)
+            if not (w and h and rim):
+                return None, None, None, None, None
+            label = f"{w}/{h}R{rim}"
+            speed = t_obj.get('speed_index') or ''
+            return w, h, rim, label, speed
+
+        wheels_sorted = sorted(wheels, key=lambda w: (not w.get('is_stock', False), -(1 if (w.get('front') or {}).get('speed_index') == 'Y' else 0)))
+
+        for w in wheels_sorted:
+            f = w.get('front', {}) or {}
+            r_ = w.get('rear', {}) or {}
+            
+            fw, fh, frim, flabel, fspeed = extract_size(f)
+            if not fw:
+                continue
+            
+            rw, rh, rrim, rlabel, rspeed = extract_size(r_)
+            is_staggered = bool(rw and rh and rrim and (rw != fw or fh != rh or frim != rrim))
+            
+            dedup_key = (flabel, rlabel if is_staggered else None)
+            if dedup_key in seen:
+                continue
+            seen.add(dedup_key)
+            
+            is_factory = bool(w.get('is_stock', False))
+            
+            item = {
+                "width": fw,
+                "height": fh,
+                "rim": frim,
+                "rear": {
+                    "width": rw,
+                    "height": rh,
+                    "rim": rrim
+                } if is_staggered else None,
+                "isFactory": is_factory,
+                "speedIndex": fspeed or '',
+                "rearSpeedIndex": (rspeed or '') if is_staggered else None,
+                "label": flabel,
+                "rearLabel": rlabel if is_staggered else None,
+                # UI helpers
+                "title": flabel + (f" / Rear: {rlabel}" if is_staggered else ""),
+                "badge": "Standard / OEM" if is_factory else (f"{frim}\" Optional" if frim else "Optional"),
+                "front_slug": f"{fw}-{fh}-r{frim}",
+                "rear_slug": f"{rw}-{rh}-r{rrim}" if is_staggered else None,
+                "rim_spec": f.get('rim', ''),
+                "is_staggered": is_staggered,
+                "is_stock": is_factory
+            }
+            options.append(item)
+
+        options.sort(key=lambda x: (not x['isFactory'], int(x['rim'] or 0)))
+
+        return jsonify({'status': 'success', 'data': options})
+    except Exception as e:
+        current_app.logger.warning(f"vs_tyres: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 502
+# ─────────────────────────────────────────────────────────────────────────────
+@site_bp.route('/api/brands', methods=['GET'])
+def client_api_brands():
+    """Returns all active tyre brands for client search widgets and overlays."""
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, name, slug, logo, is_featured, sort_order
+                FROM brands
+                WHERE deleted_at IS NULL AND (status = 'active' OR status = 1 OR status IS NULL)
+                ORDER BY 
+                    is_featured DESC,
+                    CASE 
+                        WHEN LOWER(TRIM(name)) IN ('michelin', 'bridgestone', 'continental', 'pirelli', 'goodyear', 'dunlop', 'yokohama', 'hankook') THEN 0
+                        ELSE 1
+                    END ASC,
+                    sort_order ASC, 
+                    name ASC
+            """)
+            rows = cur.fetchall()
+            brands = []
+            for r in rows:
+                brands.append({
+                    'id': r['id'],
+                    'name': r['name'],
+                    'slug': r['slug'] or r['name'].lower().replace(' ', '-'),
+                    'logo': r.get('logo') or '',
+                    'is_featured': bool(r.get('is_featured'))
+                })
+            return jsonify({
+                'status': 'success',
+                'data': brands,
+                'total': len(brands)
+            })
+    except Exception as e:
+        current_app.logger.warning(f"client_api_brands error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        conn.close()
 
 
 @site_bp.route('/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])

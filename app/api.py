@@ -5604,7 +5604,6 @@ def register_client_api_routes(app):
     # ELASTICSEARCH PRODUCTS SEARCH API
     # =========================================================================
     @app.route('/api/es/products', methods=['GET'])
-    @app.route('/api/v1/es/products', methods=['GET'])
     def client_api_es_products():
         try:
             from services.es_service import es_service

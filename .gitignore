@@ -57,6 +57,10 @@ test-results/
 *.bak
 *.tmp
 
+
+# Node & Front-end dependencies
+node_modules/
+
 # Postman collections
 *.postman_collection.json
 *.postman_environment.json

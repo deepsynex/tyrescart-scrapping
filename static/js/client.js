@@ -1824,13 +1824,20 @@ function renderPaginationControls(totalP, curP) {
 }
 
 function buildFilterPath(page = 1) {
+  const selectedTyresCategories = Array.from(document.querySelectorAll('input[name="tyres_category"]:checked')).map(cb => cb.value.trim());
   const selectedBrands = Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(cb => cb.value.trim());
   const selectedPatterns = Array.from(document.querySelectorAll('input[name="pattern"]:checked')).map(cb => cb.value.trim());
+  const selectedMarkings = Array.from(document.querySelectorAll('input[name="tyre_marking"]:checked')).map(cb => cb.value.trim());
   const selectedOems = Array.from(document.querySelectorAll('input[name="oem"]:checked')).map(cb => cb.value.trim());
   const selectedWarranties = Array.from(document.querySelectorAll('input[name="warranty"]:checked')).map(cb => cb.value.trim());
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
-  const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
+  const selectedSizesRaw = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
+  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-')).filter(Boolean)));
+  const sizeMatch = window.location.pathname.match(/(?:^|\/)size-([^\/]+)/i);
+  if (selectedSizes.length === 0 && sizeMatch) {
+    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase()));
+  }
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
   const selectedPromotions = Array.from(document.querySelectorAll('input[name="promotion"]:checked')).map(cb => cb.value.trim());
@@ -1839,22 +1846,26 @@ function buildFilterPath(page = 1) {
   const maxPriceSlider = document.getElementById('max-price-slider');
   const maxPrice = maxPriceSlider ? maxPriceSlider.value : '';
   const sortSelect = document.getElementById('sort-select');
-  const sortVal = sortSelect ? sortSelect.value : 'popular';
+  const sortVal = sortSelect ? sortSelect.value : 'price-asc';
 
   let currentPath = window.location.pathname;
   let basePath = '/tyres';
   const pathParts = currentPath.split('/').filter(Boolean);
   if (pathParts.length > 0 && ['ar', 'en', 'de', 'fr', 'es', 'ru', 'zh'].includes(pathParts[0].toLowerCase())) {
     basePath = '/' + pathParts[0].toLowerCase() + '/tyres';
+  } else if (currentPath.startsWith('/car-tyres')) {
+    basePath = '/car-tyres';
+  } else if (currentPath.startsWith('/products')) {
+    basePath = '/products';
   } else {
     basePath = '/tyres';
   }
 
   const segments = [];
 
-  // 1. Page segment: page-{page}-{per_page} (e.g. page-2-16)
-  if (page > 1) {
-    segments.push(`page-${page}-${window.PER_PAGE || 16}`);
+  // 1b. Tyres Category segment: category-premium
+  if (selectedTyresCategories.length > 0) {
+    segments.push('category-' + selectedTyresCategories.map(tc => encodeURIComponent(tc.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
 
   // 2. Brand segment: brand-pirelli
@@ -1865,6 +1876,11 @@ function buildFilterPath(page = 1) {
   // 3. Pattern segment: pattern-energy-xm2-plus
   if (selectedPatterns.length > 0) {
     segments.push('pattern-' + selectedPatterns.map(p => encodeURIComponent(p.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
+  }
+
+  // 3b. Tyre Marking segment: marking-ao
+  if (selectedMarkings.length > 0) {
+    segments.push('marking-' + selectedMarkings.map(tm => encodeURIComponent(tm.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
 
   // 4. OEM Tyres segment: oem-mercedes-benz
@@ -1889,7 +1905,7 @@ function buildFilterPath(page = 1) {
 
   // 8. Size segment: size-225-40-r18
   if (selectedSizes.length > 0) {
-    const sizeSlugs = selectedSizes.map(s => encodeURIComponent(s.toLowerCase().replace(/[\/\s_]+/g, '-')));
+    const sizeSlugs = Array.from(new Set(selectedSizes.map(s => encodeURIComponent(s.toLowerCase().replace(/[\/\s_]+/g, '-')))));
     segments.push('size-' + sizeSlugs.join(','));
   }
 
@@ -1914,6 +1930,12 @@ function buildFilterPath(page = 1) {
     segments.push('runflat');
   }
 
+  // 12b. EV Tyre segment: ev
+  const selectedEv = document.querySelector('input[name="ev_tyre"]:checked');
+  if (selectedEv) {
+    segments.push('ev');
+  }
+
   // 13. Price range segment: price-418-5668
   const sliderMin = parseFloat(minPriceSlider?.min || 0);
   const sliderMax = parseFloat(maxPriceSlider?.max || 2000);
@@ -1924,7 +1946,7 @@ function buildFilterPath(page = 1) {
   }
 
   // 14. Sort segment (Default: price-asc)
-  if (sortVal && sortVal !== 'price-asc') {
+  if (sortVal && sortVal !== 'price-asc' && sortVal !== 'popular') {
     segments.push('sort-' + encodeURIComponent(sortVal.toLowerCase()));
   }
 
@@ -1957,7 +1979,12 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const selectedWarranties = Array.from(document.querySelectorAll('input[name="warranty"]:checked')).map(cb => cb.value.trim());
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
-  const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
+  const selectedSizesRaw = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
+  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-')).filter(Boolean)));
+  const sizeMatch = window.location.pathname.match(/(?:^|\/)size-([^\/]+)/i);
+  if (selectedSizes.length === 0 && sizeMatch) {
+    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase()));
+  }
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
   const selectedPromotions = Array.from(document.querySelectorAll('input[name="promotion"]:checked')).map(cb => cb.value.trim());
@@ -2000,24 +2027,10 @@ async function fetchProducts(page = 1, scrollUp = true) {
     params.set('max_price', maxPrice);
   }
 
-  // Keep browser URL clean; preserve or set /tyres/brand/<brand_slug> when 1 brand is selected
-  let basePrefix = '/tyres';
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-  if (pathParts.length > 0 && ['ar', 'en', 'de', 'fr', 'es', 'ru', 'zh'].includes(pathParts[0].toLowerCase())) {
-    basePrefix = '/' + pathParts[0].toLowerCase() + '/tyres';
-  } else if (window.location.pathname.startsWith('/car-tyres')) {
-    basePrefix = '/car-tyres';
-  } else if (window.location.pathname.startsWith('/products')) {
-    basePrefix = '/products';
-  }
-
-  let cleanBasePath = basePrefix + '/';
-  if (selectedBrands.length === 1) {
-    cleanBasePath = basePrefix + '/brand/' + encodeURIComponent(selectedBrands[0].toLowerCase());
-  }
-
+  // Update browser URL using buildFilterPath to preserve size, page, brand, ev, and all facets
+  const cleanBasePath = buildFilterPath(page);
   if (window.location.pathname !== cleanBasePath || window.location.search) {
-    window.history.replaceState({ page: page, base: cleanBasePath }, '', cleanBasePath);
+    window.history.replaceState({ page: page, path: cleanBasePath }, '', cleanBasePath);
   }
 
   try {
@@ -2720,6 +2733,14 @@ function initProductCatalog(config) {
     updateSliderTrack();
     initCustomSortDropdown();
     refreshFilterVisibility();
+
+    // Clean up any legacy page-X or page-X-Y segment from the browser URL
+    if (window.location.pathname.match(/\/page-\d+/i)) {
+      const cleanInitPath = buildFilterPath(window.currentPage || 1);
+      if (cleanInitPath && window.location.pathname !== cleanInitPath) {
+        window.history.replaceState({ page: window.currentPage || 1, path: cleanInitPath }, '', cleanInitPath);
+      }
+    }
 
     // Immediately resolve shimmer loading state for any already-cached images
     document.querySelectorAll('.tv-card-img-wrap img').forEach(img => {

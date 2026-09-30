@@ -92,8 +92,8 @@
       <div class="tv-filter-drawer-body" id="tv-filter-drawer-body">
         <!-- Hidden Size Filters (Kept functional for query/URL/programmatic filtering, omitted from visible sidebar) -->
         <div id="hidden-size-filters" style="display: none;">
-          {% for s in filter_sizes %}
-          <input type="checkbox" name="size" value="{{ s.size }}" {% if active_sizes and (s.size in active_sizes or (s.size|replace('/', '-')|replace(' ', '-')) in active_sizes) %}checked{% endif %} onchange="filterProducts()">
+          {% for asz in active_sizes %}
+          <input type="checkbox" name="size" value="{{ asz }}" checked onchange="filterProducts()">
           {% endfor %}
         </div>
 
