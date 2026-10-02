@@ -763,6 +763,22 @@
               <span>Add to Cart</span>
             </button>
             #}
+            <!-- Contact Button (Desktop / Laptop / Tablet) -->
+            <button type="button"
+                    class="tv-btn-card-contact"
+                    data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+                    data-tyre-size="{{ p.tire_size_label or '' }}"
+                    data-brand="{{ p.brand_name or '' }}"
+                    data-price="{{ p.price or '' }}"
+                    onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                    aria-label="Contact about {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Contact</span>
+            </button>
+
+            <!-- WhatsApp Button (Mobile Screens Only) -->
             <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')') | urlencode }}" 
                target="_blank" 
                rel="noopener" 

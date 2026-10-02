@@ -1,0 +1,442 @@
+{% extends "visionadmin/base.html" %}
+
+{% block title %}Email Templates - VisionAdmin{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="emailTemplatesApp()" x-init="fetchData()">
+
+  <!-- Top Hero Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 text-[11px] font-black uppercase tracking-wider rounded-lg bg-purple-50 text-[#4B237B] border border-purple-200">Marketing Engine</span>
+        <span class="text-xs text-slate-400 font-semibold">&bull; Transactional &amp; Marketing Emails</span>
+      </div>
+      <h1 class="text-2xl font-black text-[#0E1108] tracking-tight mt-1">Email Templates</h1>
+      <p class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Configure transactional emails, order receipts, tyre fitting notifications, and automated follow-ups.</p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <a 
+        href="/visionadmin/marketing/email-templates/new" 
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#381a5c] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-95"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add New Template</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric / Stat Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white p-5 rounded-2xl border border-[#E8EDE4] shadow-xs flex items-center justify-between cursor-pointer hover:border-slate-300 transition" @click="filters.status = ''; filters.is_default = ''; applyFilters()">
+      <div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Templates</span>
+        <h3 class="text-2xl font-black text-[#0E1108] mt-1" x-text="counts.total || 0">{{ counts.total }}</h3>
+      </div>
+      <div class="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-[#E8EDE4] shadow-xs flex items-center justify-between cursor-pointer hover:border-emerald-300 transition" @click="filters.status = 'active'; applyFilters()">
+      <div>
+        <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Active</span>
+        <h3 class="text-2xl font-black text-emerald-700 mt-1" x-text="counts.active || 0">{{ counts.active }}</h3>
+      </div>
+      <div class="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-[#E8EDE4] shadow-xs flex items-center justify-between cursor-pointer hover:border-purple-300 transition" @click="filters.is_default = '1'; applyFilters()">
+      <div>
+        <span class="text-[11px] font-bold text-purple-600 uppercase tracking-wider">System Defaults</span>
+        <h3 class="text-2xl font-black text-[#4B237B] mt-1" x-text="counts.default_count || 0">{{ counts.default_count }}</h3>
+      </div>
+      <div class="w-11 h-11 rounded-2xl bg-[#FAF5FF] flex items-center justify-center text-[#7C3AED] border border-purple-100">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl border border-[#E8EDE4] shadow-xs flex items-center justify-between cursor-pointer hover:border-blue-300 transition" @click="filters.is_default = '0'; applyFilters()">
+      <div>
+        <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Custom Templates</span>
+        <h3 class="text-2xl font-black text-blue-700 mt-1" x-text="counts.custom_count || 0">{{ counts.custom_count }}</h3>
+      </div>
+      <div class="w-11 h-11 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Bar -->
+  <div class="bg-white p-5 rounded-3xl border border-[#E8EDE4] shadow-xs space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- Search -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <input 
+          type="text" 
+          x-model="filters.search" 
+          @input.debounce.350ms="applyFilters()"
+          placeholder="Search template name, code, subject..." 
+          class="w-full pl-10 pr-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[#4B237B] transition"
+        >
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <select 
+          x-model="filters.status" 
+          @change="applyFilters()"
+          class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[#4B237B] transition"
+        >
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="trash">Trash (Deleted)</option>
+        </select>
+      </div>
+
+      <!-- Template Type Filter -->
+      <div>
+        <select 
+          x-model="filters.is_default" 
+          @change="applyFilters()"
+          class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-[#4B237B] transition"
+        >
+          <option value="">All Types (System &amp; Custom)</option>
+          <option value="1">System Default Templates</option>
+          <option value="0">Custom User Templates</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="bg-white rounded-3xl border border-[#E8EDE4] shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table id="emailTemplatesTable" class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50/75 border-b border-[#E8EDE4] text-[11px] font-black uppercase text-slate-500 tracking-wider">
+            <th class="py-4 px-6 cursor-pointer select-none" @click="sortBy('id')">
+              <div class="flex items-center gap-1.5">
+                <span>ID</span>
+                <span class="text-slate-400" x-show="sortField === 'id'" x-text="sortOrder === 'asc' ? '▲' : '▼'"></span>
+              </div>
+            </th>
+            <th class="py-4 px-6 cursor-pointer select-none" @click="sortBy('name')">
+              <div class="flex items-center gap-1.5">
+                <span>Template Name</span>
+                <span class="text-slate-400" x-show="sortField === 'name'" x-text="sortOrder === 'asc' ? '▲' : '▼'"></span>
+              </div>
+            </th>
+            <th class="py-4 px-6">System Code</th>
+            <th class="py-4 px-6">Subject Line</th>
+            <th class="py-4 px-6">Type</th>
+            <th class="py-4 px-6">Status</th>
+            <th class="py-4 px-6">Last Updated</th>
+            <th class="py-4 px-6 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#E8EDE4] text-xs font-semibold text-slate-700">
+          <template x-if="loading">
+            <tr>
+              <td colspan="8" class="py-12 text-center text-slate-400">
+                <div class="inline-flex items-center gap-2">
+                  <svg class="animate-spin h-5 w-5 text-[#4B237B]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  <span>Loading templates...</span>
+                </div>
+              </td>
+            </tr>
+          </template>
+
+          <template x-if="!loading && items.length === 0">
+            <tr>
+              <td colspan="8" class="py-12 text-center text-slate-400">
+                No email templates found matching your criteria.
+              </td>
+            </tr>
+          </template>
+
+          <template x-for="item in items" :key="item.id">
+            <tr class="hover:bg-slate-50/60 transition">
+              <td class="py-3.5 px-6 font-bold text-slate-400" x-text="item.id"></td>
+              <td class="py-3.5 px-6">
+                <a :href="'/visionadmin/marketing/email-templates/' + item.id + '/edit'" class="font-extrabold text-[#0E1108] hover:text-[#4B237B] transition flex items-center gap-2">
+                  <span x-text="item.name"></span>
+                  <template x-if="item.is_default">
+                    <span class="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-[#FAF5FF] text-[#7C3AED] border border-[#DDD6FE]">Default</span>
+                  </template>
+                </a>
+              </td>
+              <td class="py-3.5 px-6 font-mono text-[11px] text-slate-500" x-text="item.code || '-'"></td>
+              <td class="py-3.5 px-6 text-slate-600 truncate max-w-xs" x-text="item.subject || '-'"></td>
+              <td class="py-3.5 px-6">
+                <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-slate-100 text-slate-600" x-text="item.type || 'HTML'"></span>
+              </td>
+              <td class="py-3.5 px-6">
+                <span 
+                  class="px-2.5 py-1 text-[11px] font-bold rounded-full"
+                  :class="item.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'"
+                  x-text="item.status === 'active' ? 'Active' : 'Inactive'"
+                ></span>
+              </td>
+              <td class="py-3.5 px-6 text-slate-400 text-[11px]" x-text="formatDate(item.updated_at || item.created_at)"></td>
+              <td class="py-3.5 px-6 text-right">
+                <div class="inline-flex items-center gap-1.5 justify-end">
+                  <!-- Preview Button -->
+                  <button 
+                    type="button" 
+                    @click="previewTemplate(item)" 
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-[#4B237B] hover:bg-[#FAF5FF] transition cursor-pointer"
+                    title="Preview Email"
+                  >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+
+                  <!-- Edit Button -->
+                  <a 
+                    :href="'/visionadmin/marketing/email-templates/' + item.id + '/edit'" 
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-[#4B237B] hover:bg-[#FAF5FF] transition cursor-pointer"
+                    title="Edit Template"
+                  >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </a>
+
+                  <!-- Delete Button -->
+                  <button 
+                    type="button" 
+                    @click="deleteTemplate(item)" 
+                    class="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                    title="Delete Template"
+                  >
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="p-4 sm:p-5 border-t border-[#E8EDE4] bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold text-slate-500">
+      <div>
+        Showing <span class="font-bold text-[#0E1108]" x-text="((page - 1) * perPage) + (items.length ? 1 : 0)"></span> to 
+        <span class="font-bold text-[#0E1108]" x-text="Math.min(page * perPage, total)"></span> of 
+        <span class="font-bold text-[#0E1108]" x-text="total"></span> templates
+      </div>
+      <div class="flex items-center gap-2">
+        <button 
+          type="button" 
+          @click="changePage(page - 1)" 
+          :disabled="page <= 1"
+          class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition font-bold"
+        >
+          Previous
+        </button>
+        <span class="px-3 py-1.5 font-bold text-slate-700" x-text="page + ' / ' + (pages || 1)"></span>
+        <button 
+          type="button" 
+          @click="changePage(page + 1)" 
+          :disabled="page >= pages"
+          class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition font-bold"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Email Modal -->
+  <div 
+    x-show="previewModalOpen" 
+    x-cloak 
+    class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+    @keydown.escape.window="previewModalOpen = false"
+  >
+    <div 
+      class="bg-white rounded-3xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      @click.away="previewModalOpen = false"
+    >
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+            <span>Email Preview:</span>
+            <span class="text-[#4B237B]" x-text="previewData.name"></span>
+          </h3>
+          <p class="text-xs text-slate-500 font-semibold mt-0.5" x-text="'Subject: ' + previewData.subject"></p>
+        </div>
+        <button 
+          type="button" 
+          @click="previewModalOpen = false"
+          class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-100">
+        <div class="bg-white rounded-xl shadow-xs p-4 overflow-hidden border border-slate-200" x-html="previewData.html"></div>
+      </div>
+
+      <div class="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
+        <span class="text-[11px] text-slate-400 italic">Sample dummy variables have been substituted for previewing.</span>
+        <button 
+          type="button" 
+          @click="previewModalOpen = false"
+          class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs"
+        >
+          Close Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function emailTemplatesApp() {
+  return {
+    items: [],
+    total: 0,
+    page: 1,
+    perPage: 25,
+    pages: 1,
+    loading: false,
+    sortField: 'name',
+    sortOrder: 'asc',
+    filters: {
+      search: '',
+      status: '',
+      is_default: ''
+    },
+    counts: {
+      total: 0,
+      active: 0,
+      default_count: 0,
+      custom_count: 0
+    },
+    previewModalOpen: false,
+    previewData: {
+      name: '',
+      subject: '',
+      html: ''
+    },
+
+    fetchData() {
+      this.loading = true;
+      const params = new URLSearchParams({
+        page: this.page,
+        per_page: this.perPage,
+        sort_by: this.sortField,
+        sort_dir: this.sortOrder,
+        search: this.filters.search,
+        status: this.filters.status,
+        is_default: this.filters.is_default
+      });
+
+      fetch('/visionadmin/api/email-templates/data?' + params.toString())
+        .then(res => res.json())
+        .then(data => {
+          this.items = data.items || [];
+          this.total = data.total || 0;
+          this.pages = data.pages || 1;
+          if (data.counts) {
+            this.counts = data.counts;
+          }
+        })
+        .catch(err => {
+          console.error('Fetch email templates error:', err);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    applyFilters() {
+      this.page = 1;
+      this.fetchData();
+    },
+
+    sortBy(field) {
+      if (this.sortField === field) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortField = field;
+        this.sortOrder = 'asc';
+      }
+      this.fetchData();
+    },
+
+    changePage(p) {
+      if (p < 1 || p > this.pages) return;
+      this.page = p;
+      this.fetchData();
+    },
+
+    formatDate(str) {
+      if (!str) return '-';
+      try {
+        const d = new Date(str);
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      } catch(e) {
+        return str;
+      }
+    },
+
+    previewTemplate(item) {
+      this.previewData.name = item.name;
+      this.previewData.subject = item.subject;
+      this.previewData.html = '<div class="py-8 text-center text-slate-400">Generating preview...</div>';
+      this.previewModalOpen = true;
+
+      fetch('/visionadmin/api/email-templates/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: item.content,
+          styles: item.styles
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        this.previewData.html = data.html || item.content;
+      })
+      .catch(err => {
+        this.previewData.html = item.content;
+      });
+    },
+
+    deleteTemplate(item) {
+      if (item.is_default) {
+        alert('System Default templates cannot be deleted.');
+        return;
+      }
+      if (!confirm(`Are you sure you want to delete template "${item.name}"?`)) return;
+
+      fetch('/visionadmin/api/email-templates/' + item.id, {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.fetchData();
+        } else {
+          alert(data.error || 'Failed to delete template.');
+        }
+      })
+      .catch(err => {
+        alert('Connection error.');
+      });
+    }
+  };
+}
+</script>
+{% endblock %}

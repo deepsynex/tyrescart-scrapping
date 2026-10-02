@@ -1681,7 +1681,7 @@ def register_visionadmin_api_routes(app):
         query = (request.args.get('q') or '').strip()
 
         blogs = Blog.all(include_deleted=include_deleted)
-
+        
         if include_deleted:
             blogs = [b for b in blogs if b.deleted_at is not None]
         else:
@@ -2545,23 +2545,34 @@ def register_visionadmin_api_routes(app):
             try:
                 from mailer import send_email
                 from visionadmin.admin_auth import create_admin_password_reset_token
+                from services.email_template_service import EmailTemplateService
                 token = create_admin_password_reset_token(email)
                 reset_link = f"{request.host_url.rstrip('/')}/visionadmin/reset-password?token={token}"
                 login_link = f"{request.host_url.rstrip('/')}/visionadmin/login?email={email}"
                 assets_url = 'https://tyrescart-scrapping.klever.ae' if ('localhost' in request.host_url or '127.0.0.1' in request.host_url) else request.host_url.rstrip('/')
                 
-                html_body = render_template(
-                    'emails/welcome_user.html',
-                    user_name=name,
-                    user_email=email,
-                    user_role=role,
-                    reset_link=reset_link,
-                    login_link=login_link,
-                    assets_url=assets_url,
+                email_ctx = {
+                    'user_name': name,
+                    'customer_name': name,
+                    'user_email': email,
+                    'customer_email': email,
+                    'user_role': role,
+                    'reset_link': reset_link,
+                    'login_link': login_link,
+                    'assets_url': assets_url,
+                    'base_url': assets_url,
+                    'store_name': 'TyresVision',
+                    'support_email': 'support@tyresvision.com',
+                    'phone_number': '+971 50 506 9575'
+                }
+                subject, html_body = EmailTemplateService.render_template_by_code(
+                    'welcome_user',
+                    context=email_ctx,
+                    default_subject='Welcome to TyresVision! Your Account Details'
                 )
                 send_email(
                     email,
-                    'Welcome to TyresVision! Your Account Details',
+                    subject,
                     html_body,
                 )
             except Exception as mail_err:

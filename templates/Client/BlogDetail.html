@@ -1,10 +1,12 @@
 {% extends 'Client/layout.html' %}
 
 {% block title %}
-  {{ post.title }} | {{ _('TyresVision Blog') }}
+  {{ post.meta_title or post.title }} | {{ _('TyresVision') }}
 {% endblock %}
 
-{% block meta_description %}{{ post.short_description or (post.title ~ ' — expert advice and tyre guide for UAE drivers.') }}{% endblock %}
+{% block meta_description %}{{ post.meta_desc or (post.title ~ ' — expert advice and tyre guide for UAE drivers.') }}{% endblock %}
+
+{% block canonical_url %}{{ canonical_url or post.canonical_url }}{% endblock %}
 
 {% block content %}
 <span id="top"></span>

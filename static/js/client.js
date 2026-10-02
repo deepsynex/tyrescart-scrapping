@@ -3,6 +3,154 @@
   var yrEl = document.getElementById('yr');
   if(yrEl) yrEl.textContent = new Date().getFullYear();
 
+  // ── Universal Main Page Scroll Lock Manager ─────────────────────────
+  // Completely removes main page scroll whenever ANY drawer or modal is open.
+  var _scrollLockHolders = new Set();
+
+  function isAnyDrawerOrModalOpen() {
+    var selectors = [
+      '#tvProductEnquiryPanel.is-open',
+      '#tvProductEnquiryBackdrop.is-open',
+      '#tvContactDrawerPanel.is-open',
+      '#tvContactDrawerBackdrop.is-open',
+      '#tv-overview-panel.is-open',
+      '#tv-overview-backdrop.is-open',
+      '#mobileNavDrawer.open',
+      '#mobileNavBackdrop.open',
+      '#item-size.is-open',
+      '#item-size-overlay:not(.hidden)',
+      '#tv-filter-sidebar.open',
+      '#tv-filter-backdrop.active',
+      '#tv-fitted-price-modal.open',
+      '.tv-fitted-modal-overlay.open',
+      '#tv-quickview-modal.open',
+      '.tv-quickview-modal.open',
+      '#tvHeroModal.open',
+      '#noticeModal.open'
+    ];
+    for (var i = 0; i < selectors.length; i++) {
+      var el = document.querySelector(selectors[i]);
+      if (el) return true;
+    }
+    if (document.body.classList.contains('filter-open') || 
+        document.body.classList.contains('tv-modal-active') ||
+        document.body.classList.contains('overflow-hidden') ||
+        document.body.classList.contains('modal-open')) {
+      return true;
+    }
+    return false;
+  }
+
+  function lockMainPageScroll(sourceId) {
+    _scrollLockHolders.add(sourceId || 'default');
+    document.documentElement.classList.add('tv-scroll-locked');
+    document.body.classList.add('tv-scroll-locked');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockMainPageScroll(sourceId) {
+    if (sourceId) {
+      _scrollLockHolders.delete(sourceId);
+    } else {
+      _scrollLockHolders.clear();
+    }
+
+    if (_scrollLockHolders.size === 0) {
+      // Ensure no other drawer/modal is still active before unlocking
+      if (!isAnyDrawerOrModalOpen()) {
+        document.documentElement.classList.remove('tv-scroll-locked');
+        document.body.classList.remove('tv-scroll-locked');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  function syncDrawerScrollLock() {
+    if (isAnyDrawerOrModalOpen()) {
+      if (!document.body.classList.contains('tv-scroll-locked')) {
+        lockMainPageScroll('observer');
+      }
+    } else {
+      if (document.body.classList.contains('tv-scroll-locked')) {
+        unlockMainPageScroll('observer');
+      }
+    }
+  }
+
+  window.lockMainPageScroll = lockMainPageScroll;
+  window.unlockMainPageScroll = unlockMainPageScroll;
+  window.isAnyDrawerOrModalOpen = isAnyDrawerOrModalOpen;
+
+  // Global MutationObserver to automatically catch ANY drawer/modal open/close state change
+  if (typeof MutationObserver !== 'undefined') {
+    var _drawerObserver = new MutationObserver(function(mutations) {
+      var relevant = false;
+      for (var i = 0; i < mutations.length; i++) {
+        var t = mutations[i].target;
+        if (t === document.body || t === document.documentElement) continue;
+        relevant = true;
+        break;
+      }
+      if (relevant) {
+        syncDrawerScrollLock();
+      }
+    });
+
+    var startObserver = function() {
+      if (document.body) {
+        _drawerObserver.observe(document.body, {
+          attributes: true,
+          attributeFilter: ['class', 'style', 'aria-hidden'],
+          subtree: true
+        });
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startObserver);
+    } else {
+      startObserver();
+    }
+  }
+
+  // Prevent wheel and touch scrolling on any drawer backdrop
+  document.addEventListener('wheel', function(e) {
+    if (document.body.classList.contains('tv-scroll-locked') && e.target && (
+      e.target.classList.contains('tv-pe-backdrop') ||
+      e.target.classList.contains('tv-contact-backdrop') ||
+      e.target.classList.contains('tv-overview-backdrop') ||
+      e.target.classList.contains('tv-filter-backdrop') ||
+      e.target.classList.contains('tv-fitted-modal-overlay') ||
+      e.target.id === 'tvProductEnquiryBackdrop' ||
+      e.target.id === 'tvContactDrawerBackdrop' ||
+      e.target.id === 'tv-overview-backdrop' ||
+      e.target.id === 'mobileNavBackdrop' ||
+      e.target.id === 'tv-filter-backdrop' ||
+      e.target.id === 'item-size-overlay'
+    )) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    if (document.body.classList.contains('tv-scroll-locked') && e.target && (
+      e.target.classList.contains('tv-pe-backdrop') ||
+      e.target.classList.contains('tv-contact-backdrop') ||
+      e.target.classList.contains('tv-overview-backdrop') ||
+      e.target.classList.contains('tv-filter-backdrop') ||
+      e.target.classList.contains('tv-fitted-modal-overlay') ||
+      e.target.id === 'tvProductEnquiryBackdrop' ||
+      e.target.id === 'tvContactDrawerBackdrop' ||
+      e.target.id === 'tv-overview-backdrop' ||
+      e.target.id === 'mobileNavBackdrop' ||
+      e.target.id === 'tv-filter-backdrop' ||
+      e.target.id === 'item-size-overlay'
+    )) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
   var form = document.getElementById('quoteForm');
   if(form){
     form.addEventListener('submit', function(e){
@@ -72,6 +220,7 @@
     }
     document.documentElement.classList.add('modal-open');
     document.body.classList.add('modal-open');
+    lockMainPageScroll('notice-modal');
     var sheetBody = m ? m.querySelector('.sheet-body') : null;
     if (sheetBody) sheetBody.scrollTop = 0;
     var closeBtn = document.getElementById('noticeClose');
@@ -91,6 +240,7 @@
     }
     document.documentElement.classList.remove('modal-open');
     document.body.classList.remove('modal-open');
+    unlockMainPageScroll('notice-modal');
   };
 
   // Bind click handlers globally (catches dynamically rendered or static triggers)
@@ -140,7 +290,7 @@
       if (d) d.classList.add('open');
       if (b) b.classList.add('open');
       if (m) m.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
+      lockMainPageScroll('mobile-nav');
     }
 
     function closeMobileNav() {
@@ -150,7 +300,7 @@
       if (d) d.classList.remove('open');
       if (b) b.classList.remove('open');
       if (m) m.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
+      unlockMainPageScroll('mobile-nav');
     }
 
     if (menuBtn) menuBtn.addEventListener('click', openMobileNav);
@@ -1441,7 +1591,22 @@ function createProductCardHTML(p) {
                 </div>
               </div>
 
-              <!-- WhatsApp Enquiry Button -->
+              <!-- Contact Button (Desktop / Laptop / Tablet) -->
+              <button type="button" 
+                      class="tv-btn-card-contact" 
+                      data-product-name="${cleanTitle}"
+                      data-tyre-size="${escapeHtml(p.tire_size_label || sizeSpec || '')}"
+                      data-brand="${brandName}"
+                      data-price="${displayPrice}"
+                      onclick="event.stopPropagation(); openProductEnquiryDrawer(this);" 
+                      aria-label="Contact about ${cleanTitle}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Contact</span>
+              </button>
+
+              <!-- WhatsApp Enquiry Button (Mobile screens only) -->
               <a href="https://wa.me/971505069575?text=${encodeURIComponent('Hi TyresVision, I would like to inquire about ' + (p.display_name || p.name_en || p.pattern_name || patternTitle || '') + (sizeSpec ? ' (Size: ' + sizeSpec + ', Price: AED ' + displayPrice + ')' : ' (Price: AED ' + displayPrice + ')'))}" 
                  target="_blank" 
                  rel="noopener" 
@@ -1833,10 +1998,10 @@ function buildFilterPath(page = 1) {
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
   const selectedSizesRaw = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
-  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-')).filter(Boolean)));
+  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-').replace(/-r(\d+)/i, '-$1')).filter(Boolean)));
   const sizeMatch = window.location.pathname.match(/(?:^|\/)size-([^\/]+)/i);
   if (selectedSizes.length === 0 && sizeMatch) {
-    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase()));
+    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase().replace(/-r(\d+)/i, '-$1')));
   }
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
@@ -1903,9 +2068,9 @@ function buildFilterPath(page = 1) {
     segments.push('origin-' + selectedOrigins.map(org => encodeURIComponent(org.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
 
-  // 8. Size segment: size-225-40-r18
+  // 8. Size segment: size-225-40-18
   if (selectedSizes.length > 0) {
-    const sizeSlugs = Array.from(new Set(selectedSizes.map(s => encodeURIComponent(s.toLowerCase().replace(/[\/\s_]+/g, '-')))));
+    const sizeSlugs = Array.from(new Set(selectedSizes.map(s => encodeURIComponent(s.toLowerCase().replace(/[\/\s_]+/g, '-').replace(/-r(\d+)/i, '-$1')))));
     segments.push('size-' + sizeSlugs.join(','));
   }
 
@@ -1980,10 +2145,10 @@ async function fetchProducts(page = 1, scrollUp = true) {
   const selectedYears = Array.from(document.querySelectorAll('input[name="year"]:checked')).map(cb => cb.value.trim());
   const selectedOrigins = Array.from(document.querySelectorAll('input[name="origin"]:checked')).map(cb => cb.value.trim());
   const selectedSizesRaw = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value.trim());
-  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-')).filter(Boolean)));
+  let selectedSizes = Array.from(new Set(selectedSizesRaw.map(s => s.toLowerCase().replace(/[\/\s_]+/g, '-').replace(/-r(\d+)/i, '-$1')).filter(Boolean)));
   const sizeMatch = window.location.pathname.match(/(?:^|\/)size-([^\/]+)/i);
   if (selectedSizes.length === 0 && sizeMatch) {
-    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase()));
+    selectedSizes.push(decodeURIComponent(sizeMatch[1].toLowerCase().replace(/-r(\d+)/i, '-$1')));
   }
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
   const selectedTypes = Array.from(document.querySelectorAll('input[name="tire_type"]:checked')).map(cb => cb.value.trim());
@@ -2642,6 +2807,7 @@ function openMobileFilter() {
   if (sidebar) sidebar.classList.add('open');
   if (backdrop) backdrop.classList.add('active');
   document.body.classList.add('filter-open');
+  lockMainPageScroll('filter-drawer');
   updateActiveFilterBadges();
 }
 
@@ -2651,6 +2817,7 @@ function closeMobileFilter() {
   if (sidebar) sidebar.classList.remove('open');
   if (backdrop) backdrop.classList.remove('active');
   document.body.classList.remove('filter-open');
+  unlockMainPageScroll('filter-drawer');
 }
 
 function applyMobileFilter() {
@@ -2844,6 +3011,7 @@ function openFittedPriceModal(e) {
   }
   document.body.classList.add('tv-modal-active');
   modal.classList.add('open');
+  lockMainPageScroll('fitted-modal');
 }
 
 function closeFittedPriceModal() {
@@ -2852,6 +3020,7 @@ function closeFittedPriceModal() {
     modal.classList.remove('open');
   }
   document.body.classList.remove('tv-modal-active');
+  unlockMainPageScroll('fitted-modal');
 }
 
 function handleFittedModalBackdrop(e) {
@@ -3484,7 +3653,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     if (backdrop) backdrop.classList.add('is-open');
     if (panel) panel.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    lockMainPageScroll('overview-drawer');
 
     if (section) {
       setOverviewActiveSection(section);
@@ -3503,7 +3672,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var panel = document.getElementById('tv-overview-panel');
     if (backdrop) backdrop.classList.remove('is-open');
     if (panel) panel.classList.remove('is-open');
-    document.body.style.overflow = '';
+    unlockMainPageScroll('overview-drawer');
   }
 
   function toggleOverviewDrawer() {
@@ -4746,6 +4915,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     }
     if (overlay) overlay.classList.add("hidden");
     document.body.classList.remove("overflow-hidden");
+    unlockMainPageScroll('vehicle-modal');
   }
 
   function filterTyrePopupContent(query) {
@@ -4965,6 +5135,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     }
     if (overlay) overlay.classList.remove("hidden");
     document.body.classList.add("overflow-hidden");
+    lockMainPageScroll('vehicle-modal');
 
     var wClean = (String(width || '').match(/\d+/) || ['205'])[0];
     var hClean = (String(height || '').match(/\d+/) || ['55'])[0];
@@ -5021,11 +5192,321 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     }
   }, true);
 
+  // ── Contact Overview Drawer Controller (Left-to-Right Slide) ──
+  function openContactDrawer() {
+    var backdrop = document.getElementById('tvContactDrawerBackdrop');
+    var panel = document.getElementById('tvContactDrawerPanel');
+    var alertBox = document.getElementById('tvContactAlert');
+
+    if (alertBox) {
+      alertBox.classList.add('hidden');
+      alertBox.textContent = '';
+      alertBox.className = 'hidden rounded-xl p-3.5 mt-3 text-xs sm:text-sm font-semibold transition-all';
+    }
+
+    if (backdrop) backdrop.classList.add('is-open');
+    if (panel) panel.classList.add('is-open');
+    lockMainPageScroll('contact-drawer');
+
+    setTimeout(function() {
+      var nameInput = document.getElementById('tvContactName');
+      if (nameInput) nameInput.focus();
+    }, 250);
+  }
+
+  function closeContactDrawer() {
+    var backdrop = document.getElementById('tvContactDrawerBackdrop');
+    var panel = document.getElementById('tvContactDrawerPanel');
+    if (backdrop) backdrop.classList.remove('is-open');
+    if (panel) panel.classList.remove('is-open');
+    unlockMainPageScroll('contact-drawer');
+  }
+
+  function toggleContactDrawer() {
+    var panel = document.getElementById('tvContactDrawerPanel');
+    if (panel && panel.classList.contains('is-open')) {
+      closeContactDrawer();
+    } else {
+      openContactDrawer();
+    }
+  }
+
+  function handleContactDrawerSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    var form = document.getElementById('tvContactDrawerForm');
+    var submitBtn = document.getElementById('tvContactSubmitBtn');
+    var alertBox = document.getElementById('tvContactAlert');
+    var btnContent = submitBtn ? submitBtn.querySelector('.tv-submit-btn-content') : null;
+    var btnSpinner = submitBtn ? submitBtn.querySelector('.tv-submit-spinner') : null;
+
+    var name = (document.getElementById('tvContactName')?.value || '').trim();
+    var email = (document.getElementById('tvContactEmail')?.value || '').trim();
+    var phone = (document.getElementById('tvContactPhone')?.value || '').trim();
+    var subject = (document.getElementById('tvContactSubject')?.value || 'General Enquiry').trim();
+    var message = (document.getElementById('tvContactMessage')?.value || '').trim();
+
+    function showAlert(text, isError) {
+      if (!alertBox) return;
+      alertBox.textContent = text;
+      alertBox.classList.remove('hidden');
+      if (isError) {
+        alertBox.className = 'rounded-xl p-3.5 mt-3 text-xs sm:text-sm font-semibold bg-rose-50 text-rose-700 border border-rose-200';
+      } else {
+        alertBox.className = 'rounded-xl p-3.5 mt-3 text-xs sm:text-sm font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200';
+      }
+    }
+
+    if (!name) {
+      showAlert('Please enter your full name.', true);
+      document.getElementById('tvContactName')?.focus();
+      return;
+    }
+
+    var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!email || !emailPattern.test(email)) {
+      showAlert('Please provide a valid email address (e.g. name@example.com).', true);
+      document.getElementById('tvContactEmail')?.focus();
+      return;
+    }
+
+    if (!message) {
+      showAlert('Please describe your tyre size, vehicle, or requirements in the message field.', true);
+      document.getElementById('tvContactMessage')?.focus();
+      return;
+    }
+
+    // Set loading state
+    if (submitBtn) submitBtn.disabled = true;
+    if (btnContent) btnContent.classList.add('hidden');
+    if (btnSpinner) btnSpinner.classList.remove('hidden');
+    if (alertBox) alertBox.classList.add('hidden');
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        phone: phone,
+        subject: subject,
+        message: message
+      })
+    })
+    .then(function(res) {
+      return res.json().then(function(data) {
+        return { status: res.status, ok: res.ok, data: data };
+      }).catch(function() {
+        return { status: res.status, ok: res.ok, data: {} };
+      });
+    })
+    .then(function(result) {
+      if (result.ok && result.data.success) {
+        showAlert('✓ Thank you! Your message has been sent successfully. Our team will contact you shortly.', false);
+        if (form) form.reset();
+        setTimeout(function() {
+          closeContactDrawer();
+        }, 3200);
+      } else {
+        var err = (result.data && result.data.error) || 'Failed to submit enquiry. Please try again or chat with us on WhatsApp.';
+        showAlert(err, true);
+      }
+    })
+    .catch(function(err) {
+      console.error('Contact submission error:', err);
+      showAlert('Connection error. Please check your network or message us on WhatsApp.', true);
+    })
+    .finally(function() {
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnContent) btnContent.classList.remove('hidden');
+      if (btnSpinner) btnSpinner.classList.add('hidden');
+    });
+  }
+
+  // ── Product Enquiry Drawer Controller (Right-to-Left Slide) ──
+  function openProductEnquiryDrawer(triggerEl) {
+    var backdrop = document.getElementById('tvProductEnquiryBackdrop');
+    var panel = document.getElementById('tvProductEnquiryPanel');
+    var productNameEl = document.getElementById('tvPeProductName');
+    var hiddenProductName = document.getElementById('tvPeHiddenProductName');
+    var alertBox = document.getElementById('tvPeAlert');
+    var form = document.getElementById('tvProductEnquiryForm');
+
+    // Resolve product title
+    var productName = '';
+    if (triggerEl) {
+      productName = triggerEl.getAttribute('data-product-name') || '';
+      if (!productName) {
+        var card = triggerEl.closest('.tv-product-card');
+        if (card) {
+          productName = card.querySelector('.tv-card-title')?.innerText || card.querySelector('h3')?.innerText || '';
+        }
+      }
+    }
+    productName = productName.trim() || 'Tyre Product';
+
+    if (productNameEl) productNameEl.textContent = productName;
+    if (hiddenProductName) hiddenProductName.value = productName;
+
+    if (alertBox) {
+      alertBox.classList.add('hidden');
+      alertBox.textContent = '';
+      alertBox.className = 'hidden tv-pe-alert';
+    }
+
+    if (form) form.reset();
+
+    if (backdrop) backdrop.classList.add('is-open');
+    if (panel) panel.classList.add('is-open');
+    lockMainPageScroll('pe-drawer');
+
+    setTimeout(function() {
+      var nameInput = document.getElementById('tvPeName');
+      if (nameInput) nameInput.focus();
+    }, 250);
+  }
+
+  function closeProductEnquiryDrawer() {
+    var backdrop = document.getElementById('tvProductEnquiryBackdrop');
+    var panel = document.getElementById('tvProductEnquiryPanel');
+    if (backdrop) backdrop.classList.remove('is-open');
+    if (panel) panel.classList.remove('is-open');
+    unlockMainPageScroll('pe-drawer');
+  }
+
+  function handleProductEnquirySubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    var form = document.getElementById('tvProductEnquiryForm');
+    var submitBtn = document.getElementById('tvPeSubmitBtn');
+    var alertBox = document.getElementById('tvPeAlert');
+    var btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+    var btnSpinner = submitBtn ? submitBtn.querySelector('.btn-spinner') : null;
+
+    var name = (document.getElementById('tvPeName')?.value || '').trim();
+    var phone = (document.getElementById('tvPePhone')?.value || '').trim();
+    var email = (document.getElementById('tvPeEmail')?.value || '').trim();
+    var comment = (document.getElementById('tvPeComment')?.value || '').trim();
+    var productName = (document.getElementById('tvPeHiddenProductName')?.value || document.getElementById('tvPeProductName')?.textContent || '').trim();
+
+    function showPeAlert(text, isError) {
+      if (!alertBox) return;
+      alertBox.textContent = text;
+      alertBox.classList.remove('hidden');
+      if (isError) {
+        alertBox.className = 'tv-pe-alert bg-rose-50 text-rose-700 border border-rose-200';
+      } else {
+        alertBox.className = 'tv-pe-alert bg-emerald-50 text-emerald-800 border border-emerald-200';
+      }
+    }
+
+    if (!name) {
+      showPeAlert('Please enter your name.', true);
+      document.getElementById('tvPeName')?.focus();
+      return;
+    }
+
+    if (!phone) {
+      showPeAlert('Please enter your phone number.', true);
+      document.getElementById('tvPePhone')?.focus();
+      return;
+    }
+
+    var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!email || !emailPattern.test(email)) {
+      showPeAlert('Please provide a valid email address.', true);
+      document.getElementById('tvPeEmail')?.focus();
+      return;
+    }
+
+    // Set loading state
+    if (submitBtn) submitBtn.disabled = true;
+    if (btnText) btnText.classList.add('hidden');
+    if (btnSpinner) btnSpinner.classList.remove('hidden');
+    if (alertBox) alertBox.classList.add('hidden');
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        phone: phone,
+        email: email,
+        product_name: productName,
+        comment: comment,
+        subject: 'Product Enquiry: ' + productName,
+        message: 'Product: ' + productName + (comment ? '\nComment: ' + comment : ''),
+        form_type: 'product_enquiry_drawer'
+      })
+    })
+    .then(function(res) {
+      return res.json().then(function(data) {
+        return { status: res.status, ok: res.ok, data: data };
+      }).catch(function() {
+        return { status: res.status, ok: res.ok, data: {} };
+      });
+    })
+    .then(function(result) {
+      if (result.ok && result.data.success) {
+        showPeAlert('✓ Thank you! Your product enquiry has been received. Our team will contact you shortly.', false);
+        if (form) form.reset();
+        setTimeout(function() {
+          closeProductEnquiryDrawer();
+        }, 2800);
+      } else {
+        var err = (result.data && result.data.error) || 'Failed to submit enquiry. Please try again.';
+        showPeAlert(err, true);
+      }
+    })
+    .catch(function(err) {
+      console.error('Product enquiry submission error:', err);
+      showPeAlert('Connection error. Please try again.', true);
+    })
+    .finally(function() {
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnText) btnText.classList.remove('hidden');
+      if (btnSpinner) btnSpinner.classList.add('hidden');
+    });
+  }
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+      var pePanel = document.getElementById('tvProductEnquiryPanel');
+      if (pePanel && pePanel.classList.contains('is-open')) {
+        closeProductEnquiryDrawer();
+      }
+      var contactPanel = document.getElementById('tvContactDrawerPanel');
+      if (contactPanel && contactPanel.classList.contains('is-open')) {
+        closeContactDrawer();
+      }
+      var overviewPanel = document.getElementById('tv-overview-panel');
+      if (overviewPanel && overviewPanel.classList.contains('is-open')) {
+        closeOverviewDrawer();
+      }
+      var filterSidebar = document.getElementById('tv-filter-sidebar');
+      if (filterSidebar && filterSidebar.classList.contains('open')) {
+        closeMobileFilter();
+      }
+      var fittedModal = document.getElementById('tv-fitted-price-modal');
+      if (fittedModal && fittedModal.classList.contains('open')) {
+        closeFittedPriceModal();
+      }
       var modal = document.getElementById("item-size");
       if (modal && (modal.classList.contains("is-open") || !modal.classList.contains("translate-x-full") || !modal.classList.contains("-translate-x-full") || !modal.classList.contains("translate-y-full"))) {
         ItemSizeClose();
+      }
+      var noticeM = document.getElementById('noticeModal');
+      if (noticeM && noticeM.classList.contains('open') && window.closeNotice) {
+        window.closeNotice();
+      }
+      if (!isAnyDrawerOrModalOpen()) {
+        unlockMainPageScroll();
       }
     }
   });
@@ -5033,6 +5514,13 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   window.openTyreVehicleModal = openTyreVehicleModal;
   window.filterTyrePopupContent = filterTyrePopupContent;
   window.ItemSizeClose = ItemSizeClose;
+  window.openContactDrawer = openContactDrawer;
+  window.closeContactDrawer = closeContactDrawer;
+  window.toggleContactDrawer = toggleContactDrawer;
+  window.handleContactDrawerSubmit = handleContactDrawerSubmit;
+  window.openProductEnquiryDrawer = openProductEnquiryDrawer;
+  window.closeProductEnquiryDrawer = closeProductEnquiryDrawer;
+  window.handleProductEnquirySubmit = handleProductEnquirySubmit;
 
   // Initialize on load
   document.addEventListener('DOMContentLoaded', function() {

@@ -29,6 +29,7 @@ from visionadmin.admin_auth import (
 from mailer import send_email
 from services.attribute_service import AttributeService
 from services.cart_price_rule_service import CartPriceRuleService
+from services.email_template_service import EmailTemplateService
 import csv
 import io
 
@@ -206,17 +207,26 @@ def register_visionadmin_routes(app):
                 assets_url = 'https://tyrescart-scrapping.klever.ae' if ('localhost' in request.host_url or '127.0.0.1' in request.host_url) else request.host_url.rstrip('/')
                 token = create_admin_password_reset_token(admin_user['email'])
                 reset_link = f"{request.host_url.rstrip('/')}/visionadmin/reset-password?token={token}"
-                html_body = render_template(
-                    'emails/vison_forgotpass.html',
-                    user_name=admin_user.get('name') or 'there',
-                    user_email=admin_user.get('email') or email,
-                    reset_link=reset_link,
-                    expires_minutes=30,
-                    assets_url=assets_url,
+                email_ctx = {
+                    'user_name': admin_user.get('name') or 'there',
+                    'customer_name': admin_user.get('name') or 'there',
+                    'user_email': admin_user.get('email') or email,
+                    'customer_email': admin_user.get('email') or email,
+                    'reset_link': reset_link,
+                    'expires_minutes': 30,
+                    'assets_url': assets_url,
+                    'base_url': assets_url,
+                    'store_name': 'TyresVision',
+                    'support_email': 'support@visionadmin.com',
+                }
+                subject, html_body = EmailTemplateService.render_template_by_code(
+                    'admin_password_reset',
+                    context=email_ctx,
+                    default_subject='Reset Your VisionAdmin Password'
                 )
                 send_email(
                     admin_user['email'],
-                    'Reset Your VisionAdmin Password',
+                    subject,
                     html_body,
                 )
             except Exception as e:
@@ -475,14 +485,21 @@ def register_visionadmin_routes(app):
         resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
         return resp
 
+    @app.route('/visionadmin/marketing/reviewer-settings', methods=['GET'])
+    @app.route('/visonadmin/marketing/reviewer-settings', methods=['GET'])
+    @app.route('/visionadmin/reviewer-settings', methods=['GET'])
+    @app.route('/visonadmin/reviewer-settings', methods=['GET'])
     @app.route('/visionadmin/settings', methods=['GET'])
     @app.route('/visionadmin/config', methods=['GET'])
-    @app.route('/visionadmin/reviewer-settings', methods=['GET'])
     @app.route('/visonadmin/settings', methods=['GET'])
     @app.route('/visonadmin/config', methods=['GET'])
     @login_required_visionadmin
     def visionadmin_settings():
-        return render_template('visionadmin/settings.html', page='settings')
+        return render_template(
+            'visionadmin/settings.html', 
+            page='reviewer_settings', 
+            section='marketing'
+        )
 
     @app.route('/visionadmin/enquiries', methods=['GET'])
     @app.route('/visionadmin/enquiry', methods=['GET'])
@@ -923,3 +940,151 @@ def register_visionadmin_routes(app):
             return jsonify({'success': True, 'message': 'Coupon code deleted successfully.'})
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)}), 400
+
+    # ========================================================================
+    # 12. MARKETING - EMAIL TEMPLATES (email_templates & variables)
+    # ========================================================================
+
+    @app.route('/visionadmin/marketing/email-templates', methods=['GET'])
+    @app.route('/visonadmin/marketing/email-templates', methods=['GET'])
+    @app.route('/visionadmin/email-templates', methods=['GET'])
+    @app.route('/visonadmin/email-templates', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_list():
+        counts = EmailTemplateService.get_counts()
+        return render_template(
+            'visionadmin/email_templates.html',
+            page='email_templates',
+            section='marketing',
+            counts=counts
+        )
+
+    @app.route('/visionadmin/api/email-templates/data', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_data_api():
+        search = request.args.get('search')
+        status = request.args.get('status')
+        is_default = request.args.get('is_default')
+        sort_by = request.args.get('sort_by', 'name')
+        sort_dir = request.args.get('sort_dir', 'asc')
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 25))
+
+        res = EmailTemplateService.get_templates(
+            search=search,
+            status=status,
+            is_default=is_default,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            page=page,
+            per_page=per_page
+        )
+        res['counts'] = EmailTemplateService.get_counts()
+        return jsonify(res)
+
+    @app.route('/visionadmin/marketing/email-templates/new', methods=['GET'])
+    @app.route('/visonadmin/marketing/email-templates/new', methods=['GET'])
+    @app.route('/visionadmin/email-templates/new', methods=['GET'])
+    @app.route('/visonadmin/email-templates/new', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_create():
+        default_templates = EmailTemplateService.get_default_templates()
+        variables_data = EmailTemplateService.get_template_variables()
+        return render_template(
+            'visionadmin/email_template_form.html',
+            page='email_templates',
+            section='marketing',
+            initial_mode='create',
+            template_item=None,
+            default_templates=default_templates,
+            variables_data=variables_data
+        )
+
+    @app.route('/visionadmin/marketing/email-templates/<int:template_id>/edit', methods=['GET'])
+    @app.route('/visonadmin/marketing/email-templates/<int:template_id>/edit', methods=['GET'])
+    @app.route('/visionadmin/email-templates/<int:template_id>/edit', methods=['GET'])
+    @app.route('/visonadmin/email-templates/<int:template_id>/edit', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_edit(template_id):
+        tmpl = EmailTemplateService.get_template_by_id(template_id)
+        if not tmpl:
+            return redirect('/visionadmin/marketing/email-templates')
+        default_templates = EmailTemplateService.get_default_templates()
+        variables_data = EmailTemplateService.get_template_variables()
+        return render_template(
+            'visionadmin/email_template_form.html',
+            page='email_templates',
+            section='marketing',
+            initial_mode='edit',
+            template_item=tmpl,
+            default_templates=default_templates,
+            variables_data=variables_data
+        )
+
+    @app.route('/visionadmin/api/email-templates', methods=['POST'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_store_api():
+        data = request.get_json(silent=True) or request.form.to_dict()
+        try:
+            admin_id = session.get('admin_user_id') or session.get('user_id')
+            new_id = EmailTemplateService.create_template(data, user_id=admin_id)
+            return jsonify({
+                'success': True,
+                'id': new_id,
+                'message': 'Email template created successfully.',
+                'redirect': '/visionadmin/marketing/email-templates'
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
+
+    @app.route('/visionadmin/api/email-templates/<int:template_id>', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_get_api(template_id):
+        tmpl = EmailTemplateService.get_template_by_id(template_id)
+        if not tmpl:
+            return jsonify({'success': False, 'error': 'Template not found'}), 404
+        return jsonify({'success': True, 'template': tmpl})
+
+    @app.route('/visionadmin/api/email-templates/<int:template_id>', methods=['PUT'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_update_api(template_id):
+        data = request.get_json(silent=True) or request.form.to_dict()
+        try:
+            admin_id = session.get('admin_user_id') or session.get('user_id')
+            EmailTemplateService.update_template(template_id, data, user_id=admin_id)
+            return jsonify({
+                'success': True,
+                'message': 'Email template updated successfully.',
+                'redirect': '/visionadmin/marketing/email-templates'
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
+
+    @app.route('/visionadmin/api/email-templates/<int:template_id>', methods=['DELETE'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_delete_api(template_id):
+        try:
+            permanent = request.args.get('permanent') in ('1', 'true', True)
+            EmailTemplateService.delete_template(template_id, permanent=permanent)
+            return jsonify({
+                'success': True,
+                'message': 'Email template deleted successfully.'
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
+
+    @app.route('/visionadmin/api/email-templates/variables', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_variables_api():
+        data = EmailTemplateService.get_template_variables()
+        return jsonify({'success': True, 'data': data})
+
+    @app.route('/visionadmin/api/email-templates/preview', methods=['POST'])
+    @login_required_visionadmin
+    def visionadmin_email_templates_preview_api():
+        data = request.get_json(silent=True) or request.form.to_dict()
+        content = data.get('content', '')
+        styles = data.get('styles', '')
+        preview_html = EmailTemplateService.preview_template(content, styles)
+        return jsonify({'success': True, 'html': preview_html})
+

@@ -4,19 +4,26 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# Gmail SMTP configuration -- hardcoded directly here (not read from .env)
-# per explicit request, since this app's systemd unit only re-reads its
-# EnvironmentFile on a full `systemctl restart` (not the SIGHUP-based
-# graceful reload this account can trigger without sudo) -- a stale/typo'd
-# env var can persist across reloads indefinitely otherwise. Keeping the
-# real credential values only here means updating them just needs a code
-# deploy + reload, not a full service restart.
-GMAIL_USER = 'task.klever@gmail.com'
-GMAIL_APP_PASSWORD = 'mschrzdtlqdxykoo'
-SMTP_HOST = 'smtp.gmail.com'
-SMTP_PORT_SSL = 465
-SMTP_PORT_TLS = 587
-MAIL_FROM = GMAIL_USER
+try:
+    from dotenv import load_dotenv
+    # Load .env from project root if present
+    _env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+    if os.path.isfile(_env_path):
+        load_dotenv(_env_path)
+    else:
+        load_dotenv()
+except Exception:
+    pass
+
+# Gmail SMTP configuration -- reads from .env with fallback defaults
+GMAIL_USER = os.environ.get('GMAIL_USER', 'task.klever@gmail.com')
+GMAIL_APP_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD', 'mschrzdtlqdxykoo')
+SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
+SMTP_PORT_SSL = int(os.environ.get('SMTP_PORT_SSL', '465'))
+SMTP_PORT_TLS = int(os.environ.get('SMTP_PORT_TLS', '587'))
+MAIL_FROM = os.environ.get('MAIL_FROM', GMAIL_USER)
+OWNER_EMAIL = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or 'alice@klever.ae'
+
 
 
 def send_email(to_address, subject, html_body, text_body=None, inline_images=None):

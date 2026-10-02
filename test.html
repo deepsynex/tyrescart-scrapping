@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>New Contact Us Enquiry - TyresVision</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            background-color: #f6f2fc;
+            color: #1e1b26;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        img {
+            display: block;
+            border: 0;
+            outline: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .outer-wrapper {
+            width: 100%;
+            padding: 40px 16px;
+        }
+
+        .email-width {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .email-shell {
+            overflow: hidden;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px -15px rgba(75, 35, 123, 0.4), 0 0 0 1px rgba(192, 132, 252, 0.25);
+        }
+
+        /* ================= OFFICIAL TYRESVISION LOGO & SWOOSH ================= */
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            line-height: 1;
+        }
+
+        .swoosh-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 200, 54, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            flex-shrink: 0;
+        }
+
+        .logo .swoosh {
+            width: 32px;
+            height: 32px;
+            color: #9f7dde;
+            display: block;
+        }
+
+        .logo .word {
+            font-size: 26px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            display: inline-flex;
+            align-items: baseline;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .logo .t1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #FFFFFF;
+        }
+
+        .logo .t2 {
+            color: #9f7dde;
+            letter-spacing: -0.03em;
+        }
+
+        .logo .oring {
+            display: inline-block;
+            width: 0.72em;
+            height: 0.72em;
+            border-radius: 50%;
+            border: 0.13em solid #9f7dde;
+            position: relative;
+            margin: 0 0.04em;
+            vertical-align: baseline;
+        }
+
+        .logo .oring-dot,
+        .logo .oring::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -0.18em;
+            margin-left: -0.18em;
+            width: 0.36em;
+            height: 0.36em;
+            border-radius: 50%;
+            background: #FFFFFF;
+            display: block;
+        }
+
+        .logo.on-dark .swoosh {
+            color: #9f7dde;
+        }
+
+        .logo.on-dark .t1 {
+            color: #FFFFFF;
+        }
+
+        .logo.on-dark .t2 {
+            color: #9f7dde;
+        }
+
+        .logo.on-dark .oring {
+            border-color: #9f7dde;
+        }
+
+        .logo.on-dark .oring-dot,
+        .logo.on-dark .oring::after {
+            background: #FFFFFF;
+        }
+
+        .email-header {
+            padding: 34px 36px 30px;
+            text-align: center;
+            background: linear-gradient(145deg, #18082c 0%, #2f1254 60%, #4b237b 100%);
+            border-bottom: 3px solid #ffc836;
+        }
+
+        .email-content {
+            padding: 36px 36px 32px;
+            background-color: #ffffff;
+        }
+
+        .greeting {
+            margin: 0 0 10px;
+            color: #0f172a;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        .intro {
+            margin: 0 0 28px;
+            color: #475569;
+            font-size: 14.5px;
+            line-height: 1.65;
+        }
+
+        .intro strong {
+            color: #4b237b;
+        }
+
+        .dossier {
+            overflow: hidden;
+            margin-bottom: 28px;
+            background-color: #faf8ff;
+            border: 1px solid #e7d8fb;
+            border-radius: 14px;
+        }
+
+        .dossier-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #ffffff;
+            background-color: #4b237b;
+            border-bottom: 1px solid #3b1765;
+        }
+
+        .dossier-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .inquiry-row {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0e6ff;
+        }
+
+        .inquiry-row:last-child {
+            border-bottom: 0;
+        }
+
+        .inquiry-label {
+            flex: 0 0 130px;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .inquiry-value {
+            flex: 1;
+            min-width: 0;
+            color: #0f172a;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .inquiry-value a {
+            color: #4b237b;
+            font-weight: 700;
+        }
+
+        .inquiry-value .email-link {
+            text-decoration: underline;
+            overflow-wrap: anywhere;
+        }
+
+        .verified-badge {
+            margin-left: 8px;
+            padding: 2px 7px;
+            color: #15803d;
+            background-color: #dcfce7;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            color: #581c87;
+            background-color: #f1eafe;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .highlight-row {
+            padding: 18px 20px;
+            background-color: #f3ebfc;
+            border-bottom-color: #e7d8fb;
+        }
+
+        .highlight-row .inquiry-label {
+            color: #4b237b;
+            font-weight: 800;
+        }
+
+        .tyre-name {
+            color: #1e1b26;
+            font-size: 15.5px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .tyre-spec {
+            margin-top: 3px;
+            color: #6b21a8;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .premium-badge {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 2px 8px;
+            color: #1e1b26;
+            background-color: #ffc836;
+            border-radius: 4px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .note {
+            color: #64748b;
+            font-size: 13.5px;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .quick-actions {
+            margin-bottom: 30px;
+            padding: 18px 20px;
+            text-align: center;
+            background-color: #faf5ff;
+            border: 1px dashed #d8b4fe;
+            border-radius: 12px;
+        }
+
+        .quick-actions-title {
+            margin-bottom: 12px;
+            color: #581c87;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .call-btn {
+            color: #ffffff;
+            background-color: #4b237b;
+            box-shadow: 0 4px 12px rgba(75, 35, 123, 0.25);
+        }
+
+        .reply-btn {
+            color: #1e1b26;
+            background-color: #ffc836;
+            box-shadow: 0 4px 12px rgba(255, 200, 54, 0.3);
+            font-weight: 800;
+        }
+
+        .signature {
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .signature p {
+            margin: 0;
+        }
+
+        .signature-greeting {
+            margin-bottom: 4px !important;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .signature-name {
+            color: #1e1b26;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .signature-role {
+            margin-top: 2px !important;
+            color: #94a3b8;
+            font-size: 11.5px;
+        }
+
+        .email-footer {
+            padding: 32px 30px;
+            text-align: center;
+            color: #d8b4fe;
+            background-color: #120721;
+            border-top: 1px solid #2d144e;
+        }
+
+        .footer-brand {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-brand .swoosh-box {
+            width: 38px;
+            height: 38px;
+            border-color: rgba(192, 132, 252, 0.3);
+        }
+
+        .footer-brand .logo .swoosh {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-brand .logo .word {
+            font-size: 22px;
+        }
+
+        .footer-contact {
+            margin: 0 0 12px;
+            color: #d8b4fe;
+            font-size: 12.5px;
+            line-height: 1.6;
+        }
+
+        .footer-contact a {
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .footer-contact .phone {
+            margin-right: 12px;
+            color: #ffffff;
+        }
+
+        .footer-contact .email {
+            color: #ffc836;
+        }
+
+        .copyright {
+            margin: 0;
+            color: #7e6c9b;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .copyright strong {
+            color: #ffffff;
+        }
+
+        .disclaimer {
+            padding: 0 16px;
+            margin-top: 14px;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        @media only screen and (max-width: 640px) {
+            .outer-wrapper {
+                padding: 16px 8px;
+            }
+
+            .email-shell {
+                border-radius: 16px;
+            }
+
+            .email-header {
+                padding: 28px 20px 24px;
+            }
+
+            .email-content {
+                padding: 24px 18px;
+            }
+
+            .email-footer {
+                padding: 28px 18px;
+            }
+
+            .inquiry-row {
+                display: block;
+            }
+
+            .inquiry-label {
+                margin-bottom: 4px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="outer-wrapper">
+        <div class="email-width">
+
+            <main class="email-shell">
+                <!-- Header with Official TyresVision Logo SVG & Wordmark -->
+                <header class="email-header">
+                    <div class="brand-lockup">
+                        <div class="logo on-dark">
+                            <div class="swoosh-box">
+                                <svg class="swoosh" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                    <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"></path>
+                                    <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"></path>
+                                    <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"></path>
+                                    <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"></path>
+                                </svg>
+                            </div>
+                            <span class="word">
+                                <span class="t1">TYRES</span><span class="t2">VISI<span class="oring"><span class="oring-dot"></span></span>N</span>
+                            </span>
+                        </div>
+                    </div>
+                </header>
+
+                <section class="email-content">
+                    <p class="greeting">Dear Admin,</p>
+                    <p class="intro">A new customer inquiry has just been submitted through the
+                        <strong>TyresVision</strong> portal. Please review the customer details and product requirements
+                        below to follow up promptly.
+                    </p>
+
+                    <section class="dossier">
+                        <div class="dossier-header">
+                            <span class="dossier-title">&#128203; Customer</span>
+                        </div>
+
+                        <div class="inquiry-row">
+                            <div class="inquiry-label">Customer Name</div>
+                            <div class="inquiry-value">{{client name}}</div>
+                        </div>
+                        <div class="inquiry-row">
+                            <div class="inquiry-label">Phone Number</div>
+                            <div class="inquiry-value">
+                                <a href="tel:+971506515269">&#128222; {{client mobile}}</a>
+                            </div>
+                        </div>
+                        <div class="inquiry-row">
+                            <div class="inquiry-label">Email Address</div>
+                            <div class="inquiry-value">
+                                <a class="email-link" href="mailto:{{client email}}">{{client email}}</a>
+                            </div>
+                        </div>
+                        <div class="inquiry-row">
+                            <div class="inquiry-label">Service</div>
+                            <div class="inquiry-value">
+                                <span class="category-badge">{{service}}</span>
+                            </div>
+                        </div>
+                        <div class="inquiry-row highlight-row">
+                            <div class="inquiry-label">Product</div>
+                            <div class="inquiry-value">
+                                <div class="tyre-name">{{product Name}}</div>
+                            </div>
+                        </div>
+                        <div class="inquiry-row">
+                            <div class="inquiry-label">Client Note</div>
+                            <div class="inquiry-value note">{{Note}}</div>
+                        </div>
+                    </section>
+
+                    <section class="quick-actions">
+                        <div class="quick-actions-title">Immediate Response Actions</div>
+                        <div class="action-buttons">
+                            <a href="tel:{{client number}}" class="action-btn call-btn">&#128222; Call Customer</a>
+                            <a href="mailto:{{client Email}}?subject=Enquiry%20Update%20-%20Continental%20Tyres%20from%20TyresVision"
+                                class="action-btn reply-btn">&#9993;&#65039; Reply by Email</a>
+                        </div>
+                    </section>
+
+                    <div class="signature">
+                        <p class="signature-greeting">Kind Regards,</p>
+                        <p class="signature-name">The TyresVision.com</p>
+                        <p class="signature-role">Customer Relations &amp; Fulfillment Operations &bull; UAE</p>
+                    </div>
+                </section>
+
+                <!-- Footer with Official TyresVision Logo SVG & Wordmark -->
+                <footer class="email-footer">
+                    <div class="footer-brand">
+                        <div class="logo on-dark">
+                            <div class="swoosh-box">
+                                <svg class="swoosh" width="24" height="24" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                    <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"></path>
+                                    <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"></path>
+                                    <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"></path>
+                                    <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".75"></path>
+                                </svg>
+                            </div>
+                            <span class="word">
+                                <span class="t1">TYRES</span><span class="t2">VISI<span class="oring"><span class="oring-dot"></span></span>N</span>
+                            </span>
+                        </div>
+                    </div>
+                    <p class="footer-contact">
+                        Need assistance with this ticket? Contact direct operations:<br />
+                        <a class="phone" href="tel:+971505069575">+971 50 506 9575</a>
+                        <a class="email" href="mailto:info@tyresvision.com">info@tyresvision.com</a>
+                    </p>
+                    <p class="copyright">&copy; 2026 <strong>tyresvision.com</strong>. All rights
+                        reserved.<br />Automated enquiry notification generated for internal administrative records.</p>
+                </footer>
+            </main>
+
+            <div class="disclaimer">This email was generated automatically by the TyresVision portal in response to a
+                customer form submission.</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,612 @@
+{% extends "visionadmin/base.html" %}
+
+{% block title %}{{ 'Edit Email Template' if initial_mode == 'edit' else 'New Email Template' }} - VisionAdmin{% endblock %}
+
+{% block content %}
+<!-- Initial template JSON for edit mode -->
+<script id="email-template-initial-data" type="application/json">
+  {{ (template_item or {}) | tojson | safe }}
+</script>
+
+<div class="space-y-6" x-data="emailTemplateFormApp('{{ initial_mode }}')" x-init="initForm()">
+
+  <!-- Top Breadcrumbs & Action Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs">
+    <div>
+      <nav class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-1">
+        <a href="/visionadmin/marketing/email-templates" class="hover:text-slate-800 transition">Marketing</a>
+        <span>&rsaquo;</span>
+        <a href="/visionadmin/marketing/email-templates" class="hover:text-slate-800 transition">Email Templates</a>
+        <span>&rsaquo;</span>
+        <span class="text-slate-700">{{ 'Edit Template' if initial_mode == 'edit' else 'New Template' }}</span>
+      </nav>
+      <div class="flex items-center gap-3 mt-1">
+        <h1 class="text-2xl font-black text-[#0E1108] tracking-tight" x-text="form.name || 'New Email Template'"></h1>
+        <template x-if="form.is_default">
+          <span class="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-[#FAF5FF] text-[#7C3AED] border border-[#DDD6FE]">Default Template</span>
+        </template>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2.5">
+      <a 
+        href="/visionadmin/marketing/email-templates" 
+        class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer"
+      >
+        Back
+      </a>
+      <button 
+        type="button" 
+        @click="resetForm()" 
+        class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer"
+      >
+        Reset
+      </button>
+      <button 
+        type="button" 
+        @click="openPreview()" 
+        class="px-4 py-2.5 rounded-2xl border border-[#DDD6FE] bg-[#FAF5FF] hover:bg-[#F3E8FF] text-[#7C3AED] text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Preview</span>
+      </button>
+      <button 
+        type="button" 
+        @click="saveTemplate()" 
+        :disabled="saving"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#381a5c] disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-95"
+      >
+        <template x-if="saving">
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </template>
+        <span x-text="saving ? 'Saving...' : 'Save Template'"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Card Form matching Image 0 -->
+  <div class="bg-white p-8 sm:p-10 rounded-3xl border border-[#E8EDE4] shadow-xs space-y-10">
+
+    <!-- Section 1: Load Default Template (Image 0) -->
+    <div class="space-y-4">
+      <h2 class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">Load Default Template</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-start">
+        <label for="defaultTemplateSelect" class="md:col-span-3 text-xs sm:text-sm font-bold text-slate-700 md:text-right pt-2">
+          Template <span class="text-rose-500 font-bold">*</span>
+        </label>
+        
+        <div class="md:col-span-8 space-y-2">
+          <div class="flex items-center gap-2 max-w-xl">
+            <select 
+              id="defaultTemplateSelect"
+              x-model="selectedDefaultId"
+              data-va-skip="true"
+              class="no-custom-dropdown w-full h-10 px-3.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition shadow-2xs cursor-pointer"
+            >
+              <option value="">-- Please Select a Default Template --</option>
+              {% for dt in default_templates %}
+                <option value="{{ dt.id }}">{{ dt.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <p class="text-xs text-slate-500 font-medium">
+            Get <a href="javascript:void(0)" @click="openDrawer()" class="text-blue-600 hover:underline">bundle of follow up emails</a> templates that convert
+          </p>
+
+          <div class="pt-2">
+            <button 
+              type="button" 
+              @click="loadDefaultTemplate()" 
+              :disabled="loadingDefault || !selectedDefaultId"
+              class="px-4 py-2 text-xs font-bold bg-[#E2E8F0] hover:bg-[#CBD5E1] text-slate-700 border border-slate-300 rounded-md shadow-2xs transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span x-text="loadingDefault ? 'Loading...' : 'Load Template'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Template Information (Image 0) -->
+    <div class="space-y-6 pt-6 border-t border-slate-200">
+      <h2 class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">Template Information</h2>
+
+      <!-- Template Name * -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-center">
+        <label for="templateName" class="md:col-span-3 text-xs sm:text-sm font-bold text-slate-700 md:text-right">
+          Template Name <span class="text-rose-500 font-bold">*</span>
+        </label>
+        <div class="md:col-span-8">
+          <input 
+            type="text" 
+            id="templateName"
+            x-model="form.name"
+            required
+            placeholder="e.g. New Order Confirmation"
+            class="w-full max-w-3xl h-10 px-3.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition shadow-2xs"
+          />
+        </div>
+      </div>
+
+      <!-- Template Subject * -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-center">
+        <label for="templateSubject" class="md:col-span-3 text-xs sm:text-sm font-bold text-slate-700 md:text-right">
+          Template Subject <span class="text-rose-500 font-bold">*</span>
+        </label>
+        <div class="md:col-span-8">
+          <input 
+            type="text" 
+            id="templateSubject"
+            x-model="form.subject"
+            @focus="lastFocusedField = 'subject'"
+            required
+            placeholder="e.g. Your TyresVision Order #{% raw %}{{var order.increment_id}}{% endraw %} Confirmation"
+            class="w-full max-w-3xl h-10 px-3.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition shadow-2xs"
+          />
+        </div>
+      </div>
+
+      <!-- Insert Variable Button (Image 0) -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-center">
+        <div class="md:col-span-3"></div>
+        <div class="md:col-span-8">
+          <button 
+            type="button" 
+            @click="openDrawer()" 
+            class="px-4 py-2 text-xs font-bold bg-[#E2E8F0] hover:bg-[#CBD5E1] text-slate-700 border border-slate-300 rounded-md shadow-2xs transition cursor-pointer inline-flex items-center gap-1.5"
+          >
+            <span>Insert Variable...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Template Content * -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-start">
+        <label for="templateContent" class="md:col-span-3 text-xs sm:text-sm font-bold text-slate-700 md:text-right pt-2">
+          Template Content <span class="text-rose-500 font-bold">*</span>
+        </label>
+        <div class="md:col-span-8 space-y-2">
+          <textarea 
+            id="templateContent"
+            x-model="form.content"
+            @focus="lastFocusedField = 'content'"
+            rows="18"
+            required
+            placeholder="&lt;html&gt;&lt;body&gt;&lt;h1&gt;Dear {% raw %}{{var customer.name}}{% endraw %},&lt;/h1&gt;...&lt;/body&gt;&lt;/html&gt;"
+            class="w-full max-w-3xl p-3.5 text-xs sm:text-sm font-mono text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition shadow-2xs resize-y"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Template Styles -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-y-2 md:gap-x-6 items-start">
+        <label for="templateStyles" class="md:col-span-3 text-xs sm:text-sm font-bold text-slate-700 md:text-right pt-2">
+          Template Styles
+        </label>
+        <div class="md:col-span-8 space-y-2">
+          <textarea 
+            id="templateStyles"
+            x-model="form.styles"
+            rows="4"
+            placeholder="body { font-family: Arial, sans-serif; }&#10;.btn { background: #4B237B; color: #fff; }"
+            class="w-full max-w-3xl p-3.5 text-xs sm:text-sm font-mono text-slate-800 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-[#4B237B] focus:ring-1 focus:ring-[#4B237B] transition shadow-2xs resize-y"
+          ></textarea>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       OVERVIEW DRAWER: INSERT VARIABLE... (EXACT MATCH TO IMAGE 1)
+       Slides in from right-to-left when user clicks 'Insert Variable...'
+       ========================================================================= -->
+
+  <!-- Backdrop Overlay -->
+  <div 
+    id="tvInsertVariableBackdrop"
+    x-show="drawerOpen"
+    x-cloak
+    @click="closeDrawer()"
+    class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-2xs transition-opacity duration-300"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Drawer Panel (Right-to-Left Slide) -->
+  <aside 
+    id="tvInsertVariablePanel"
+    x-show="drawerOpen"
+    x-cloak
+    x-transition:enter="transform transition ease-in-out duration-300"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform transition ease-in-out duration-300"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-lg bg-white shadow-2xl flex flex-col border-l border-slate-200"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tvIvDrawerTitle"
+  >
+    <!-- Drawer Header matching Image 1: 'Insert Variable...' + 'X' close button -->
+    <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-white flex-shrink-0">
+      <h2 id="tvIvDrawerTitle" class="text-xl font-bold text-slate-800 tracking-tight">Insert Variable...</h2>
+      
+      <button 
+        type="button" 
+        @click="closeDrawer()" 
+        class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer text-xl leading-none font-bold"
+        aria-label="Close Insert Variable Drawer"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Search filter inside drawer -->
+    <div class="px-6 py-3 border-b border-slate-100 bg-slate-50 flex-shrink-0">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <input 
+          type="text" 
+          x-model="variableSearch"
+          placeholder="Filter variables by name or group..." 
+          class="w-full pl-9 pr-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#4B237B] transition"
+        />
+      </div>
+    </div>
+
+    <!-- Drawer Body: Hierarchical variable links exactly matching Image 1 -->
+    <div class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+      <template x-for="item in filteredVariableList" :key="item.group">
+        <div class="space-y-1.5">
+          <!-- Group Title (Bold text exactly as in Image 1) -->
+          <h3 class="text-xs font-bold text-slate-900" x-text="item.group"></h3>
+          
+          <!-- Variable items (Blue clickable links exactly as in Image 1) -->
+          <div class="space-y-1 pl-0.5">
+            <template x-for="v in item.vars" :key="v.id">
+              <div>
+                <a 
+                  href="javascript:void(0)"
+                  @click="insertVariable(v.variable_code)"
+                  style="color: #007bdb !important; font-size: 13px;"
+                  class="hover:underline font-normal block py-0.5 transition cursor-pointer"
+                  :title="'Insert ' + v.variable_code"
+                >
+                  <span x-text="v.label"></span>
+                </a>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <template x-if="filteredVariableList.length === 0">
+        <div class="py-8 text-center text-xs text-slate-400">
+          No variables match "<span x-text="variableSearch"></span>"
+        </div>
+      </template>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500 flex-shrink-0">
+      <span class="italic">Clicking any link inserts it into active field</span>
+      <button 
+        type="button" 
+        @click="closeDrawer()" 
+        class="px-4 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold transition text-xs"
+      >
+        Close
+      </button>
+    </div>
+  </aside>
+
+  <!-- Preview Email Modal -->
+  <div 
+    x-show="previewModalOpen" 
+    x-cloak 
+    class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+    @keydown.escape.window="previewModalOpen = false"
+  >
+    <div 
+      class="bg-white rounded-3xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      @click.away="previewModalOpen = false"
+    >
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+            <span>Email Preview:</span>
+            <span class="text-[#4B237B]" x-text="form.name || 'Untitled Template'"></span>
+          </h3>
+          <p class="text-xs text-slate-500 font-semibold mt-0.5" x-text="'Subject: ' + (form.subject || 'No Subject')"></p>
+        </div>
+        <button 
+          type="button" 
+          @click="previewModalOpen = false"
+          class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-100">
+        <div class="bg-white rounded-xl shadow-xs p-4 overflow-hidden border border-slate-200" x-html="previewHtml"></div>
+      </div>
+
+      <div class="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
+        <span class="text-[11px] text-slate-400 italic">Sample dummy variables have been substituted for previewing.</span>
+        <button 
+          type="button" 
+          @click="previewModalOpen = false"
+          class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs"
+        >
+          Close Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div 
+    x-show="toast.show" 
+    x-cloak 
+    x-transition 
+    class="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl border text-xs font-bold flex items-center gap-2"
+    :class="toast.isError ? 'bg-rose-50 text-rose-800 border-rose-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'"
+  >
+    <span x-text="toast.message"></span>
+  </div>
+
+</div>
+
+<script>
+function emailTemplateFormApp(mode) {
+  return {
+    mode: mode,
+    templateId: null,
+    selectedDefaultId: '',
+    loadingDefault: false,
+    saving: false,
+    drawerOpen: false,
+    variableSearch: '',
+    lastFocusedField: 'content', // 'content' or 'subject'
+    variablesList: {{ (variables_data.ordered_list if variables_data and variables_data.ordered_list else []) | tojson | safe }},
+    previewModalOpen: false,
+    previewHtml: '',
+    toast: { show: false, message: '', isError: false },
+
+    form: {
+      name: '',
+      code: '',
+      subject: '',
+      content: '',
+      styles: '',
+      type: 'html',
+      status: 'active',
+      is_default: 0
+    },
+
+    initForm() {
+      try {
+        const raw = document.getElementById('email-template-initial-data')?.textContent;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.id) {
+            this.templateId = parsed.id;
+            this.form.name = parsed.name || '';
+            this.form.code = parsed.code || '';
+            this.form.subject = parsed.subject || '';
+            this.form.content = parsed.content || '';
+            this.form.styles = parsed.styles || '';
+            this.form.type = parsed.type || 'html';
+            this.form.status = parsed.status || 'active';
+            this.form.is_default = parsed.is_default || 0;
+          }
+        }
+      } catch (err) {
+        console.error('Initial template load error:', err);
+      }
+    },
+
+    get filteredVariableList() {
+      const q = this.variableSearch.toLowerCase().trim();
+      if (!q) {
+        return this.variablesList;
+      }
+      const result = [];
+      for (const item of this.variablesList) {
+        const matched = item.vars.filter(v => 
+          (v.label && v.label.toLowerCase().includes(q)) || 
+          (v.variable_code && v.variable_code.toLowerCase().includes(q)) ||
+          item.group.toLowerCase().includes(q)
+        );
+        if (matched.length > 0) {
+          result.push({ group: item.group, vars: matched });
+        }
+      }
+      return result;
+    },
+
+    loadDefaultTemplate() {
+      if (!this.selectedDefaultId) {
+        this.showToast('Please select a default template from the dropdown.', true);
+        return;
+      }
+
+      this.loadingDefault = true;
+      fetch('/visionadmin/api/email-templates/' + this.selectedDefaultId)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.template) {
+            const t = data.template;
+            this.form.name = t.name + ' (Custom)';
+            this.form.subject = t.subject;
+            this.form.content = t.content;
+            this.form.styles = t.styles || '';
+            this.form.type = t.type || 'html';
+            this.showToast(`Loaded "${t.name}" successfully!`, false);
+          } else {
+            this.showToast(data.error || 'Failed to load template.', true);
+          }
+        })
+        .catch(err => {
+          console.error('Load default template error:', err);
+          this.showToast('Network error while loading template.', true);
+        })
+        .finally(() => {
+          this.loadingDefault = false;
+        });
+    },
+
+    openDrawer() {
+      this.drawerOpen = true;
+      document.documentElement.classList.add('overflow-hidden', 'tv-scroll-locked');
+      document.body.classList.add('overflow-hidden', 'tv-scroll-locked');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      if (window.lockMainPageScroll) {
+        window.lockMainPageScroll('variable-drawer');
+      }
+    },
+
+    closeDrawer() {
+      this.drawerOpen = false;
+      document.documentElement.classList.remove('overflow-hidden', 'tv-scroll-locked');
+      document.body.classList.remove('overflow-hidden', 'tv-scroll-locked');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      if (window.unlockMainPageScroll) {
+        window.unlockMainPageScroll('variable-drawer');
+      }
+    },
+
+    insertVariable(varCode) {
+      if (this.lastFocusedField === 'subject') {
+        const input = document.getElementById('templateSubject');
+        if (input) {
+          const start = input.selectionStart || 0;
+          const end = input.selectionEnd || 0;
+          const val = input.value;
+          this.form.subject = val.substring(0, start) + varCode + val.substring(end);
+          this.$nextTick(() => {
+            input.focus();
+            input.setSelectionRange(start + varCode.length, start + varCode.length);
+          });
+        } else {
+          this.form.subject += varCode;
+        }
+      } else {
+        const textarea = document.getElementById('templateContent');
+        if (textarea) {
+          const start = textarea.selectionStart || 0;
+          const end = textarea.selectionEnd || 0;
+          const val = textarea.value;
+          this.form.content = val.substring(0, start) + varCode + val.substring(end);
+          this.$nextTick(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + varCode.length, start + varCode.length);
+          });
+        } else {
+          this.form.content += varCode;
+        }
+      }
+
+      this.showToast(`Inserted ${varCode}`, false);
+      this.closeDrawer();
+    },
+
+    openPreview() {
+      this.previewHtml = '<div class="py-8 text-center text-slate-400">Rendering preview...</div>';
+      this.previewModalOpen = true;
+
+      fetch('/visionadmin/api/email-templates/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: this.form.content,
+          styles: this.form.styles
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        this.previewHtml = data.html || this.form.content;
+      })
+      .catch(err => {
+        this.previewHtml = this.form.content;
+      });
+    },
+
+    saveTemplate() {
+      if (!this.form.name.trim()) {
+        this.showToast('Please enter a Template Name.', true);
+        document.getElementById('templateName')?.focus();
+        return;
+      }
+      if (!this.form.subject.trim()) {
+        this.showToast('Please enter a Template Subject.', true);
+        document.getElementById('templateSubject')?.focus();
+        return;
+      }
+      if (!this.form.content.trim()) {
+        this.showToast('Please enter Template Content.', true);
+        document.getElementById('templateContent')?.focus();
+        return;
+      }
+
+      this.saving = true;
+      const url = this.mode === 'edit' && this.templateId 
+        ? '/visionadmin/api/email-templates/' + this.templateId 
+        : '/visionadmin/api/email-templates';
+      const method = this.mode === 'edit' && this.templateId ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(this.form)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.showToast(data.message || 'Saved successfully!', false);
+          setTimeout(() => {
+            window.location.href = data.redirect || '/visionadmin/marketing/email-templates';
+          }, 600);
+        } else {
+          this.showToast(data.error || 'Failed to save template.', true);
+        }
+      })
+      .catch(err => {
+        console.error('Save template error:', err);
+        this.showToast('Connection error while saving.', true);
+      })
+      .finally(() => {
+        this.saving = false;
+      });
+    },
+
+    resetForm() {
+      if (!confirm('Are you sure you want to reset all fields?')) return;
+      this.initForm();
+    },
+
+    showToast(msg, isError) {
+      this.toast.message = msg;
+      this.toast.isError = !!isError;
+      this.toast.show = true;
+      setTimeout(() => {
+        this.toast.show = false;
+      }, 3500);
+    }
+  };
+}
+</script>
+{% endblock %}

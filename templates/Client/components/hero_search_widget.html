@@ -4,958 +4,7 @@
    ========================================================================= #}
 
 {# ── Inline styles for the modal overlay ── #}
-<style>
-/* Overlay backdrop */
-#tvHeroModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9000;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  animation: tvModalBdIn 0.22s ease;
-}
-@keyframes tvModalBdIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes spin { to { transform: rotate(360deg); } }
-#tvHeroModal.open {
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
-  padding: 0;
-}
-
-/* Make logo grid */
-.tvhm-make-logo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.tvhm-make-logo-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 8px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 12px;
-  background: #F9FAFB;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-.tvhm-make-logo-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
-.tvhm-make-logo-card img { width: 64px; height: 34px; object-fit: contain; }
-.tvhm-make-logo-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; line-height: 1.2; }
-
-/* Engine cards */
-.tvhm-engine-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 13px 16px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 12px;
-  background: #F9FAFB;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.18s;
-  width: 100%;
-}
-.tvhm-engine-card:hover { border-color: #A78BFA; background: #F5F3FF; }
-.tvhm-engine-card-left { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.tvhm-engine-name { font-size: 14px; font-weight: 700; color: #111827; }
-.tvhm-engine-spec { font-size: 12px; color: #6B7280; }
-.tvhm-engine-fuel { font-size: 12px; color: #7C3AED; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-
-/* Tyre Size Option Cards */
-.tvhm-size-option-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 13px 16px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 14px;
-  background: #FFFFFF;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.18s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-.tvhm-size-option-card:hover {
-  border-color: #7C3AED;
-  background: #F5F3FF;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1);
-}
-.tvhm-size-option-card.stock {
-  border-color: #C4B5FD;
-  background: linear-gradient(135deg, #FAFAFE 0%, #F5F3FF 100%);
-}
-.tvhm-size-option-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-.tvhm-rim-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #EDE9FE;
-  color: #7C3AED;
-  font-weight: 800;
-  font-size: 15px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.tvhm-rim-badge-sub {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.8;
-  margin-top: 2px;
-}
-.tvhm-size-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.tvhm-size-main {
-  font-size: 15px;
-  font-weight: 800;
-  color: #111827;
-  letter-spacing: -0.01em;
-}
-.tvhm-size-staggered {
-  font-size: 12px;
-  color: #6B7280;
-  font-weight: 600;
-}
-.tvhm-fitment-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  width: fit-content;
-}
-.tvhm-fitment-badge.stock {
-  background: #DCFCE7;
-  color: #15803D;
-}
-.tvhm-fitment-badge.optional {
-  background: #F3F4F6;
-  color: #4B5563;
-}
-.tvhm-size-option-arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #16A34A;
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: transform 0.18s, background 0.18s;
-}
-.tvhm-size-option-card:hover .tvhm-size-option-arrow {
-  transform: translateX(3px);
-  background: #15803D;
-}
-.tvhm-size-badge-btn {
-  cursor: pointer;
-  transition: all 0.15s ease;
-  border: none;
-}
-.tvhm-size-badge-btn:hover {
-  filter: brightness(0.95);
-  transform: scale(0.98);
-}
-
-/* Right-to-Left Slide-In Drawer */
-.tvhm-panel {
-  width: min(600px, 100vw);
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100dvh;
-  background: #FFFFFF;
-  border-radius: 28px 0 0 28px;
-  box-shadow: -25px 0 70px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: tvDrawerSlideLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: right center;
-  position: relative;
-}
-@keyframes tvDrawerSlideLeft {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
-}
-@media (max-width: 640px) {
-  .tvhm-panel {
-    width: 100vw;
-    border-radius: 0;
-    animation: tvDrawerSlideLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-}
-
-/* Header */
-.tvhm-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 24px 16px;
-  border-bottom: 1.5px solid #F1F5F9;
-  flex-shrink: 0;
-}
-.tvhm-header-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: #EDE9FE;
-  color: #6320EE;
-  flex-shrink: 0;
-}
-.tvhm-title-wrap { flex: 1; min-width: 0; }
-.tvhm-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: #6320EE;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  display: block;
-  margin-bottom: 2px;
-}
-.tvhm-title {
-  font-size: 21px;
-  font-weight: 800;
-  color: #0F172A;
-  line-height: 1.2;
-  margin: 0;
-  letter-spacing: -0.015em;
-}
-.tvhm-close {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1.5px solid #E2E8F0;
-  background: #F8FAFC;
-  color: #64748B;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all 0.18s;
-}
-.tvhm-close:hover { background: #FEE2E2; border-color: #FECACA; color: #DC2626; transform: scale(1.05); }
-
-/* Body scroll area */
-.tvhm-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 22px 32px;
-  scroll-behavior: smooth;
-}
-.tvhm-body::-webkit-scrollbar { width: 5px; }
-.tvhm-body::-webkit-scrollbar-track { background: transparent; }
-.tvhm-body::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
-
-/* Section label */
-.tvhm-section-lbl {
-  font-size: 11px;
-  font-weight: 700;
-  color: #6B7280;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0 0 10px;
-}
-/* Step indicator (e.g. Step 1 of 3) */
-.tvhm-step-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-.tvhm-step-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #E5E7EB;
-  transition: background 0.2s;
-}
-.tvhm-step-dot.active { background: #7C3AED; transform: scale(1.3); }
-.tvhm-step-dot.done   { background: #16A34A; }
-
-/* Chip grid */
-.tvhm-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 22px;
-}
-.tvhm-chip {
-  padding: 7px 14px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-  background: #F9FAFB;
-  cursor: pointer;
-  transition: all 0.18s;
-  user-select: none;
-}
-.tvhm-chip:hover { border-color: #A78BFA; color: #7C3AED; background: #F5F3FF; }
-.tvhm-chip.selected { border-color: #7C3AED; background: #7C3AED; color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,0.25); }
-
-.tvhm-chips-loading {
-  padding: 18px 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #9CA3AF;
-  margin-bottom: 22px;
-}
-.tvhm-empty-note {
-  padding: 14px 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #9CA3AF;
-  margin-bottom: 22px;
-}
-
-/* Brand cards */
-.tvhm-brands-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.tvhm-brand-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 12px 8px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 12px;
-  background: #F9FAFB;
-  cursor: pointer;
-  text-decoration: none;
-  color: #374151;
-  transition: all 0.18s;
-  min-height: 84px;
-  box-sizing: border-box;
-}
-.tvhm-brand-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
-.tvhm-brand-card img { width: 64px; height: 36px; object-fit: contain; filter: grayscale(0.2); transition: filter 0.18s; }
-.tvhm-brand-card:hover img { filter: grayscale(0); }
-.tvhm-brand-card span { font-size: 11px; font-weight: 700; color: #374151; text-align: center; line-height: 1.2; word-break: break-word; }
-.tvhm-brand-placeholder {
-  width: 64px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  font-weight: 800;
-  color: #7C3AED;
-  background: #EDE9FE;
-  border-radius: 8px;
-}
-
-/* Brand Product Cards in Drawer */
-.tvhm-brand-prod-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 14px;
-  background: #FFFFFF;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.18s ease;
-  width: 100%;
-  box-sizing: border-box;
-}
-.tvhm-brand-prod-card:hover {
-  border-color: #7C3AED;
-  background: #F5F3FF;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1);
-}
-.tvhm-brand-prod-img {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  flex-shrink: 0;
-  background: #F9FAFB;
-  border-radius: 8px;
-  padding: 4px;
-  border: 1px solid #F3F4F6;
-}
-.tvhm-brand-prod-details {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
-}
-.tvhm-brand-prod-pattern {
-  font-size: 11px;
-  font-weight: 700;
-  color: #7C3AED;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.tvhm-brand-prod-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.tvhm-brand-prod-tags {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 2px;
-}
-.tvhm-brand-prod-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: #F3F4F6;
-  color: #4B5563;
-}
-.tvhm-brand-prod-badge.rf {
-  background: #FEF3C7;
-  color: #92400E;
-}
-.tvhm-brand-prod-badge.ev {
-  background: #E0E7FF;
-  color: #3730A3;
-}
-.tvhm-brand-prod-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.tvhm-brand-prod-price {
-  font-size: 15px;
-  font-weight: 800;
-  color: #111827;
-  white-space: nowrap;
-}
-.tvhm-brand-prod-price span {
-  font-size: 10px;
-  font-weight: 700;
-  color: #6B7280;
-}
-.tvhm-brand-prod-arrow {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #EDE9FE;
-  color: #7C3AED;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.18s;
-}
-.tvhm-brand-prod-card:hover .tvhm-brand-prod-arrow {
-  background: #7C3AED;
-  color: #FFFFFF;
-  transform: translateX(2px);
-}
-
-/* Vehicle search input */
-.tvhm-search-input-wrap {
-  position: relative;
-  margin-bottom: 18px;
-}
-.tvhm-search-input-wrap svg {
-  position: absolute;
-  left: 12px; top: 50%;
-  transform: translateY(-50%);
-  color: #9CA3AF;
-  pointer-events: none;
-}
-.tvhm-search-input {
-  width: 100%;
-  padding: 11px 14px 11px 38px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #111827;
-  outline: none;
-  transition: border-color 0.18s;
-  box-sizing: border-box;
-}
-.tvhm-search-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-
-/* Make cards (vehicle) */
-.tvhm-make-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin-bottom: 22px;
-}
-.tvhm-make-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 10px;
-  background: #F9FAFB;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-  transition: all 0.18s;
-}
-.tvhm-make-card:hover  { border-color: #A78BFA; background: #F5F3FF; color: #7C3AED; }
-.tvhm-make-card.selected { border-color: #7C3AED; background: #7C3AED; color: #fff; }
-.tvhm-make-card svg { flex-shrink: 0; opacity: 0.6; }
-
-/* EV option cards */
-.tvhm-ev-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 22px;
-}
-.tvhm-ev-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px;
-  border: 1.5px solid #E5E7EB;
-  border-radius: 12px;
-  background: #F9FAFB;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.18s;
-}
-.tvhm-ev-card:hover { border-color: #A78BFA; background: #F5F3FF; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,0.12); }
-.tvhm-ev-card-label { font-size: 10px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
-.tvhm-ev-card-name  { font-size: 14px; font-weight: 700; color: #111827; }
-.tvhm-ev-card-sub   { font-size: 11px; color: #6B7280; }
-
-/* Primary action button */
-.tvhm-action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 20px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #7C3AED, #9333EA);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.18s, transform 0.18s;
-  margin-top: 6px;
-}
-.tvhm-action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-.tvhm-action-btn:active { transform: translateY(0); }
-.tvhm-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-/* All-brands link */
-.tvhm-all-link {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 14px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1.5px dashed #C4B5FD;
-  color: #7C3AED;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.18s;
-}
-.tvhm-all-link:hover { background: #F5F3FF; }
-
-/* Size step display */
-.tvhm-selected-size {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.tvhm-size-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 14px;
-  background: #F5F3FF;
-  border: 1.5px solid #C4B5FD;
-  border-radius: 10px;
-  min-width: 64px;
-}
-.tvhm-size-badge-lbl { font-size: 9px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
-.tvhm-size-badge-val { font-size: 17px; font-weight: 800; color: #7C3AED; }
-
-/* ══════════════════════════════════════════════════════
-   REDESIGNED TYRE SIZE WIZARD (Image Sep 30 Ref)
-   ══════════════════════════════════════════════════════ */
-.tvhm-step-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.tvhm-step-dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.tvhm-step-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #E2E8F0;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tvhm-step-dot.active {
-  background: #6320EE;
-  width: 22px;
-  border-radius: 10px;
-}
-.tvhm-step-dot.done {
-  background: #10B981;
-}
-.tvhm-step-text {
-  font-size: 11px;
-  font-weight: 800;
-  color: #6320EE;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* 2-Column Hero */
-.tvhm-size-hero {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-  align-items: stretch;
-}
-@media (max-width: 580px) {
-  .tvhm-size-hero {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-}
-.tvhm-hero-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.tvhm-step-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0 0 4px;
-  letter-spacing: -0.015em;
-  line-height: 1.25;
-}
-.tvhm-step-sub {
-  font-size: 13px;
-  color: #64748B;
-  margin: 0 0 12px;
-  line-height: 1.4;
-}
-
-/* Tip Box */
-.tvhm-tip-box {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-left: 3.5px solid #6320EE;
-  border-radius: 12px;
-  padding: 10px 12px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-.tvhm-tip-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #EDE9FE;
-  color: #6320EE;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.tvhm-tip-content {
-  flex: 1;
-  min-width: 0;
-}
-.tvhm-tip-heading {
-  font-size: 12px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0 0 2px;
-}
-.tvhm-tip-desc {
-  font-size: 11px;
-  color: #64748B;
-  line-height: 1.38;
-  margin: 0;
-}
-
-/* 3D Visual Container */
-.tvhm-tyre-visual {
-  position: relative;
-  background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F1F5F9 100%);
-  border: 1px solid #E2E8F0;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 165px;
-  padding: 12px;
-  overflow: hidden;
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
-}
-.tvhm-tyre-img {
-  max-height: 140px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  display: block;
-  user-select: none;
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.12));
-}
-.tvhm-tyre-overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-.tvhm-tyre-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(99, 32, 238, 0.95);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #FFFFFF;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 14px rgba(99, 32, 238, 0.38);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 5;
-}
-.tvhm-tyre-badge strong {
-  font-weight: 800;
-}
-
-/* Selector Bar (Search + Label) */
-.tvhm-selector-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.tvhm-selector-lbl {
-  font-size: 11px;
-  font-weight: 800;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin: 0;
-}
-.tvhm-search-box {
-  position: relative;
-  width: 170px;
-}
-@media (max-width: 480px) {
-  .tvhm-selector-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .tvhm-search-box {
-    width: 100%;
-  }
-}
-.tvhm-search-box svg {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94A3B8;
-  pointer-events: none;
-}
-.tvhm-search-box input {
-  width: 100%;
-  padding: 6px 10px 6px 30px;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #0F172A;
-  background: #FFFFFF;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  box-sizing: border-box;
-}
-.tvhm-search-box input:focus {
-  border-color: #6320EE;
-  box-shadow: 0 0 0 2px rgba(99, 32, 238, 0.15);
-}
-
-/* Chips Grid */
-.tvhm-chips-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  max-height: clamp(240px, 35vh, 340px);
-  overflow-y: auto;
-  padding: 2px 2px 6px;
-  margin-bottom: 8px;
-}
-@media (max-width: 600px) {
-  .tvhm-chips-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-@media (max-width: 400px) {
-  .tvhm-chips-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-.tvhm-chips-grid::-webkit-scrollbar { width: 5px; }
-.tvhm-chips-grid::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; }
-
-.tvhm-size-chip {
-  padding: 9px 4px;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
-}
-.tvhm-size-chip:hover {
-  border-color: #6320EE;
-  background: #F5F3FF;
-  color: #6320EE;
-  transform: translateY(-1px);
-}
-.tvhm-size-chip.selected {
-  border-color: #6320EE;
-  background: #6320EE;
-  color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(99, 32, 238, 0.35);
-  font-weight: 800;
-}
-
-/* Modal Footer */
-.tvhm-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 24px;
-  border-top: 1.5px solid #F1F5F9;
-  background: #FFFFFF;
-  flex-shrink: 0;
-  gap: 12px;
-}
-.tvhm-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  background: #F1F5F9;
-  border: 1.5px solid #E2E8F0;
-  color: #475569;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.tvhm-back-btn:hover {
-  background: #E2E8F0;
-  color: #0F172A;
-}
-.tvhm-next-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 24px;
-  border-radius: 10px;
-  background: #6320EE;
-  border: none;
-  color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 14px rgba(99, 32, 238, 0.3);
-  margin-left: auto;
-}
-.tvhm-next-btn:hover {
-  background: #4F13D1;
-  box-shadow: 0 6px 18px rgba(99, 32, 238, 0.4);
-  transform: translateY(-1px);
-}
-.tvhm-next-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-.tvhm-search-action-btn {
-  background: linear-gradient(135deg, #10B981, #059669);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-}
-.tvhm-search-action-btn:hover {
-  background: linear-gradient(135deg, #059669, #047857);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
-}
-</style>
+{# ── Styles for hero search widget & overview drawer have been moved to static/css/client.css ── #}
 
 {# ── Modal overlay ── #}
 <div id="tvHeroModal" aria-modal="true" role="dialog" onclick="tvHeroModalClose(event)">
@@ -1024,7 +73,7 @@
         </button>
         <a href="/brands" class="tv-hsoption-card">
           <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v10M12 12l7.07-7.07"/></svg></div>
-          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">Tyre Brands</span></div>
+          <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">Brands</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="/tyres/ev" class="tv-hsoption-card">
@@ -1104,32 +153,6 @@ function switchHeroSearchTab(tabKey) {
    MODAL STATE
 ══════════════════════════════════════════════════════ */
 var _tvState = { type: null, tab: null, step: 1, width: null, profile: null, rim: null, make: null, model: null };
-
-var _tyreWidths   = ['145','155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325'];
-var _tyreProfiles = ['25','30','35','40','45','50','55','60','65','70','75','80','85'];
-var _tyreRims     = ['R13','R14','R15','R16','R17','R18','R19','R20','R21','R22','R23','R24'];
-var _wheelRims    = ['R15','R16','R17','R18','R19','R20','R21','R22','R23','R24'];
-var _wheelWidths  = ['6.5J','7.0J','7.5J','8.0J','8.5J','9.0J','9.5J','10.0J','10.5J'];
-var _mbWidths     = ['80','90','100','110','120','130','140','150','160','170','180'];
-var _mbProfiles   = ['50','55','60','65','70','75','80','85','90'];
-var _mbRims       = ['R10','R12','R14','R16','R17','R18','R19'];
-
-var _carMakes = {
-  'Toyota':    ['Land Cruiser','Prado','Hilux','Camry','Corolla','RAV4','Fortuner','Yaris'],
-  'Nissan':    ['Patrol','Altima','Sunny','X-Trail','Pathfinder','Kicks','Navara'],
-  'Lexus':     ['LX570','LX600','GX460','RX350','ES350','IS300','LS500'],
-  'Ford':      ['F-150','Explorer','Expedition','Mustang','Ranger','EcoSport'],
-  'BMW':       ['X5','X6','X7','3 Series','5 Series','7 Series','M4','M5'],
-  'Mercedes':  ['C-Class','E-Class','S-Class','G-Class','GLE','GLC','A-Class'],
-  'Land Rover':['Range Rover','Defender','Sport','Velar','Discovery'],
-  'Porsche':   ['Cayenne','Macan','Panamera','911','Taycan'],
-  'Hyundai':   ['Tucson','Santa Fe','Elantra','Sonata','Palisade'],
-  'Kia':       ['Sportage','Sorento','Telluride','Cerato','Carnival'],
-  'Audi':      ['Q7','Q8','Q5','A6','A4','e-tron','RS6'],
-  'Honda':     ['Accord','Civic','CR-V','Pilot','HR-V'],
-  'Mitsubishi':['Pajero','Outlander','Montero Sport','ASX','Eclipse Cross'],
-  'Tesla':     ['Model 3','Model Y','Model S','Model X','Cybertruck']
-};
 
 var _allBrandsCache = null;
 
@@ -1232,7 +255,8 @@ function _tvRenderModal() {
       title.textContent = (_tvState.brandName || 'Brand') + ' Tyres';
     } else {
       badge.textContent = 'TYRES FOUND';
-      title.textContent = (_tvState.brandName || '') + ' ' + _tvState.width + '/' + _tvState.profile + ' ' + _tvState.rim;
+      var rimClean = String(_tvState.rim || '').replace(/^R/i, '').trim();
+      title.textContent = (_tvState.brandName || '') + ' ' + _tvState.width + '/' + _tvState.profile + (rimClean ? ' ' + rimClean : '');
     }
     _tvRenderBrandsPanel(body);
   } else if (t === 'ev') {
@@ -1312,12 +336,13 @@ function _tvRenderSizePanel(body, tab) {
     stepTitle = 'Select Rim Size';
     stepSub = 'Choose the diameter of the wheel rim in inches.';
     tipHeading = 'What is rim diameter?';
-    tipDesc = 'The diameter of the wheel rim in inches that the tyre is designed to fit. Found after the letter \'R\', e.g., 195/65 R15.';
+    tipDesc = 'The diameter of the wheel rim in inches that the tyre is designed to fit, e.g., 195/65 15.';
     badgeLabel = 'Rim Size';
-    badgeUnit = '';
-    defaultVal = 'R16';
-    if (!s.rim && isTyre) s.rim = 'R16';
-    currentSelectedVal = s.rim || (isTyre ? 'R16' : defaultVal);
+    badgeUnit = '"';
+    defaultVal = '16';
+    if (s.rim) s.rim = String(s.rim).replace(/^R/i, '').trim();
+    if (!s.rim && isTyre) s.rim = '16';
+    currentSelectedVal = s.rim || (isTyre ? '16' : defaultVal);
     selectorLabel = 'SELECT RIM SIZE (INCHES)';
     searchPlaceholder = 'Search rim...';
   }
@@ -1455,9 +480,7 @@ function _tvRenderSizePanel(body, tab) {
 
   // Load options based on current step and tab
   if (!isTyre) {
-    var widths   = isMoto ? _mbWidths : _wheelRims;
-    var profiles = isMoto ? _mbProfiles : _wheelWidths;
-    var rims     = isMoto ? _mbRims : [];
+    var widths = []; var profiles = []; var rims = [];
     if (s.step === 1) renderView(widths, false);
     else if (s.step === 2) renderView(profiles, false);
     else if (s.step === 3) renderView(rims, false);
@@ -1498,9 +521,10 @@ function _tvRenderSizePanel(body, tab) {
     } else {
       renderView([], true);
       _tvFetchTyreSizeOptions(s.width, s.profile).then(function(opts) {
-        _tvTyreSizeCache.rims[rimKey] = opts;
+        var cleanOpts = (opts || []).map(function(r) { return String(r).replace(/^R/i, '').trim(); }).filter(function(r) { return parseInt(r, 10) >= 14; });
+        _tvTyreSizeCache.rims[rimKey] = cleanOpts;
         if (_tvState.type === 'size' && _tvState.step === 3 && _tvState.width === s.width && _tvState.profile === s.profile) {
-          renderView(opts, false);
+          renderView(cleanOpts, false);
         }
       });
     }
@@ -1510,14 +534,14 @@ function _tvRenderSizePanel(body, tab) {
 function tvSelectSizeChip(val, autoAdvance) {
   var s = _tvState;
   var isWheel = s.tab === 'car-wheels';
-  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
 
   if (s.step === 1) {
     s.width = val;
   } else if (s.step === 2) {
     s.profile = val;
   } else if (s.step === 3) {
-    s.rim = val;
+    s.rim = String(val).replace(/^R/i, '').trim();
   }
 
   var grid = document.getElementById('tvSizeChipsGrid');
@@ -1530,7 +554,8 @@ function tvSelectSizeChip(val, autoAdvance) {
 
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal) {
-    badgeVal.textContent = val + badgeUnit;
+    var cleanVal = (s.step === 3 && !isWheel) ? String(val).replace(/^R/i, '').trim() : val;
+    badgeVal.textContent = cleanVal + badgeUnit;
   }
 
   var nextBtn = document.getElementById('tvSizeNextBtn');
@@ -1550,10 +575,11 @@ function tvSelectSizeChip(val, autoAdvance) {
 function tvHoverSizeChip(val) {
   var s = _tvState;
   var isWheel = s.tab === 'car-wheels';
-  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal) {
-    badgeVal.textContent = val + badgeUnit;
+    var cleanVal = (s.step === 3 && !isWheel) ? String(val).replace(/^R/i, '').trim() : val;
+    badgeVal.textContent = cleanVal + badgeUnit;
   }
 }
 
@@ -1561,10 +587,11 @@ function tvLeaveSizeChip() {
   var s = _tvState;
   var isWheel = s.tab === 'car-wheels';
   var currentVal = s.step === 1 ? s.width : (s.step === 2 ? s.profile : s.rim);
-  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '');
+  var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal && currentVal) {
-    badgeVal.textContent = currentVal + badgeUnit;
+    var cleanVal = (s.step === 3 && !isWheel) ? String(currentVal).replace(/^R/i, '').trim() : currentVal;
+    badgeVal.textContent = cleanVal + badgeUnit;
   }
 }
 
@@ -1607,7 +634,8 @@ function tvSizeSearch() {
   if (s.tab === 'car-wheels') {
     window.location.href = '/wheels?rim=' + encodeURIComponent(s.width || '') + '&width=' + encodeURIComponent(s.profile || '');
   } else {
-    var size = (s.width || '') + '-' + (s.profile || '') + '-' + (s.rim || '');
+    var rimClean = String(s.rim || '').replace(/^R/i, '').trim();
+    var size = (s.width || '') + '-' + (s.profile || '') + '-' + rimClean;
     window.location.href = '/tyres/size-' + encodeURIComponent(size);
   }
 }

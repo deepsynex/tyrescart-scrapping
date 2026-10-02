@@ -265,19 +265,10 @@
 
       <!-- Brand Logo Header (Matches Reference) -->
       <div class="flex items-center justify-between pb-3 border-b border-[#F1F5F0]">
-        <a href="/visionadmin/pages" class="flex items-center gap-2 group">
-          <svg class="swoosh" width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <path d="M5 14.5C9.2 7.6 16.2 3.6 24 4.2c5.2.4 9.6 2.7 12.4 6" stroke="currentColor" stroke-width="3.4"
-              stroke-linecap="round"></path>
-            <path d="M9.5 18.6c3.4-5.3 9-8.4 15.1-8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-              opacity=".75"></path>
-            <path d="M35 25.5C30.8 32.4 23.8 36.4 16 35.8c-5.2-.4-9.6-2.7-12.4-6" stroke="currentColor"
-              stroke-width="3.4" stroke-linecap="round"></path>
-            <path d="M30.5 21.4c-3.4 5.3-9 8.4-15.1 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-              opacity=".75"></path>
-          </svg>
-          <span class="word"><span class="t1">TYRES</span><span class="t2">VISI<span
-                class="oring"></span>N</span></span>
+        <a href="/visionadmin/pages" class="flex items-center gap-2.5 group">
+          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.png') }}"
+               alt="TyresVision"
+               class="h-7 w-auto object-contain group-hover:scale-105 transition-transform" />
         </a>
         <button type="button" id="va-close-sidebar-btn"
           class="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
@@ -408,8 +399,8 @@
           </div>
         </div>
 
-        <!-- 3. MARKETING (ACCORDION - CART PRICE RULES) -->
-        {% set is_marketing = page in ['cart_price_rules', 'marketing'] %}
+        <!-- 3. MARKETING (ACCORDION - CART PRICE RULES, EMAIL TEMPLATES, REVIEWER SETTINGS) -->
+        {% set is_marketing = page in ['cart_price_rules', 'marketing', 'email_templates', 'email_template_form', 'reviewer_settings', 'settings'] %}
         <div class="space-y-1">
           <button type="button" onclick="toggleSidebarAccordion('marketing')"
             class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold transition-all duration-200 {% if is_marketing %}bg-[#f7f4fd] text-[#4B237B]{% else %}text-slate-700 hover:bg-slate-50 hover:text-slate-900{% endif %}">
@@ -434,6 +425,16 @@
               class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page == 'cart_price_rules' %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
               <span>Cart Price Rules</span>
               {% if page == 'cart_price_rules' %}<span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>{% endif %}
+            </a>
+            <a href="/visionadmin/marketing/email-templates"
+              class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page in ['email_templates', 'email_template_form'] %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
+              <span>Email Templates</span>
+              {% if page in ['email_templates', 'email_template_form'] %}<span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>{% endif %}
+            </a>
+            <a href="/visionadmin/marketing/reviewer-settings"
+              class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page in ['reviewer_settings', 'settings'] %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
+              <span>Reviewer Settings</span>
+              {% if page in ['reviewer_settings', 'settings'] %}<span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>{% endif %}
             </a>
           </div>
         </div>

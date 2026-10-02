@@ -1,10 +1,10 @@
 {% extends 'Client/layout.html' %}
 
-{% block title %}All Tyre Brands in UAE | TyresVision{% endblock %}
+{% block title %}All Car Brands in UAE | Tyre Fitment by Vehicle | TyresVision{% endblock %}
 
-{% block meta_description %}Browse 80+ official tyre brands in Dubai, Abu Dhabi & UAE. Compare genuine tyres from Michelin, Pirelli, Continental, Bridgestone and more with free doorstep fitting.{% endblock %}
+{% block meta_description %}Browse 100+ car brands in Dubai, Abu Dhabi & UAE. Select your vehicle make (Toyota, Nissan, BMW, Mercedes, Porsche) to find official OEM and compatible tyre sizes with free doorstep fitting.{% endblock %}
 
-{% block canonical_url %}https://www.tyresvision.com/brand{% endblock %}
+{% block canonical_url %}{{ canonical_url or 'https://www.tyresvision.com/tyres/cars' }}{% endblock %}
 
 {% block content %}
 <main class="min-h-screen bg-slate-50 text-slate-900 pb-20">
@@ -15,11 +15,11 @@
     <div class="absolute inset-0 z-0">
       <img 
         src="{{ url_for('static', filename='assets/images/Brandhero.png') }}" 
-        alt="TyresVision Brand Hero" 
+        alt="TyresVision Car Brands Hero" 
         class="w-full h-full object-cover object-right lg:object-center"
         loading="eager"
       />
-      {# Dark gradient overlay to ensure text readability on the left while keeping skyline and tyres visible on the right #}
+      {# Dark gradient overlay to ensure text readability on the left while keeping background aesthetics #}
       <div class="absolute inset-0 bg-gradient-to-r from-[#1c0b30]/95 via-[#1c0b30]/85 to-[#1c0b30]/40 lg:to-transparent"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-[#1c0b30] via-transparent to-transparent"></div>
     </div>
@@ -29,7 +29,7 @@
       <nav class="flex items-center gap-2 text-xs font-semibold text-purple-200/80 mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-white transition-colors">Home</a>
         <span class="text-purple-300/50">/</span>
-        <span class="text-white">Brands</span>
+        <span class="text-white">Car Brands</span>
       </nav>
 
       <div class="max-w-3xl">
@@ -38,36 +38,36 @@
           <svg class="w-3.5 h-3.5 text-purple-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          Authorised UAE Retailer • Official Brand Directory
+          Authorised Fitment Guide • Official Car Directory
         </span>
 
         {# Title #}
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
-          Explore <span class="text-purple-300">80+</span> Official <br class="hidden sm:inline">Tyre Brands in the UAE
+          Find Tyres by Car Brand <br class="hidden sm:inline">in the UAE
         </h1>
 
         {# Description #}
         <p class="text-base sm:text-lg text-purple-100 font-normal leading-relaxed mb-8 max-w-2xl">
-          Find genuine, date-fresh tyres from the world’s leading manufacturers. Fitted at your doorstep by our mobile service vans or at trusted workshop centres across Dubai, Abu Dhabi, and Sharjah.
+          Select your vehicle manufacturer to discover official OEM and compatible tyre sizes. Fitted at your doorstep by our mobile service vans or at trusted workshop centres across Dubai, Abu Dhabi, and Sharjah.
         </p>
 
         {# Trust Stat Badges #}
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
-            <span class="block text-2xl sm:text-3xl font-black text-white">{{ total_brands or brands|length or 83 }}</span>
-            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Tyre Brands</span>
+            <span class="block text-2xl sm:text-3xl font-black text-white">{{ total_makes or makes|length or 118 }}</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Car Makes</span>
           </div>
           <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
-            <span class="block text-2xl sm:text-3xl font-black text-white">{{ "{:,}".format(total_tyres or 6447) }}+</span>
-            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Tyres In Stock</span>
+            <span class="block text-2xl sm:text-3xl font-black text-white">1,200+</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Vehicle Models</span>
           </div>
           <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
             <span class="block text-2xl sm:text-3xl font-black text-emerald-300">100%</span>
-            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">GCC Authentic</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">OEM Accurate</span>
           </div>
           <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm hover:bg-white/15 transition-colors">
-            <span class="block text-2xl sm:text-3xl font-black text-white">5 Years</span>
-            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Official Warranty</span>
+            <span class="block text-2xl sm:text-3xl font-black text-white">Free</span>
+            <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Doorstep Fitment</span>
           </div>
         </div>
       </div>
@@ -90,14 +90,14 @@
           </div>
           <input 
             type="text" 
-            id="tvBrandSearchInput" 
-            placeholder="Search tyre brands (e.g. Michelin, Pirelli, Dunlop)..." 
+            id="tvCarBrandSearchInput" 
+            placeholder="Search car brands (e.g. Toyota, Nissan, BMW, Mercedes)..." 
             class="w-full pl-10 pr-10 py-3 text-sm bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:bg-white focus:border-transparent transition-all placeholder:text-slate-400 font-medium text-slate-900"
             autocomplete="off"
           >
           <button 
             type="button" 
-            id="tvBrandClearBtn" 
+            id="tvCarBrandClearBtn" 
             class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden"
             aria-label="Clear Search"
           >
@@ -112,109 +112,84 @@
         <div class="flex items-center gap-2">
           <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7C3AED] font-extrabold text-xs border border-purple-200/80">
             <span class="w-2 h-2 rounded-full bg-[#7C3AED] animate-pulse"></span>
-            <span id="tvBrandMatchCount">{{ brands|length }}</span> of {{ brands|length }} Brands
+            <span id="tvCarBrandMatchCount">{{ makes|length }}</span> of {{ makes|length }} Car Brands
           </span>
           <span class="text-xs text-slate-300 hidden sm:inline">•</span>
-          <span class="text-xs font-semibold text-slate-500 hidden sm:inline">100% Genuine GCC Specs</span>
+          <span class="text-xs font-semibold text-slate-500 hidden sm:inline">100% Genuine Fitment</span>
         </div>
       </div>
 
       {# Tier Filter Tabs #}
       <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 hidden sm:inline">Tier:</span>
-        <button type="button" class="tv-brand-tier-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="all">
-          All Brands ({{ brands|length }})
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 hidden sm:inline">Category:</span>
+        <button type="button" class="tv-carbrand-tier-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="all">
+          All Brands ({{ makes|length }})
         </button>
-        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="premium">
-          Premium
+        <button type="button" class="tv-carbrand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="popular">
+          ★ Popular in UAE
         </button>
-        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="mid-range">
-          Mid-Range
+        <button type="button" class="tv-carbrand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="luxury">
+          Luxury &amp; Supercars
         </button>
-        <button type="button" class="tv-brand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="budget">
-          Budget &amp; Economy
+        <button type="button" class="tv-carbrand-tier-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all" data-tier="suv">
+          SUV &amp; 4x4
         </button>
       </div>
 
       {# Alphabet Bar #}
-      <div class="mt-3 flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1" id="tvBrandAlphabetBar">
-        <button type="button" class="tv-brand-letter-btn active px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all" data-letter="all">ALL</button>
+      <div class="mt-3 flex flex-wrap items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1" id="tvCarBrandAlphabetBar">
+        <button type="button" class="tv-carbrand-letter-btn active px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all" data-letter="all">ALL</button>
         {% for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
-        <button type="button" class="tv-brand-letter-btn px-2 py-1 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-[#7C3AED] hover:bg-purple-50" data-letter="{{ letter }}">{{ letter }}</button>
+        <button type="button" class="tv-carbrand-letter-btn px-2 py-1 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-[#7C3AED] hover:bg-purple-50" data-letter="{{ letter }}">{{ letter }}</button>
         {% endfor %}
       </div>
 
     </div>
 
-    {# ── 3. BRANDS GRID CONTAINER ── #}
+    {# ── 3. CAR BRANDS GRID CONTAINER ── #}
     <div>
     <div 
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4.5" 
-      id="tvBrandGridContainer"
+      id="tvCarBrandGridContainer"
     >
-      {% for b in brands %}
+      {% for m in makes %}
       <div 
-        class="tv-brand-card group bg-white rounded-xl border border-slate-200/90 p-2.5 sm:p-3 shadow-xs hover:shadow-lg hover:border-[#7C3AED] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between text-left relative overflow-hidden"
-        data-name="{{ b.name|lower }}"
-        data-tier="{{ b.tier }}"
-        data-letter="{{ b.name[:1]|upper }}"
-        data-featured="{{ '1' if b.is_featured or b.tier == 'premium' else '0' }}"
+        class="tv-carbrand-card group bg-white rounded-xl border border-slate-200/90 p-2.5 sm:p-3 shadow-xs hover:shadow-lg hover:border-[#7C3AED] hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between text-left relative overflow-hidden"
+        data-name="{{ m.name|lower }}"
+        data-tier="{{ m.tier or 'all' }}"
+        data-letter="{{ m.name[:1]|upper }}"
+        data-featured="{{ '1' if m.is_featured else '0' }}"
       >
-        <span class="sr-only">{{ b.name }}</span>
-
-        {# Top Badges #}
-        <div class="flex items-center justify-between gap-1 mb-1">
-          {% if b.tier == 'premium' %}
-          <span class="inline-flex items-center text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-purple-50 text-[#7C3AED] border border-purple-200/80 leading-none">
-            Premium
-          </span>
-          {% elif b.tier == 'mid-range' %}
-          <span class="inline-flex items-center text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200/80 leading-none">
-            Mid-Range
-          </span>
-          {% else %}
-          <span class="inline-flex items-center text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 leading-none">
-            Budget
-          </span>
-          {% endif %}
-
-          {% if b.tyre_count and b.tyre_count > 0 %}
-          <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 bg-slate-100 group-hover:bg-purple-100 group-hover:text-[#7C3AED] px-1.5 py-0.5 rounded-md transition-colors whitespace-nowrap leading-none">
-            {{ b.tyre_count }} Tyres
-          </span>
-          {% else %}
-          <span class="text-[9px] sm:text-[10px] font-semibold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded-md leading-none">In Stock</span>
-          {% endif %}
-        </div>
+        <span class="sr-only">{{ m.name }}</span>
 
         {# Logo Area #}
-        <div class="h-10 sm:h-12 flex items-center justify-center my-0.5 px-1.5">
-          {% if b.logo %}
+        <div class="h-12 sm:h-14 flex items-center justify-center my-1.5 px-1 overflow-hidden">
+          {% if m.logo %}
           <img 
-            src="{{ b.logo }}" 
-            alt="{{ b.name }} Tyres" 
+            src="{{ m.logo }}" 
+            alt="{{ m.name }} Car Tyres" 
             loading="lazy" 
-            class="max-h-8 sm:max-h-9 max-w-full object-contain filter group-hover:scale-105 transition-transform duration-200"
+            class="tv-carbrand-logo-img max-w-full object-contain filter group-hover:scale-105 transition-transform duration-200"
             onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"
           />
-          <div class="tv-brand-monogram hidden w-9 h-9 rounded-lg bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-base items-center justify-center shadow-xs">
-            {{ b.name[:1]|upper }}
+          <div class="tv-carbrand-monogram hidden w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-lg items-center justify-center shadow-xs">
+            {{ m.name[:1]|upper }}
           </div>
           {% else %}
-          <div class="tv-brand-monogram w-9 h-9 rounded-lg bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-base flex items-center justify-center shadow-xs">
-            {{ b.name[:1]|upper }}
+          <div class="tv-carbrand-monogram w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 border border-purple-200 text-[#4B237B] font-black text-lg flex items-center justify-center shadow-xs">
+            {{ m.name[:1]|upper }}
           </div>
           {% endif %}
         </div>
 
-        {# Direct Link to Brand Catalog #}
+        {# Direct Link to Car Models Page #}
         <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-center">
           <a 
-            href="/tyres/brand/{{ b.slug }}" 
+            href="/tyres/cars/{{ m.slug }}" 
             class="w-full py-1.5 px-2.5 rounded-lg bg-slate-50 hover:bg-[#7C3AED] text-slate-700 hover:text-white font-bold text-[11px] sm:text-xs inline-flex items-center justify-center gap-1 transition-all shadow-2xs group-hover:bg-[#7C3AED] group-hover:text-white"
-            title="Browse all {{ b.name }} tyres"
+            title="Browse all {{ m.name }} models & tyres"
           >
-            <span>View Tyres</span>
+            <span>View Models</span>
             <svg class="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
@@ -227,7 +202,7 @@
 
     {# No Results State #}
     <div 
-      id="tvBrandNoResults" 
+      id="tvCarBrandNoResults" 
       class="hidden py-16 px-4 text-center bg-white rounded-3xl border border-slate-200 mt-6 shadow-sm"
     >
       <div class="w-16 h-16 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mx-auto mb-4">
@@ -236,13 +211,13 @@
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
       </div>
-      <h3 class="text-lg font-bold text-slate-900 mb-1">No brands matching your search</h3>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">No car brands matching your search</h3>
       <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">
-        We couldn't find any tyre brands matching "<span id="tvBrandNoResultsQuery" class="font-semibold text-slate-800"></span>".
+        We couldn't find any vehicle makes matching "<span id="tvCarBrandNoResultsQuery" class="font-semibold text-slate-800"></span>".
       </p>
       <button 
         type="button" 
-        id="tvBrandResetFilterBtn"
+        id="tvCarBrandResetFilterBtn"
         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-sm transition-colors shadow-sm"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -252,91 +227,124 @@
       </button>
     </div>
 
-  </section>
+    </div>
+
+    {# ── 4. SEO & FAQ SECTION ── #}
+    <div class="mt-16 bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10">
+      <div class="max-w-3xl">
+        <span class="text-xs font-extrabold uppercase tracking-wider text-[#7C3AED]">Car Tyre Buying Guide</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1 mb-4">Finding the Right Tyres for Your Car in Dubai &amp; UAE</h2>
+        <p class="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
+          Every vehicle brand and model comes with specific manufacturer specifications for tyre sizing, speed rating, and load capacity. Whether you drive a luxury Porsche 911, a family Toyota Land Cruiser, or an executive BMW 5-Series, TyresVision guarantees 100% genuine GCC-spec tyres tailored to your car.
+        </p>
+
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <h3 class="font-bold text-slate-900 text-sm sm:text-base">What are OEM marked tyres and do I need them?</h3>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+              OEM (Original Equipment Manufacturer) tyres are custom-engineered in collaboration between tyre manufacturers and car brands. Examples include MO/MOE for Mercedes, ★ for BMW, N0/N1/N2 for Porsche, and AO for Audi. While standard tyres matching the correct size fit safely, OEM tyres optimize factory handling, braking, and ride comfort.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <h3 class="font-bold text-slate-900 text-sm sm:text-base">How does TyresVision mobile fitting work for my car?</h3>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
+              Our mobile fitting vans come directly to your home, office, or designated parking in Dubai, Abu Dhabi, and Sharjah. Equipped with computerized tyre balancers, non-scratch rim clamps, and nitrogen inflation, our certified technicians change and balance your tyres on site with zero hassle.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
 </main>
 
 <style>
-.tv-brand-tier-btn {
+.tv-carbrand-tier-btn {
   background: #F8FAFC;
   color: #64748B;
   border: 1px solid #E2E8F0;
 }
-.tv-brand-tier-btn:hover {
+.tv-carbrand-tier-btn:hover {
   background: #FAF5FF;
   color: #7C3AED;
   border-color: #DDD6FE;
 }
-.tv-brand-tier-btn.active {
+.tv-carbrand-tier-btn.active {
   background: #7C3AED;
   color: #FFFFFF;
   border-color: #7C3AED;
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
 }
 
-.tv-brand-letter-btn.active {
+.tv-carbrand-letter-btn.active {
   background: #4B237B;
   color: #FFFFFF !important;
   font-weight: 800;
+}
+
+.tv-carbrand-logo-img {
+  max-height: 38px !important;
+  max-width: 90% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block;
 }
 </style>
 
 <script>
 (function() {
-  var searchInput = document.getElementById('tvBrandSearchInput');
-  var clearBtn    = document.getElementById('tvBrandClearBtn');
-  var cards       = document.querySelectorAll('.tv-brand-card');
-  var matchCount  = document.getElementById('tvBrandMatchCount');
-  var noResults   = document.getElementById('tvBrandNoResults');
-  var noResQuery  = document.getElementById('tvBrandNoResultsQuery');
-  var resetBtn    = document.getElementById('tvBrandResetFilterBtn');
-  var tierBtns    = document.querySelectorAll('.tv-brand-tier-btn');
-  var letterBtns  = document.querySelectorAll('.tv-brand-letter-btn');
+  var searchInput = document.getElementById('tvCarBrandSearchInput');
+  var clearBtn    = document.getElementById('tvCarBrandClearBtn');
+  var cards       = document.querySelectorAll('.tv-carbrand-card');
+  var matchCount  = document.getElementById('tvCarBrandMatchCount');
+  var noResults   = document.getElementById('tvCarBrandNoResults');
+  var noResQuery  = document.getElementById('tvCarBrandNoResultsQuery');
+  var resetBtn    = document.getElementById('tvCarBrandResetFilterBtn');
+  var tierBtns    = document.querySelectorAll('.tv-carbrand-tier-btn');
+  var letterBtns  = document.querySelectorAll('.tv-carbrand-letter-btn');
 
-  var currentTier = 'all';
+  var currentTier   = 'all';
   var currentLetter = 'all';
 
   function applyFilters() {
-    var query = (searchInput.value || '').trim().toLowerCase();
-    var visible = 0;
+    var query = (searchInput ? searchInput.value : '').trim().toLowerCase();
 
-    if (query.length > 0) {
-      clearBtn.classList.remove('hidden');
-    } else {
-      clearBtn.classList.add('hidden');
+    if (clearBtn) {
+      if (query.length > 0) clearBtn.classList.remove('hidden');
+      else clearBtn.classList.add('hidden');
     }
 
+    var visibleCount = 0;
+
     cards.forEach(function(card) {
-      var name = card.getAttribute('data-name') || '';
-      var tier = card.getAttribute('data-tier') || '';
-      var letter = card.getAttribute('data-letter') || '';
-      var featured = card.getAttribute('data-featured') || '0';
+      var name     = card.getAttribute('data-name') || '';
+      var tier     = card.getAttribute('data-tier') || 'all';
+      var letter   = card.getAttribute('data-letter') || '';
+      var featured = card.getAttribute('data-featured') === '1';
 
-      var matchQuery = !query || name.indexOf(query) !== -1;
-      
-      var matchTier = true;
-      if (currentTier === 'popular') {
-        matchTier = featured === '1';
-      } else if (currentTier !== 'all') {
-        matchTier = tier === currentTier;
-      }
-
+      var matchQuery  = !query || name.indexOf(query) !== -1;
+      var matchTier   = (currentTier === 'all') || 
+                        (currentTier === 'popular' && (featured || tier === 'popular')) ||
+                        (currentTier === tier);
       var matchLetter = (currentLetter === 'all') || (letter === currentLetter);
 
       if (matchQuery && matchTier && matchLetter) {
         card.style.display = '';
-        visible++;
+        visibleCount++;
       } else {
         card.style.display = 'none';
       }
     });
 
-    if (matchCount) matchCount.textContent = visible;
+    if (matchCount) matchCount.textContent = visibleCount;
 
-    if (visible === 0) {
+    if (visibleCount === 0 && noResults) {
       noResults.classList.remove('hidden');
       if (noResQuery) noResQuery.textContent = query || 'selected filters';
-    } else {
+    } else if (noResults) {
       noResults.classList.add('hidden');
     }
   }

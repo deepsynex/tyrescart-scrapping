@@ -8,6 +8,7 @@ import json
 import os
 import math
 import re
+import time
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 from flask import Blueprint, current_app, g, render_template, request, session, abort, redirect, make_response, send_from_directory, jsonify
@@ -150,7 +151,39 @@ def blog_default():
     session['site_locale'] = code
     categories = Blog.distinct_categories(locale=code)
     selected_category = (request.args.get('category') or '').strip()
-    resp = make_response(render_template('Client/Blog.html', locale=code, categories=categories, selected_category=selected_category))
+
+    base_url = "https://www.tyresvision.com"
+    canonical_url = f"{base_url}/{code}/blog" if code and code.lower() != 'en' else f"{base_url}/blog"
+    canonical_url = canonical_url.rstrip('/')
+
+    listing_title = translate('Tyre Care & Buying Guides | TyresVision Blog', code)
+    listing_desc = translate('Straight answers on tyre sizing, maintenance, and buying the right set for UAE roads and heat — from the team behind TyresVision.', code)
+    listing_img = f"{base_url}/static/assets/images/online-tyres-shop-dubai.png"
+
+    page_og_tags = {
+        'og_type': 'website',
+        'og_url': canonical_url,
+        'og_title': listing_title,
+        'og_description': listing_desc,
+        'og_image': listing_img,
+        'og_locale': 'ar_AE' if code == 'ar' else 'en_AE',
+    }
+    page_twitter_tags = {
+        'twitter_card': 'summary_large_image',
+        'twitter_title': listing_title,
+        'twitter_description': listing_desc,
+        'twitter_image': listing_img,
+    }
+
+    resp = make_response(render_template(
+        'Client/Blog.html',
+        locale=code,
+        categories=categories,
+        selected_category=selected_category,
+        canonical_url=canonical_url,
+        page_og_tags=page_og_tags,
+        page_twitter_tags=page_twitter_tags
+    ))
     resp.set_cookie('site_locale', code, max_age=31536000, path='/')
     return resp
 
@@ -165,7 +198,39 @@ def blog_locale(lang_code):
     session['site_locale'] = code
     categories = Blog.distinct_categories(locale=code)
     selected_category = (request.args.get('category') or '').strip()
-    resp = make_response(render_template('Client/Blog.html', locale=code, categories=categories, selected_category=selected_category))
+
+    base_url = "https://www.tyresvision.com"
+    canonical_url = f"{base_url}/{code}/blog" if code and code.lower() != 'en' else f"{base_url}/blog"
+    canonical_url = canonical_url.rstrip('/')
+
+    listing_title = translate('Tyre Care & Buying Guides | TyresVision Blog', code)
+    listing_desc = translate('Straight answers on tyre sizing, maintenance, and buying the right set for UAE roads and heat — from the team behind TyresVision.', code)
+    listing_img = f"{base_url}/static/assets/images/online-tyres-shop-dubai.png"
+
+    page_og_tags = {
+        'og_type': 'website',
+        'og_url': canonical_url,
+        'og_title': listing_title,
+        'og_description': listing_desc,
+        'og_image': listing_img,
+        'og_locale': 'ar_AE' if code == 'ar' else 'en_AE',
+    }
+    page_twitter_tags = {
+        'twitter_card': 'summary_large_image',
+        'twitter_title': listing_title,
+        'twitter_description': listing_desc,
+        'twitter_image': listing_img,
+    }
+
+    resp = make_response(render_template(
+        'Client/Blog.html',
+        locale=code,
+        categories=categories,
+        selected_category=selected_category,
+        canonical_url=canonical_url,
+        page_og_tags=page_og_tags,
+        page_twitter_tags=page_twitter_tags
+    ))
     resp.set_cookie('site_locale', code, max_age=31536000, path='/')
     return resp
 
@@ -270,14 +335,49 @@ def _render_blog_detail(slug, locale):
         published_str = '26-08-2026'
         reviewed_str = '24-08-2026'
 
+    # Canonical URL: actual full URL without trailing slash
+    base_url = "https://www.tyresvision.com"
+    if locale and locale.lower() != 'en':
+        canonical_url = f"{base_url}/{locale.lower()}/blog/{blog.slug}"
+    else:
+        canonical_url = f"{base_url}/blog/{blog.slug}"
+    canonical_url = canonical_url.rstrip('/')
+
+    # Meta Title and Meta Description (fallback to title / short_description / default)
+    meta_title = blog.get_meta_title(locale) or blog.get_title(locale)
+    meta_desc = blog.get_meta_desc(locale) or blog.get_short_desc(locale) or f"{blog.get_title(locale)} — expert advice and tyre guide for UAE drivers."
+
+    # Cover image and absolute OG image URL
+    cover_image = blog.image or '/static/assets/images/online-tyres-shop-dubai.png'
+    full_image_url = cover_image if cover_image.startswith('http') else f"{base_url}{cover_image}"
+
+    # Build Open Graph and Twitter tags
+    page_og_tags = {
+        'og_type': 'article',
+        'og_url': canonical_url,
+        'og_title': meta_title,
+        'og_description': meta_desc,
+        'og_image': full_image_url,
+        'og_locale': 'ar_AE' if locale == 'ar' else 'en_AE',
+    }
+    page_twitter_tags = {
+        'twitter_card': 'summary_large_image',
+        'twitter_title': meta_title,
+        'twitter_description': meta_desc,
+        'twitter_image': full_image_url,
+    }
+
     blog_data = {
         'id': blog.id,
         'slug': blog.slug,
         'title': blog.get_title(locale),
+        'meta_title': meta_title,
+        'meta_desc': meta_desc,
+        'canonical_url': canonical_url,
         'content': _strip_inline_styles(blog.get_content(locale)),
         'short_description': blog.get_short_desc(locale),
         'category': cat_name,
-        'cover_image_url': blog.image or '/static/assets/images/online-tyres-shop-dubai.png',
+        'cover_image_url': cover_image,
         'published_at': published_str,
         'reviewed_at': reviewed_str,
         'read_time': translate('5 min read', locale),
@@ -299,7 +399,10 @@ def _render_blog_detail(slug, locale):
         prev_post=prev_post,
         next_post=next_post,
         reviewer=reviewer_info,
-        locale=locale
+        locale=locale,
+        canonical_url=canonical_url,
+        page_og_tags=page_og_tags,
+        page_twitter_tags=page_twitter_tags
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
@@ -1022,8 +1125,34 @@ def _fetch_catalog_products(args, locale='en'):
                 for sz in sizes:
                     sz_clean = sz.strip()
                     sz_hyphen = sz_clean.replace('/', '-').replace(' ', '-')
-                    s_clauses.append("(LOWER(p.tire_size_label) = LOWER(%s) OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s))")
-                    s_params.extend([sz_clean, sz_hyphen])
+                    sz_nor = re.sub(r'[-/ ]*r(\d+)', r'-\1', sz_hyphen, flags=re.IGNORECASE)
+                    sz_withr = re.sub(r'-(\d+)$', r'-r\1', sz_nor, flags=re.IGNORECASE)
+                    m_dim = re.match(r'^(\d+)[-/ ]+(\d+)[-/ ]+r?(\d+(?:\.\d+)?)$', sz_clean, re.IGNORECASE)
+                    if m_dim:
+                        w_val, h_val, r_val = m_dim.group(1), m_dim.group(2), m_dim.group(3)
+                        s_clauses.append(
+                            "("
+                            "LOWER(p.tire_size_label) = LOWER(%s) "
+                            "OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s) "
+                            "OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s) "
+                            "OR REPLACE(REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-'), 'r', '') = LOWER(%s) "
+                            "OR (JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.width')) = %s "
+                            "    AND JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.height')) = %s "
+                            "    AND (JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.rim')) = %s "
+                            "         OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.rim')) = %s))"
+                            ")"
+                        )
+                        s_params.extend([sz_clean, sz_hyphen, sz_withr, sz_nor, w_val, h_val, r_val, f"R{r_val}"])
+                    else:
+                        s_clauses.append(
+                            "("
+                            "LOWER(p.tire_size_label) = LOWER(%s) "
+                            "OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s) "
+                            "OR REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-') = LOWER(%s) "
+                            "OR REPLACE(REPLACE(REPLACE(LOWER(p.tire_size_label), '/', '-'), ' ', '-'), 'r', '') = LOWER(%s)"
+                            ")"
+                        )
+                        s_params.extend([sz_clean, sz_hyphen, sz_withr, sz_nor])
                 clauses['size'][0].append("(" + " OR ".join(s_clauses) + ")")
                 clauses['size'][1].extend(s_params)
 
@@ -1699,12 +1828,18 @@ def _render_product_listing(locale, filter_path=None):
         if not s_c:
             continue
         s_slug = s_c.lower().replace('/', '-').replace(' ', '-')
-        if s_slug not in active_sizes:
-            active_sizes.append(s_slug)
+        s_slug_clean = re.sub(r'[-/ ]*r(\d+)', r'-\1', s_slug, flags=re.IGNORECASE)
+        if s_slug_clean not in active_sizes:
+            active_sizes.append(s_slug_clean)
         active_sizes_match.add(s_c.lower())
         active_sizes_match.add(s_slug)
+        active_sizes_match.add(s_slug_clean)
         active_sizes_match.add(s_c.upper())
         active_sizes_match.add(s_slug.upper())
+        active_sizes_match.add(s_slug_clean.upper())
+        s_slug_r = re.sub(r'-(\d+)$', r'-r\1', s_slug_clean, flags=re.IGNORECASE)
+        active_sizes_match.add(s_slug_r)
+        active_sizes_match.add(s_slug_r.upper())
     active_types = [t.lower() for t in (combined_args.getlist('type') or combined_args.getlist('tire_type'))]
     active_runflat = [r.lower() for r in (combined_args.getlist('runflat') or combined_args.getlist('run_flat') or combined_args.getlist('is_runflat'))]
     filter_runflat_count = facets.get('runflat', 0)
@@ -2488,6 +2623,755 @@ def brand_page():
         conn.close()
 
 
+# ============================================================================
+# CAR BRANDS & VEHICLE DYNAMIC MULTI-SLUG PAGES
+# ============================================================================
+_DB_AVAILABLE_SIZES_CACHE = None
+_DB_AVAILABLE_SIZES_CACHE_TIME = 0
+_AVAILABLE_MAKES_CACHE = None
+_AVAILABLE_MAKES_CACHE_TIME = 0
+_AVAILABLE_MODELS_CACHE = {}
+_AVAILABLE_MODELS_CACHE_TIME = {}
+
+
+def get_available_db_tire_sizes():
+    """
+    Returns a set of normalized size keys (e.g. '245-40-18', '255-40-23')
+    for all products currently active and in stock in the database.
+    Cached in memory for 5 minutes.
+    """
+    global _DB_AVAILABLE_SIZES_CACHE, _DB_AVAILABLE_SIZES_CACHE_TIME
+    now = time.time()
+    if _DB_AVAILABLE_SIZES_CACHE is not None and (now - _DB_AVAILABLE_SIZES_CACHE_TIME < 300):
+        return _DB_AVAILABLE_SIZES_CACHE
+
+    sizes = set()
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT DISTINCT tire_size_label 
+                FROM products 
+                WHERE deleted_at IS NULL 
+                  AND status = 'active' 
+                  AND stock_status = 'in_stock' 
+                  AND stock_qty > 0
+            """)
+            for r in cur.fetchall():
+                sz = r.get('tire_size_label') or ''
+                m = re.search(r'(\d+)[/\s]+(\d+)\s*(?:[A-Za-z]+)?\s*(\d+)', sz)
+                if m:
+                    sizes.add(f"{m.group(1)}-{m.group(2)}-{m.group(3)}")
+    except Exception as e:
+        current_app.logger.warning(f"get_available_db_tire_sizes error: {e}")
+    finally:
+        conn.close()
+
+    _DB_AVAILABLE_SIZES_CACHE = sizes
+    _DB_AVAILABLE_SIZES_CACHE_TIME = now
+    return sizes
+
+
+def get_makes_with_available_tyres():
+    """
+    Returns a set of car make slugs that have at least one model with in-stock tyres in the database.
+    Cached in memory for 10 minutes.
+    """
+    global _AVAILABLE_MAKES_CACHE, _AVAILABLE_MAKES_CACHE_TIME
+    now = time.time()
+    if _AVAILABLE_MAKES_CACHE is not None and (now - _AVAILABLE_MAKES_CACHE_TIME < 600):
+        return _AVAILABLE_MAKES_CACHE
+
+    makes = set()
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT DISTINCT v.make
+                FROM vehicles v
+                JOIN products p ON (p.tire_size_label = v.front_tire_size OR p.tire_size_label = v.rear_tire_size)
+                WHERE p.deleted_at IS NULL
+                  AND p.status = 'active'
+                  AND p.stock_status = 'in_stock'
+                  AND p.stock_qty > 0
+            """)
+            for r in cur.fetchall():
+                if r.get('make'):
+                    makes.add(r['make'].lower().strip())
+    except Exception as e:
+        current_app.logger.warning(f"get_makes_with_available_tyres error: {e}")
+    finally:
+        conn.close()
+
+    _AVAILABLE_MAKES_CACHE = makes
+    _AVAILABLE_MAKES_CACHE_TIME = now
+    return makes
+
+
+def get_models_with_available_tyres(make_slug):
+    """
+    Returns a set of model slugs for the specified make that have in-stock tyres in the database.
+    Cached in memory for 10 minutes per make.
+    """
+    global _AVAILABLE_MODELS_CACHE, _AVAILABLE_MODELS_CACHE_TIME
+    clean_make = (make_slug or '').lower().strip()
+    if clean_make == 'mercedes-benz':
+        clean_make = 'mercedes'
+    now = time.time()
+    if clean_make in _AVAILABLE_MODELS_CACHE and (now - _AVAILABLE_MODELS_CACHE_TIME.get(clean_make, 0) < 600):
+        return _AVAILABLE_MODELS_CACHE[clean_make]
+
+    models = set()
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT DISTINCT v.model
+                FROM vehicles v
+                JOIN products p ON (p.tire_size_label = v.front_tire_size OR p.tire_size_label = v.rear_tire_size)
+                WHERE v.make = %s
+                  AND p.deleted_at IS NULL
+                  AND p.status = 'active'
+                  AND p.stock_status = 'in_stock'
+                  AND p.stock_qty > 0
+            """, [clean_make])
+            for r in cur.fetchall():
+                if r.get('model'):
+                    models.add(r['model'].lower().strip())
+    except Exception as e:
+        current_app.logger.warning(f"get_models_with_available_tyres error for {make_slug}: {e}")
+    finally:
+        conn.close()
+
+    _AVAILABLE_MODELS_CACHE[clean_make] = models
+    _AVAILABLE_MODELS_CACHE_TIME[clean_make] = now
+    return models
+
+
+@site_bp.route('/tyres/cars', strict_slashes=False)
+@site_bp.route('/tyres/cars/', strict_slashes=False)
+@site_bp.route('/cars', strict_slashes=False)
+@site_bp.route('/cars/', strict_slashes=False)
+def car_brands_page():
+    """Client storefront Car Brands directory rendering Client/CarBrands.html."""
+    locale = _get_locale()
+    return _render_car_brands(locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/cars', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/tyres/cars/', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/cars', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/cars/', strict_slashes=False)
+def car_brands_page_locale(lang_code):
+    """Client storefront Car Brands directory with dynamic locale."""
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_car_brands(code)
+
+
+def _render_car_brands(locale):
+    avail_makes = get_makes_with_available_tyres()
+    try:
+        raw = _vs_wheel_get('makes.php', {'region': 'medm'})
+        raw_makes = raw.get('data', [])
+        # Only show car brands that have available tyres in our database
+        if avail_makes:
+            raw_makes = [
+                m for m in raw_makes 
+                if (m.get('slug') or '').strip().lower() in avail_makes 
+                or (m.get('slug') or '').strip().lower() in {'mercedes', 'mercedes-benz'}
+            ]
+    except Exception as e:
+        current_app.logger.warning(f"Error fetching car makes from Wheel-API: {e}")
+        raw_makes = []
+
+    popular_makes = {
+        'toyota', 'nissan', 'lexus', 'bmw', 'mercedes', 'mercedes-benz', 'ford',
+        'land-rover', 'porsche', 'audi', 'hyundai', 'kia', 'honda', 'mitsubishi',
+        'tesla', 'chevrolet', 'volkswagen', 'jeep'
+    }
+    luxury_makes = {
+        'porsche', 'ferrari', 'lamborghini', 'bentley', 'rolls-royce', 'aston-martin',
+        'maserati', 'mclaren', 'mercedes-benz', 'mercedes', 'bmw', 'audi', 'lexus',
+        'land-rover', 'jaguar', 'genesis', 'bugatti'
+    }
+    suv_makes = {
+        'toyota', 'nissan', 'land-rover', 'jeep', 'ford', 'gmc', 'chevrolet',
+        'mitsubishi', 'lexus', 'dodge', 'ram', 'subaru'
+    }
+
+    avail_local = _get_car_logo_files()
+    makes = []
+    for m in raw_makes:
+        slug = (m.get('slug') or '').strip().lower()
+        if not slug:
+            continue
+        name = m.get('name_en') or m.get('name') or slug.replace('-', ' ').title()
+
+        logo_file = f"{slug}.png"
+        if logo_file in avail_local:
+            logo_url = f"/static/assets/images/cars-logo/{logo_file}"
+        else:
+            logo_url = m.get('logo') or f"https://wheel-api.klever.ae/logos/{slug}.png"
+
+        tier = 'all'
+        category_label = 'Passenger'
+        if slug in luxury_makes:
+            tier = 'luxury'
+            category_label = 'Luxury'
+        elif slug in popular_makes:
+            tier = 'popular'
+            category_label = 'Popular'
+        elif slug in suv_makes:
+            tier = 'suv'
+            category_label = 'SUV & 4x4'
+        elif slug in {'tesla', 'lucid', 'polestar', 'byd', 'nio', 'zeekr'}:
+            tier = 'all'
+            category_label = 'EV'
+
+        is_feat = (slug in popular_makes) or (slug in luxury_makes)
+
+        makes.append({
+            'slug': slug,
+            'name': name,
+            'logo': logo_url,
+            'tier': tier,
+            'category_label': category_label,
+            'is_featured': is_feat
+        })
+
+    makes.sort(key=lambda x: (not x['is_featured'], x['name'].lower()))
+
+    base_url = "https://www.tyresvision.com"
+    canonical_url = f"{base_url}/{locale}/tyres/cars" if locale and locale != 'en' else f"{base_url}/tyres/cars"
+    canonical_url = canonical_url.rstrip('/')
+
+    resp = make_response(render_template(
+        'Client/CarBrands.html',
+        makes=makes,
+        total_makes=len(makes),
+        locale=locale,
+        canonical_url=canonical_url
+    ))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
+
+
+@site_bp.route('/tyres/cars/<path:slug_path>', strict_slashes=False)
+@site_bp.route('/cars/<path:slug_path>', strict_slashes=False)
+def vehicle_dynamic_page(slug_path):
+    """Dynamic multi-slug Vehicle page supporting Make > Model > Year > Trim fitments."""
+    locale = _get_locale()
+    return _render_vehicle_page(slug_path, locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/cars/<path:slug_path>', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/cars/<path:slug_path>', strict_slashes=False)
+def vehicle_dynamic_page_locale(lang_code, slug_path):
+    """Dynamic multi-slug Vehicle page with dynamic locale."""
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_vehicle_page(slug_path, code)
+
+
+def _render_vehicle_page(slug_path, locale):
+    clean_path = (slug_path or '').strip('/')
+    segments = [s.strip() for s in clean_path.split('/') if s.strip()]
+    if not segments:
+        return redirect('/tyres/cars', code=301)
+
+    level = len(segments)
+    make_slug = segments[0].lower()
+    if make_slug == 'mercedes-benz':
+        make_slug = 'mercedes'
+    model_slug = segments[1].lower() if level >= 2 else None
+    year = segments[2] if level >= 3 else None
+    trim_slug = segments[3].lower() if level >= 4 else None
+
+    # Fetch Make metadata
+    make_info = {'slug': make_slug, 'name': make_slug.replace('-', ' ').title(), 'logo': None}
+    try:
+        raw_makes = _vs_wheel_get('makes.php', {'region': 'medm'})
+        for rm in raw_makes.get('data', []):
+            if rm.get('slug', '').lower() == make_slug:
+                make_info['name'] = rm.get('name_en') or rm.get('name') or make_info['name']
+                if rm.get('logo'):
+                    make_info['logo'] = rm.get('logo')
+                break
+    except Exception as e:
+        current_app.logger.warning(f"Error resolving make {make_slug}: {e}")
+
+    avail_local = _get_car_logo_files()
+    if f"{make_slug}.png" in avail_local:
+        make_info['logo'] = f"/static/assets/images/cars-logo/{make_slug}.png"
+    elif not make_info['logo']:
+        make_info['logo'] = f"https://wheel-api.klever.ae/logos/{make_slug}.png"
+
+    base_prefix = f"/{locale}/tyres/cars" if locale and locale != 'en' else "/tyres/cars"
+    breadcrumbs = [
+        {"label": "Home", "url": "/"},
+        {"label": "Tyres", "url": "/tyres"},
+        {"label": "Cars", "url": base_prefix},
+        {"label": make_info['name'], "url": f"{base_prefix}/{make_slug}"}
+    ]
+
+    models = []
+    years = []
+    engines = []
+    tyre_options = []
+    products = []
+    model_info = {}
+    trim_info = {}
+    make_stats = {'total_tyres': 0, 'min_price': None, 'popular_sizes': []}
+    model_stats = {'total_tyres': 0, 'min_price': None, 'popular_sizes': [], 'staggered': False, 'front_size': None, 'rear_size': None, 'year_range': ''}
+
+    if level == 1:
+        # Level 1: Make overview -> list of Models with available tyres in DB
+        avail_models = get_models_with_available_tyres(make_slug)
+        db_model_stats = {}
+        try:
+            import db
+            conn = db.get_connection()
+            with conn.cursor() as cur:
+                # 1. Model years and fitment counts
+                cur.execute(
+                    "SELECT LOWER(model) AS model, MIN(year_from) AS min_y, MAX(year_to) AS max_y, COUNT(*) AS cnt "
+                    "FROM vehicles WHERE LOWER(make) = %s GROUP BY model",
+                    (make_slug,)
+                )
+                for row in cur.fetchall():
+                    m_key = (row.get('model') or '').strip().lower()
+                    min_y = row.get('min_y')
+                    max_y = row.get('max_y')
+                    y_disp = f"{min_y} - {max_y}" if min_y and max_y and min_y != max_y else str(min_y or max_y or '')
+                    db_model_stats[m_key] = {'year_range': y_disp, 'count': row.get('cnt') or 0}
+
+                # 2. Make overall stats
+                cur.execute(
+                    "SELECT COUNT(DISTINCT p.id) AS total_tyres, MIN(p.price) AS min_price "
+                    "FROM vehicles v "
+                    "JOIN products p ON INSTR(p.tire_size_label, v.front_tire_size) > 0 "
+                    "WHERE LOWER(v.make) = %s AND p.stock_status = 'in_stock'",
+                    (make_slug,)
+                )
+                st_row = cur.fetchone() or {}
+                if st_row:
+                    make_stats['total_tyres'] = st_row.get('total_tyres') or 0
+                    make_stats['min_price'] = st_row.get('min_price')
+
+                # 3. Top popular tyre sizes
+                cur.execute(
+                    "SELECT v.front_tire_size, COUNT(DISTINCT p.id) AS tyre_count "
+                    "FROM vehicles v "
+                    "JOIN products p ON INSTR(p.tire_size_label, v.front_tire_size) > 0 "
+                    "WHERE LOWER(v.make) = %s AND p.stock_status = 'in_stock' "
+                    "GROUP BY v.front_tire_size "
+                    "ORDER BY tyre_count DESC LIMIT 6",
+                    (make_slug,)
+                )
+                for s_row in cur.fetchall():
+                    sz = s_row.get('front_tire_size') or ''
+                    if sz:
+                        import re
+                        slug_parts = re.findall(r'\d+', sz)
+                        sz_slug = '-'.join(slug_parts) if slug_parts else sz
+                        make_stats['popular_sizes'].append({
+                            'label': sz,
+                            'slug': sz_slug,
+                            'count': s_row.get('tyre_count') or 0
+                        })
+            conn.close()
+        except Exception as e:
+            current_app.logger.warning(f"Error querying vehicle stats for {make_slug}: {e}")
+
+        try:
+            raw_models = _vs_wheel_get('models.php', {'make': make_slug, 'region': 'medm'})
+            for rm in raw_models.get('data', []):
+                slug = (rm.get('slug') or '').lower()
+                # When tyres for this model are not available in our database, do not show that model on the list
+                if avail_models and slug not in avail_models:
+                    continue
+                models.append({
+                    'slug': slug,
+                    'name': rm.get('name_en') or rm.get('name', ''),
+                    'years': rm.get('year_ranges', [])
+                })
+        except Exception as e:
+            current_app.logger.warning(f"Error fetching models for {make_slug}: {e}")
+
+        # If models list is empty due to API issue, fallback to DB models
+        if not models and avail_models:
+            for m_slug in sorted(avail_models):
+                models.append({
+                    'slug': m_slug,
+                    'name': m_slug.replace('-', ' ').title(),
+                    'years': []
+                })
+
+        # Enrich each model with year_display and category
+        BODY_TYPES = {
+            'cullinan': 'Ultra-Luxury SUV',
+            'phantom': 'Flagship Luxury Saloon',
+            'ghost': 'Prestige Saloon',
+            'dawn': 'Luxury Drophead Coupe',
+            'wraith': 'Grand Tourer Coupe',
+        }
+        for m in models:
+            m_slug = m['slug']
+            st = db_model_stats.get(m_slug, {})
+            m['year_display'] = st.get('year_range') or (', '.join(str(y) for y in m.get('years', [])) if m.get('years') else '')
+            if m_slug in BODY_TYPES:
+                m['category'] = BODY_TYPES[m_slug]
+            elif any(k in m_slug for k in ['suv', 'cross', 'x5', 'x6', 'x7', 'gls', 'gle', 'cayenne', 'macan', 'urus', 'land-cruiser', 'patrol', 'defender']):
+                m['category'] = 'Luxury SUV'
+            elif any(k in m_slug for k in ['coupe', 'cabrio', 'spider', 'convertible', 'gt', '911', '718', 'vantage']):
+                m['category'] = 'Coupe / Convertible'
+            elif any(k in m_slug for k in ['sedan', 'saloon', 's-class', '7-series', 'a8', 'flying-spur']):
+                m['category'] = 'Executive Saloon'
+            else:
+                m['category'] = 'Certified Fitment'
+
+    elif level == 2:
+        # Level 2: Model overview -> list of Years
+        model_name = model_slug.replace('-', ' ').title()
+        try:
+            raw_models = _vs_wheel_get('models.php', {'make': make_slug, 'region': 'medm'})
+            for rm in raw_models.get('data', []):
+                if rm.get('slug', '').lower() == model_slug:
+                    model_name = rm.get('name_en') or rm.get('name') or model_name
+                    break
+        except Exception:
+            pass
+
+        model_info = {'slug': model_slug, 'name': model_name}
+        breadcrumbs.append({"label": model_name, "url": f"{base_prefix}/{make_slug}/{model_slug}"})
+        try:
+            raw_years = _vs_wheel_get('years.php', {'make': make_slug, 'model': model_slug})
+            for y_item in raw_years.get('data', []):
+                y_val = str(y_item.get('slug') or y_item.get('name', '')).strip()
+                if y_val and y_val not in years:
+                    years.append(y_val)
+            years.sort(key=lambda y: int(y) if y.isdigit() else 0, reverse=True)
+        except Exception as e:
+            current_app.logger.warning(f"Error fetching years for {make_slug}/{model_slug}: {e}")
+
+        try:
+            import db
+            conn = db.get_connection()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT MIN(year_from) AS min_y, MAX(year_to) AS max_y, "
+                    "front_tire_size, rear_tire_size "
+                    "FROM vehicles WHERE LOWER(make) = %s AND LOWER(model) = %s "
+                    "GROUP BY front_tire_size, rear_tire_size",
+                    (make_slug, model_slug)
+                )
+                fitments = cur.fetchall()
+                front_sizes = []
+                rear_sizes = []
+                min_y_val = None
+                max_y_val = None
+                for f in fitments:
+                    if f.get('min_y'):
+                        min_y_val = min(min_y_val or 9999, f['min_y'])
+                    if f.get('max_y'):
+                        max_y_val = max(max_y_val or 0, f['max_y'])
+                    fs = (f.get('front_tire_size') or '').strip()
+                    rs = (f.get('rear_tire_size') or '').strip()
+                    if fs and fs not in front_sizes:
+                        front_sizes.append(fs)
+                    if rs and rs not in rear_sizes:
+                        rear_sizes.append(rs)
+
+                if min_y_val and max_y_val:
+                    model_stats['year_range'] = f"{min_y_val} - {max_y_val}" if min_y_val != max_y_val else str(min_y_val)
+                elif years:
+                    model_stats['year_range'] = f"{years[-1]} - {years[0]}" if len(years) > 1 else str(years[0])
+
+                p_front = front_sizes[0] if front_sizes else None
+                p_rear = rear_sizes[0] if rear_sizes else None
+                is_staggered = bool(p_front and p_rear and p_front != p_rear)
+
+                model_stats['staggered'] = is_staggered
+                model_stats['front_size'] = p_front
+                model_stats['rear_size'] = p_rear if is_staggered else None
+
+                f_cnt = 0
+                f_min_p = None
+                r_cnt = 0
+                r_min_p = None
+
+                if p_front:
+                    m_f = re.search(r'(\d+)[/\s](\d+)\s*(?:[A-Za-z]+)?\s*(\d+)', p_front)
+                    if m_f:
+                        f_pattern = f"%{m_f.group(1)}/{m_f.group(2)}%{m_f.group(3)}%"
+                        f_slug = f"{m_f.group(1)}-{m_f.group(2)}-{m_f.group(3)}"
+                        model_stats['front_size_slug'] = f_slug
+                        cur.execute(
+                            "SELECT COUNT(id) AS cnt, MIN(price) AS min_p FROM products "
+                            "WHERE tire_size_label LIKE %s AND stock_status = 'in_stock'",
+                            (f_pattern,)
+                        )
+                        f_res = cur.fetchone() or {}
+                        f_cnt = f_res.get('cnt') or 0
+                        f_min_p = float(f_res['min_p']) if f_res.get('min_p') else None
+                        model_stats['front_count'] = f_cnt
+                        model_stats['front_min_price'] = f_min_p
+
+                if p_rear and is_staggered:
+                    m_r = re.search(r'(\d+)[/\s](\d+)\s*(?:[A-Za-z]+)?\s*(\d+)', p_rear)
+                    if m_r:
+                        r_pattern = f"%{m_r.group(1)}/{m_r.group(2)}%{m_r.group(3)}%"
+                        r_slug = f"{m_r.group(1)}-{m_r.group(2)}-{m_r.group(3)}"
+                        model_stats['rear_size_slug'] = r_slug
+                        cur.execute(
+                            "SELECT COUNT(id) AS cnt, MIN(price) AS min_p FROM products "
+                            "WHERE tire_size_label LIKE %s AND stock_status = 'in_stock'",
+                            (r_pattern,)
+                        )
+                        r_res = cur.fetchone() or {}
+                        r_cnt = r_res.get('cnt') or 0
+                        r_min_p = float(r_res['min_p']) if r_res.get('min_p') else None
+                        model_stats['rear_count'] = r_cnt
+                        model_stats['rear_min_price'] = r_min_p
+
+                total_tyres = f_cnt + r_cnt
+                all_prices = [p for p in [f_min_p, r_min_p] if p is not None]
+                model_stats['total_tyres'] = total_tyres
+                model_stats['min_price'] = min(all_prices) if all_prices else None
+
+                f_patt = None
+                if model_stats.get('front_size_slug'):
+                    f_parts = model_stats['front_size_slug'].split('-')
+                    if len(f_parts) == 3:
+                        f_patt = f"%{f_parts[0]}/{f_parts[1]}%{f_parts[2]}%"
+
+                r_patt = None
+                if model_stats.get('rear_size_slug'):
+                    r_parts = model_stats['rear_size_slug'].split('-')
+                    if len(r_parts) == 3:
+                        r_patt = f"%{r_parts[0]}/{r_parts[1]}%{r_parts[2]}%"
+                if f_patt or r_patt:
+                    where_clause = []
+                    params = []
+                    if f_patt:
+                        where_clause.append("p.tire_size_label LIKE %s")
+                        params.append(f_patt)
+                    if r_patt:
+                        where_clause.append("p.tire_size_label LIKE %s")
+                        params.append(r_patt)
+                    q = (
+                        "SELECT p.id, p.display_name, p.name, p.slug, p.price, p.image_path, p.tire_size_label, "
+                        "p.tire_speed_rating, p.tire_load_index, b.name as brand_name "
+                        "FROM products p "
+                        "LEFT JOIN brands b ON p.brand_id = b.id "
+                        f"WHERE ({' OR '.join(where_clause)}) AND p.stock_status = 'in_stock' "
+                        "ORDER BY p.price DESC LIMIT 6"
+                    )
+                    cur.execute(q, tuple(params))
+                    model_stats['sample_products'] = cur.fetchall() or []
+        except Exception as e:
+            current_app.logger.warning(f"Error fetching model stats for {make_slug}/{model_slug}: {e}")
+
+    elif level == 3:
+        # Level 3: Year overview -> list of Engines/Trims
+        model_name = model_slug.replace('-', ' ').title()
+        try:
+            raw_models = _vs_wheel_get('models.php', {'make': make_slug, 'region': 'medm'})
+            for rm in raw_models.get('data', []):
+                if rm.get('slug', '').lower() == model_slug:
+                    model_name = rm.get('name_en') or rm.get('name') or model_name
+                    break
+        except Exception:
+            pass
+
+        model_info = {'slug': model_slug, 'name': model_name}
+        breadcrumbs.append({"label": model_name, "url": f"{base_prefix}/{make_slug}/{model_slug}"})
+        breadcrumbs.append({"label": str(year), "url": f"{base_prefix}/{make_slug}/{model_slug}/{year}"})
+        try:
+            raw_eng = _vs_wheel_get('modifications.php', {'make': make_slug, 'model': model_slug, 'year': year})
+            seen_trims = set()
+            for m in raw_eng.get('data', []):
+                trim = m.get('trim') or m.get('name', '')
+                if not trim or trim in seen_trims:
+                    continue
+                seen_trims.add(trim)
+                eng = m.get('engine') or {}
+                power = eng.get('power') or {}
+                parts = []
+                if eng.get('capacity'): parts.append(f"{eng['capacity']}L")
+                if eng.get('type'): parts.append(eng['type'])
+                if power.get('hp'): parts.append(f"{power['hp']} hp")
+                engine_str = ' · '.join(parts)
+                engines.append({
+                    'slug': m.get('slug', ''),
+                    'trim': trim,
+                    'engine': engine_str,
+                    'fuel': eng.get('fuel', ''),
+                    'display': trim + (f' — {engine_str}' if engine_str else '')
+                })
+        except Exception as e:
+            current_app.logger.warning(f"Error fetching engines for {make_slug}/{model_slug}/{year}: {e}")
+
+    elif level >= 4:
+        # Level 4: Engine/Trim fitment -> Tyre Sizes & Catalog Products
+        model_name = model_slug.replace('-', ' ').title()
+        try:
+            raw_models = _vs_wheel_get('models.php', {'make': make_slug, 'region': 'medm'})
+            for rm in raw_models.get('data', []):
+                if rm.get('slug', '').lower() == model_slug:
+                    model_name = rm.get('name_en') or rm.get('name') or model_name
+                    break
+        except Exception:
+            pass
+
+        model_info = {'slug': model_slug, 'name': model_name}
+
+        # Resolve real engine / trim details from modifications API instead of raw slug
+        resolved_trim_name = None
+        resolved_engine_desc = None
+        try:
+            raw_mods = _vs_wheel_get('modifications.php', {'make': make_slug, 'model': model_slug, 'year': year})
+            for m in raw_mods.get('data', []):
+                m_slug = (m.get('slug') or '').lower()
+                m_trim = (m.get('trim') or m.get('name') or '').strip()
+                m_trim_slug = m_trim.lower().replace(' ', '-')
+                if m_slug == trim_slug or m_trim_slug == trim_slug:
+                    resolved_trim_name = m_trim
+                    eng = m.get('engine') or {}
+                    power = eng.get('power') or {}
+                    parts = []
+                    if eng.get('capacity'): parts.append(f"{eng['capacity']}L")
+                    if eng.get('type'): parts.append(eng['type'])
+                    if power.get('hp'): parts.append(f"{power['hp']} hp")
+                    resolved_engine_desc = ' · '.join(parts)
+                    break
+        except Exception as e:
+            current_app.logger.warning(f"Error resolving trim modification {trim_slug}: {e}")
+
+        if resolved_trim_name and resolved_engine_desc:
+            trim_display = f"{resolved_trim_name} ({resolved_engine_desc})"
+            trim_name = resolved_trim_name
+        elif resolved_engine_desc:
+            trim_display = resolved_engine_desc
+            trim_name = resolved_engine_desc
+        elif resolved_trim_name:
+            trim_display = resolved_trim_name
+            trim_name = resolved_trim_name
+        else:
+            clean_fallback = trim_slug.replace('-', ' ').title()
+            trim_display = clean_fallback
+            trim_name = clean_fallback
+
+        trim_info = {
+            'slug': trim_slug,
+            'trim': trim_name,
+            'display': trim_display,
+            'engine': resolved_engine_desc or ''
+        }
+        breadcrumbs.append({"label": model_name, "url": f"{base_prefix}/{make_slug}/{model_slug}"})
+        breadcrumbs.append({"label": str(year), "url": f"{base_prefix}/{make_slug}/{model_slug}/{year}"})
+        breadcrumbs.append({"label": trim_info['trim'], "url": f"{base_prefix}/{make_slug}/{model_slug}/{year}/{trim_slug}"})
+
+        try:
+            params = {'make': make_slug, 'model': model_slug, 'year': year, 'modification': trim_slug}
+            raw = _vs_wheel_get('search/by_model/', params)
+            if not raw.get('data'):
+                raw = _vs_wheel_get('search/by_model/', {'make': make_slug, 'model': model_slug, 'year': year})
+
+            wheels = []
+            for item in raw.get('data', []):
+                wheels.extend(item.get('wheels', []))
+
+            def extract_size(t_obj):
+                w = t_obj.get('tire_width')
+                h = t_obj.get('tire_aspect_ratio')
+                rim = t_obj.get('rim_diameter')
+                if not (w and h and rim):
+                    raw_t = t_obj.get('tire') or ''
+                    m = re.search(r'(\d{2,3})[/\s](\d{2,3})\s*(?:[A-Za-z]+)?\s*(\d{2})', raw_t)
+                    if m:
+                        w, h, rim = m.group(1), m.group(2), m.group(3)
+                if not (w and h and rim):
+                    return None, None, None, None, None
+                label = f"{w}/{h} R{rim}"
+                speed = t_obj.get('speed_index') or ''
+                return str(w), str(h), str(rim), label, speed
+
+            seen = set()
+            avail_sizes = get_available_db_tire_sizes()
+            for w in wheels:
+                f = w.get('front', {}) or {}
+                r_ = w.get('rear', {}) or {}
+                fw, fh, frim, flabel, fspeed = extract_size(f)
+                if not fw:
+                    continue
+
+                # User requirement: If tyre size is not available in our database, do NOT show that size!
+                front_key = f"{fw}-{fh}-{frim}"
+                if avail_sizes and front_key not in avail_sizes:
+                    continue
+
+                rw, rh, rrim, rlabel, rspeed = extract_size(r_)
+                is_staggered = bool(rw and rh and rrim and (rw != fw or fh != rh or frim != rrim))
+                dedup_key = (flabel, rlabel if is_staggered else None)
+                if dedup_key in seen:
+                    continue
+                seen.add(dedup_key)
+                is_factory = bool(w.get('is_stock', False))
+                tyre_options.append({
+                    "width": fw,
+                    "height": fh,
+                    "rim": frim,
+                    "rear": {"width": rw, "height": rh, "rim": rrim} if is_staggered else None,
+                    "isFactory": is_factory,
+                    "is_stock": is_factory,
+                    "speedIndex": fspeed or '',
+                    "label": flabel,
+                    "badge": "Standard / OEM" if is_factory else f"{frim}\" Optional"
+                })
+
+            tyre_options.sort(key=lambda x: (not x['is_stock'], int(x['rim'] or 0)))
+
+            # Fetch matching products in DB for all available sizes
+            if tyre_options:
+                target_sizes = [f"{opt['width']}-{opt['height']}-{opt['rim']}" for opt in tyre_options]
+                from werkzeug.datastructures import MultiDict
+                filter_args = MultiDict([('size', sz) for sz in target_sizes])
+                catalog_res = _fetch_catalog_products(filter_args, locale)
+                products = catalog_res.get('products', []) if isinstance(catalog_res, dict) else (catalog_res or [])
+        except Exception as e:
+            current_app.logger.warning(f"Error fetching tyres for vehicle fitment: {e}")
+
+    base_url = "https://www.tyresvision.com"
+    canonical_url = f"{base_url}/{locale}/tyres/cars/{clean_path}" if locale and locale != 'en' else f"{base_url}/tyres/cars/{clean_path}"
+    canonical_url = canonical_url.rstrip('/')
+
+    resp = make_response(render_template(
+        'Client/VehiclePage.html',
+        level=level,
+        make=make_info,
+        model=model_info,
+        year=year,
+        trim=trim_info,
+        models=models,
+        years=years,
+        engines=engines,
+        tyre_options=tyre_options,
+        products=products,
+        breadcrumbs=breadcrumbs,
+        canonical_url=canonical_url,
+        make_stats=make_stats,
+        model_stats=model_stats,
+        locale=locale
+    ))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
+
+
 @site_bp.route('/car-tyres', strict_slashes=False)
 @site_bp.route('/car-tyres/', strict_slashes=False)
 @site_bp.route('/tyres', strict_slashes=False)
@@ -2521,11 +3405,18 @@ def car_tyres_listing_slug(filter_path):
     finally:
         conn.close()
 
-    # If URL contains page-X or page-X-Y segment, 301 redirect to clean path without pagination in URL
+    # If URL contains page-X or page-X-Y segment, or legacy size with '-r' (e.g. size-195-55-r16), 301 redirect to clean path
     raw_segments = [s.strip() for s in clean_path.split('/') if s.strip()]
     has_page_segment = any(re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE) for s in raw_segments)
-    if has_page_segment:
-        cleaned_segments = [s for s in raw_segments if not re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE)]
+    has_size_r = any(re.match(r'^size-.*-r\d+', s, re.IGNORECASE) for s in raw_segments)
+    if has_page_segment or has_size_r:
+        cleaned_segments = []
+        for s in raw_segments:
+            if re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE):
+                continue
+            if re.match(r'^size-', s, re.IGNORECASE):
+                s = re.sub(r'[-/ ]*r(\d+)', r'-\1', s, flags=re.IGNORECASE)
+            cleaned_segments.append(s)
         prefix = '/car-tyres' if request.path.startswith('/car-tyres') else ('/products' if request.path.startswith('/products') else '/tyres')
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
@@ -2575,11 +3466,18 @@ def car_tyres_listing_locale_slug(lang_code, filter_path):
     finally:
         conn.close()
 
-    # If URL contains page-X or page-X-Y segment, 301 redirect to clean path without pagination in URL
+    # If URL contains page-X or page-X-Y segment, or legacy size with '-r', 301 redirect to clean path
     raw_segments = [s.strip() for s in clean_path.split('/') if s.strip()]
     has_page_segment = any(re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE) for s in raw_segments)
-    if has_page_segment:
-        cleaned_segments = [s for s in raw_segments if not re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE)]
+    has_size_r = any(re.match(r'^size-.*-r\d+', s, re.IGNORECASE) for s in raw_segments)
+    if has_page_segment or has_size_r:
+        cleaned_segments = []
+        for s in raw_segments:
+            if re.match(r'^page-\d+(?:-\d+)?$', s, re.IGNORECASE):
+                continue
+            if re.match(r'^size-', s, re.IGNORECASE):
+                s = re.sub(r'[-/ ]*r(\d+)', r'-\1', s, flags=re.IGNORECASE)
+            cleaned_segments.append(s)
         prefix = f'/{code}/car-tyres' if f'/{code}/car-tyres' in request.path else (f'/{code}/products' if f'/{code}/products' in request.path else f'/{code}/tyres')
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
@@ -3338,15 +4236,22 @@ def api_tyre_sizes_cascade():
         conn.close()
 
     if step == 'rim':
-        # attributes_json.rim stores just digits ("19"), but the size
-        # filter matches against tire_size_label verbatim (e.g.
-        # "235/55 R19" -> "235-55-R19"), so the "R" has to be added back
-        # here for the value this API returns to actually match anything.
-        def rim_key(v):
-            digits = ''.join(ch for ch in v if ch.isdigit())
-            return int(digits) if digits else 0
-        seen = sorted(set(raw_vals), key=rim_key)
-        options = [v if v.upper().startswith('R') else f'R{v}' for v in seen]
+        # Clean rim sizes: omit 'R'/'r' prefix and exclude rims < 14 (no R13 or below)
+        cleaned_rims = set()
+        for v in raw_vals:
+            v_clean = v.strip()
+            if v_clean.upper().startswith('R'):
+                v_clean = v_clean[1:].strip()
+            if v_clean.upper().endswith('C'):
+                v_clean = v_clean[:-1].strip()
+            try:
+                val_num = float(v_clean)
+                if val_num >= 14:
+                    rim_str = str(int(val_num)) if val_num.is_integer() else str(val_num)
+                    cleaned_rims.add(rim_str)
+            except ValueError:
+                pass
+        options = sorted(cleaned_rims, key=float)
     else:
         numeric_vals = [v for v in raw_vals if v.isdigit()]
         options = sorted(set(numeric_vals), key=int)
@@ -3743,6 +4648,163 @@ def ajax_buy_tyre_search():
     except Exception as e:
         current_app.logger.warning(f"Wheel-API request failed for {w_clean}/{h_clean}R{r_clean}: {e}")
         return jsonify({'status': 'error', 'message': 'Unable to load compatible vehicles at this time.'})
+
+
+@site_bp.route('/api/contact', methods=['POST'])
+@site_bp.route('/api/contact-us', methods=['POST'])
+def handle_contact_submission():
+    """
+    Handles customer contact form submissions from the Contact Overview Drawer.
+    Validates form data, records the enquiry in hdweb_enquiry,
+    and dispatches a notification email via Gmail SMTP.
+    """
+    data = request.get_json(silent=True) or request.form.to_dict() or {}
+    
+    name = (data.get('name') or '').strip()
+    email = (data.get('email') or '').strip().lower()
+    phone = (data.get('phone') or data.get('number') or '').strip()
+    subject = (data.get('subject') or '').strip()
+    message = (data.get('message') or '').strip()
+    product_name = (data.get('product_name') or data.get('product') or '').strip()
+    comment = (data.get('comment') or '').strip()
+    form_type = (data.get('form_type') or 'contact_drawer_mail').strip()
+    
+    if product_name and not subject:
+        subject = f"Product Enquiry: {product_name}"
+    elif not subject:
+        subject = 'General Enquiry'
+        
+    if not message:
+        parts = []
+        if product_name:
+            parts.append(f"Product: {product_name}")
+        if comment:
+            parts.append(f"Comment: {comment}")
+        message = "\n".join(parts) if parts else "Customer Enquiry"
+    
+    if not name:
+        return jsonify({'success': False, 'error': 'Please provide your full name.'}), 400
+    if not email or not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+        return jsonify({'success': False, 'error': 'Please provide a valid email address.'}), 400
+    if not message:
+        return jsonify({'success': False, 'error': 'Please enter your message or tyre details.'}), 400
+        
+    # 1. Save into hdweb_enquiry table
+    enquiry_id = None
+    try:
+        import db
+        conn = db.get_connection()
+        try:
+            with conn.cursor() as cur:
+                sql = """
+                    INSERT INTO hdweb_enquiry (
+                        name, email, number, enquiry_for, message, status, form_type
+                    ) VALUES (%s, %s, %s, %s, %s, 0, %s)
+                """
+                cur.execute(sql, (name, email, phone or None, subject, message, form_type))
+                conn.commit()
+                enquiry_id = cur.lastrowid
+        finally:
+            conn.close()
+    except Exception as db_err:
+        current_app.logger.error(f"Error saving contact enquiry to DB: {db_err}", exc_info=True)
+
+    # 2. Dispatch email notification via mailer using the database Product Enquiry template
+    mail_sent = False
+    try:
+        from mailer import send_email, GMAIL_USER, OWNER_EMAIL
+        from services.email_template_service import EmailTemplateService
+        import urllib.parse
+        
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr or 'Unknown')
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        clean_phone = re.sub(r'[^\d+]', '', phone) if phone else ''
+        
+        display_product = product_name if product_name else (subject if subject and subject != 'General Enquiry' else 'TyresVision Products')
+        service_text = 'Product Enquiry • Tyres Catalog' if product_name else (subject if subject else 'General Customer Enquiry')
+        note_text = comment if comment else (message if message else 'Customer submitted an enquiry via TyresVision website.')
+
+        context = {
+            'client name': name,
+            'client_name': name,
+            'client mobile': phone or 'Not provided',
+            'client number': clean_phone or phone or 'Not provided',
+            'client email': email,
+            'client Email': email,
+            'service': service_text,
+            'product Name': display_product,
+            'product_name': display_product,
+            'Note': note_text,
+            'note': note_text,
+            'enquiry_id': str(enquiry_id or 'N/A'),
+            'timestamp': timestamp,
+            'client_ip': client_ip,
+        }
+
+        # Render database email template for Product Enquiry (code: contact_enquiry_received)
+        fallback_subject = f"New Product Enquiry from TyresVision: {display_product} - {name}"
+        email_subject, html_body = EmailTemplateService.render_template_by_code(
+            'contact_enquiry_received',
+            context=context,
+            default_subject=fallback_subject
+        )
+        if not email_subject or email_subject.strip() == 'Customer Enquiry':
+            email_subject = fallback_subject
+
+        # Clean up any static href attributes in template
+        if clean_phone:
+            html_body = html_body.replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"')
+        if display_product:
+            encoded_prod = urllib.parse.quote(display_product)
+            html_body = html_body.replace('Continental%20Tyres', encoded_prod)
+
+        text_body = f"""New Product Enquiry from TyresVision
+-------------------------------------
+Customer Name: {name}
+Email Address: {email}
+Phone / Mobile: {phone or 'Not provided'}
+Service / Type: {service_text}
+Product Name: {display_product}
+
+Customer Note / Message:
+{note_text}
+
+-------------------------------------
+Enquiry ID: #{enquiry_id or 'N/A'}
+Timestamp: {timestamp}
+IP Address: {client_ip}
+"""
+        
+        # Attach TyresVision white logo as inline CID image for bulletproof rendering across Gmail PC, Outlook, Apple Mail
+        logo_path = os.path.abspath(os.path.join(current_app.root_path, '..', 'static', 'assets', 'images', 'logo', 'tyresvision-logo-white.png'))
+        inline_images = {'tyresvision_logo': logo_path} if os.path.isfile(logo_path) else None
+
+        # Resolve owner notification email from environment (.env), falling back to mailer.OWNER_EMAIL
+        owner_email_raw = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or OWNER_EMAIL or "alice@klever.ae"
+        owner_recipients = [e.strip() for e in re.split(r'[,;]', owner_email_raw) if e.strip()]
+        for target_email in owner_recipients:
+            try:
+                send_email(target_email, email_subject, html_body, text_body, inline_images=inline_images)
+            except Exception as send_err:
+                current_app.logger.warning(f"Failed to send contact enquiry to {target_email}: {send_err}")
+        
+        # Also copy GMAIL_USER if configured and distinct from owner recipients
+        if GMAIL_USER and not any(GMAIL_USER.lower() == r.lower() for r in owner_recipients):
+            try:
+                send_email(GMAIL_USER, email_subject, html_body, text_body, inline_images=inline_images)
+            except Exception:
+                pass
+
+        mail_sent = True
+    except Exception as mail_err:
+        current_app.logger.warning(f"Failed to send email notification for contact enquiry: {mail_err}", exc_info=True)
+
+    return jsonify({
+        'success': True,
+        'message': 'Thank you! Your message has been sent successfully. Our team will contact you shortly.',
+        'enquiry_id': enquiry_id,
+        'mail_dispatched': mail_sent
+    }), 200
 
 
 @site_bp.route('/page/<slug>')

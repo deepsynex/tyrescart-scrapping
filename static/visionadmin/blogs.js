@@ -713,8 +713,8 @@ document.addEventListener('DOMContentLoaded', () => {
       setVal('slug', blog.slug || '');
       setVal('status', blog.status || 'draft');
       setVal('short_description_en', (typeof blog.short_description === 'object' ? blog.short_description?.en : blog.short_description) || '');
-      setVal('meta_title_en', (typeof blog.meta_title === 'object' ? blog.meta_title?.en : '') || '');
-      setVal('meta_desc_en', (typeof blog.meta_desc === 'object' ? blog.meta_desc?.en : '') || '');
+      setVal('meta_title_en', (typeof blog.meta_title === 'object' ? (blog.meta_title?.en || '') : (blog.meta_title || '')));
+      setVal('meta_desc_en', (typeof blog.meta_desc === 'object' ? (blog.meta_desc?.en || '') : (blog.meta_desc || '')));
 
       loadCategories(blog.category_name || null, blog.category_id || null);
       setImagePreview(blog.image || '');

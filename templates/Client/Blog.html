@@ -8,6 +8,8 @@
   {{ _('Straight answers on tyre sizing, maintenance, and buying the right set for UAE roads and heat — from the team behind TyresVision.') }}
 {% endblock %}
 
+{% block canonical_url %}{{ canonical_url or 'https://www.tyresvision.com/blog' }}{% endblock %}
+
 {% block content %}
 <div x-data="blogListing({ locale: '{{ locale or 'en' }}', category: '{{ selected_category or '' }}' })" x-init="init()">
   <span id="top"></span>
