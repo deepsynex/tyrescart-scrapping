@@ -1,10 +1,10 @@
 {% extends 'Client/layout.html' %}
 
-{% block title %}{% if active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Car Tyres Dubai & Abu Dhabi | Buy Premium Tyres Online | TyresVision{% endif %}{% endblock %}
+{% block title %}{% if active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE - Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
 
 {% block meta_description %}{% if active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium car tyres online in UAE. Leading brands including Michelin, Bridgestone, Continental, Pirelli & Goodyear with free doorstep mobile fitting.{% endif %}{% endblock %}
 
-{% block canonical_url %}{% if active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/car-tyres{% endif %}{% endblock %}
+{% block canonical_url %}{% if active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap">
@@ -23,7 +23,9 @@
         <span class="sep">&rsaquo;</span>
         <a href="/tyres">Tyres</a>
         <span class="sep">&rsaquo;</span>
-        {% if active_brand_name %}
+        {% if is_staggered %}
+        <span class="current" id="tv-breadcrumb-current">Staggered ({{ front_size_label }} + {{ rear_size_label }})</span>
+        {% elif active_brand_name %}
         <span class="current" id="tv-breadcrumb-current">{{ active_brand_name }}</span>
         {% else %}
         <span class="current" id="tv-breadcrumb-current">Car Tyres</span>
@@ -34,16 +36,9 @@
         {% if active_brand_name %}
         Buy {{ active_brand_name }} Tyres Online UAE
         {% else %}
-        Car Tyres
+        Buy All Types of Tyres Online in UAE
         {% endif %}
       </h1>
-      <p class="tv-cat-hero-sub" id="tv-hero-sub">
-        {% if active_brand_name %}
-        Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.
-        {% else %}
-        Choose from a wide range of premium tyres for a safer and smoother journey.
-        {% endif %}
-      </p>
     </div>
 
     <!-- Floating Script Badge in Sky: "Drive with Confidence" -->
@@ -527,7 +522,321 @@
         </div>
         {% endif %}
         {% for p in products %}
-        <div class="tv-product-card {% if p.offer_banner %}has-offer{% endif %}"
+        {% if p.is_combined_pair %}
+        <div class="tv-product-card tv-staggered-combined-card"
+             data-slug="{{ p.slug }}"
+             data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
+             data-brand-name="{{ p.brand_name }}"
+             data-pattern="{{ p.pattern_name }}"
+             data-full-title="{{ p.full_title }}"
+             data-staggered="true"
+             data-total-set-price="{{ p.total_set_price }}"
+             data-front-price="{{ p.front.price }}"
+             data-rear-price="{{ p.rear.price }}">
+
+          <!-- Dual Tyres Top Container -->
+          <div class="tv-staggered-dual-body">
+            
+            <!-- LEFT COLUMN: FRONT TYRE -->
+            <div class="tv-staggered-side tv-staggered-front">
+              <!-- 1. Top Header Bar: Brand Logo (Left) -->
+              <div class="tv-card-header-bar">
+                {% set front_b_slug = p.front.brand_slug or (p.front.brand_name|lower|replace(' ', '-')) %}
+                <a href="/tyres/brand/{{ front_b_slug }}" class="tv-card-brand-wrap" title="View all {{ p.front.brand_name }} tyres" onclick="event.stopPropagation();">
+                  {% if p.front.brand_logo %}
+                  <img src="{{ p.front.brand_logo }}" alt="{{ p.front.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                  <span class="tv-card-brand-fallback" style="display:none;">{{ p.front.brand_name }}</span>
+                  {% else %}
+                  <span class="tv-card-brand-fallback">{{ p.front.brand_name }}</span>
+                  {% endif %}
+                </a>
+              </div>
+
+              <!-- 2. Centered Tyre Image Area -->
+              <div class="tv-card-img-area">
+                <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view"
+                        data-slug="{{ p.front.slug }}" data-image="{{ p.front.image_path }}" data-title="{{ p.front.full_title }}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+
+                <div class="tv-card-img-link">
+                  <div class="tv-card-tyre-box tv-img-loading">
+                    <img src="{{ p.front.image_path or '/static/assets/images/no-image-available.svg' }}" 
+                         alt="{{ p.front.pattern_name or p.front.display_name }}" 
+                         class="tv-product-img" 
+                         loading="lazy" 
+                         onload="this.parentElement.classList.remove('tv-img-loading')"
+                         onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+                  </div>
+                </div>
+
+                <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
+                  <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] h-[0.625rem]">
+                      <g transform="translate(0)">
+                        <path d="M-122.615,146.25a14.294,14.294,0,0,0,.9,1.807,1.609,1.609,0,0,0,.935.518c1.073.245,2.161.424,3.313.642a4.4,4.4,0,0,1,2.574-3.96,4.107,4.107,0,0,1,2.686-.294,4.432,4.432,0,0,1,3.413,4.935l21.435.432a4.315,4.315,0,0,1,1.162-4.224,4.061,4.061,0,0,1,3.118-1.236,4.36,4.36,0,0,1,4.163,5.139c.687-.113,1.356-.194,2.011-.338,1.472-.323,1.693-.616,1.987-2.158a5.746,5.746,0,0,0-.342-2.547,2.327,2.327,0,0,0-1.6-1.7,39.349,39.349,0,0,0-7.593-2.017,16.658,16.658,0,0,1-3.88-1.389c-1.793-.78-3.566-1.607-5.351-2.407a21.266,21.266,0,0,0-9.744-1.617,33.618,33.618,0,0,0-11.928,2.885,20.127,20.127,0,0,1-5.156,1.381c-1.089.153-1.255.357-1.256,1.444,0,.358-.012.716,0,1.073a2.047,2.047,0,0,1-.454,1.677,2.842,2.842,0,0,0-.391.931Zm30.034-4.853a.274.274,0,0,1-.12.014c-2.485-.069-4.97-.144-7.455-.2-.27-.007-.33-.139-.381-.359-.23-.982-.476-1.96-.714-2.939-.071-.291-.135-.584-.222-.962,3.475.284,6.78.76,9.465,2.868Zm-9.58-.407a.745.745,0,0,1-.153.049c-2.3-.068-4.594-.135-6.89-.218a.451.451,0,0,1-.317-.243,1.572,1.572,0,0,1,.174-1.881,8.174,8.174,0,0,0,.455-.7.938.938,0,0,1,.418-.325,17.885,17.885,0,0,1,5.381-.687.411.411,0,0,1,.315.232C-102.558,138.468-102.363,139.723-102.161,140.989Zm-11.361-.195a1.036,1.036,0,0,1,.612-1.247c.563-.291,1.137-.561,1.714-.823.506-.23,1.022-.436,1.534-.653-.557.9-1.154,1.725-1.762,2.543a.451.451,0,0,1-.3.172C-112.325,140.8-112.928,140.794-113.522,140.794Z" transform="translate(122.615 -135.806)" fill="currentColor"/>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+
+                <span class="tv-card-warranty-badge">
+                  <span>{{ p.front.warranty or '1 Year Warranty' }}</span>
+                </span>
+              </div>
+
+              <!-- 3. Product Info Block & Bottom Details -->
+              <div class="product-bottom-detail">
+                <div class="tv-card-info-block">
+                  <a href="/{{ p.front.slug }}" class="tv-card-pattern-link" title="{{ p.front.pattern_name or p.front.display_name }}">
+                    <h3 class="tv-card-pattern">
+                      {{ p.front.pattern_name or p.front.display_name }}
+                    </h3>
+                  </a>
+
+                  <div class="tv-card-size-row">
+                    <span class="tv-card-spec-text">{{ p.front.full_size_spec }}</span>
+                    <span class="tv-card-year-meta" title="Manufacturing Year">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span>{{ p.front.year or '2025' }}</span>
+                    </span>
+                  </div>
+
+                  <div class="tv-card-meta-row">
+                    <span class="tv-meta-item tv-meta-country" title="Origin: {{ p.front.country_of_origin or 'USA' }}">
+                      <span>{{ p.front.country_of_origin or 'USA' }}</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </span>
+
+                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                      {% if p.front.is_runflat or p.front.runflat_text == 'Runflat' %}
+                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                      {% endif %}
+                    </span>
+
+                    <span class="tv-meta-item tv-meta-premium" title="Category: {{ p.front.tyres_category or 'Premium' }}">
+                      <span>{{ p.front.tyres_category or '' }}</span>
+                      {% if p.front.tyres_category %}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="tv-card-bottom-info">
+                  <div class="tv-stock-status">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="8 12 11 15 16 9"></polyline>
+                    </svg>
+                    <span>In Stock</span>
+                  </div>
+
+                  <div class="tv-fitted-status">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    <span>Fitted Included</span>
+                    <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                      <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="tv-card-pricing-left">
+                  <div class="tv-card-main-price-line">
+                    <span class="currency-dirham tv-ref-curr">&#xe900;</span>
+                    <strong class="tv-card-price-num">{{ "%.0f"|format(p.front.price) if (p.front.price % 1 == 0) else "%.2f"|format(p.front.price) }}</strong>
+                    <span class="tv-card-per-tyre">/tyre</span>
+                  </div>
+                  <div class="tv-card-set4-line">
+                    Set of 2 &bull; <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(p.front.set_of_2_price or (p.front.price * 2)) if ((p.front.set_of_2_price or (p.front.price * 2)) % 1 == 0) else "%.2f"|format(p.front.set_of_2_price or (p.front.price * 2)) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CENTER VERTICAL DIVIDER -->
+            <div class="tv-staggered-dual-divider"></div>
+
+            <!-- RIGHT COLUMN: REAR TYRE -->
+            <div class="tv-staggered-side tv-staggered-rear">
+              <!-- 1. Top Header Bar: Brand Logo (Left) -->
+              <div class="tv-card-header-bar">
+                {% set rear_b_slug = p.rear.brand_slug or (p.rear.brand_name|lower|replace(' ', '-')) %}
+                <a href="/tyres/brand/{{ rear_b_slug }}" class="tv-card-brand-wrap" title="View all {{ p.rear.brand_name }} tyres" onclick="event.stopPropagation();">
+                  {% if p.rear.brand_logo %}
+                  <img src="{{ p.rear.brand_logo }}" alt="{{ p.rear.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                  <span class="tv-card-brand-fallback" style="display:none;">{{ p.rear.brand_name }}</span>
+                  {% else %}
+                  <span class="tv-card-brand-fallback">{{ p.rear.brand_name }}</span>
+                  {% endif %}
+                </a>
+              </div>
+
+              <!-- 2. Centered Tyre Image Area -->
+              <div class="tv-card-img-area">
+                <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view"
+                        data-slug="{{ p.rear.slug }}" data-image="{{ p.rear.image_path }}" data-title="{{ p.rear.full_title }}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+
+                <div class="tv-card-img-link">
+                  <div class="tv-card-tyre-box tv-img-loading">
+                    <img src="{{ p.rear.image_path or '/static/assets/images/no-image-available.svg' }}" 
+                         alt="{{ p.rear.pattern_name or p.rear.display_name }}" 
+                         class="tv-product-img" 
+                         loading="lazy" 
+                         onload="this.parentElement.classList.remove('tv-img-loading')"
+                         onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+                  </div>
+                </div>
+
+                <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
+                  <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.747 16.977" class="w-[1.75rem] h-[0.625rem]">
+                      <g transform="translate(0)">
+                        <path d="M-122.615,146.25a14.294,14.294,0,0,0,.9,1.807,1.609,1.609,0,0,0,.935.518c1.073.245,2.161.424,3.313.642a4.4,4.4,0,0,1,2.574-3.96,4.107,4.107,0,0,1,2.686-.294,4.432,4.432,0,0,1,3.413,4.935l21.435.432a4.315,4.315,0,0,1,1.162-4.224,4.061,4.061,0,0,1,3.118-1.236,4.36,4.36,0,0,1,4.163,5.139c.687-.113,1.356-.194,2.011-.338,1.472-.323,1.693-.616,1.987-2.158a5.746,5.746,0,0,0-.342-2.547,2.327,2.327,0,0,0-1.6-1.7,39.349,39.349,0,0,0-7.593-2.017,16.658,16.658,0,0,1-3.88-1.389c-1.793-.78-3.566-1.607-5.351-2.407a21.266,21.266,0,0,0-9.744-1.617,33.618,33.618,0,0,0-11.928,2.885,20.127,20.127,0,0,1-5.156,1.381c-1.089.153-1.255.357-1.256,1.444,0,.358-.012.716,0,1.073a2.047,2.047,0,0,1-.454,1.677,2.842,2.842,0,0,0-.391.931Zm30.034-4.853a.274.274,0,0,1-.12.014c-2.485-.069-4.97-.144-7.455-.2-.27-.007-.33-.139-.381-.359-.23-.982-.476-1.96-.714-2.939-.071-.291-.135-.584-.222-.962,3.475.284,6.78.76,9.465,2.868Zm-9.58-.407a.745.745,0,0,1-.153.049c-2.3-.068-4.594-.135-6.89-.218a.451.451,0,0,1-.317-.243,1.572,1.572,0,0,1,.174-1.881,8.174,8.174,0,0,0,.455-.7.938.938,0,0,1,.418-.325,17.885,17.885,0,0,1,5.381-.687.411.411,0,0,1,.315.232C-102.558,138.468-102.363,139.723-102.161,140.989Zm-11.361-.195a1.036,1.036,0,0,1,.612-1.247c.563-.291,1.137-.561,1.714-.823.506-.23,1.022-.436,1.534-.653-.557.9-1.154,1.725-1.762,2.543a.451.451,0,0,1-.3.172C-112.325,140.8-112.928,140.794-113.522,140.794Z" transform="translate(122.615 -135.806)" fill="currentColor"/>
+                      </g>
+                    </svg>
+                  </span>
+                </div>
+
+                <span class="tv-card-warranty-badge">
+                  <span>{{ p.rear.warranty or '1 Year Warranty' }}</span>
+                </span>
+              </div>
+
+              <!-- 3. Product Info Block & Bottom Details -->
+              <div class="product-bottom-detail">
+                <div class="tv-card-info-block">
+                  <a href="/{{ p.rear.slug }}" class="tv-card-pattern-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
+                    <h3 class="tv-card-pattern">
+                      {{ p.rear.pattern_name or p.rear.display_name }}
+                    </h3>
+                  </a>
+
+                  <div class="tv-card-size-row">
+                    <span class="tv-card-spec-text">{{ p.rear.full_size_spec }}</span>
+                    <span class="tv-card-year-meta" title="Manufacturing Year">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      <span>{{ p.rear.year or '2025' }}</span>
+                    </span>
+                  </div>
+
+                  <div class="tv-card-meta-row">
+                    <span class="tv-meta-item tv-meta-country" title="Origin: {{ p.rear.country_of_origin or 'USA' }}">
+                      <span>{{ p.rear.country_of_origin or 'USA' }}</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                    </span>
+
+                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                      {% if p.rear.is_runflat or p.rear.runflat_text == 'Runflat' %}
+                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                      {% endif %}
+                    </span>
+
+                    <span class="tv-meta-item tv-meta-premium" title="Category: {{ p.rear.tyres_category or 'Premium' }}">
+                      <span>{{ p.rear.tyres_category or '' }}</span>
+                      {% if p.rear.tyres_category %}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="tv-card-bottom-info">
+                  <div class="tv-stock-status">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="8 12 11 15 16 9"></polyline>
+                    </svg>
+                    <span>In Stock</span>
+                  </div>
+
+                  <div class="tv-fitted-status">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                      <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                    <span>Fitted Included</span>
+                    <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                      <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="tv-card-pricing-left">
+                  <div class="tv-card-main-price-line">
+                    <span class="currency-dirham tv-ref-curr">&#xe900;</span>
+                    <strong class="tv-card-price-num">{{ "%.0f"|format(p.rear.price) if (p.rear.price % 1 == 0) else "%.2f"|format(p.rear.price) }}</strong>
+                    <span class="tv-card-per-tyre">/tyre</span>
+                  </div>
+                  <div class="tv-card-set4-line">
+                    Set of 2 &bull; <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(p.rear.set_of_2_price or (p.rear.price * 2)) if ((p.rear.set_of_2_price or (p.rear.price * 2)) % 1 == 0) else "%.2f"|format(p.rear.set_of_2_price or (p.rear.price * 2)) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- /tv-staggered-dual-body -->
+
+          <!-- BOTTOM ACTION BAR: SET OF 4 PRICE (Left) + CONTACT US (Right) -->
+          <div class="tv-staggered-bottom-bar">
+            <div class="tv-staggered-set4-block">
+              <span>SET OF 4</span>
+              <span class="currency-dirham">&#xe900;</span>
+              <strong>{{ p.total_set_price_formatted }}</strong>
+            </div>
+
+            <button type="button" class="tv-staggered-contact-btn"
+                    data-product-name="Front Tyre: {{ p.front.brand_name }} {{ p.front.full_size_spec }} {{ p.front.pattern_name or p.display_name }} {{ p.front.year or '' }} &amp; Rear Tyre: {{ p.rear.brand_name }} {{ p.rear.full_size_spec }} {{ p.rear.pattern_name or p.display_name }} {{ p.rear.year or '' }}"
+                    data-tyre-size="Front: {{ p.front.full_size_spec }} + Rear: {{ p.rear.full_size_spec }}"
+                    data-brand="{{ p.brand_name }}"
+                    data-price="{{ p.total_set_price }}"
+                    onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                    aria-label="Contact about {{ p.display_name|escape }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>Contact Us</span>
+            </button>
+          </div>
+
+        </div>
+        {% else %}
+        <div class="tv-product-card {% if p.offer_banner %}has-offer{% endif %} {% if p.is_staggered %}tv-staggered-card{% endif %}"
              data-slug="{{ p.slug }}"
              data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
              data-brand-name="{{ p.brand_name }}"
@@ -548,16 +857,22 @@
              data-vehicle="{{ p.vehicle_type or 'car' }}"
              data-type="{{ p.tire_type or 'summer' }}"
              data-price="{{ p.price|float }}"
-             data-price-set2="{{ "%.2f"|format(p.price * 2) }}"
-             data-price-set4="{{ "%.2f"|format(p.set_of_4_price or (p.price * 4)) }}"
-              data-price-set8="{{ "%.2f"|format(p.set_of_8_price or (p.price * 8)) }}"
-              data-rating="{{ p.rating|float }}"
-              data-order="{{ p.sort_order or loop.index }}"
-              data-runflat="{{ 'Runflat' if p.is_runflat else '' }}"
-              data-category="{{ p.tyres_category or 'Premium' }}"
-              data-offer="{{ p.offer_banner or '' }}">
+             data-price-set2="{{ "%.2f"|format((p.price|float) * 2) }}"
+             data-price-set4="{{ "%.2f"|format(p.total_set_price or p.set_of_4_price or (p.price|float * 4)) }}"
+             data-price-set8="{{ "%.2f"|format((p.total_set_price or p.set_of_4_price or (p.price|float * 4)) * 2) }}"
+             data-rating="{{ p.rating|float }}"
+             data-order="{{ p.sort_order or loop.index }}"
+             data-runflat="{{ 'Runflat' if p.is_runflat else '' }}"
+             data-category="{{ p.tyres_category or 'Premium' }}"
+             data-offer="{{ p.offer_banner or '' }}"
+             data-staggered="{{ 'true' if p.is_staggered else 'false' }}"
+             data-front-size="{{ p.front_size or '' }}"
+             data-rear-size="{{ p.rear_size or '' }}"
+             data-front-price="{{ p.front_price or '' }}"
+             data-rear-price="{{ p.rear_price or '' }}"
+             data-total-set-price="{{ p.total_set_price or '' }}">
           
-          <!-- 0. Top Offer Ribbon (Only when offer exists) -->
+          <!-- 0. Top Offer Ribbon -->
           {% if p.offer_banner %}
           <div class="tv-card-offer-ribbon {% if 'ARRIVAL' in p.offer_banner.upper() %}tv-ribbon-green{% endif %}">
             <span class="tv-offer-ribbon-text">{{ p.offer_banner }}</span>
@@ -744,30 +1059,24 @@
           <div class="tv-card-price-action-row">
             <div class="tv-card-pricing-left">
               <div class="tv-card-main-price-line">
-                <span class="currency-dirham tv-ref-curr"></span>
+                <span class="currency-dirham tv-ref-curr">&#xe900;</span>
                 <strong class="tv-card-price-num">{{ "%.0f"|format(p.price) if (p.price % 1 == 0) else "%.2f"|format(p.price) }}</strong>
                 <span class="tv-card-per-tyre">/tyre</span>
               </div>
               <div class="tv-card-set4-line">
-                Set of 4 &bull; <span class="currency-dirham"></span> {{ "%.0f"|format(p.set_of_4_price or (p.price * 4)) if ((p.set_of_4_price or (p.price * 4)) % 1 == 0) else "%.2f"|format(p.set_of_4_price or (p.price * 4)) }}
+                {% if p.is_staggered %}
+                Set of 2: <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(p.set_of_2_price or (p.price * 2)) if ((p.set_of_2_price or (p.price * 2)) % 1 == 0) else "%.2f"|format(p.set_of_2_price or (p.price * 2)) }}
+                {% else %}
+                Set of 4 &bull; <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(p.set_of_4_price or (p.price * 4)) if ((p.set_of_4_price or (p.price * 4)) % 1 == 0) else "%.2f"|format(p.set_of_4_price or (p.price * 4)) }}
+                {% endif %}
               </div>
             </div>
 
-            {#
-            <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '{{ p.pattern_name or p.display_name }}', {{ p.price }});" aria-label="Add to cart">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              <span>Add to Cart</span>
-            </button>
-            #}
             <!-- Contact Button (Desktop / Laptop / Tablet) -->
             <button type="button"
                     class="tv-btn-card-contact"
                     data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
-                    data-tyre-size="{{ p.tire_size_label or '' }}"
+                    data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
                     data-brand="{{ p.brand_name or '' }}"
                     data-price="{{ p.price or '' }}"
                     onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
@@ -779,14 +1088,14 @@
             </button>
 
             <!-- WhatsApp Button (Mobile Screens Only) -->
-            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')') | urlencode }}" 
+            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.full_size_spec or p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')' ) | urlencode }}" 
                target="_blank" 
                rel="noopener" 
                class="tv-btn-card-wa" 
                data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
                data-enquiry-for="Product Enquiry: {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
                data-form-type="product_card_whatsapp"
-               data-tyre-size="{{ p.tire_size_label or '' }}"
+               data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
                data-brand="{{ p.brand_name or '' }}"
                onclick="event.stopPropagation()" 
                aria-label="Inquire on WhatsApp">
@@ -798,6 +1107,7 @@
           <!-- /product-bottom-detail -->
 
         </div>
+        {% endif %}
         {% endfor %}
       </div>
 
@@ -813,11 +1123,34 @@
         <div class="tv-pagination-controls" id="pagination-controls">
           <!-- Rendered dynamically by JavaScript with working data -->
         </div>
+
+        <!-- Mobile / Tablet "Show More" Button (hidden on desktop) -->
+        <div class="tv-mobile-show-more-wrap {% if (total_pages or 1) <= 1 or (current_page or 1) >= (total_pages or 1) %}tv-hidden{% endif %}" id="tv-mobile-show-more-wrap">
+          <button type="button" class="tv-btn-show-more" id="tv-btn-show-more" onclick="loadMoreProducts()">
+            <span class="tv-show-more-text">Show More Tyres</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
       </div>
 
     </div>
   </div>
 </main>
+
+<!-- Floating Sticky Filter Button for Mobile & Tablet -->
+<button type="button" 
+        class="tv-sticky-floating-filter-btn" 
+        id="tv-sticky-floating-filter-btn" 
+        onclick="openMobileFilter()" 
+        aria-label="Open Filters">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+  </svg>
+  <span>Filters</span>
+  <span class="tv-sticky-filter-badge" id="tv-sticky-filter-badge" style="display:none;">0</span>
+</button>
 
 <!-- Floating Toast Notification -->
 <div id="tv-toast" class="tv-toast-notify" role="status" aria-live="polite">

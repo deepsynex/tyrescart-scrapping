@@ -225,6 +225,7 @@ document.addEventListener('keydown', function(e) {
 function _tvRenderModal() {
   var t = _tvState.type;
   var tab = _tvState.tab;
+  var s = _tvState;
   var badge = document.getElementById('tvhmBadge');
   var title = document.getElementById('tvhmTitle');
   var body  = document.getElementById('tvhmBody');
@@ -236,8 +237,8 @@ function _tvRenderModal() {
   }
 
   if (t === 'size') {
-    badge.textContent = 'SEARCH BY';
-    title.textContent = tab === 'car-wheels' ? 'Wheel Size' : tab === 'motorbike' ? 'Motorbike Tyre Size' : 'Tyre Size';
+    badge.textContent = s.selectingRear ? 'REAR TYRE SIZE' : 'SEARCH BY';
+    title.textContent = tab === 'car-wheels' ? 'Wheel Size' : tab === 'motorbike' ? 'Motorbike Tyre Size' : (s.selectingRear ? 'Rear Tyre Size' : 'Tyre Size');
     icon.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/></svg>';
     _tvRenderSizePanel(body, tab);
   } else if (t === 'vehicle') {
@@ -295,8 +296,6 @@ function _tvRenderSizePanel(body, tab) {
 
   var stepTitle = '';
   var stepSub = '';
-  var tipHeading = '';
-  var tipDesc = '';
   var badgeLabel = '';
   var badgeUnit = '';
   var defaultVal = '';
@@ -307,10 +306,6 @@ function _tvRenderSizePanel(body, tab) {
   if (s.step === 1) {
     stepTitle = isWheel ? 'Select Wheel Diameter' : (isMoto ? 'Select Tyre Width' : 'Select Tyre Width');
     stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyres in millimeters.';
-    tipHeading = isWheel ? 'What is wheel diameter?' : 'What is tyre width?';
-    tipDesc = isWheel
-      ? 'It is the diameter of the wheel rim in inches measured from bead seat to bead seat.'
-      : 'It\'s the width of the tyre from sidewall to sidewall in millimeters. Found as the first number on your tyre, e.g., 195/65 R15.';
     badgeLabel = isWheel ? 'Wheel Rim' : 'Tyre Width';
     badgeUnit = isWheel ? '"' : ' mm';
     defaultVal = isWheel ? '17' : '195';
@@ -321,10 +316,6 @@ function _tvRenderSizePanel(body, tab) {
   } else if (s.step === 2) {
     stepTitle = isWheel ? 'Select Wheel Width' : (isMoto ? 'Select Aspect Ratio' : 'Select Tyre Height');
     stepSub = isWheel ? 'Choose the rim width in inches (J).' : 'Choose the aspect ratio (height as % of width).';
-    tipHeading = isWheel ? 'What is wheel width?' : 'What is tyre height?';
-    tipDesc = isWheel
-      ? 'The width of the wheel rim between the inner bead seat and outer bead seat.'
-      : 'The aspect ratio indicates the sidewall height as a percentage of the width. Found as the second number, e.g., 195/65 R15.';
     badgeLabel = isWheel ? 'Wheel Width' : 'Tyre Height';
     badgeUnit = isWheel ? '' : '%';
     defaultVal = isWheel ? '7.5J' : '55';
@@ -335,8 +326,6 @@ function _tvRenderSizePanel(body, tab) {
   } else if (s.step === 3) {
     stepTitle = 'Select Rim Size';
     stepSub = 'Choose the diameter of the wheel rim in inches.';
-    tipHeading = 'What is rim diameter?';
-    tipDesc = 'The diameter of the wheel rim in inches that the tyre is designed to fit, e.g., 195/65 15.';
     badgeLabel = 'Rim Size';
     badgeUnit = '"';
     defaultVal = '16';
@@ -345,6 +334,10 @@ function _tvRenderSizePanel(body, tab) {
     currentSelectedVal = s.rim || (isTyre ? '16' : defaultVal);
     selectorLabel = 'SELECT RIM SIZE (INCHES)';
     searchPlaceholder = 'Search rim...';
+  }
+
+  if (s.selectingRear) {
+    stepSub = 'Front tyre size: ' + (s.frontWidth || '') + '/' + (s.frontProfile || '') + ' R' + (s.frontRim || '') + '. ' + stepSub;
   }
 
   // Visual SVG Guides
@@ -391,15 +384,72 @@ function _tvRenderSizePanel(body, tab) {
       }
       options.forEach(function(opt) {
         var isSel = opt === currentSelectedVal;
-        chipsHtml += '<button type="button" class="tvhm-size-chip"'
-          + 'data-val="' + opt + '" '
-          + 'onclick="tvSelectSizeChip(\'' + opt + '\')" '
-          + 'ondblclick="tvSelectSizeChip(\'' + opt + '\', true)" '
-          + 'onmouseenter="tvHoverSizeChip(\'' + opt + '\')" '
-          + 'onmouseleave="tvLeaveSizeChip()">'
+        chipsHtml += '<button type="button" class="tvhm-size-chip' + (isSel ? ' selected' : '') + '"'
+          + ' data-val="' + opt + '"'
+          + ' onclick="tvSelectSizeChip(\'' + opt + '\')"'
+          + ' ondblclick="tvSelectSizeChip(\'' + opt + '\', true)"'
+          + ' onmouseenter="tvHoverSizeChip(\'' + opt + '\')"'
+          + ' onmouseleave="tvLeaveSizeChip()">'
           + opt
           + '</button>';
       });
+    }
+
+    var pillsList = [];
+    if (s.selectingRear) {
+      if (s.frontWidth && s.frontProfile && s.frontRim) {
+        pillsList.push({
+          label: 'Front: ' + s.frontWidth + '/' + s.frontProfile + ' R' + s.frontRim,
+          key: 'front'
+        });
+      }
+      if (s.step >= 2 && s.width) {
+        pillsList.push({
+          label: 'Width: ' + s.width,
+          key: 'width'
+        });
+      }
+      if (s.step >= 3 && s.profile) {
+        pillsList.push({
+          label: 'Height: ' + s.profile,
+          key: 'profile'
+        });
+      }
+    } else if (isWheel) {
+      if (s.step >= 2 && s.width) {
+        pillsList.push({
+          label: 'Rim: ' + s.width + '"',
+          key: 'width'
+        });
+      }
+    } else {
+      if (s.step >= 2 && s.width) {
+        pillsList.push({
+          label: 'Width: ' + s.width,
+          key: 'width'
+        });
+      }
+      if (s.step >= 3 && s.profile) {
+        pillsList.push({
+          label: 'Height: ' + s.profile,
+          key: 'profile'
+        });
+      }
+    }
+
+    var pillsHtml = '';
+    if (pillsList.length > 0) {
+      pillsHtml = '<div class="tvhm-active-pills-row">';
+      pillsList.forEach(function(pill) {
+        pillsHtml += '<button type="button" class="tvhm-filter-pill" onclick="tvRemoveFilter(\'' + pill.key + '\')" title="Remove ' + pill.label + '">'
+          + '<span>' + pill.label + '</span>'
+          + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="tvhm-pill-close-icon">'
+          + '<line x1="18" y1="6" x2="6" y2="18"></line>'
+          + '<line x1="6" y1="6" x2="18" y2="18"></line>'
+          + '</svg>'
+          + '</button>';
+      });
+      pillsHtml += '</div>';
     }
 
     var html = ''
@@ -411,17 +461,7 @@ function _tvRenderSizePanel(body, tab) {
       + '  <div class="tvhm-hero-info">'
       + '    <h3 class="tvhm-step-title">' + stepTitle + '</h3>'
       + '    <p class="tvhm-step-sub">' + stepSub + '</p>'
-      + '    <div class="tvhm-tip-box">'
-      + '      <div class="tvhm-tip-icon">'
-      + '        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
-      + '          <path d="M12 2a6 6 0 0 0-6 6c0 2.22 1.21 4.16 3 5.2V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-3.8c1.79-1.04 3-2.98 3-5.2a6 6 0 0 0-6-6zM9 21h6"/>'
-      + '        </svg>'
-      + '      </div>'
-      + '      <div class="tvhm-tip-content">'
-      + '        <h4 class="tvhm-tip-heading">' + tipHeading + '</h4>'
-      + '        <p class="tvhm-tip-desc">' + tipDesc + '</p>'
-      + '      </div>'
-      + '    </div>'
+      +      pillsHtml
       + '  </div>'
       + '  <div class="tvhm-tyre-visual">'
       + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge">'
@@ -471,7 +511,17 @@ function _tvRenderSizePanel(body, tab) {
         nextBtnHtml = '<button type="button" class="tvhm-next-btn" id="tvSizeNextBtn" onclick="tvSizeNext()" ' + (hasProfile ? '' : 'disabled') + '>Next: Rim Size <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
       } else {
         var hasRim = isWheel ? Boolean(s.profile) : Boolean(s.rim);
-        nextBtnHtml = '<button type="button" class="tvhm-next-btn tvhm-search-action-btn" id="tvSizeNextBtn" onclick="tvSizeSearch()" ' + (hasRim ? '' : 'disabled') + '>Search Tyres <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>';
+        var searchBtnText = s.selectingRear ? 'Search Staggered Tyres' : 'Search Tyres';
+        var searchBtnHtml = '<button type="button" class="tvhm-next-btn tvhm-search-action-btn" id="tvSizeNextBtn" onclick="tvSizeSearch()" ' + (hasRim ? '' : 'disabled') + '>' + searchBtnText + ' <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>';
+        
+        var diffRearBtnHtml = (!isWheel && !s.selectingRear)
+          ? '<button type="button" class="tvhm-different-rear-btn" id="tvChooseRearSizeBtn" onclick="tvChooseRearSize()" ' + (hasRim ? '' : 'disabled') + '>+ Different Rear Size</button>'
+          : '';
+
+        nextBtnHtml = '<div class="tvhm-footer-actions">'
+          + searchBtnHtml
+          + diffRearBtnHtml
+          + '</div>';
       }
 
       footer.innerHTML = backBtnHtml + nextBtnHtml;
@@ -521,7 +571,7 @@ function _tvRenderSizePanel(body, tab) {
     } else {
       renderView([], true);
       _tvFetchTyreSizeOptions(s.width, s.profile).then(function(opts) {
-        var cleanOpts = (opts || []).map(function(r) { return String(r).replace(/^R/i, '').trim(); }).filter(function(r) { return parseInt(r, 10) >= 14; });
+        var cleanOpts = (opts || []).map(function(r) { return String(r).replace(/^R/i, '').trim(); });
         _tvTyreSizeCache.rims[rimKey] = cleanOpts;
         if (_tvState.type === 'size' && _tvState.step === 3 && _tvState.width === s.width && _tvState.profile === s.profile) {
           renderView(cleanOpts, false);
@@ -530,6 +580,8 @@ function _tvRenderSizePanel(body, tab) {
     }
   }
 }
+
+var _tvAutoAdvanceTimer = null;
 
 function tvSelectSizeChip(val, autoAdvance) {
   var s = _tvState;
@@ -562,13 +614,31 @@ function tvSelectSizeChip(val, autoAdvance) {
   if (nextBtn) {
     nextBtn.removeAttribute('disabled');
   }
+  var rearBtn = document.getElementById('tvChooseRearSizeBtn');
+  if (rearBtn) {
+    rearBtn.removeAttribute('disabled');
+  }
 
   if (autoAdvance) {
+    if (_tvAutoAdvanceTimer) {
+      clearTimeout(_tvAutoAdvanceTimer);
+      _tvAutoAdvanceTimer = null;
+    }
     if (s.step === 3 || (s.step === 2 && isWheel)) {
       tvSizeSearch();
     } else {
       tvSizeNext();
     }
+    return;
+  }
+
+  // Single click: automatically advance to the next step
+  if (s.step === 1 || (s.step === 2 && !isWheel)) {
+    if (_tvAutoAdvanceTimer) clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = setTimeout(function() {
+      _tvAutoAdvanceTimer = null;
+      tvSizeNext();
+    }, 180);
   }
 }
 
@@ -607,6 +677,10 @@ function tvFilterSizeChips(q) {
 }
 
 function tvSizeNext() {
+  if (_tvAutoAdvanceTimer) {
+    clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = null;
+  }
   var s = _tvState;
   var isWheel = s.tab === 'car-wheels';
   if (s.step === 1) {
@@ -621,12 +695,74 @@ function tvSizeNext() {
   _tvRenderModal();
 }
 
-function tvSizeBack() {
+function tvChooseRearSize() {
+  if (_tvAutoAdvanceTimer) {
+    clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = null;
+  }
   var s = _tvState;
+  if (!s.rim) return;
+  s.frontWidth = s.width;
+  s.frontProfile = s.profile;
+  s.frontRim = s.rim;
+  s.isStaggered = true;
+  s.selectingRear = true;
+  s.step = 1;
+  s.width = null;
+  s.profile = null;
+  s.rim = null;
+  _tvRenderModal();
+}
+
+function tvSizeBack() {
+  if (_tvAutoAdvanceTimer) {
+    clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = null;
+  }
+  var s = _tvState;
+  if (s.selectingRear && s.step === 1) {
+    s.selectingRear = false;
+    s.isStaggered = false;
+    s.width = s.frontWidth;
+    s.profile = s.frontProfile;
+    s.rim = s.frontRim;
+    s.step = 3;
+    _tvRenderModal();
+    return;
+  }
   if (s.step > 1) {
     s.step--;
     _tvRenderModal();
   }
+}
+
+function tvRemoveFilter(key) {
+  var s = _tvState;
+  if (_tvAutoAdvanceTimer) {
+    clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = null;
+  }
+  if (key === 'front') {
+    s.selectingRear = false;
+    s.isStaggered = false;
+    s.width = s.frontWidth;
+    s.profile = s.frontProfile;
+    s.rim = s.frontRim;
+    s.step = 3;
+  } else if (key === 'width') {
+    s.width = null;
+    s.profile = null;
+    s.rim = null;
+    s.step = 1;
+  } else if (key === 'profile') {
+    s.profile = null;
+    s.rim = null;
+    s.step = 2;
+  } else if (key === 'rim') {
+    s.rim = null;
+    s.step = 3;
+  }
+  _tvRenderModal();
 }
 
 function tvSizeSearch() {
@@ -634,9 +770,18 @@ function tvSizeSearch() {
   if (s.tab === 'car-wheels') {
     window.location.href = '/wheels?rim=' + encodeURIComponent(s.width || '') + '&width=' + encodeURIComponent(s.profile || '');
   } else {
-    var rimClean = String(s.rim || '').replace(/^R/i, '').trim();
-    var size = (s.width || '') + '-' + (s.profile || '') + '-' + rimClean;
-    window.location.href = '/tyres/size-' + encodeURIComponent(size);
+    var frontRimClean = String((s.selectingRear ? s.frontRim : s.rim) || '').replace(/^R/i, '').trim();
+    var frontWidth = s.selectingRear ? s.frontWidth : s.width;
+    var frontProfile = s.selectingRear ? s.frontProfile : s.profile;
+    var frontSize = (frontWidth || '') + '-' + (frontProfile || '') + '-' + frontRimClean;
+
+    if (s.selectingRear && s.width && s.profile && s.rim) {
+      var rearRimClean = String(s.rim || '').replace(/^R/i, '').trim();
+      var rearSize = s.width + '-' + s.profile + '-' + rearRimClean;
+      window.location.href = '/tyres/' + encodeURIComponent(frontSize) + '/' + encodeURIComponent(rearSize);
+    } else {
+      window.location.href = '/tyres/' + encodeURIComponent(frontSize);
+    }
   }
 }
 

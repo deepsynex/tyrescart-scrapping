@@ -8,6 +8,7 @@ import json
 import os
 import math
 import re
+import threading
 import time
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
@@ -1033,6 +1034,212 @@ def _fetch_catalog_products(args, locale='en'):
     conn = get_connection()
     try:
         with conn.cursor() as cur:
+            raw_rear = (args.get('rear') or '').strip()
+            raw_sizes = args.getlist('size') or args.getlist('sizes')
+            if not raw_rear and len(raw_sizes) >= 2:
+                raw_rear = raw_sizes[1].strip()
+                raw_sizes = [raw_sizes[0]]
+
+            m_front = re.match(r'^(\d+)[-/ ]+(\d+)[-/ ]+r?(\d+(?:\.\d+)?)$', raw_sizes[0].strip(), re.IGNORECASE) if raw_sizes else None
+            m_rear = re.match(r'^(\d+)[-/ ]+(\d+)[-/ ]+r?(\d+(?:\.\d+)?)$', raw_rear, re.IGNORECASE) if raw_rear else None
+
+            # ── STAGGERED PAIR FITMENT QUERY (Front + Rear Matching Pairs) ──
+            if m_front and m_rear:
+                f_w, f_h, f_r = m_front.group(1), m_front.group(2), m_front.group(3)
+                r_w, r_h, r_r = m_rear.group(1), m_rear.group(2), m_rear.group(3)
+                front_size_label = f"{f_w}/{f_h} R{f_r}"
+                rear_size_label = f"{r_w}/{r_h} R{r_r}"
+
+                where_conds = [
+                    "p1.deleted_at IS NULL", "p1.status = 'active'", "p1.website_id = 1",
+                    "p2.deleted_at IS NULL", "p2.status = 'active'", "p2.website_id = 1",
+                    "p1.brand_id = p2.brand_id",
+                    "(p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')"
+                ]
+                if front_size_label != rear_size_label:
+                    where_conds.append("p1.id != p2.id")
+                else:
+                    where_conds.append("p1.id = p2.id")
+                params = []
+
+                # Front size match
+                where_conds.append("""(
+                    (JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.width')) = %s 
+                     AND JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.height')) = %s 
+                     AND JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.rim')) IN (%s, %s))
+                    OR p1.tire_size_label = %s
+                )""")
+                params.extend([f_w, f_h, f_r, f"R{f_r}", front_size_label])
+
+                # Rear size match
+                where_conds.append("""(
+                    (JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.width')) = %s 
+                     AND JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.height')) = %s 
+                     AND JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.rim')) IN (%s, %s))
+                    OR p2.tire_size_label = %s
+                )""")
+                params.extend([r_w, r_h, r_r, f"R{r_r}", rear_size_label])
+
+                # Optional Brand filter
+                raw_brands = args.getlist('brand') or args.getlist('brands')
+                brand_terms = []
+                for b_entry in raw_brands:
+                    for b_part in b_entry.split(','):
+                        bp = b_part.strip().lower()
+                        if bp and bp not in brand_terms:
+                            brand_terms.append(bp)
+                if brand_terms:
+                    b_ph = ', '.join(['%s'] * len(brand_terms))
+                    where_conds.append(f"(LOWER(b.slug) IN ({b_ph}) OR LOWER(b.name) IN ({b_ph}))")
+                    params.extend(brand_terms)
+                    params.extend(brand_terms)
+
+                # Optional Category filter
+                raw_cats = args.getlist('tyres_category') or args.getlist('category')
+                cat_terms = [c.strip().title() for c in raw_cats if c.strip()]
+                if cat_terms:
+                    c_clauses = ["(p1.tyres_category = %s OR JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.tyres_category')) = %s)" for _ in cat_terms]
+                    where_conds.append("(" + " OR ".join(c_clauses) + ")")
+                    for ct in cat_terms:
+                        params.extend([ct, ct])
+
+                # Optional Price filter
+                max_price = args.get('max_price')
+                if max_price:
+                    try:
+                        where_conds.append("(p1.price * 2 + p2.price * 2) <= %s")
+                        params.append(float(max_price))
+                    except (ValueError, TypeError):
+                        pass
+
+                where_sql = " AND ".join(where_conds)
+
+                # Sorting
+                sort_by = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
+                if sort_by in ('price-desc', 'price_desc', 'high-to-low', 'price_high_to_low'):
+                    order_sql = "ORDER BY total_set_price DESC, p1.id ASC"
+                else:
+                    order_sql = "ORDER BY total_set_price ASC, p1.id ASC"
+
+                cur.execute(f"""
+                    SELECT COUNT(*) as total
+                    FROM products p1
+                    JOIN products p2 ON p1.brand_id = p2.brand_id
+                         AND (p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')
+                    LEFT JOIN brands b ON p1.brand_id = b.id
+                    WHERE {where_sql}
+                """, params)
+                c_row = cur.fetchone()
+                total_count = c_row['total'] if c_row else 0
+
+                try:
+                    page = max(1, int(args.get('page', 1)))
+                except (ValueError, TypeError):
+                    page = 1
+                per_page = max(1, min(100, int(args.get('per_page', 16))))
+                total_pages = max(1, math.ceil(total_count / per_page)) if total_count > 0 else 1
+                offset = (page - 1) * per_page
+
+                cur.execute(f"""
+                    SELECT 
+                        p1.id as front_id, p2.id as rear_id,
+                        (p1.price * 2 + p2.price * 2) as total_set_price
+                    FROM products p1
+                    JOIN products p2 ON p1.brand_id = p2.brand_id
+                         AND (p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')
+                    LEFT JOIN brands b ON p1.brand_id = b.id
+                    WHERE {where_sql}
+                    {order_sql}
+                    LIMIT %s OFFSET %s
+                """, params + [per_page, offset])
+                pair_rows = cur.fetchall()
+
+                # Collect all product IDs to fetch full product rows
+                all_ids = []
+                for pr in pair_rows:
+                    if pr['front_id'] not in all_ids:
+                        all_ids.append(pr['front_id'])
+                    if pr['rear_id'] not in all_ids:
+                        all_ids.append(pr['rear_id'])
+
+                full_products_map = {}
+                if all_ids:
+                    id_placeholders = ', '.join(['%s'] * len(all_ids))
+                    cur.execute(f"""
+                        SELECT p.*, b.name as brand_name, b.slug as brand_slug, b.logo as brand_logo
+                        FROM products p
+                        LEFT JOIN brands b ON p.brand_id = b.id
+                        WHERE p.id IN ({id_placeholders})
+                    """, all_ids)
+                    for prow in cur.fetchall():
+                        full_products_map[prow['id']] = prow
+
+                staggered_products = []
+                for pr in pair_rows:
+                    f_row = full_products_map.get(pr['front_id'])
+                    r_row = full_products_map.get(pr['rear_id'])
+                    if not f_row or not r_row:
+                        continue
+
+                    p1_formatted = _format_product_for_client(f_row, locale)
+                    p1_formatted['axle'] = 'front'
+                    p1_formatted['axle_label'] = 'Front'
+                    p1_formatted['set_qty'] = 2
+                    p1_formatted['set_of_2_price'] = round(p1_formatted['price'] * 2, 2)
+                    p1_formatted['paired_with_id'] = pr['rear_id']
+                    p1_formatted['paired_size'] = rear_size_label
+
+                    p2_formatted = _format_product_for_client(r_row, locale)
+                    p2_formatted['axle'] = 'rear'
+                    p2_formatted['axle_label'] = 'Rear'
+                    p2_formatted['set_qty'] = 2
+                    p2_formatted['set_of_2_price'] = round(p2_formatted['price'] * 2, 2)
+                    p2_formatted['paired_with_id'] = pr['front_id']
+                    p2_formatted['paired_size'] = front_size_label
+
+                    f_price = float(p1_formatted.get('price') or 0)
+                    r_price = float(p2_formatted.get('price') or 0)
+                    tot_price = float(pr['total_set_price'] or (f_price * 2 + r_price * 2))
+
+                    combined_pair = {
+                        'id': f"{pr['front_id']}_{pr['rear_id']}",
+                        'is_staggered': True,
+                        'is_combined_pair': True,
+                        'brand_name': p1_formatted.get('brand_name') or 'Tyres',
+                        'brand_slug': p1_formatted.get('brand_slug') or '',
+                        'brand_logo': p1_formatted.get('brand_logo') or '',
+                        'pattern_name': p1_formatted.get('pattern_name') or '',
+                        'display_name': f"{p1_formatted.get('brand_name', '')} {p1_formatted.get('pattern_name', '')}".strip(),
+                        'total_set_price': tot_price,
+                        'total_set_price_formatted': f"{tot_price:.2f}" if (tot_price % 1 != 0) else f"{tot_price:.0f}",
+                        'front': p1_formatted,
+                        'rear': p2_formatted,
+                        'front_id': pr['front_id'],
+                        'rear_id': pr['rear_id'],
+                        'front_size': p1_formatted['full_size_spec'],
+                        'rear_size': p2_formatted['full_size_spec'],
+                        'front_price': f_price,
+                        'rear_price': r_price,
+                        'front_set2': p1_formatted['set_of_2_price'],
+                        'rear_set2': p2_formatted['set_of_2_price'],
+                        'price': round(tot_price / 4.0, 2),
+                        'slug': p1_formatted.get('slug', ''),
+                        'full_title': f"{p1_formatted.get('brand_name', '')} {p1_formatted.get('pattern_name', '')} Staggered Fitment (Front: {p1_formatted['full_size_spec']} • Rear: {p2_formatted['full_size_spec']})".strip()
+                    }
+                    staggered_products.append(combined_pair)
+
+                return {
+                    'products': staggered_products,
+                    'total': total_count,
+                    'page': page,
+                    'per_page': per_page,
+                    'total_pages': total_pages,
+                    'facets': {},
+                    'is_staggered': True,
+                    'front_size_label': front_size_label,
+                    'rear_size_label': rear_size_label
+                }
+
             # Build filter clauses mapped by dimension for multi-select disjunctive facet calculation
             clauses = {
                 'tyres_category': ([], []),
@@ -1627,7 +1834,6 @@ def _fetch_catalog_products(args, locale='en'):
 def _parse_filter_path(filter_path):
     """Parses clean SEO slug filter segments (e.g. /page-2-16/brand-pirelli/size-225-40-R18/max_price-5693) into request args."""
     from werkzeug.datastructures import MultiDict
-    import re
     args = MultiDict()
     if not filter_path:
         return args
@@ -1650,6 +1856,18 @@ def _parse_filter_path(filter_path):
             args.setlistdefault('page', []).append(m_page.group(1))
             if m_page.group(2):
                 args.setlistdefault('per_page', []).append(m_page.group(2))
+            continue
+
+        # Check pure tyre size like 155-70-13 or 175-65-15 or size-155-70-13
+        m_pure_size = re.match(r'^(?:size-)?(\d{2,3})[-/ ]+(\d{2})[-/ ]+r?(\d{2}(?:\.\d+)?)$', seg, re.IGNORECASE)
+        if m_pure_size:
+            formatted_size = f"{m_pure_size.group(1)}-{m_pure_size.group(2)}-{m_pure_size.group(3)}"
+            if not args.getlist('size'):
+                args.add('size', formatted_size)
+            elif not args.getlist('rear'):
+                args.setlistdefault('rear', []).append(formatted_size)
+            else:
+                args.add('size', formatted_size)
             continue
 
         m_tc = re.match(r'^(?:tyres_category|category|tyres-category|tyre-category)-(.+)$', seg, re.IGNORECASE)
@@ -1801,6 +2019,9 @@ def _render_product_listing(locale, filter_path=None):
     per_page = catalog_data['per_page']
     total_pages = catalog_data['total_pages']
     facets = catalog_data.get('facets', {})
+    is_staggered = catalog_data.get('is_staggered', False)
+    front_size_label = catalog_data.get('front_size_label', '')
+    rear_size_label = catalog_data.get('rear_size_label', '')
 
     active_tyres_categories = [tc.strip() for tc in (combined_args.getlist('tyres_category') or combined_args.getlist('category') or combined_args.getlist('tyre_category') or combined_args.getlist('tyres_categories')) if tc.strip()]
     active_brands = [b.lower() for b in (combined_args.getlist('brand') or combined_args.getlist('brands'))]
@@ -2233,6 +2454,9 @@ def _render_product_listing(locale, filter_path=None):
                 active_max_price=active_max_price,
                 active_min_price=active_min_price,
                 active_sort=active_sort,
+                is_staggered=is_staggered,
+                front_size_label=front_size_label,
+                rear_size_label=rear_size_label,
                 locale=locale
             ))
             resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
@@ -2777,13 +3001,6 @@ def _render_car_brands(locale):
     try:
         raw = _vs_wheel_get('makes.php', {'region': 'medm'})
         raw_makes = raw.get('data', [])
-        # Only show car brands that have available tyres in our database
-        if avail_makes:
-            raw_makes = [
-                m for m in raw_makes 
-                if (m.get('slug') or '').strip().lower() in avail_makes 
-                or (m.get('slug') or '').strip().lower() in {'mercedes', 'mercedes-benz'}
-            ]
     except Exception as e:
         current_app.logger.warning(f"Error fetching car makes from Wheel-API: {e}")
         raw_makes = []
@@ -2810,6 +3027,8 @@ def _render_car_brands(locale):
         if not slug:
             continue
         name = m.get('name_en') or m.get('name') or slug.replace('-', ' ').title()
+        if slug == 'citroen':
+            name = 'Citroën'
 
         logo_file = f"{slug}.png"
         if logo_file in avail_local:
@@ -2833,6 +3052,7 @@ def _render_car_brands(locale):
             category_label = 'EV'
 
         is_feat = (slug in popular_makes) or (slug in luxury_makes)
+        has_db_tyres = slug in avail_makes or slug in {'mercedes', 'mercedes-benz'}
 
         makes.append({
             'slug': slug,
@@ -2840,10 +3060,12 @@ def _render_car_brands(locale):
             'logo': logo_url,
             'tier': tier,
             'category_label': category_label,
-            'is_featured': is_feat
+            'is_featured': is_feat,
+            'has_db_tyres': has_db_tyres
         })
 
-    makes.sort(key=lambda x: (not x['is_featured'], x['name'].lower()))
+    # Sort alphabetically from A to Z to match OEM car makes directory
+    makes.sort(key=lambda x: x['name'].lower())
 
     base_url = "https://www.tyresvision.com"
     canonical_url = f"{base_url}/{locale}/tyres/cars" if locale and locale != 'en' else f"{base_url}/tyres/cars"
@@ -2975,7 +3197,6 @@ def _render_vehicle_page(slug_path, locale):
                 for s_row in cur.fetchall():
                     sz = s_row.get('front_tire_size') or ''
                     if sz:
-                        import re
                         slug_parts = re.findall(r'\d+', sz)
                         sz_slug = '-'.join(slug_parts) if slug_parts else sz
                         make_stats['popular_sizes'].append({
@@ -4236,7 +4457,7 @@ def api_tyre_sizes_cascade():
         conn.close()
 
     if step == 'rim':
-        # Clean rim sizes: omit 'R'/'r' prefix and exclude rims < 14 (no R13 or below)
+        # Clean rim sizes: omit 'R'/'r' prefix and C suffix, no artificial minimum size restriction
         cleaned_rims = set()
         for v in raw_vals:
             v_clean = v.strip()
@@ -4246,15 +4467,30 @@ def api_tyre_sizes_cascade():
                 v_clean = v_clean[:-1].strip()
             try:
                 val_num = float(v_clean)
-                if val_num >= 14:
+                if val_num > 0:
                     rim_str = str(int(val_num)) if val_num.is_integer() else str(val_num)
                     cleaned_rims.add(rim_str)
             except ValueError:
-                pass
-        options = sorted(cleaned_rims, key=float)
+                if v_clean:
+                    cleaned_rims.add(v_clean)
+        def _rim_sort_key(x):
+            try:
+                return (0, float(x))
+            except ValueError:
+                return (1, str(x))
+        options = sorted(cleaned_rims, key=_rim_sort_key)
     else:
-        numeric_vals = [v for v in raw_vals if v.isdigit()]
-        options = sorted(set(numeric_vals), key=int)
+        cleaned_vals = set()
+        for v in raw_vals:
+            v_clean = v.strip()
+            if v_clean:
+                cleaned_vals.add(v_clean)
+        def _sort_key(x):
+            try:
+                return (0, float(x))
+            except ValueError:
+                return (1, str(x))
+        options = sorted(cleaned_vals, key=_sort_key)
 
     return jsonify({'success': True, 'step': step, 'options': options})
 
@@ -4709,56 +4945,81 @@ def handle_contact_submission():
     except Exception as db_err:
         current_app.logger.error(f"Error saving contact enquiry to DB: {db_err}", exc_info=True)
 
-    # 2. Dispatch email notification via mailer using the database Product Enquiry template
-    mail_sent = False
-    try:
-        from mailer import send_email, GMAIL_USER, OWNER_EMAIL
-        from services.email_template_service import EmailTemplateService
-        import urllib.parse
-        
-        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr or 'Unknown')
-        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-        clean_phone = re.sub(r'[^\d+]', '', phone) if phone else ''
-        
-        display_product = product_name if product_name else (subject if subject and subject != 'General Enquiry' else 'TyresVision Products')
-        service_text = 'Product Enquiry • Tyres Catalog' if product_name else (subject if subject else 'General Customer Enquiry')
-        note_text = comment if comment else (message if message else 'Customer submitted an enquiry via TyresVision website.')
+    # 2. Dispatch email notification via mailer using the database Product Enquiry template.
+    # Sent in a background thread so the SMTP round-trips (which can take
+    # several seconds each, more if SSL fails and it falls back to TLS)
+    # never block the HTTP response the browser is waiting on.
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr or 'Unknown')
+    flask_app = current_app._get_current_object()
+    thread = threading.Thread(
+        target=_send_contact_enquiry_email,
+        args=(flask_app, name, email, phone, subject, message, product_name, comment, enquiry_id, client_ip),
+        daemon=True
+    )
+    thread.start()
 
-        context = {
-            'client name': name,
-            'client_name': name,
-            'client mobile': phone or 'Not provided',
-            'client number': clean_phone or phone or 'Not provided',
-            'client email': email,
-            'client Email': email,
-            'service': service_text,
-            'product Name': display_product,
-            'product_name': display_product,
-            'Note': note_text,
-            'note': note_text,
-            'enquiry_id': str(enquiry_id or 'N/A'),
-            'timestamp': timestamp,
-            'client_ip': client_ip,
-        }
+    return jsonify({
+        'success': True,
+        'message': 'Thank you! Your message has been sent successfully. Our team will contact you shortly.',
+        'enquiry_id': enquiry_id,
+        'mail_dispatched': True
+    }), 200
 
-        # Render database email template for Product Enquiry (code: contact_enquiry_received)
-        fallback_subject = f"New Product Enquiry from TyresVision: {display_product} - {name}"
-        email_subject, html_body = EmailTemplateService.render_template_by_code(
-            'contact_enquiry_received',
-            context=context,
-            default_subject=fallback_subject
-        )
-        if not email_subject or email_subject.strip() == 'Customer Enquiry':
-            email_subject = fallback_subject
 
-        # Clean up any static href attributes in template
-        if clean_phone:
-            html_body = html_body.replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"')
-        if display_product:
-            encoded_prod = urllib.parse.quote(display_product)
-            html_body = html_body.replace('Continental%20Tyres', encoded_prod)
+def _send_contact_enquiry_email(flask_app, name, email, phone, subject, message, product_name, comment, enquiry_id, client_ip):
+    """Builds and sends the contact-enquiry notification email(s). Runs on a
+    background thread (see handle_contact_submission) so a slow or failing
+    SMTP connection never blocks the form's HTTP response. Any failure here
+    only reaches the server log, never the customer -- by the time this
+    runs, the browser has already been told the enquiry was received."""
+    with flask_app.app_context():
+        try:
+            from mailer import send_email, GMAIL_USER, OWNER_EMAIL
+            from services.email_template_service import EmailTemplateService
+            import urllib.parse
 
-        text_body = f"""New Product Enquiry from TyresVision
+            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            clean_phone = re.sub(r'[^\d+]', '', phone) if phone else ''
+
+            display_product = product_name if product_name else (subject if subject and subject != 'General Enquiry' else 'TyresVision Products')
+            service_text = 'Product Enquiry • Tyres Catalog' if product_name else (subject if subject else 'General Customer Enquiry')
+            note_text = comment if comment else (message if message else 'Customer submitted an enquiry via TyresVision website.')
+
+            context = {
+                'client name': name,
+                'client_name': name,
+                'client mobile': phone or 'Not provided',
+                'client number': clean_phone or phone or 'Not provided',
+                'client email': email,
+                'client Email': email,
+                'service': service_text,
+                'product Name': display_product,
+                'product_name': display_product,
+                'Note': note_text,
+                'note': note_text,
+                'enquiry_id': str(enquiry_id or 'N/A'),
+                'timestamp': timestamp,
+                'client_ip': client_ip,
+            }
+
+            # Render database email template for Product Enquiry (code: contact_enquiry_received)
+            fallback_subject = f"New Product Enquiry from TyresVision: {display_product} - {name}"
+            email_subject, html_body = EmailTemplateService.render_template_by_code(
+                'contact_enquiry_received',
+                context=context,
+                default_subject=fallback_subject
+            )
+            if not email_subject or email_subject.strip() == 'Customer Enquiry':
+                email_subject = fallback_subject
+
+            # Clean up any static href attributes in template
+            if clean_phone:
+                html_body = html_body.replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"')
+            if display_product:
+                encoded_prod = urllib.parse.quote(display_product)
+                html_body = html_body.replace('Continental%20Tyres', encoded_prod)
+
+            text_body = f"""New Product Enquiry from TyresVision
 -------------------------------------
 Customer Name: {name}
 Email Address: {email}
@@ -4774,37 +5035,28 @@ Enquiry ID: #{enquiry_id or 'N/A'}
 Timestamp: {timestamp}
 IP Address: {client_ip}
 """
-        
-        # Attach TyresVision white logo as inline CID image for bulletproof rendering across Gmail PC, Outlook, Apple Mail
-        logo_path = os.path.abspath(os.path.join(current_app.root_path, '..', 'static', 'assets', 'images', 'logo', 'tyresvision-logo-white.png'))
-        inline_images = {'tyresvision_logo': logo_path} if os.path.isfile(logo_path) else None
 
-        # Resolve owner notification email from environment (.env), falling back to mailer.OWNER_EMAIL
-        owner_email_raw = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or OWNER_EMAIL or "alice@klever.ae"
-        owner_recipients = [e.strip() for e in re.split(r'[,;]', owner_email_raw) if e.strip()]
-        for target_email in owner_recipients:
-            try:
-                send_email(target_email, email_subject, html_body, text_body, inline_images=inline_images)
-            except Exception as send_err:
-                current_app.logger.warning(f"Failed to send contact enquiry to {target_email}: {send_err}")
-        
-        # Also copy GMAIL_USER if configured and distinct from owner recipients
-        if GMAIL_USER and not any(GMAIL_USER.lower() == r.lower() for r in owner_recipients):
-            try:
-                send_email(GMAIL_USER, email_subject, html_body, text_body, inline_images=inline_images)
-            except Exception:
-                pass
+            # Attach TyresVision white logo as inline CID image for bulletproof rendering across Gmail PC, Outlook, Apple Mail
+            logo_path = os.path.abspath(os.path.join(flask_app.root_path, '..', 'static', 'assets', 'images', 'logo', 'tyresvision-logo-white.png'))
+            inline_images = {'tyresvision_logo': logo_path} if os.path.isfile(logo_path) else None
 
-        mail_sent = True
-    except Exception as mail_err:
-        current_app.logger.warning(f"Failed to send email notification for contact enquiry: {mail_err}", exc_info=True)
+            # Resolve owner notification email from environment (.env), falling back to mailer.OWNER_EMAIL
+            owner_email_raw = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or OWNER_EMAIL
+            owner_recipients = [e.strip() for e in re.split(r'[,;]', owner_email_raw) if e.strip()]
+            for target_email in owner_recipients:
+                try:
+                    send_email(target_email, email_subject, html_body, text_body, inline_images=inline_images)
+                except Exception as send_err:
+                    flask_app.logger.warning(f"Failed to send contact enquiry to {target_email}: {send_err}")
 
-    return jsonify({
-        'success': True,
-        'message': 'Thank you! Your message has been sent successfully. Our team will contact you shortly.',
-        'enquiry_id': enquiry_id,
-        'mail_dispatched': mail_sent
-    }), 200
+            # Also copy GMAIL_USER if configured and distinct from owner recipients
+            if GMAIL_USER and not any(GMAIL_USER.lower() == r.lower() for r in owner_recipients):
+                try:
+                    send_email(GMAIL_USER, email_subject, html_body, text_body, inline_images=inline_images)
+                except Exception as send_err:
+                    flask_app.logger.warning(f"Failed to send contact enquiry copy to {GMAIL_USER}: {send_err}")
+        except Exception as mail_err:
+            flask_app.logger.warning(f"Failed to send email notification for contact enquiry #{enquiry_id}: {mail_err}", exc_info=True)
 
 
 @site_bp.route('/page/<slug>')

@@ -22,7 +22,7 @@ SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
 SMTP_PORT_SSL = int(os.environ.get('SMTP_PORT_SSL', '465'))
 SMTP_PORT_TLS = int(os.environ.get('SMTP_PORT_TLS', '587'))
 MAIL_FROM = os.environ.get('MAIL_FROM', GMAIL_USER)
-OWNER_EMAIL = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or 'alice@klever.ae'
+OWNER_EMAIL = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL')
 
 
 

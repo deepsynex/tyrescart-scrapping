@@ -10583,10 +10583,11 @@ body.filter-open .float-wa {
 }
 
 .tv-btn-quickview:hover {
-  color: #0F172A;
-  border-color: #CBD5E1;
+  color: #4B237B;
+  border-color: #4B237B;
+  background: #FAF5FF;
   transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(75, 35, 123, 0.18);
 }
 
 /* 3. Product Info Block */
@@ -10619,8 +10620,9 @@ body.filter-open .float-wa {
   transition: color 0.15s ease;
 }
 
-.tv-card-pattern:hover {
-  color: #DC2626;
+.tv-card-pattern:hover,
+.tv-card-pattern-link:hover .tv-card-pattern {
+  color: #4B237B;
 }
 
 /* Product Size Row */
@@ -18147,6 +18149,91 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   background: linear-gradient(135deg, #059669, #047857);
   box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
 }
+.tvhm-footer-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.tvhm-footer-actions .tvhm-next-btn {
+  margin-left: 0;
+}
+.tvhm-different-rear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: 9999px;
+  background: #008A44;
+  border: none;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 138, 68, 0.25);
+  white-space: nowrap;
+}
+.tvhm-different-rear-btn:hover {
+  background: #007338;
+  box-shadow: 0 6px 18px rgba(0, 138, 68, 0.35);
+  transform: translateY(-1px);
+}
+.tvhm-different-rear-btn:active {
+  transform: translateY(0);
+}
+.tvhm-different-rear-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Active Filter Pills Row (Replaces "What is tyre width?" tip box) */
+.tvhm-active-pills-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.tvhm-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #008A44;
+  border: none;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 138, 68, 0.22);
+  white-space: nowrap;
+}
+.tvhm-filter-pill:hover {
+  background: #007338;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 138, 68, 0.32);
+}
+.tvhm-filter-pill:active {
+  transform: translateY(0);
+}
+.tvhm-filter-pill .tvhm-pill-close-icon {
+  display: inline-block;
+  stroke: #FFFFFF;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  opacity: 0.9;
+}
+.tvhm-filter-pill:hover .tvhm-pill-close-icon {
+  transform: scale(1.15);
+  opacity: 1;
+}
 
 /* ============================================================
    CONTACT BUTTON IN HEADER & CONTACT OVERVIEW DRAWER
@@ -18583,23 +18670,12 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   transform: translateY(0);
 }
 
-/* Responsive display toggle between Contact (Desktop/Laptop/Tablet) and WhatsApp (Mobile) */
-@media (min-width: 768px) {
-  .tv-card-price-action-row .tv-btn-card-contact {
-    display: inline-flex !important;
-  }
-  .tv-card-price-action-row .tv-btn-card-wa {
-    display: none !important;
-  }
+/* Branded purple Contact button on product cards across all screen sizes (per user reference) */
+.tv-card-price-action-row .tv-btn-card-contact {
+  display: inline-flex !important;
 }
-
-@media (max-width: 767px) {
-  .tv-card-price-action-row .tv-btn-card-contact {
-    display: none !important;
-  }
-  .tv-card-price-action-row .tv-btn-card-wa {
-    display: inline-flex !important;
-  }
+.tv-card-price-action-row .tv-btn-card-wa {
+  display: none !important;
 }
 
 /* ============================================================
@@ -18896,5 +18972,659 @@ body.tv-scroll-locked {
   font-size: 13.5px;
   font-weight: 600;
 }
+
+/* ============================================================================
+   STAGGERED PAIR FITMENT (CATALOG BANNER & CARD STYLING)
+   ============================================================================ */
+.tv-staggered-fitment-banner {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tv-staggered-fitment-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(0, 138, 68, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.tv-staggered-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tv-staggered-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 138, 68, 0.2);
+  border: 1px solid rgba(0, 138, 68, 0.4);
+  color: #34D399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tv-staggered-banner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tv-staggered-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tv-staggered-banner-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.tv-staggered-mode-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #008A44;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.tv-staggered-pairs-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tv-staggered-axle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tv-staggered-axle-badge.front {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  color: #93C5FD;
+}
+
+.tv-staggered-axle-badge.rear {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #FCD34D;
+}
+
+.tv-staggered-axle-badge .tv-axle-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  opacity: 0.9;
+}
+
+.tv-staggered-axle-badge .tv-axle-size {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.tv-staggered-plus-icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #94A3B8;
+}
+
+.tv-staggered-set-note {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.tv-staggered-banner-right {
+  flex-shrink: 0;
+}
+
+.tv-btn-front-only {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tv-btn-front-only:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 860px) {
+  .tv-staggered-fitment-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px;
+    gap: 14px;
+  }
+  .tv-staggered-banner-right {
+    width: 100%;
+  }
+  .tv-btn-front-only {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   STAGGERED COMBINED DUAL-TYRE CARD (Exact match to reference)
+   ============================================================ */
+.tv-product-card.tv-staggered-combined-card {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  overflow: hidden;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .tv-product-card.tv-staggered-combined-card {
+    grid-column: span 1;
+  }
+}
+
+/* Card Hover Effect: Branded PURPLE (per user requirement) */
+.tv-product-card:hover,
+.tv-product-card.tv-staggered-card:hover,
+.tv-product-card.tv-staggered-combined-card:hover {
+  border-color: #4B237B !important;
+  box-shadow: 0 16px 36px -4px rgba(75, 35, 123, 0.22) !important;
+  transform: translateY(-2px);
+}
+
+.tv-product-card.tv-staggered-combined-card:hover .tv-product-img {
+  transform: scale(1.04);
+}
+
+/* Dual Tyres Body: Front & Rear side-by-side */
+.tv-staggered-dual-body {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  padding: 12px 14px 10px;
+  background: #FFFFFF;
+}
+
+@media (max-width: 520px) {
+  .tv-staggered-dual-body {
+    flex-direction: column;
+    padding: 10px;
+  }
+}
+
+.tv-staggered-side {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 4px 8px;
+}
+
+.tv-staggered-dual-divider {
+  width: 1px;
+  background: #F1F5F9;
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .tv-staggered-dual-divider {
+    width: 100%;
+    height: 1px;
+    margin: 12px 0;
+  }
+}
+
+/* Tyre Image Box in Combined Card */
+.tv-staggered-side .tv-card-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 28px;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.tv-staggered-side .tv-card-brand-img {
+  max-height: 38px;
+  max-width: 100px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.tv-staggered-side .tv-card-img-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 10px;
+  width: 100%;
+}
+
+.tv-staggered-side .tv-card-img-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.tv-staggered-side .tv-card-tyre-box {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tv-staggered-side .tv-product-img {
+  max-width: 130px;
+  max-height: 130px;
+  object-fit: contain;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tv-staggered-side .tyre-type-icons {
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tv-staggered-side .tv-card-warranty-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5B21B6 0%, #4B237B 100%);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(75, 35, 123, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Staggered Side Details */
+.tv-staggered-side .product-bottom-detail {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.tv-staggered-side .tv-card-pattern {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.25;
+  margin: 0 0 6px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.tv-staggered-side .tv-card-pattern:hover,
+.tv-staggered-side .tv-card-pattern-link:hover .tv-card-pattern {
+  color: #4B237B !important;
+}
+
+.tv-staggered-side .tv-card-size-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.tv-staggered-side .tv-card-spec-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #4A5C73;
+  letter-spacing: -0.01em;
+}
+
+.tv-staggered-side .tv-card-year-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4A5C73;
+}
+
+.tv-staggered-side .tv-card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748B;
+  margin-bottom: 6px;
+}
+
+.tv-staggered-side .tv-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.tv-staggered-side .tv-card-bottom-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.tv-staggered-side .tv-stock-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: #16A34A;
+  font-size: 12px;
+}
+
+.tv-staggered-side .tv-fitted-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: #E02424;
+  font-size: 12px;
+}
+
+.tv-staggered-side .tv-card-pricing-left {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.tv-staggered-side .tv-card-main-price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  line-height: 1;
+}
+
+.tv-staggered-side .tv-card-price-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #051F38;
+  letter-spacing: -0.01em;
+}
+
+.tv-staggered-side .tv-card-per-tyre {
+  font-size: 13.5px;
+  color: #64748B;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+.tv-staggered-side .tv-card-set4-line {
+  font-size: 13px;
+  font-weight: 500;
+  color: #051F38;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bottom Action Bar: Set of 4 (Left) + Contact Us (Right) */
+.tv-staggered-bottom-bar {
+  display: flex;
+  width: 100%;
+  margin-top: auto;
+  border-top: 1px solid #E2E8F0;
+}
+
+.tv-staggered-set4-block {
+  flex: 1 1 50%;
+  background: #000000;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.tv-staggered-set4-block strong {
+  font-size: 1.05rem;
+  color: #FFFFFF;
+}
+
+.tv-staggered-contact-btn {
+  flex: 1 1 50%;
+  background: #4B237B;
+  color: #FFFFFF !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.tv-staggered-contact-btn:hover {
+  background: #5B21B6;
+  color: #FFFFFF !important;
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.tv-staggered-contact-btn svg {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MOBILE & TABLET: SHOW MORE BUTTON & STICKY FILTER BUTTON
+   ============================================================ */
+
+/* Mobile / Tablet "Show More" Button */
+.tv-mobile-show-more-wrap {
+  width: 100%;
+  display: none;
+  justify-content: center;
+  padding: 18px 0 6px;
+}
+
+.tv-btn-show-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  height: 46px;
+  background: #FFFFFF;
+  border: 2px solid #4B237B;
+  color: #4B237B;
+  font-size: 0.94rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(75, 35, 123, 0.1);
+  transition: all 0.22s ease;
+}
+
+.tv-btn-show-more:hover {
+  background: #4B237B;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(75, 35, 123, 0.25);
+}
+
+.tv-btn-show-more:active {
+  transform: translateY(0);
+}
+
+.tv-btn-show-more.is-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Mobile & Tablet Responsive Rules for Pagination */
+@media (max-width: 1024px) {
+  #pagination-controls {
+    display: none !important;
+  }
+  
+  .tv-mobile-show-more-wrap:not(.tv-hidden) {
+    display: flex !important;
+  }
+
+  .tv-mobile-show-more-wrap.tv-hidden {
+    display: none !important;
+  }
+
+  /* Make mobile filter button visible on tablet as well */
+  .tv-mobile-filter-btn {
+    display: inline-flex !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .tv-mobile-show-more-wrap {
+    display: none !important;
+  }
+  
+  #pagination-controls {
+    display: flex !important;
+  }
+}
+
+/* Floating Sticky Filter Button for Mobile & Tablet */
+.tv-sticky-floating-filter-btn {
+  display: none;
+  position: fixed;
+  bottom: 82px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 88;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #4B237B 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  box-shadow: 0 10px 26px rgba(75, 35, 123, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.tv-sticky-floating-filter-btn.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tv-sticky-floating-filter-btn:hover {
+  background: linear-gradient(135deg, #3B1B61 0%, #5B21B6 100%);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 14px 32px rgba(75, 35, 123, 0.55);
+}
+
+.tv-sticky-floating-filter-btn:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tv-sticky-filter-badge {
+  background: #10B981;
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+@media (max-width: 1024px) {
+  .tv-sticky-floating-filter-btn {
+    display: inline-flex;
+  }
+}
+
 
 
