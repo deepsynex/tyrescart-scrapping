@@ -300,6 +300,72 @@
     transform: translateY(-3px);
     box-shadow: 0 14px 28px -6px rgba(124, 58, 237, 0.16);
   }
+
+  /* Featured Tyres carousel: 3 cards visible at a time, auto-rotating + manual nav */
+  .tv-vp-carousel-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tv-vp-nav-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    flex-shrink: 0;
+  }
+  .tv-vp-nav-arrow:hover {
+    background: #7C3AED;
+    border-color: #7C3AED;
+    color: #ffffff;
+    transform: scale(1.06);
+  }
+  .tv-vp-nav-arrow:active {
+    transform: scale(0.96);
+  }
+  .tv-vp-carousel-track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 2px 10px 2px;
+  }
+  .tv-vp-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+  .tv-vp-carousel-card {
+    flex: 0 0 calc((100% - 48px) / 3);
+    width: calc((100% - 48px) / 3);
+    max-width: calc((100% - 48px) / 3);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+  @media (max-width: 900px) {
+    .tv-vp-carousel-card {
+      flex: 0 0 calc((100% - 24px) / 2);
+      width: calc((100% - 24px) / 2);
+      max-width: calc((100% - 24px) / 2);
+    }
+  }
+  @media (max-width: 600px) {
+    .tv-vp-carousel-card {
+      flex: 0 0 82vw;
+      width: 82vw;
+      max-width: 82vw;
+    }
+  }
 </style>
 
 {% if level == 1 %}
@@ -551,15 +617,17 @@
       {# Card 1: Acoustic Foam #}
       <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-200 transition-all flex flex-col justify-between">
         <div>
-          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="23"></line>
-              <line x1="8" y1="23" x2="16" y2="23"></line>
-            </svg>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">Noise-Cancelling PNCS</h3>
           </div>
-          <h3 class="text-lg font-black text-slate-900 mb-2">Noise-Cancelling PNCS</h3>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Tyres equipped with internal polyurethane acoustic foam (Pirelli PNCS, Continental ContiSilent, Michelin Acoustic) that reduce interior road vibration by up to 9dB.
           </p>
@@ -572,13 +640,15 @@
       {# Card 2: High-Load XL Rating #}
       <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-200 transition-all flex flex-col justify-between">
         <div>
-          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-            </svg>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">Reinforced XL Carcass</h3>
           </div>
-          <h3 class="text-lg font-black text-slate-900 mb-2">Reinforced XL Carcass</h3>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             High load-capacity engineering designed to support heavy vehicle weights (up to 2.8+ tonnes) with zero tire deflection and razor-sharp steering responsiveness.
           </p>
@@ -591,20 +661,22 @@
       {# Card 3: Summer Heat & Desert Compound #}
       <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-200 transition-all flex flex-col justify-between">
         <div>
-          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">Gulf Heat Resistance</h3>
           </div>
-          <h3 class="text-lg font-black text-slate-900 mb-2">Gulf Heat Resistance</h3>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Every tyre is GCC compliant and built with thermal-resistant silica compounds capable of withstanding UAE summer tarmac temperatures exceeding 55&deg;C.
           </p>
@@ -617,12 +689,14 @@
       {# Card 4: Touchless Mobile Rim Care #}
       <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-200 transition-all flex flex-col justify-between">
         <div>
-          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-[#7C3AED] flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">Scratch-Free Mounting</h3>
           </div>
-          <h3 class="text-lg font-black text-slate-900 mb-2">Scratch-Free Mounting</h3>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Our high-spec mobile vans utilize polymer-protected bead levers and laser 3D road-force balancers to protect delicate 20&quot; to 24&quot; bespoke alloy rims.
           </p>
@@ -640,7 +714,7 @@
       <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="relative z-10 max-w-3xl mb-8">
-        <span class="tv-glass-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-3">
+        <span class="tv-glass-pill inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-3 max-w-full whitespace-normal break-words">
           Global OEM Partnerships
         </span>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #FFFFFF;">
@@ -652,26 +726,19 @@
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {# Brand 1: Pirelli #}
-        <a href="/brands/pirelli" class="tv-brand-card-item p-5 text-center group">
-          <span class="block text-xl font-black tracking-wider text-white group-hover:text-purple-300 transition-colors">PIRELLI</span>
-          <span class="text-[11px] font-medium block mt-1" style="color: rgba(233, 213, 255, 0.85);">P Zero PZ4 PNCS</span>
+        {% for b in oem_brands %}
+        <a href="/brands/{{ b.slug }}" class="tv-brand-card-item p-5 text-center group overflow-hidden">
+          {% if b.logo %}
+          <span class="flex items-center justify-center h-8 sm:h-10 mb-1">
+            <img src="{{ b.logo }}" alt="{{ b.name }}" class="max-h-full max-w-[110px] object-contain opacity-95 group-hover:opacity-100 transition-opacity" loading="lazy" onerror="this.parentElement.style.display='none'; this.closest('a').querySelector('.tv-brand-name-fallback').style.display='block';">
+          </span>
+          <span class="tv-brand-name-fallback block text-xs sm:text-lg font-black tracking-normal text-white group-hover:text-purple-300 transition-colors whitespace-nowrap" style="display:none;">{{ b.name|upper }}</span>
+          {% else %}
+          <span class="tv-brand-name-fallback block text-xs sm:text-lg font-black tracking-normal text-white group-hover:text-purple-300 transition-colors whitespace-nowrap">{{ b.name|upper }}</span>
+          {% endif %}
+          <span class="text-[11px] font-medium block mt-1" style="color: rgba(233, 213, 255, 0.85);">{{ b.tagline }}</span>
         </a>
-        {# Brand 2: Continental #}
-        <a href="/brands/continental" class="tv-brand-card-item p-5 text-center group">
-          <span class="block text-xl font-black tracking-wider text-white group-hover:text-purple-300 transition-colors">CONTINENTAL</span>
-          <span class="text-[11px] font-medium block mt-1" style="color: rgba(233, 213, 255, 0.85);">SportContact ContiSilent</span>
-        </a>
-        {# Brand 3: Michelin #}
-        <a href="/brands/michelin" class="tv-brand-card-item p-5 text-center group">
-          <span class="block text-xl font-black tracking-wider text-white group-hover:text-purple-300 transition-colors">MICHELIN</span>
-          <span class="text-[11px] font-medium block mt-1" style="color: rgba(233, 213, 255, 0.85);">Pilot Sport 4 SUV Acoustic</span>
-        </a>
-        {# Brand 4: Goodyear #}
-        <a href="/brands/goodyear" class="tv-brand-card-item p-5 text-center group">
-          <span class="block text-xl font-black tracking-wider text-white group-hover:text-purple-300 transition-colors">GOODYEAR</span>
-          <span class="text-[11px] font-medium block mt-1" style="color: rgba(233, 213, 255, 0.85);">Eagle F1 SoundComfort</span>
-        </a>
+        {% endfor %}
       </div>
     </div>
   </section>
@@ -1086,76 +1153,207 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-2">
-        {% if model_stats.front_size_slug %}
-        <a href="/tyres/size-{{ model_stats.front_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
-          View All Front ({{ model_stats.front_count }}) &rarr;
-        </a>
-        {% endif %}
-        {% if model_stats.rear_size_slug %}
-        <span class="text-slate-300">•</span>
-        <a href="/tyres/size-{{ model_stats.rear_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
-          View All Rear ({{ model_stats.rear_count }}) &rarr;
-        </a>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          {% if model_stats.front_size_slug %}
+          <a href="/tyres/size-{{ model_stats.front_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
+            View All Front ({{ model_stats.front_count }}) &rarr;
+          </a>
+          {% endif %}
+          {% if model_stats.rear_size_slug %}
+          <span class="text-slate-300">•</span>
+          <a href="/tyres/size-{{ model_stats.rear_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
+            View All Rear ({{ model_stats.rear_count }}) &rarr;
+          </a>
+          {% endif %}
+        </div>
+        {% if model_stats.sample_products|length > 3 %}
+        <div class="tv-vp-carousel-nav">
+          <button type="button" class="tv-vp-nav-arrow tv-vp-nav-prev" onclick="tvVpScrollFeatured(-1)" aria-label="Previous tyres">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button type="button" class="tv-vp-nav-arrow tv-vp-nav-next" onclick="tvVpScrollFeatured(1)" aria-label="Next tyres">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
         {% endif %}
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% set COUNTRY_FLAG_CODES = {
+      'Brazil': 'br', 'China': 'cn', 'Czech Republic': 'cz', 'France': 'fr',
+      'Germany': 'de', 'Great Britain': 'gb', 'Hungary': 'hu', 'India': 'in',
+      'Indonesia': 'id', 'Italy': 'it', 'Japan': 'jp', 'Luxembourg': 'lu',
+      'Malaysia': 'my', 'Mexico': 'mx', 'Netherlands': 'nl', 'Philippines': 'ph',
+      'Poland': 'pl', 'Portugal': 'pt', 'Romania': 'ro', 'Serbia': 'rs',
+      'Slovakia': 'sk', 'Slovenia': 'si', 'South Africa': 'za', 'South Korea': 'kr',
+      'Spain': 'es', 'Taiwan': 'tw', 'Thailand': 'th', 'Turkey': 'tr',
+      'United Kingdom': 'gb', 'United States': 'us', 'USA': 'us', 'Usa': 'us',
+      'Uk': 'gb', 'Uae': 'ae', 'Vietnam': 'vn'
+    } %}
+    <div class="tv-vp-carousel-track" id="tv-vp-featured-carousel">
       {% for p in model_stats.sample_products %}
-      {% set img_url = p.image_path|replace('\\', '/') if p.image_path else '' %}
-      {% if img_url and not img_url.startswith('/') %}{% set img_url = '/' + img_url %}{% endif %}
-      <div class="tv-curated-card">
-        <div>
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="text-xs font-black uppercase text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full border border-purple-200">
-              {{ p.brand_name or 'Premium' }}
-            </span>
-            <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              In Stock
-            </span>
-          </div>
+      <div class="tv-product-card tv-vp-carousel-card"
+           data-slug="{{ p.slug }}"
+           data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
+           data-brand-name="{{ p.brand_name }}"
+           data-brand-logo="{{ p.brand_logo or '' }}"
+           data-pattern="{{ p.pattern_name or p.display_name }}"
+           data-full-title="{{ p.brand_name ~ ' ' ~ p.full_size_spec ~ ' ' ~ (p.display_name or p.name) ~ ' ' ~ (p.year or '2024') }}"
+           data-size="{{ p.tire_size_label }}"
+           data-full-spec="{{ p.full_size_spec }}"
+           data-year="{{ p.year or '2024' }}"
+           data-country="{{ p.country_of_origin or 'China' }}"
+           data-sku="{{ 'TCKL-' ~ p.id }}"
+           data-image="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}"
+           data-price="{{ p.price|float }}"
+           data-price-set4="{{ "%.2f"|format(p.price|float * 4) }}"
+           data-category="{{ p.tyres_category or 'Premium' }}">
 
-          <div class="w-full h-40 flex items-center justify-center p-3 bg-slate-50 rounded-xl mb-4 border border-slate-100 overflow-hidden">
-            {% if img_url %}
-            <img 
-              src="{{ img_url }}" 
-              alt="{{ p.display_name or p.name }}" 
-              class="max-h-full max-w-full object-contain transition-transform duration-300 hover:scale-105"
-              onerror="this.onerror=null; this.src='/static/assets/images/tyre-placeholder.png';"
-            />
+        <div class="tv-card-header-bar">
+          {% set card_b_slug = p.brand_slug or (p.brand_name|lower|replace(' ', '-')) %}
+          <a href="/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.brand_name }} brand page" onclick="event.stopPropagation();">
+            {% if p.brand_logo %}
+            <img src="{{ p.brand_logo }}" alt="{{ p.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <span class="tv-card-brand-fallback" style="display:none;">{{ p.brand_name }}</span>
             {% else %}
-            <svg class="w-16 h-16 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="9"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
+            <span class="tv-card-brand-fallback">{{ p.brand_name or 'Premium' }}</span>
             {% endif %}
+          </a>
+          {% if p.tyres_category %}
+          <div class="tv-card-badge-wrap">
+            <span class="tv-card-badge tv-badge-category">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>{{ p.tyres_category }}</span>
+            </span>
           </div>
-
-          <div class="mb-2">
-            <span class="text-xs font-extrabold text-[#7C3AED]">{{ p.tire_size_label }}</span>
-            <h3 class="font-bold text-sm text-slate-900 line-clamp-2 mt-0.5" title="{{ p.display_name or p.name }}">
-              {{ p.display_name or p.name }}
-            </h3>
-          </div>
+          {% endif %}
         </div>
 
-        <div class="mt-4 pt-3 border-t border-slate-100">
-          <div class="flex items-baseline justify-between mb-3">
-            <span class="text-xs font-semibold text-slate-400">Fitted Price (Inc. VAT)</span>
-            <span class="text-lg font-black text-slate-900">AED {{ p.price|int }}</span>
+        <div class="tv-card-img-area">
+          <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+
+          <div class="tv-card-img-link">
+            <div class="tv-card-tyre-box tv-img-loading">
+              <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}"
+                   alt="{{ p.display_name or p.name }}"
+                   class="tv-product-img"
+                   loading="lazy"
+                   onload="this.parentElement.classList.remove('tv-img-loading')"
+                   onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
+            </div>
           </div>
 
-          <a 
-            href="/product/{{ p.slug }}" 
-            class="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-[#7C3AED] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 transition shadow-sm"
-          >
-            <span>View Tyre Details</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </a>
+          <span class="tv-card-warranty-badge">
+            <span>{{ p.warranty or '1 Year Warranty' }}</span>
+          </span>
+        </div>
+
+        <div class="product-bottom-detail">
+          <div class="tv-card-info-block">
+            {% set origin_name = p.country_of_origin or 'USA' %}
+            {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+            <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+              {% if origin_code %}
+              <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+              <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+              {% else %}
+              <span>{{ origin_name }}</span>
+              {% endif %}
+            </span>
+
+            <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.display_name or p.name }}">
+              <h3 class="tv-card-pattern">
+                {{ p.display_name or p.name }}
+              </h3>
+            </a>
+
+            <div class="tv-card-size-row">
+              <span class="tv-card-spec-text">{{ p.full_size_spec }}</span>
+              <span class="tv-card-year-meta" title="Manufacturing Year">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>{{ p.year or '2025' }}</span>
+              </span>
+            </div>
+
+            <div class="tv-card-meta-row">
+              <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                {% if p.is_runflat or p.runflat_text == 'Runflat' %}
+                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                {% endif %}
+              </span>
+            </div>
+          </div>
+
+          <div class="tv-card-bottom-info">
+            <div class="tv-stock-status">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="8 12 11 15 16 9"></polyline>
+              </svg>
+              <span>In Stock</span>
+            </div>
+
+            <div class="tv-fitted-status">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+              <span>Fitted Included</span>
+            </div>
+          </div>
+
+          <div class="tv-card-price-action-row">
+            <div class="tv-card-pricing-left">
+              <div class="tv-card-main-price-line">
+                <span class="currency-dirham tv-ref-curr">&#xe900;</span>
+                <strong class="tv-card-price-num">{{ "%.0f"|format(p.price) if (p.price % 1 == 0) else "%.2f"|format(p.price) }}</strong>
+                <span class="tv-card-per-tyre">/tyre</span>
+              </div>
+              <div class="tv-card-set4-line">
+                Set of 4 &bull; <span class="currency-dirham">&#xe900;</span> {{ "%.0f"|format(p.price * 4) if ((p.price * 4) % 1 == 0) else "%.2f"|format(p.price * 4) }}
+              </div>
+            </div>
+
+            <button type="button"
+                    class="tv-btn-card-contact"
+                    data-product-name="{{ (p.display_name or p.name or '')|escape }}"
+                    data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
+                    data-brand="{{ p.brand_name or '' }}"
+                    data-price="{{ p.price or '' }}"
+                    onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                    aria-label="Contact about {{ (p.display_name or p.name or '')|escape }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Contact</span>
+            </button>
+
+            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name or '') ~ ' (Size: ' ~ (p.full_size_spec or p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')' ) | urlencode }}"
+               target="_blank"
+               rel="noopener"
+               class="tv-btn-card-wa"
+               data-product-name="{{ (p.display_name or p.name or '')|escape }}"
+               data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
+               data-brand="{{ p.brand_name or '' }}"
+               onclick="event.stopPropagation()"
+               aria-label="Inquire on WhatsApp">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              <span>WhatsApp</span>
+            </a>
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -1240,33 +1438,27 @@
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {# Michelin #}
-      <a href="/tyres/michelin" class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#7C3AED] hover:shadow-lg transition-all group text-center">
-        <span class="block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors">MICHELIN</span>
-        <span class="text-xs font-bold text-purple-700 block mt-1">Pilot Sport Cup 2 BG</span>
-        <span class="text-[11px] text-slate-400 block mt-0.5">Bugatti Factory Homologation</span>
+      {% set brand_cards = [
+        ('michelin', 'Pilot Sport Cup 2 BG', model.name ~ ' Factory Homologation'),
+        ('pirelli', 'P Zero PZ4 Hypercar', 'Ultra-High Velocity Grip'),
+        ('continental', 'SportContact 7', 'German Precision Traction'),
+        ('goodyear', 'Eagle F1 SuperSport', 'Track &amp; Highway Velocity'),
+      ] %}
+      {% for b_slug, line1, line2 in brand_cards %}
+      {% set b = oem_brands_by_slug.get(b_slug) %}
+      <a href="/tyres/{{ b_slug }}" class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#7C3AED] hover:shadow-lg transition-all group text-center">
+        {% if b and b.logo %}
+        <span class="flex items-center justify-center h-9 mb-1">
+          <img src="{{ b.logo }}" alt="{{ b.name }}" class="max-h-full max-w-[120px] object-contain" loading="lazy" onerror="this.parentElement.style.display='none'; this.closest('a').querySelector('.tv-brand-name-fallback').style.display='block';">
+        </span>
+        <span class="tv-brand-name-fallback block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors" style="display:none;">{{ b_slug|upper }}</span>
+        {% else %}
+        <span class="tv-brand-name-fallback block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors">{{ b_slug|upper }}</span>
+        {% endif %}
+        <span class="text-xs font-bold text-purple-700 block mt-1">{{ line1 }}</span>
+        <span class="text-[11px] text-slate-400 block mt-0.5">{{ line2|safe }}</span>
       </a>
-
-      {# Pirelli #}
-      <a href="/tyres/pirelli" class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#7C3AED] hover:shadow-lg transition-all group text-center">
-        <span class="block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors">PIRELLI</span>
-        <span class="text-xs font-bold text-purple-700 block mt-1">P Zero PZ4 Hypercar</span>
-        <span class="text-[11px] text-slate-400 block mt-0.5">Ultra-High Velocity Grip</span>
-      </a>
-
-      {# Continental #}
-      <a href="/tyres/continental" class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#7C3AED] hover:shadow-lg transition-all group text-center">
-        <span class="block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors">CONTINENTAL</span>
-        <span class="text-xs font-bold text-purple-700 block mt-1">SportContact 7</span>
-        <span class="text-[11px] text-slate-400 block mt-0.5">German Precision Traction</span>
-      </a>
-
-      {# Goodyear #}
-      <a href="/tyres/goodyear" class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#7C3AED] hover:shadow-lg transition-all group text-center">
-        <span class="block text-lg font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors">GOODYEAR</span>
-        <span class="text-xs font-bold text-purple-700 block mt-1">Eagle F1 SuperSport</span>
-        <span class="text-[11px] text-slate-400 block mt-0.5">Track &amp; Highway Velocity</span>
-      </a>
+      {% endfor %}
     </div>
   </section>
 
@@ -1282,10 +1474,12 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm mb-4">
-              01
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm flex-shrink-0">
+                01
+              </div>
+              <h3 class="text-base font-black text-slate-900">Select Year &amp; Fitment</h3>
             </div>
-            <h3 class="text-base font-black text-slate-900 mb-2">Select Year &amp; Fitment</h3>
             <p class="text-xs text-slate-600 leading-relaxed">
               Choose your {{ model.name }} year above to view exact front (285/30 R20) and rear (355/25 R21) tyre sizes verified against official technical bulletins.
             </p>
@@ -1294,10 +1488,12 @@
 
         <div class="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm mb-4">
-              02
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm flex-shrink-0">
+                02
+              </div>
+              <h3 class="text-base font-black text-slate-900">Select Genuine Tyres</h3>
             </div>
-            <h3 class="text-base font-black text-slate-900 mb-2">Select Genuine Tyres</h3>
             <p class="text-xs text-slate-600 leading-relaxed">
               Select manufacturer-homologated Michelin or Pirelli sets with 100% fresh manufacture date codes and GCC conformity warranty.
             </p>
@@ -1306,10 +1502,12 @@
 
         <div class="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col justify-between">
           <div>
-            <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm mb-4">
-              03
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center font-black text-sm flex-shrink-0">
+                03
+              </div>
+              <h3 class="text-base font-black text-slate-900">Doorstep Laser Installation</h3>
             </div>
-            <h3 class="text-base font-black text-slate-900 mb-2">Doorstep Laser Installation</h3>
             <p class="text-xs text-slate-600 leading-relaxed">
               Our mobile fitting van arrives with high-speed digital wheel balancers and touchless tyre changers to complete fitment without rim marks.
             </p>
@@ -1317,126 +1515,6 @@
         </div>
       </div>
     </div>
-  {# ── 8. TAILORED VEHICLE FITMENT FAQ ACCORDION WITH SCHEMA.ORG JSON-LD ── #}
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-    <div class="text-center mb-8">
-      <span class="text-xs font-black uppercase text-[#7C3AED] tracking-wider">Fitment FAQ</span>
-      <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">Frequently Asked Questions</h2>
-      <p class="text-xs sm:text-sm text-slate-500 mt-1">Everything you need to know about {{ make.name }} {{ model.name }} tyres in the UAE.</p>
-    </div>
-
-    <div class="space-y-3">
-      <details class="tv-faq-item bg-white rounded-2xl border border-slate-200/90 overflow-hidden transition-all duration-200">
-        <summary class="tv-faq-summary flex items-center justify-between p-5 cursor-pointer list-none font-black text-sm sm:text-base text-slate-900 hover:text-[#7C3AED] transition-colors">
-          <span>What are the factory tyre sizes for the {{ make.name }} {{ model.name }}?</span>
-          <svg class="tv-faq-icon w-4 h-4 text-purple-600 flex-shrink-0 ml-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-purple-100/50">
-          The factory original equipment fitment for the {{ make.name }} {{ model.name }} consists of a calibrated staggered setup: <strong>{{ model_stats.front_size or '285/30 R20' }}</strong> on the front axle and <strong>{{ model_stats.rear_size or '355/25 R21' }}</strong> on the rear axle. Both axles require (Y) or ZR speed-rated tyres tested to withstand extreme hypercar velocity.
-        </div>
-      </details>
-
-      <details class="tv-faq-item bg-white rounded-2xl border border-slate-200/90 overflow-hidden transition-all duration-200">
-        <summary class="tv-faq-summary flex items-center justify-between p-5 cursor-pointer list-none font-black text-sm sm:text-base text-slate-900 hover:text-[#7C3AED] transition-colors">
-          <span>Why does the {{ model.name }} require special speed-rated tyres?</span>
-          <svg class="tv-faq-icon w-4 h-4 text-purple-600 flex-shrink-0 ml-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-purple-100/50">
-          With a 1,500 hp quad-turbo W16 powerplant and an electronically limited top speed of 420 km/h, the tyres experience massive centrifugal loads exceeding 3,800g. Standard tyres would delaminate under these forces. {{ model.name }} tyres are engineered with aramid-reinforced carcass layers and bespoke compounds.
-        </div>
-      </details>
-
-      <details class="tv-faq-item bg-white rounded-2xl border border-slate-200/90 overflow-hidden transition-all duration-200">
-        <summary class="tv-faq-summary flex items-center justify-between p-5 cursor-pointer list-none font-black text-sm sm:text-base text-slate-900 hover:text-[#7C3AED] transition-colors">
-          <span>Can I replace only the front or rear tyres on my {{ model.name }}?</span>
-          <svg class="tv-faq-icon w-4 h-4 text-purple-600 flex-shrink-0 ml-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-purple-100/50">
-          Due to the {{ model.name }}'s precision all-wheel-drive system, it is strongly recommended to replace tyres in pairs across the same axle, or ideally as a complete four-tyre set. Large tread depth discrepancies between axles can cause rotational mismatches that strain the AWD central coupling.
-        </div>
-      </details>
-
-      <details class="tv-faq-item bg-white rounded-2xl border border-slate-200/90 overflow-hidden transition-all duration-200">
-        <summary class="tv-faq-summary flex items-center justify-between p-5 cursor-pointer list-none font-black text-sm sm:text-base text-slate-900 hover:text-[#7C3AED] transition-colors">
-          <span>How does mobile doorstep installation protect my hypercar's wheels?</span>
-          <svg class="tv-faq-icon w-4 h-4 text-purple-600 flex-shrink-0 ml-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-purple-100/50">
-          TyresVision operates mobile workshops equipped with Corghi touchless tyre changers featuring polymer-shielded clamping heads. Metal levers never touch the wheel finish, ensuring zero scratches or stress on carbon-ceramic brake discs and magnesium wheel rims.
-        </div>
-      </details>
-
-      <details class="tv-faq-item bg-white rounded-2xl border border-slate-200/90 overflow-hidden transition-all duration-200">
-        <summary class="tv-faq-summary flex items-center justify-between p-5 cursor-pointer list-none font-black text-sm sm:text-base text-slate-900 hover:text-[#7C3AED] transition-colors">
-          <span>Are tyres supplied with fresh DOT manufacturing dates?</span>
-          <svg class="tv-faq-icon w-4 h-4 text-purple-600 flex-shrink-0 ml-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </summary>
-        <div class="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-purple-100/50">
-          Yes. All tyres supplied by TyresVision are 100% genuine, GCC-specified, and backed by a comprehensive manufacturer defect warranty. Every tyre features fresh DOT manufacture dates compliant with UAE ESMA safety guidelines.
-        </div>
-      </details>
-    </div>
-
-    {# Schema.org FAQPage JSON-LD #}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What are the factory tyre sizes for the {{ make.name }} {{ model.name }}?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The factory original equipment fitment for the Bugatti Chiron consists of a staggered setup: 285/30 R20 on the front axle and 355/25 R21 on the rear axle. Both axles require (Y) or ZR speed-rated tyres tested to withstand extreme hypercar velocity."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Why does the {{ model.name }} require special speed-rated tyres?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "With a 1,500 hp quad-turbo W16 powerplant and an electronically limited top speed of 420 km/h, the tyres experience massive centrifugal loads exceeding 3,800g. Chiron tyres are engineered with aramid-reinforced carcass layers and bespoke compounds."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I replace only the front or rear tyres on my {{ model.name }}?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Due to the Chiron's precision AWD system, it is strongly recommended to replace tyres in pairs across the same axle, or ideally as a complete four-tyre set to safeguard the active AWD differential."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does mobile doorstep installation protect my hypercar's wheels?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "TyresVision operates mobile workshops equipped with Corghi touchless tyre changers featuring polymer-shielded clamping heads. Metal levers never touch the wheel finish, ensuring zero scratches on rims or carbon-ceramic rotors."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Are tyres supplied with fresh DOT manufacturing dates?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. All tyres supplied by TyresVision are 100% genuine, GCC-specified, and backed by a comprehensive manufacturer defect warranty with fresh DOT manufacture dates compliant with UAE ESMA safety guidelines."
-          }
-        }
-      ]
-    }
-    </script>
-  </section>
 
   {# ── 9. VIP CONCIERGE CALLOUT BANNER ── #}
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
@@ -1673,4 +1751,61 @@
 
 </main>
 {% endif %}
+
+<script>
+(function() {
+  var track = document.getElementById('tv-vp-featured-carousel');
+  if (!track) return;
+
+  function cardStep() {
+    var card = track.querySelector('.tv-vp-carousel-card');
+    if (!card) return 0;
+    var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '24') || 24;
+    return card.getBoundingClientRect().width + gap;
+  }
+
+  window.tvVpScrollFeatured = function(direction) {
+    var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    if (direction > 0 && atEnd) {
+      track.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+    track.scrollBy({ left: cardStep() * direction, behavior: 'smooth' });
+  };
+
+  var AUTO_ROTATE_MS = 4000;
+  var autoTimer = null;
+
+  function startAutoRotate() {
+    stopAutoRotate();
+    autoTimer = setInterval(function() {
+      window.tvVpScrollFeatured(1);
+    }, AUTO_ROTATE_MS);
+  }
+
+  function stopAutoRotate() {
+    if (autoTimer) {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  }
+
+  // Pause while the user is interacting, resume shortly after they stop.
+  var resumeTimeout = null;
+  function pauseThenResume() {
+    stopAutoRotate();
+    clearTimeout(resumeTimeout);
+    resumeTimeout = setTimeout(startAutoRotate, 5000);
+  }
+
+  track.addEventListener('mouseenter', stopAutoRotate);
+  track.addEventListener('mouseleave', startAutoRotate);
+  track.addEventListener('touchstart', pauseThenResume, { passive: true });
+  track.addEventListener('wheel', pauseThenResume, { passive: true });
+
+  if (track.scrollWidth > track.clientWidth + 4) {
+    startAutoRotate();
+  }
+})();
+</script>
 {% endblock %}

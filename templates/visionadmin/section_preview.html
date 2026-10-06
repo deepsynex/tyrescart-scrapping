@@ -492,8 +492,10 @@
           <div class="grid g3" style="margin-top:44px">
             {% for c in cards %}
             <div class="card">
-              <div class="icon" aria-hidden="true">{{ render_icon(c.icon or 'star', 22) }}</div>
-              <h3>{{ c.title }}</h3>
+              <div class="card-head">
+                <div class="icon" aria-hidden="true">{{ render_icon(c.icon or 'star', 22) }}</div>
+                <h3>{{ c.title }}</h3>
+              </div>
               <p>{{ c.description or c.desc }}</p>
             </div>
             {% endfor %}
@@ -638,8 +640,10 @@
             {% for st in steps %}
             <div class="step">
               <span class="step-num" aria-hidden="true">{{ loop.index }}</span>
-              <div class="icon" aria-hidden="true">{{ render_icon(st.icon or 'star', 22) }}</div>
-              <h3>{{ st.title }}</h3>
+              <div class="card-head">
+                <div class="icon" aria-hidden="true">{{ render_icon(st.icon or 'star', 22) }}</div>
+                <h3>{{ st.title }}</h3>
+              </div>
               <p>{{ st.description or st.desc }}</p>
             </div>
             {% endfor %}
@@ -738,8 +742,10 @@
           <div class="grid g3" style="margin-top:44px">
             {% for c in cards %}
             <div class="card advice-card">
-              <div class="icon" aria-hidden="true">{{ render_icon(c.icon or 'star', 22) }}</div>
-              <h3>{{ c.title.en if (c.title is mapping) else (c.title or '') }}</h3>
+              <div class="card-head">
+                <div class="icon" aria-hidden="true">{{ render_icon(c.icon or 'star', 22) }}</div>
+                <h3>{{ c.title.en if (c.title is mapping) else (c.title or '') }}</h3>
+              </div>
               <p>{{ c.description.en if (c.description is mapping) else (c.description or c.desc or '') }}</p>
             </div>
             {% endfor %}

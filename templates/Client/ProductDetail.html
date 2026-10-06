@@ -2711,6 +2711,17 @@
           </div>
         </div>
       </div>
+      {% set COUNTRY_FLAG_CODES = {
+        'Brazil': 'br', 'China': 'cn', 'Czech Republic': 'cz', 'France': 'fr',
+        'Germany': 'de', 'Great Britain': 'gb', 'Hungary': 'hu', 'India': 'in',
+        'Indonesia': 'id', 'Italy': 'it', 'Japan': 'jp', 'Luxembourg': 'lu',
+        'Malaysia': 'my', 'Mexico': 'mx', 'Netherlands': 'nl', 'Philippines': 'ph',
+        'Poland': 'pl', 'Portugal': 'pt', 'Romania': 'ro', 'Serbia': 'rs',
+        'Slovakia': 'sk', 'Slovenia': 'si', 'South Africa': 'za', 'South Korea': 'kr',
+        'Spain': 'es', 'Taiwan': 'tw', 'Thailand': 'th', 'Turkey': 'tr',
+        'United Kingdom': 'gb', 'United States': 'us', 'USA': 'us', 'Usa': 'us',
+        'Uk': 'gb', 'Uae': 'ae', 'Vietnam': 'vn'
+      } %}
       <!-- CAROUSEL TRACK (Scrollable, NOT automatic moving) -->
       <div class="tv-pdp-related-carousel" id="related-products-carousel">
         {% for rp in related_products %}
@@ -2752,10 +2763,10 @@
           </div>
           {% endif %}
 
-          <!-- 1. Top Header Bar: Brand Logo (Left) -->
+          <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
           <div class="tv-card-header-bar">
             {% set card_b_slug = rp.brand_slug or (rp.brand_name|lower|replace(' ', '-')) %}
-            <a href="/tyres/brand/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View all {{ rp.brand_name }} tyres" onclick="event.stopPropagation();">
+            <a href="/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ rp.brand_name }} brand page" onclick="event.stopPropagation();">
               {% if rp.brand_logo %}
               <img src="{{ rp.brand_logo }}" alt="{{ rp.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
               <span class="tv-card-brand-fallback" style="display:none;">{{ rp.brand_name }}</span>
@@ -2763,6 +2774,16 @@
               <span class="tv-card-brand-fallback">{{ rp.brand_name }}</span>
               {% endif %}
             </a>
+            {% if rp.tyres_category %}
+            <div class="tv-card-badge-wrap">
+              <span class="tv-card-badge tv-badge-category">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>{{ rp.tyres_category }}</span>
+              </span>
+            </div>
+            {% endif %}
           </div>
 
           <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
@@ -2813,6 +2834,17 @@
           <div class="product-bottom-detail">
             <!-- 3. Product Info Block -->
             <div class="tv-card-info-block">
+              {% set origin_name = rp.country_of_origin or 'USA' %}
+              {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+              <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                {% if origin_code %}
+                <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                {% else %}
+                <span>{{ origin_name }}</span>
+                {% endif %}
+              </span>
+
               <!-- Product Pattern / Model Name (Brand name removed) -->
               <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
                 <h3 class="tv-card-pattern">
@@ -2834,29 +2866,11 @@
                 </span>
               </div>
 
-              <!-- 4. USA __ Runflat __ premium -->
+              <!-- 4. Runflat (country of origin and category moved elsewhere on the card) -->
               <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-country" title="Origin: {{ rp.country_of_origin or 'USA' }}">
-                  <span>{{ rp.country_of_origin or 'USA' }}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                  </svg>
-                </span>
-
                 <span class="tv-meta-item tv-meta-runflat" title="Technology">
                   {% if rp.is_runflat or rp.runflat_text == 'Runflat' %}
                   <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                  {% endif %}
-                </span>
-
-                <span class="tv-meta-item tv-meta-premium" title="Category: {{ rp.tyres_category or 'Budget' }}">
-                  <span>{{ rp.tyres_category or '' }}</span>
-                  {% if rp.tyres_category %}
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>
                   {% endif %}
                 </span>
               </div>

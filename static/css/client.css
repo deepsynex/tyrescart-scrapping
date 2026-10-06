@@ -199,7 +199,8 @@ img {
 }
 
 a {
-  color: inherit
+  color: inherit;
+  cursor: pointer;
 }
 
 h1,
@@ -274,10 +275,10 @@ section {
 }
 
 .tv-header-logo-img {
-  height: 40px;
+  height: 52px;
   width: auto;
-  max-height: 40px;
-  max-width: 175px;
+  max-height: 52px;
+  max-width: 215px;
   object-fit: contain;
   display: block;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
@@ -313,9 +314,9 @@ section {
 
 @media(max-width: 979px) {
   .tv-header-logo-img {
-    height: 35px;
-    max-height: 35px;
-    max-width: 150px;
+    height: 44px;
+    max-height: 44px;
+    max-width: 255px;
   }
 }
 
@@ -328,19 +329,19 @@ section {
 
 @media(max-width: 480px) {
   .tv-header-logo-img {
-    height: 32px;
-    max-height: 32px;
-    max-width: 135px;
+    height: 38px;
+    max-height: 38px;
+    max-width: 220px;
   }
 }
 
-/* Mobile Small (<= 380px): Standalone Brand Mark Icon is activated via <picture> */
+/* Mobile Small (<= 380px) */
 @media(max-width: 380px) {
   .tv-header-logo-img {
-    height: 32px;
-    width: 32px;
-    max-width: 32px;
-    max-height: 32px;
+    height: 36px;
+    width: 130px;
+    max-width: 150px;
+    max-height: 36px;
     object-fit: contain;
   }
 }
@@ -1987,6 +1988,23 @@ header {
   margin-bottom: 16px
 }
 
+/* Why/Features trust cards: icon sits beside the title instead of above it */
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.card-head .icon {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.card-head h3 {
+  margin: 0;
+}
+
 /* Tighter card sizing so the 2-column mobile grid doesn't feel cramped with longer copy */
 @media(max-width:559px) {
   .card {
@@ -2419,6 +2437,14 @@ header {
 
 .step .icon {
   margin-bottom: 14px
+}
+
+.step .card-head .icon {
+  margin-bottom: 0;
+}
+
+.step .card-head {
+  margin-bottom: 10px;
 }
 
 .step h3 {
@@ -10423,6 +10449,39 @@ body.filter-open .float-wa {
   color: #92400E;
 }
 
+.tv-badge-category {
+  background: #F7F4FD;
+  border: 1px solid #E2D6F8;
+  color: #4B237B;
+  text-transform: uppercase;
+}
+
+/* Country-of-origin line, shown above the product title */
+.tv-card-origin-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.tv-card-origin-row svg {
+  flex-shrink: 0;
+}
+
+.tv-card-origin-flag {
+  width: 26px;
+  height: 19px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
 .tv-badge-offer {
   background: #EFF6FF;
   border: 1px solid #BFDBFE;
@@ -10655,18 +10714,18 @@ body.filter-open .float-wa {
   flex-shrink: 0;
 }
 
-/* Meta attributes row: USA __ Runflat __ Premium */
+/* Meta attributes row: Runflat only now that origin/category moved elsewhere */
 .tv-card-meta-row {
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   flex-wrap: nowrap;
   font-size: 13px;
   color: #4a5c73;
   font-weight: 400;
   margin-bottom: 4px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  min-height: 1px;
 }
 
 .tv-card-meta-row .tv-meta-runflat span {
@@ -19625,6 +19684,289 @@ body.tv-scroll-locked {
     display: inline-flex;
   }
 }
+.tv-carbrand-tier-btn {
+  background: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+.tv-carbrand-tier-btn:hover {
+  background: #FAF5FF;
+  color: #7C3AED;
+  border-color: #DDD6FE;
+}
+.tv-carbrand-tier-btn.active {
+  background: #7C3AED;
+  color: #FFFFFF;
+  border-color: #7C3AED;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
 
+.tv-carbrand-letter-btn.active {
+  background: #4B237B;
+  color: #FFFFFF !important;
+  font-weight: 800;
+}
+
+#tvCarBrandGridContainer {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 1.125rem !important;
+}
+
+@media (max-width: 768px) {
+  #tvCarBrandGridContainer {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.875rem !important;
+  }
+}
+@media (max-width: 480px) {
+  #tvCarBrandGridContainer {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+}
+@media (max-width: 380px) {
+  #tvCarBrandGridContainer {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+}
+.tv-carbrand-card {
+  text-decoration: none !important;
+}
+.tv-carbrand-card:hover {
+  text-decoration: none !important;
+}
+
+.tv-carbrand-logo-img {
+  max-height: 38px !important;
+  max-width: 80% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block;
+}
+
+/* Antigravity Guide Layout Grids */
+.guide-features-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 1.25rem !important;
+}
+@media (max-width: 1024px) {
+  .guide-features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+}
+@media (max-width: 640px) {
+  .guide-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.875rem !important;
+  }
+}
+
+.guide-split-layout {
+  display: grid !important;
+  grid-template-columns: 5fr 7fr !important;
+  gap: 2.25rem !important;
+  align-items: start !important;
+  padding-top: 20px !important;
+}
+@media (max-width: 1024px) {
+  .guide-split-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+}
+
+.guide-markings-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+}
+@media (max-width: 480px) {
+  .guide-markings-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.guide-left-col,
+.guide-right-col {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* Antigravity Guide & Accordion Micro-interactions */
+.guide-accordion-item {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.guide-accordion-item.active {
+  border-color: #DDD6FE !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.08), 0 8px 10px -6px rgba(124, 58, 237, 0.04) !important;
+}
+.guide-accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out;
+  opacity: 0;
+}
+.guide-accordion-item.active .guide-accordion-content {
+  max-height: 600px;
+  opacity: 1;
+}
+.guide-chevron {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, color 0.2s;
+}
+.guide-accordion-item.active .guide-chevron {
+  transform: rotate(180deg);
+  color: #7C3AED !important;
+  background-color: #F3E8FF !important;
+}
+.guide-feature-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  will-change: transform;
+}
+
+/* -------------------------------------------------------------
+   BRAND DETAIL PAGE: PATTERN CARDS (one card per tyre pattern,
+   not per size/SKU) -- compact grid style.
+   ------------------------------------------------------------- */
+.tv-pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1280px) {
+  .tv-pattern-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .tv-pattern-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+}
+
+@media (max-width: 640px) {
+  .tv-pattern-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+.tv-pattern-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ECE9F4;
+  border-radius: 16px;
+  padding: 14px 14px 16px;
+  text-align: center;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.tv-pattern-card:hover {
+  border-color: #D9CCF5;
+  box-shadow: 0 10px 28px rgba(76, 29, 149, 0.1);
+  transform: translateY(-2px);
+}
+
+.tv-pattern-card-logo {
+  align-self: flex-start;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #F7F4FD;
+  border: 1px solid #ECE4FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.tv-pattern-card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.tv-pattern-card-logo-fallback {
+  font-size: 9px;
+  font-weight: 800;
+  color: #6D28D9;
+  letter-spacing: 0.02em;
+}
+
+.tv-pattern-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 108px;
+  margin: 2px 0 10px;
+}
+
+.tv-pattern-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.tv-pattern-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #171023;
+  line-height: 1.3;
+  margin: 0 0 6px;
+  min-height: 2.6em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tv-pattern-name:hover {
+  color: #6D28D9;
+}
+
+.tv-pattern-stats {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  margin: 0 0 14px;
+}
+
+.tv-pattern-stats strong {
+  color: #171023;
+  font-weight: 700;
+}
+
+.tv-pattern-more-btn {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #15111F;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.tv-pattern-more-btn:hover {
+  background: #6D28D9;
+  transform: translateY(-1px);
+}
+
+.tv-pattern-more-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.tv-pattern-more-btn:hover svg {
+  transform: translateX(2px);
+}
 
 

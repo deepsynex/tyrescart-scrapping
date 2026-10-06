@@ -2847,6 +2847,167 @@ def brand_page():
         conn.close()
 
 
+_BRAND_FEATURE_DEFAULTS = [
+    {
+        'icon': 'shield',
+        'title': 'Genuine Stock, Manufacturer Warranty',
+        'text': 'Every tyre is sourced through authorised channels with fresh manufacturing dates and the full manufacturer warranty honoured in the UAE.'
+    },
+    {
+        'icon': 'truck',
+        'title': 'Fitted at Your Home or Office',
+        'text': 'Choose a fitting centre near you or book one of our mobile vans — tyres are delivered and fitted without you needing to drive anywhere.'
+    },
+    {
+        'icon': 'check',
+        'title': 'Matched to Your Exact Vehicle',
+        'text': 'Search by size, by your number plate, or by vehicle to see only the tyres that actually fit — no guesswork, no wrong-size returns.'
+    },
+]
+
+
+@site_bp.route('/brands/<slug>', strict_slashes=False)
+def brand_detail_page(slug):
+    """Client storefront Brand Detail page: one brand's story + its in-stock tyres."""
+    locale = _get_locale()
+    import db
+    conn = db.get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, name, slug, logo, description, country, meta_title, meta_desc
+                FROM brands
+                WHERE slug = %s AND deleted_at IS NULL AND (status = 'active' OR status IS NULL)
+            """, (slug,))
+            brand_row = cur.fetchone()
+            if not brand_row:
+                abort(404)
+
+            cur.execute("""
+                SELECT COUNT(*) AS cnt, MIN(price) AS min_price
+                FROM products
+                WHERE brand_id = %s AND deleted_at IS NULL AND status = 'active' AND stock_status = 'in_stock'
+            """, (brand_row['id'],))
+            stats_row = cur.fetchone() or {}
+
+            cur.execute("""
+                SELECT DISTINCT tyres_category
+                FROM products
+                WHERE brand_id = %s AND deleted_at IS NULL AND status = 'active'
+                      AND stock_status = 'in_stock' AND tyres_category IS NOT NULL AND tyres_category != ''
+            """, (brand_row['id'],))
+            categories = [r['tyres_category'] for r in cur.fetchall()]
+
+            # One card per tyre pattern/model (not per size/SKU): group all
+            # variants by pattern name, keep the cheapest variant's row for
+            # the card's image/slug, and attach how many variants/distinct
+            # sizes that pattern has in stock.
+            cur.execute("""
+                WITH ranked AS (
+                    SELECT p.*,
+                           COALESCE(NULLIF(p.tire_pattern, ''), p.display_name, p.name) AS pattern_key,
+                           ROW_NUMBER() OVER (
+                               PARTITION BY COALESCE(NULLIF(p.tire_pattern, ''), p.display_name, p.name)
+                               ORDER BY p.price ASC
+                           ) AS rn
+                    FROM products p
+                    WHERE p.brand_id = %s AND p.deleted_at IS NULL AND p.status = 'active' AND p.stock_status = 'in_stock'
+                ),
+                counts AS (
+                    SELECT pattern_key,
+                           COUNT(*) AS variant_count,
+                           COUNT(DISTINCT tire_size_label) AS size_count
+                    FROM ranked
+                    GROUP BY pattern_key
+                )
+                SELECT r.*, c.variant_count, c.size_count, b.name as brand_name, b.slug as brand_slug, b.logo as brand_logo
+                FROM ranked r
+                JOIN counts c ON c.pattern_key = r.pattern_key
+                LEFT JOIN brands b ON r.brand_id = b.id
+                WHERE r.rn = 1
+                ORDER BY r.price ASC
+                LIMIT 24
+            """, (brand_row['id'],))
+            raw_patterns = cur.fetchall()
+            products = []
+            for row in raw_patterns:
+                variant_count = row.pop('variant_count', 1)
+                size_count = row.pop('size_count', 1)
+                row.pop('pattern_key', None)
+                row.pop('rn', None)
+                fp = _format_product_for_client(row, locale)
+                fp['variant_count'] = variant_count
+                fp['size_count'] = size_count
+                products.append(fp)
+    finally:
+        conn.close()
+
+    def _loc(value):
+        if isinstance(value, str) and value.strip().startswith('{'):
+            try:
+                value = json.loads(value)
+            except Exception:
+                pass
+        if isinstance(value, dict):
+            return value.get(locale) or value.get('en') or next(iter(value.values()), '')
+        return value or ''
+
+    brand_name = brand_row['name']
+    description = _loc(brand_row.get('description'))
+    if not description:
+        description = (
+            f"{brand_name} tyres are available at TyresVision with genuine stock, fresh manufacturing dates, "
+            f"and full manufacturer warranty. Compare {brand_name} sizes and patterns, then have them fitted "
+            f"at a centre near you or at your home or office anywhere in the UAE."
+        )
+
+    meta_title = _loc(brand_row.get('meta_title')) or f"{brand_name} Tyres UAE | Genuine Stock & Fitting | TyresVision"
+    meta_desc = _loc(brand_row.get('meta_desc')) or (
+        f"Shop genuine {brand_name} tyres in the UAE. Compare sizes and prices, then book doorstep or "
+        f"workshop fitting with TyresVision."
+    )
+
+    base_url = "https://www.tyresvision.com"
+    canonical_url = f"{base_url}/brands/{slug}"
+
+    breadcrumbs = [
+        {"label": "Home", "url": "/"},
+        {"label": "Brands", "url": "/brands"},
+        {"label": brand_name, "url": f"/brands/{slug}"},
+    ]
+
+    resp = make_response(render_template(
+        'Client/BrandDetail.html',
+        brand={
+            'id': brand_row['id'],
+            'name': brand_name,
+            'slug': brand_row['slug'],
+            'logo': brand_row.get('logo') or '',
+            'country': brand_row.get('country') or '',
+            'description': description,
+        },
+        tyre_count=int(stats_row.get('cnt') or 0),
+        min_price=stats_row.get('min_price'),
+        categories=categories,
+        products=products,
+        features=_BRAND_FEATURE_DEFAULTS,
+        breadcrumbs=breadcrumbs,
+        canonical_url=canonical_url,
+        page_og_tags={
+            'og_type': 'website',
+            'og_url': canonical_url,
+            'og_title': meta_title,
+            'og_description': meta_desc,
+            'og_image': brand_row.get('logo') or f"{base_url}/static/assets/images/online-tyres-shop-dubai.png",
+        },
+        meta_title=meta_title,
+        meta_desc=meta_desc,
+        locale=locale,
+    ))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
+
+
 # ============================================================================
 # CAR BRANDS & VEHICLE DYNAMIC MULTI-SLUG PAGES
 # ============================================================================
@@ -3149,6 +3310,39 @@ def _render_vehicle_page(slug_path, locale):
     trim_info = {}
     make_stats = {'total_tyres': 0, 'min_price': None, 'popular_sizes': []}
     model_stats = {'total_tyres': 0, 'min_price': None, 'popular_sizes': [], 'staggered': False, 'front_size': None, 'rear_size': None, 'year_range': ''}
+    # OEM partner brand logos, used by the "Recommended Tyre Brands" panels
+    # on both the make-overview page and the model/trim pages.
+    oem_brands = []
+    OEM_BRAND_TAGLINES = {
+        'pirelli': 'P Zero PZ4 PNCS',
+        'continental': 'SportContact ContiSilent',
+        'michelin': 'Pilot Sport 4 SUV Acoustic',
+        'goodyear': 'Eagle F1 SoundComfort',
+    }
+    try:
+        import db
+        _brand_conn = db.get_connection()
+        try:
+            with _brand_conn.cursor() as _cur:
+                _cur.execute(
+                    "SELECT name, slug, logo FROM brands WHERE slug IN (%s, %s, %s, %s)",
+                    tuple(OEM_BRAND_TAGLINES.keys())
+                )
+                _brand_rows = {r['slug']: r for r in _cur.fetchall()}
+            for b_slug, tagline in OEM_BRAND_TAGLINES.items():
+                b_row = _brand_rows.get(b_slug)
+                oem_brands.append({
+                    'slug': b_slug,
+                    'name': b_row['name'] if b_row else b_slug.title(),
+                    'logo': b_row.get('logo') if b_row else None,
+                    'tagline': tagline,
+                })
+        finally:
+            _brand_conn.close()
+    except Exception as e:
+        current_app.logger.warning(f"Error fetching OEM brand logos: {e}")
+
+    oem_brands_by_slug = {b['slug']: b for b in oem_brands}
 
     if level == 1:
         # Level 1: Make overview -> list of Models with available tyres in DB
@@ -3386,7 +3580,9 @@ def _render_vehicle_page(slug_path, locale):
                         params.append(r_patt)
                     q = (
                         "SELECT p.id, p.display_name, p.name, p.slug, p.price, p.image_path, p.tire_size_label, "
-                        "p.tire_speed_rating, p.tire_load_index, b.name as brand_name "
+                        "p.tire_size_label AS full_size_spec, p.tire_speed_rating, p.tire_load_index, "
+                        "p.year, p.country_of_origin, p.tyres_category, "
+                        "b.name as brand_name, b.slug as brand_slug, b.logo as brand_logo "
                         "FROM products p "
                         "LEFT JOIN brands b ON p.brand_id = b.id "
                         f"WHERE ({' OR '.join(where_clause)}) AND p.stock_status = 'in_stock' "
@@ -3587,6 +3783,8 @@ def _render_vehicle_page(slug_path, locale):
         canonical_url=canonical_url,
         make_stats=make_stats,
         model_stats=model_stats,
+        oem_brands=oem_brands,
+        oem_brands_by_slug=oem_brands_by_slug,
         locale=locale
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')

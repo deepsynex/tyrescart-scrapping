@@ -41,12 +41,31 @@
     return false;
   }
 
+  // Scroll position at the moment the lock first engages, and the
+  // scrollbar width at that moment -- both restored/released on unlock.
+  // Locking via position:fixed (not just overflow:hidden) is what stops
+  // the page content from reflowing left/right as the scrollbar
+  // disappears and reappears.
+  var _savedScrollY = 0;
+
   function lockMainPageScroll(sourceId) {
+    var wasUnlocked = _scrollLockHolders.size === 0;
     _scrollLockHolders.add(sourceId || 'default');
+    if (!wasUnlocked || document.body.classList.contains('tv-scroll-locked')) return;
+
+    _savedScrollY = window.scrollY || window.pageYOffset || 0;
+    var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
     document.documentElement.classList.add('tv-scroll-locked');
     document.body.classList.add('tv-scroll-locked');
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-_savedScrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = scrollbarWidth + 'px';
+    }
   }
 
   function unlockMainPageScroll(sourceId) {
@@ -61,8 +80,13 @@
       if (!isAnyDrawerOrModalOpen()) {
         document.documentElement.classList.remove('tv-scroll-locked');
         document.body.classList.remove('tv-scroll-locked');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, _savedScrollY);
       }
     }
   }
@@ -1213,6 +1237,43 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Country name -> ISO alpha-2 code, kept in sync with the same mapping in
+// templates/Client/ProductListing.html so client-rendered cards (after a
+// filter/sort re-render) show the same flag as the initial server render.
+var TV_COUNTRY_FLAG_CODES = {
+  'Brazil': 'br', 'China': 'cn', 'Czech Republic': 'cz', 'France': 'fr',
+  'Germany': 'de', 'Great Britain': 'gb', 'Hungary': 'hu', 'India': 'in',
+  'Indonesia': 'id', 'Italy': 'it', 'Japan': 'jp', 'Luxembourg': 'lu',
+  'Malaysia': 'my', 'Mexico': 'mx', 'Netherlands': 'nl', 'Philippines': 'ph',
+  'Poland': 'pl', 'Portugal': 'pt', 'Romania': 'ro', 'Serbia': 'rs',
+  'Slovakia': 'sk', 'Slovenia': 'si', 'South Africa': 'za', 'South Korea': 'kr',
+  'Spain': 'es', 'Taiwan': 'tw', 'Thailand': 'th', 'Turkey': 'tr',
+  'United Kingdom': 'gb', 'United States': 'us', 'USA': 'us', 'Usa': 'us',
+  'Uk': 'gb', 'Uae': 'ae', 'Vietnam': 'vn'
+};
+
+function tvCardOriginHTML(originName) {
+  var safeName = escapeHtml(originName);
+  var code = TV_COUNTRY_FLAG_CODES[originName];
+  if (code) {
+    return '<span class="tv-card-origin-row" title="Origin: ' + safeName + '">'
+      + '<img src="https://flags.restcountries.com/v5/w640/' + code + '.png" alt="' + safeName + '" class="tv-card-origin-flag" loading="lazy" onerror="this.closest(\'.tv-card-origin-row\').querySelector(\'.tv-card-origin-fallback-text\').style.display=\'inline\';this.style.display=\'none\';">'
+      + '<span class="tv-card-origin-fallback-text" style="display:none;">' + safeName + '</span>'
+      + '</span>';
+  }
+  return '<span class="tv-card-origin-row" title="Origin: ' + safeName + '"><span>' + safeName + '</span></span>';
+}
+
+function tvCardCategoryBadgeHTML(categoryName) {
+  if (!categoryName) return '';
+  var safeName = escapeHtml(categoryName);
+  return '<div class="tv-card-badge-wrap">'
+    + '<span class="tv-card-badge tv-badge-category">'
+    + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>'
+    + '<span>' + safeName + '</span>'
+    + '</span></div>';
+}
+
 function renderSkeletons(count) {
   const container = document.getElementById('products-grid-container');
   if (!container) return;
@@ -1393,11 +1454,12 @@ function createStaggeredCombinedCardHTML(p) {
 
     return `
       <div class="tv-staggered-side tv-staggered-${sideKey}">
-        <!-- 1. Top Header Bar: Brand Logo (Left) -->
+        <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
         <div class="tv-card-header-bar">
-          <a href="/tyres/brand/${bSlug}" class="tv-card-brand-wrap" title="View all ${bName} tyres" onclick="event.stopPropagation();">
+          <a href="/brands/${bSlug}" class="tv-card-brand-wrap" title="View ${bName} brand page" onclick="event.stopPropagation();">
             ${brandImgHTML}
           </a>
+          ${tvCardCategoryBadgeHTML(itemCategory)}
         </div>
 
         <!-- 2. Centered Tyre Image Area -->
@@ -1428,6 +1490,8 @@ function createStaggeredCombinedCardHTML(p) {
         <!-- 3. Product Info Block & Bottom Details -->
         <div class="product-bottom-detail">
           <div class="tv-card-info-block">
+            ${tvCardOriginHTML(itemOrigin)}
+
             <a href="/${itemSlug}" class="tv-card-pattern-link" title="${itemPattern}">
               <h3 class="tv-card-pattern">${itemPattern}</h3>
             </a>
@@ -1446,24 +1510,8 @@ function createStaggeredCombinedCardHTML(p) {
             </div>
 
             <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-country" title="Origin: ${itemOrigin}">
-                <span>${itemOrigin}</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-              </span>
-
               <span class="tv-meta-item tv-meta-runflat" title="Technology">
                 ${isRunflat ? `<span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span>` : ''}
-              </span>
-
-              <span class="tv-meta-item tv-meta-premium" title="Category: ${itemCategory}">
-                <span>${itemCategory}</span>
-                ${itemCategory ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>` : ''}
               </span>
             </div>
           </div>
@@ -1716,11 +1764,12 @@ function createProductCardHTML(p) {
           
           ${offerBannerHTML}
 
-          <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
+          <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
           <div class="tv-card-header-bar">
-            <a href="/tyres/brand/${cardBrandSlug}" class="tv-card-brand-wrap" title="View all ${brandName} tyres" onclick="event.stopPropagation();">
+            <a href="/brands/${cardBrandSlug}" class="tv-card-brand-wrap" title="View ${brandName} brand page" onclick="event.stopPropagation();">
               ${brandLogoHTML}
             </a>
+            ${tvCardCategoryBadgeHTML(categoryVal)}
           </div>
 
           <!-- 2. Centered Tyre Image (Transparent / Clean - No background color) -->
@@ -1768,6 +1817,8 @@ function createProductCardHTML(p) {
           <div class="product-bottom-detail">
             <!-- 3. Product Info Block -->
             <div class="tv-card-info-block">
+              ${tvCardOriginHTML(originVal)}
+
               <!-- Product Pattern / Model Name (Brand name removed) -->
               <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
                 <h3 class="tv-card-pattern">
@@ -1777,27 +1828,10 @@ function createProductCardHTML(p) {
 
               ${sizeBlockHTML}
 
-              <!-- 4. USA __ Runflat __ premium -->
+              <!-- 4. Runflat (country of origin and category moved elsewhere on the card) -->
               <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-country" title="Origin: ${originVal}">
-                  <span>${originVal}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                  </svg>
-                </span>
-
                 <span class="tv-meta-item tv-meta-runflat" title="Technology">
                   ${runflatContent}
-                </span>
-
-                <span class="tv-meta-item tv-meta-premium" title="Category: ${categoryVal}">
-                  <span>${categoryVal}</span>
-                  ${categoryVal ? `
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tv-meta-icon" style="color: #64748b; margin-left: 2px;">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>` : ''}
                 </span>
               </div>
             </div>

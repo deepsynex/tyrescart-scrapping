@@ -613,47 +613,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              x-cloak
              role="menu">
           
-          <a href="/ev-tyres" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/tyres" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              <span class="dropdown-icon-box" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-              </span>
-              <span class="dropdown-item-title">{{ _('EV & Hybrid Tyres') }}</span>
+              <span class="dropdown-item-title">{{ _('All Tyres') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
 
-          <a href="/off-road-4x4-tyres" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/cars" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              <span class="dropdown-icon-box" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              </span>
-              <span class="dropdown-item-title">{{ _('Off-Road & 4x4 Tyres') }}</span>
+              <span class="dropdown-item-title">{{ _('Tyres by Vehicle') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
 
-          <a href="/tyre-brands" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/brands" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              <span class="dropdown-icon-box" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-              </span>
-              <span class="dropdown-item-title">{{ _('Tyre Brands') }}</span>
+              <span class="dropdown-item-title">{{ _('Tyre by Brands') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
 
-          <a href="/tyre-sizes" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/tyres/ev" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
-              <span class="dropdown-icon-box" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              </span>
-              <span class="dropdown-item-title">{{ _('Tyre Sizes & Prices') }}</span>
+              <span class="dropdown-item-title">{{ _('EV Tyres') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
 
-          <a href="/tyres-by-car" class="dropdown-item" role="menuitem" @click="open = false">
+          <!-- <a href="/tyres-by-car" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
               <span class="dropdown-icon-box" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10M12 12l4-4"/></svg>
@@ -661,7 +649,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span class="dropdown-item-title">{{ _('Tyres by Car Model') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </a>
+          </a> -->
         </div>
       </div>
 
@@ -848,7 +836,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="f-grid">
       <div>
         <a class="logo lg on-dark" href="#top" aria-label="TyresVision home">
-          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-white.png') }}"
+          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.png') }}"
                alt="TyresVision"
                class="tv-footer-logo-img"
                loading="lazy" />
