@@ -20,6 +20,7 @@
   const searchInput = document.getElementById('enquiry-search-input');
   const typeFilter = document.getElementById('enquiry-type-filter');
   const btnRefresh = document.getElementById('btn-refresh-enquiries');
+  const btnTruncate = document.getElementById('btn-truncate-enquiries');
   const tabBtns = document.querySelectorAll('.va-tab-btn');
 
   // Metrics Elements
@@ -436,6 +437,8 @@
     // Delete Buttons
     document.querySelectorAll('.btn-delete-lead').forEach((btn) => {
       btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
         const id = parseInt(e.currentTarget.getAttribute('data-id'), 10);
         if (confirm(`Are you sure you want to delete lead #${id}?`)) {
           await deleteEnquiry(id);
@@ -514,7 +517,8 @@
   async function deleteEnquiry(id) {
     try {
       const resp = await fetch(`/visionadmin/api/v1/enquiries/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' }
       });
       const data = await resp.json();
       if (!data.success) throw new Error(data.error || 'Failed to delete lead');
@@ -527,9 +531,33 @@
     }
   }
 
+  async function truncateEnquiries() {
+    if (!confirm('Are you sure you want to delete ALL enquiries and truncate the table? This action cannot be undone.')) {
+      return;
+    }
+    try {
+      const resp = await fetch('/visionadmin/api/v1/enquiries/truncate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+      });
+      const data = await resp.json();
+      if (!data.success) throw new Error(data.error || 'Failed to clear leads');
+
+      allEnquiries = [];
+      closeModal();
+      loadEnquiries();
+    } catch (err) {
+      alert('Error clearing enquiries: ' + err.message);
+    }
+  }
+
   // ================= EVENT LISTENERS =================
   if (btnRefresh) {
     btnRefresh.addEventListener('click', loadEnquiries);
+  }
+
+  if (btnTruncate) {
+    btnTruncate.addEventListener('click', truncateEnquiries);
   }
 
   // Tab Filtering

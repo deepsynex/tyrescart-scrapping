@@ -180,6 +180,7 @@
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var mobileEl = document.getElementById('MobileNumer');
+      var mobile = mobileEl ? mobileEl.value.trim() : '';
       var sizeEl = document.getElementById('tyreSize');
       var size = sizeEl ? sizeEl.value.trim() : '';
       if(!size){ if(sizeEl){ sizeEl.focus(); sizeEl.style.borderColor = '#C0392B'; } return; }
@@ -191,34 +192,46 @@
       var fittingEl = document.getElementById('fitting');
       var fitting = fittingEl ? fittingEl.value : '';
 
-      var lines = ["Hi TyresVision, I'd like a tyre quote.", "Tyre size: " + size];
+      var lines = ["Hi TyresVision, I'd like a tyre quote."];
+      if(mobile) lines.push("Contact: " + mobile);
+      lines.push("Tyre size: " + size);
       if(make) lines.push("Car: " + make);
       if(emirate) lines.push("Emirate: " + emirate);
       if(fitting) lines.push("Fitting: " + fitting);
 
-      // Save enquiry record in existing hdweb_enquiry table
+      // Only hero section quote-card data saves into database
+      var payload = {
+        number: mobile,
+        tyre_size: size,
+        vehicle: make,
+        city: emirate,
+        spec: fitting,
+        form_type: 'hero_quote_card',
+        enquiry_for: 'Hero Section Quote Card (' + (size || make || 'Tyre Quote') + ')',
+        message: lines.join("\n")
+      };
+
       try {
-        fetch('/api/v1/enquiry', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            Phone: mobileEl ? mobileEl.value.trim() : '',
-            tyre_size: size,
-            vehicle: make,
-            city: emirate,
-            spec: fitting,
-            enquiry_for: 'Tyre Quote (WhatsApp Home Banner)',
-            form_type: 'home_banner_whatsapp',
-            message: lines.join("\n")
-          })
-        }).catch(function(err){
-          console.warn('Enquiry store error:', err);
-        });
+        if (navigator.sendBeacon) {
+          var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+          navigator.sendBeacon('/api/v1/enquiry', blob);
+        } else {
+          fetch('/api/v1/enquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function() {});
+        }
       } catch (err) {
-        console.warn(err);
+        try {
+          fetch('/api/v1/enquiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function() {});
+        } catch (e) {}
       }
 
       // Open WhatsApp with pre-filled message
@@ -350,153 +363,12 @@
     });
   }
 
-  /* ---------- Helper to save enquiry directly to hdweb_enquiry ---------- */
+  /* ---------- WhatsApp & Enquiry Clicks (Do not store into database) ---------- */
   function trackEnquiry(data) {
-    if (!data) return;
-    var payload = {
-      enquiry_for: data.enquiry_for || 'WhatsApp Tyre Enquiry',
-      form_type: data.form_type || 'whatsapp_button_click',
-      message: data.message || 'WhatsApp Enquiry Click',
-      tyre_size: data.tyre_size || '',
-      vehicle: data.vehicle || '',
-      spec: data.spec || '',
-      city: data.city || 'UAE'
-    };
-    try {
-      if (navigator.sendBeacon) {
-        var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-        navigator.sendBeacon('/api/v1/enquiry', blob);
-      } else {
-        fetch('/api/v1/enquiry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload),
-          keepalive: true
-        }).catch(function(e) { console.warn('Enquiry fetch error:', e); });
-      }
-    } catch (err) {
-      try {
-        fetch('/api/v1/enquiry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload),
-          keepalive: true
-        }).catch(function() {});
-      } catch (e) {}
-    }
+    // WhatsApp button and chip clicks are deliberately NOT stored into the database.
+    return;
   }
   window.trackEnquiry = trackEnquiry;
-
-  /* ---------- Global WhatsApp & Enquiry Button Click Capture (Capture Phase) ---------- */
-  document.addEventListener('click', function(e) {
-    var target = e.target && e.target.closest ? e.target.closest('.btn-wa, .float-wa, .tv-btn-card-wa, .tv-qv-wa-btn, .tv-pdp-wa-btn, a[href*="wa.me"], button[data-wa]') : null;
-    if (!target) return;
-
-    // If it's the submit button inside quoteForm, let the form submit event handle it with full input values
-    if (target.closest && target.closest('#quoteForm') && (target.type === 'submit' || target.tagName === 'BUTTON')) {
-      return;
-    }
-
-    var href = target.getAttribute('href') || '';
-    var ctaText = (target.textContent || '').trim();
-    var pageUrl = window.location.pathname || '/';
-
-    var messageText = 'Direct WhatsApp CTA Click';
-    if (href && href.indexOf('text=') !== -1) {
-      try {
-        var match = href.match(/text=([^&]+)/);
-        if (match && match[1]) {
-          messageText = decodeURIComponent(match[1]);
-        }
-      } catch (err) {}
-    } else if (ctaText) {
-      messageText = 'Clicked: ' + ctaText;
-    }
-
-    var formType = 'whatsapp_button_click';
-    if (target.classList && target.classList.contains('float-wa')) {
-      formType = 'floating_whatsapp_widget';
-    } else if (target.closest && target.closest('.nav-cta')) {
-      formType = 'header_nav_whatsapp';
-    } else if (target.closest && (target.closest('.mobile-sticky-cta') || target.closest('.mobile-nav-cta'))) {
-      formType = 'mobile_whatsapp_bar';
-    } else if (target.classList && (target.classList.contains('tv-btn-card-wa') || target.closest('.tv-btn-card-wa'))) {
-      formType = 'product_card_whatsapp';
-    } else if (target.classList && (target.classList.contains('tv-qv-wa-btn') || target.closest('.tv-qv-wa-btn') || target.id === 'tv-qv-wa-btn')) {
-      formType = 'quick_view_whatsapp';
-    } else if (target.classList && (target.classList.contains('tv-pdp-wa-btn') || target.closest('.tv-pdp-wa-btn'))) {
-      formType = 'pdp_whatsapp';
-    }
-
-    // Extract structured tyre size, vehicle, brand, product name from element or ancestors
-    var prodName = target.getAttribute('data-product-name') || (target.closest && target.closest('[data-product-name]') ? target.closest('[data-product-name]').getAttribute('data-product-name') : '') || '';
-    var tyreSize = target.getAttribute('data-tyre-size') || (target.closest && target.closest('[data-tyre-size]') ? target.closest('[data-tyre-size]').getAttribute('data-tyre-size') : '') || '';
-    var vehicle = target.getAttribute('data-vehicle') || (target.closest && target.closest('[data-vehicle]') ? target.closest('[data-vehicle]').getAttribute('data-vehicle') : '') || '';
-    var brand = target.getAttribute('data-brand') || (target.closest && target.closest('[data-brand]') ? target.closest('[data-brand]').getAttribute('data-brand') : '') || '';
-    var customFormType = target.getAttribute('data-form-type') || (target.closest && target.closest('[data-form-type]') ? target.closest('[data-form-type]').getAttribute('data-form-type') : '') || '';
-    var customEnquiryFor = target.getAttribute('data-enquiry-for') || (target.closest && target.closest('[data-enquiry-for]') ? target.closest('[data-enquiry-for]').getAttribute('data-enquiry-for') : '') || '';
-
-    // Quick View context enhancement
-    if ((formType === 'quick_view_whatsapp' || target.id === 'tv-qv-wa-btn') && window.currentQuickViewProduct) {
-      var qp = window.currentQuickViewProduct;
-      if (!tyreSize) tyreSize = qp.size || qp.width || '';
-      if (!brand) brand = qp.brandName || '';
-      if (!prodName) prodName = qp.fullTitle || qp.pattern || 'Tyre';
-    }
-
-    // Intelligent regex parsing fallback from messageText
-    if (!tyreSize && messageText) {
-      var sm = messageText.match(/(?:Size:?\s*)?([1-3]\d{2}\s*\/\s*\d{2}\s*(?:R|ZR|r|zr)?\s*\d{2})/i);
-      if (sm && sm[1]) tyreSize = sm[1].trim();
-    }
-    if (!vehicle && messageText) {
-      var vm = messageText.match(/(?:tyre\s+options\s+for|options\s+for|vehicle:?)\s*([^.\n]+)/i);
-      if (vm && vm[1]) vehicle = vm[1].trim();
-    }
-    if (!brand && messageText) {
-      var bm = messageText.match(/(?:tyres\s+from|brand:?)\s*([^.\n]+)/i);
-      if (bm && bm[1]) brand = bm[1].trim();
-    }
-
-    if (customFormType) {
-      formType = customFormType;
-    } else if (prodName) {
-      // Keep formType as resolved above
-    } else if (tyreSize) {
-      formType = 'shop_by_size';
-    } else if (vehicle) {
-      formType = 'shop_by_vehicle';
-    } else if (brand) {
-      formType = 'shop_by_brand';
-    }
-
-    var enquiryFor = customEnquiryFor || (
-      prodName ? ('Product Enquiry: ' + prodName) :
-      tyreSize ? ('Tyre Size Lead (' + tyreSize + ')') :
-      vehicle ? ('Vehicle Tyre Lead (' + vehicle + ')') :
-      brand ? ('Brand Tyre Lead (' + brand + ')') :
-      ('WhatsApp Lead (' + (ctaText || 'CTA Button') + ')')
-    );
-
-    var cityAttr = target.getAttribute('data-city') || (target.closest && target.closest('[data-city]') ? target.closest('[data-city]').getAttribute('data-city') : '') || '';
-    var locationAttr = target.getAttribute('data-location') || (target.closest && target.closest('[data-location]') ? target.closest('[data-location]').getAttribute('data-location') : '') || '';
-    var resolvedCity = 'UAE';
-    if (locationAttr && cityAttr) {
-      resolvedCity = locationAttr + ', ' + cityAttr;
-    } else if (locationAttr || cityAttr) {
-      resolvedCity = locationAttr || cityAttr;
-    }
-
-    trackEnquiry({
-      enquiry_for: enquiryFor,
-      form_type: formType,
-      message: messageText + (pageUrl ? ('\nSource Page: ' + pageUrl) : ''),
-      tyre_size: tyreSize || '',
-      vehicle: vehicle || '',
-      spec: brand || '',
-      city: resolvedCity
-    });
-  }, true);
 
   /* ---------- Dynamic Nav Active State (Mobile Drawer) & ScrollSpy ---------- */
   function initNavActiveState() {
@@ -1108,27 +980,33 @@ window.initTvPageComponents = function() {
             var emirate = emirateSelect ? emirateSelect.value : '';
 
             var pageTitle = document.title ? document.title.split('|')[0].trim() : 'TyresVision UAE';
+            var mobileInput = qForm.querySelector('input[name="MobileNumer"], input[name="phone"], input[name="mobile"]');
+            var mobile = mobileInput ? mobileInput.value.trim() : '';
+
             var msgLines = [
-                "Hi TyresVision, I would like a tyre quote.",
-                "Tyre size: " + size
+                "Hi TyresVision, I would like a tyre quote."
             ];
+            if (mobile) msgLines.push("Contact: " + mobile);
+            msgLines.push("Tyre size: " + size);
             if (make) msgLines.push("Car: " + make);
             if (emirate) msgLines.push("Emirate: " + emirate);
             msgLines.push("Source: " + pageTitle);
 
-            // Record enquiry in database asynchronously
+            // Save hero section quote-card data into database
             try {
                 fetch('/api/v1/enquiry', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
+                        number: mobile,
                         tyre_size: size,
                         vehicle: make,
                         city: emirate,
-                        enquiry_for: 'CMS Page Quote (' + pageTitle + ')',
-                        form_type: 'cms_page_hero_quote',
+                        enquiry_for: 'Hero Quote Card (' + pageTitle + ')',
+                        form_type: 'hero_quote_card',
                         message: msgLines.join("\n")
-                    })
+                    }),
+                    keepalive: true
                 }).catch(function() {});
             } catch (err) {}
 
