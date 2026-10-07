@@ -352,6 +352,7 @@ section {
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  padding-top: 0.3rem;
 }
 
 .logo .tv-logo-badge-img {
@@ -3268,6 +3269,28 @@ footer .wrap {
   .f-grid > div:first-child {
     grid-column: 1 / -1;
   }
+}
+
+footer .logo,
+.site-foot .logo {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  display: inline-flex;
+  align-items: flex-start;
+  line-height: 1;
+  vertical-align: top;
+}
+
+footer .tv-footer-logo-img,
+.site-foot .tv-footer-logo-img {
+  margin-top: -3px !important;
+  display: block;
+  vertical-align: top;
+}
+
+footer .f-grid > div:first-child p,
+.site-foot .f-grid > div:first-child p {
+  margin-top: 14px;
 }
 
 footer h4 {
@@ -9213,11 +9236,11 @@ details.tv-faq-item[open] {
 }
 
 .tv-filter-item.tv-filter-empty {
-  display: none !important;
+  display: flex !important;
 }
 
 .tv-filter-group.tv-group-empty {
-  display: none !important;
+  display: block !important;
 }
 
 .tv-search-size-box,
@@ -19329,7 +19352,7 @@ body.tv-scroll-locked {
 .tv-staggered-side .tv-card-header-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   min-height: 28px;
   margin-bottom: 4px;
   width: 100%;

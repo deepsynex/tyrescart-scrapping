@@ -193,7 +193,6 @@
       var fitting = fittingEl ? fittingEl.value : '';
 
       var lines = ["Hi TyresVision, I'd like a tyre quote."];
-      if(mobile) lines.push("Contact: " + mobile);
       lines.push("Tyre size: " + size);
       if(make) lines.push("Car: " + make);
       if(emirate) lines.push("Emirate: " + emirate);
@@ -986,7 +985,6 @@ window.initTvPageComponents = function() {
             var msgLines = [
                 "Hi TyresVision, I would like a tyre quote."
             ];
-            if (mobile) msgLines.push("Contact: " + mobile);
             msgLines.push("Tyre size: " + size);
             if (make) msgLines.push("Car: " + make);
             if (emirate) msgLines.push("Emirate: " + emirate);
@@ -2584,10 +2582,18 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
 function updateSidebarFacetCounts(facets) {
   if (!facets) return;
 
+  const currentUrlParams = new URLSearchParams(window.location.search);
+  const hasSearchOrQuery = currentUrlParams.has('search') || currentUrlParams.has('q') ||
+    currentUrlParams.has('make') || currentUrlParams.has('model') || currentUrlParams.has('trim') ||
+    currentUrlParams.has('car_year') || currentUrlParams.has('vehicle_year') || currentUrlParams.has('width') ||
+    currentUrlParams.has('aspect_ratio') || currentUrlParams.has('rim_diameter') ||
+    (window.location.search && window.location.search.length > 1);
+
+  if (hasSearchOrQuery) return;
+
   function updateGroupItems(inputName, facetMap, isCaseInsensitive, keyTransform) {
     if (!facetMap) return;
     const inputs = document.querySelectorAll(`input[name="${inputName}"]`);
-    let groupVisibleCount = 0;
     inputs.forEach(cb => {
       let val = cb.value.trim();
       if (keyTransform) val = keyTransform(val);
@@ -2603,28 +2609,18 @@ function updateSidebarFacetCounts(facets) {
       const item = cb.closest('.tv-filter-item');
       if (item) {
         const countSpan = item.querySelector('.tv-filter-count');
-        if (countSpan) {
+        if (countSpan && !hasSearchOrQuery) {
           countSpan.textContent = count.toLocaleString();
         }
-        if (count === 0 && !cb.checked) {
-          item.classList.add('tv-filter-empty');
-          item.style.display = 'none';
-        } else {
-          item.classList.remove('tv-filter-empty');
-          item.style.display = '';
-          groupVisibleCount++;
-        }
+        item.classList.remove('tv-filter-empty');
+        item.style.display = '';
       }
     });
 
     if (inputs.length > 0) {
       const groupEl = inputs[0].closest('.tv-filter-group');
       if (groupEl) {
-        if (groupVisibleCount === 0) {
-          groupEl.classList.add('tv-group-empty');
-        } else {
-          groupEl.classList.remove('tv-group-empty');
-        }
+        groupEl.classList.remove('tv-group-empty');
       }
     }
   }
@@ -2660,25 +2656,16 @@ function updateSidebarFacetCounts(facets) {
   if (facets.runflat !== undefined) {
     const rfCount = facets.runflat;
     const rfEl = document.getElementById('tv-filter-count-runflat');
-    if (rfEl) rfEl.textContent = Number(rfCount).toLocaleString();
+    if (rfEl && !hasSearchOrQuery) rfEl.textContent = Number(rfCount).toLocaleString();
     const rfCb = document.querySelector('input[name="runflat"]');
     const rfItem = rfCb ? rfCb.closest('.tv-filter-item') : null;
     if (rfItem) {
-      if (rfCount === 0 && (!rfCb || !rfCb.checked)) {
-        rfItem.classList.add('tv-filter-empty');
-        rfItem.style.display = 'none';
-      } else {
-        rfItem.classList.remove('tv-filter-empty');
-        rfItem.style.display = '';
-      }
+      rfItem.classList.remove('tv-filter-empty');
+      rfItem.style.display = '';
     }
     const rfGroup = rfCb ? rfCb.closest('.tv-filter-group') : null;
     if (rfGroup) {
-      if (rfCount === 0 && (!rfCb || !rfCb.checked)) {
-        rfGroup.classList.add('tv-group-empty');
-      } else {
-        rfGroup.classList.remove('tv-group-empty');
-      }
+      rfGroup.classList.remove('tv-group-empty');
     }
   }
 
@@ -2686,57 +2673,28 @@ function updateSidebarFacetCounts(facets) {
   if (facets.ev_tyre !== undefined) {
     const evCount = facets.ev_tyre;
     const evEl = document.getElementById('tv-filter-count-ev');
-    if (evEl) evEl.textContent = Number(evCount).toLocaleString();
+    if (evEl && !hasSearchOrQuery) evEl.textContent = Number(evCount).toLocaleString();
     const evCb = document.querySelector('input[name="ev_tyre"]');
     const evItem = evCb ? evCb.closest('.tv-filter-item') : null;
     if (evItem) {
-      if (evCount === 0 && (!evCb || !evCb.checked)) {
-        evItem.classList.add('tv-filter-empty');
-        evItem.style.display = 'none';
-      } else {
-        evItem.classList.remove('tv-filter-empty');
-        evItem.style.display = '';
-      }
+      evItem.classList.remove('tv-filter-empty');
+      evItem.style.display = '';
     }
     const evGroup = evCb ? evCb.closest('.tv-filter-group') : null;
     if (evGroup) {
-      if (evCount === 0 && (!evCb || !evCb.checked)) {
-        evGroup.classList.add('tv-group-empty');
-      } else {
-        evGroup.classList.remove('tv-group-empty');
-      }
+      evGroup.classList.remove('tv-group-empty');
     }
   }
 }
 
 function refreshFilterVisibility() {
   document.querySelectorAll('.tv-filter-group').forEach(group => {
-    let groupVisibleCount = 0;
+    group.classList.remove('tv-group-empty');
     const items = group.querySelectorAll('.tv-filter-item');
     items.forEach(item => {
-      const cb = item.querySelector('input[type="checkbox"]');
-      const countSpan = item.querySelector('.tv-filter-count');
-      let count = 0;
-      if (countSpan) {
-        count = parseInt(countSpan.textContent.replace(/,/g, '').trim(), 10) || 0;
-      }
-      if (count === 0 && (!cb || !cb.checked)) {
-        item.classList.add('tv-filter-empty');
-        item.style.display = 'none';
-      } else {
-        item.classList.remove('tv-filter-empty');
-        item.style.display = '';
-        groupVisibleCount++;
-      }
+      item.classList.remove('tv-filter-empty');
+      item.style.display = '';
     });
-
-    if (items.length > 0) {
-      if (groupVisibleCount === 0) {
-        group.classList.add('tv-group-empty');
-      } else {
-        group.classList.remove('tv-group-empty');
-      }
-    }
   });
 }
 
@@ -2945,11 +2903,12 @@ function updatePriceFilter(val) {
 }
 
 function clearAllFilters() {
+  const isSizeRoute = /^\/tyres\/\d+-\d+-\d+/i.test(window.location.pathname);
   document.querySelectorAll('.tv-filter-sidebar input[type="checkbox"]').forEach(cb => {
+    if (isSizeRoute && cb.closest('#hidden-size-filters')) return;
     cb.checked = false;
-  });
   const hiddenSizeBox = document.getElementById('hidden-size-filters');
-  if (hiddenSizeBox) {
+  if (hiddenSizeBox && !isSizeRoute) {
     hiddenSizeBox.querySelectorAll('input[type="checkbox"]').forEach(cb => {
       cb.checked = false;
     });
@@ -2994,12 +2953,6 @@ function searchFilterList(inputEl, listSelector) {
   if (!container) return;
   const items = container.querySelectorAll('.tv-filter-item');
   items.forEach(it => {
-    const cb = it.querySelector('input[type="checkbox"]');
-    const isChecked = cb ? cb.checked : false;
-    if (it.classList.contains('tv-filter-empty') && !isChecked) {
-      it.style.display = 'none';
-      return;
-    }
     const text = (it.getAttribute('data-filter-name') || it.innerText || '').toLowerCase();
     if (!q || text.includes(q)) {
       it.style.display = '';
@@ -3013,12 +2966,6 @@ function searchFilterSizes(query) {
   const q = query.trim().toLowerCase();
   const items = document.querySelectorAll('#filter-size-list .tv-filter-item');
   items.forEach(it => {
-    const cb = it.querySelector('input[type="checkbox"]');
-    const isChecked = cb ? cb.checked : false;
-    if (it.classList.contains('tv-filter-empty') && !isChecked) {
-      it.style.display = 'none';
-      return;
-    }
     const size = (it.getAttribute('data-size') || '').toLowerCase();
     if (!q || size.includes(q)) {
       it.style.display = '';
@@ -3114,7 +3061,7 @@ function updateActiveFilterBadges() {
   const selectedWarranties = document.querySelectorAll('input[name="warranty"]:checked').length;
   const selectedYears = document.querySelectorAll('input[name="year"]:checked').length;
   const selectedOrigins = document.querySelectorAll('input[name="origin"]:checked').length;
-  const selectedSizes = document.querySelectorAll('input[name="size"]:checked').length;
+  const selectedSizes = document.querySelectorAll('#filter-size-list input[name="size"]:checked').length;
   const selectedVehicles = document.querySelectorAll('input[name="vehicle_type"]:checked').length;
   const selectedTypes = document.querySelectorAll('input[name="tire_type"]:checked').length;
   const selectedPromotions = document.querySelectorAll('input[name="promotion"]:checked').length;
@@ -3145,10 +3092,10 @@ function updateActiveFilterBadges() {
     }
   });
 
-  const resetBtn = document.querySelector('.tv-btn-drawer-reset');
-  if (resetBtn) {
-    resetBtn.style.display = totalActive > 0 ? 'inline-block' : 'none';
-  }
+  const resetBtns = document.querySelectorAll('.tv-btn-drawer-reset, .tv-btn-clear-all');
+  resetBtns.forEach(btn => {
+    btn.style.display = totalActive > 0 ? 'inline-flex' : 'none';
+  });
 
   if (applyCount && typeof window.totalCount !== 'undefined') {
     applyCount.textContent = `(${window.totalCount.toLocaleString()})`;

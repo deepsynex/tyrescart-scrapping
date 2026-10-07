@@ -1261,7 +1261,9 @@ def _fetch_catalog_products(args, locale='en'):
             }
 
             # 0. Tyres Category filter (Budget, Premium, Quality)
-            raw_tyres_cats = args.getlist('tyres_category') or args.getlist('category') or args.getlist('tyre_category') or args.getlist('tyres_categories')
+            raw_tyres_cats = args.getlist('tyres_category') or args.getlist('tyres-category') or args.getlist('tyre_category') or args.getlist('tyres_categories')
+            if not raw_tyres_cats and args.getlist('category'):
+                raw_tyres_cats = [c for c in args.getlist('category') if c.strip().lower() in ('budget', 'quality', 'premium')]
             tyres_cats = []
             for tc_entry in raw_tyres_cats:
                 for tc_part in tc_entry.split(','):
@@ -2025,7 +2027,10 @@ def _render_product_listing(locale, filter_path=None):
     front_size_label = catalog_data.get('front_size_label', '')
     rear_size_label = catalog_data.get('rear_size_label', '')
 
-    active_tyres_categories = [tc.strip() for tc in (combined_args.getlist('tyres_category') or combined_args.getlist('category') or combined_args.getlist('tyre_category') or combined_args.getlist('tyres_categories')) if tc.strip()]
+    raw_tc = (combined_args.getlist('tyres_category') or combined_args.getlist('tyres-category') or combined_args.getlist('tyres_categories') or combined_args.getlist('tyre_category'))
+    if not raw_tc and combined_args.getlist('category'):
+        raw_tc = [c for c in combined_args.getlist('category') if c.strip().lower() in ('budget', 'quality', 'premium')]
+    active_tyres_categories = [tc.strip() for tc in raw_tc if tc.strip()]
     active_brands = [b.lower() for b in (combined_args.getlist('brand') or combined_args.getlist('brands'))]
     active_patterns = [p.strip() for p in (combined_args.getlist('pattern') or combined_args.getlist('patterns'))]
     active_tyre_markings = [tm.strip() for tm in (combined_args.getlist('tyre_marking') or combined_args.getlist('marking') or combined_args.getlist('tyre_markings') or combined_args.getlist('markings')) if tm.strip()]
@@ -2067,9 +2072,9 @@ def _render_product_listing(locale, filter_path=None):
         active_sizes_match.add(s_slug_r.upper())
     active_types = [t.lower() for t in (combined_args.getlist('type') or combined_args.getlist('tire_type'))]
     active_runflat = [r.lower() for r in (combined_args.getlist('runflat') or combined_args.getlist('run_flat') or combined_args.getlist('is_runflat'))]
-    filter_runflat_count = facets.get('runflat', 0)
+    filter_runflat_count = 0
     active_ev_tyre = [e.lower() for e in (combined_args.getlist('ev_tyre') or combined_args.getlist('ev') or combined_args.getlist('is_ev') or combined_args.getlist('ev_rated')) if e.strip()]
-    filter_ev_tyre_count = facets.get('ev_tyre', 0)
+    filter_ev_tyre_count = 0
     active_max_price = combined_args.get('max_price')
     active_min_price = combined_args.get('min_price')
     active_sort = combined_args.get('sort') or 'price-asc'
@@ -2095,7 +2100,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_tyres_categories = [{
                 'category': r['tc'],
-                'count': facets.get('tyres_categories', {}).get(r['tc'], 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall() if r.get('tc')]
 
             # 2. Sidebar: Brands from DB (active brands + product counts)
@@ -2111,7 +2116,7 @@ def _render_product_listing(locale, filter_path=None):
             for b in cur.fetchall():
                 b_slug = b.get('slug') or (b.get('name') or '').lower().replace(' ', '')
                 b_logo = b.get('logo') or f"/static/assets/images/brands/{b_slug}.svg"
-                b_cnt = facets.get('brands', {}).get(b_slug, 0) if facets else b.get('cnt', 0)
+                b_cnt = b.get('cnt', 0)
                 filter_brands.append({
                     'id': b['id'],
                     'name': b['name'],
@@ -2164,7 +2169,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_patterns = [{
                 'pattern': r['pattern'],
-                'count': facets.get('patterns', {}).get(r['pattern'], 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall()]
 
             # 4b. Sidebar: Tyre Markings from DB
@@ -2180,7 +2185,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_tyre_markings = [{
                 'marking': r['tm'],
-                'count': facets.get('tyre_markings', {}).get(r['tm'], 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall() if r.get('tm')]
 
             # 5. Sidebar: OEM Tyres from DB (using direct index idx_products_active_oem)
@@ -2194,7 +2199,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_oem_tyres = [{
                 'oem': r['oem'],
-                'count': facets.get('oems', {}).get(r['oem'], 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall()]
 
             # 6. Sidebar: Warranty Period from DB
@@ -2214,7 +2219,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_warranties = [{
                 'warranty': r['warranty'],
-                'count': facets.get('warranties', {}).get(r['warranty'], 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall()]
 
             # 7. Sidebar: Year from DB (using direct index idx_products_year)
@@ -2228,7 +2233,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_years = [{
                 'year': r['year'],
-                'count': facets.get('years', {}).get(str(r['year']), 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall()]
 
             # 8. Sidebar: Origin from DB (using direct index idx_products_active_origin)
@@ -2242,7 +2247,7 @@ def _render_product_listing(locale, filter_path=None):
             """)
             filter_origins = [{
                 'origin': r['origin'],
-                'count': facets.get('origins', {}).get((r['origin'] or '').lower(), 0) if facets else r['cnt']
+                'count': r['cnt']
             } for r in cur.fetchall()]
 
             # 4. Sidebar: Vehicle Types from DB

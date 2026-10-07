@@ -68,7 +68,7 @@
           <span class="tv-filter-badge" id="tv-drawer-badge" style="display:none;">0</span>
         </div>
         <div class="tv-filter-header-right">
-          <button type="button" class="tv-btn-clear-all" onclick="clearAllFilters()" aria-label="Clear all filters">
+          <button type="button" class="tv-btn-clear-all" onclick="clearAllFilters()" aria-label="Clear all filters" style="display:none;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
             </svg>
@@ -112,7 +112,7 @@
             {% endif %}
             {% for tc in filter_tyres_categories %}
             {% set is_active_tc = active_tyres_categories and (tc.category in active_tyres_categories or (tc.category|lower) in active_tyres_categories or (tc.category|capitalize) in active_tyres_categories) %}
-            <label class="tv-filter-item {% if tc.count == 0 and not is_active_tc %}tv-filter-empty{% endif %}" data-filter-name="{{ tc.category }}">
+            <label class="tv-filter-item" data-filter-name="{{ tc.category }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="tyres_category" value="{{ tc.category }}" {% if is_active_tc %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ tc.category }}</span>
@@ -142,7 +142,7 @@
             {% endif %}
             {% for b in filter_brands %}
             {% set is_active_b = active_brands and (b.slug in active_brands or (b.name|lower) in active_brands) %}
-            <label class="tv-filter-item {% if b.count == 0 and not is_active_b %}tv-filter-empty{% endif %}" data-filter-name="{{ b.name }}">
+            <label class="tv-filter-item" data-filter-name="{{ b.name }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="brand" value="{{ b.slug }}" {% if is_active_b %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ b.name }}</span>
@@ -176,7 +176,7 @@
             {% endif %}
             {% for p in filter_patterns %}
             {% set is_active_p = active_patterns and (p.pattern in active_patterns or (p.pattern|lower) in active_patterns or (p.pattern|lower|replace(' ', '-')) in active_patterns or (p.pattern|lower|replace('-', ' ')) in active_patterns) %}
-            <label class="tv-filter-item {% if p.count == 0 and not is_active_p %}tv-filter-empty{% endif %}" data-filter-name="{{ p.pattern }}">
+            <label class="tv-filter-item" data-filter-name="{{ p.pattern }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="pattern" value="{{ p.pattern }}" {% if is_active_p %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ p.pattern }}</span>
@@ -205,7 +205,7 @@
             {% endif %}
             {% for tm in filter_tyre_markings %}
             {% set is_active_tm = active_tyre_markings and (tm.marking in active_tyre_markings or (tm.marking|lower) in active_tyre_markings) %}
-            <label class="tv-filter-item {% if tm.count == 0 and not is_active_tm %}tv-filter-empty{% endif %}" data-filter-name="{{ tm.marking }}">
+            <label class="tv-filter-item" data-filter-name="{{ tm.marking }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="tyre_marking" value="{{ tm.marking }}" {% if is_active_tm %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ tm.marking }}</span>
@@ -235,7 +235,7 @@
             {% endif %}
             {% for o in filter_oem_tyres %}
             {% set is_active_o = active_oem_tyres and (o.oem in active_oem_tyres or (o.oem|lower) in active_oem_tyres or (o.oem|lower|replace(' ', '-')) in active_oem_tyres or (o.oem|lower|replace('-', ' ')) in active_oem_tyres) %}
-            <label class="tv-filter-item {% if o.count == 0 and not is_active_o %}tv-filter-empty{% endif %}" data-filter-name="{{ o.oem }}">
+            <label class="tv-filter-item" data-filter-name="{{ o.oem }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="oem" value="{{ o.oem }}" {% if is_active_o %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ o.oem }}</span>
@@ -267,7 +267,7 @@
             {% endif %}
             {% for pr in filter_promotions %}
             {% set is_active_pr = active_promotions and (pr.key in active_promotions or (pr.key|replace('_', '-')) in active_promotions) %}
-            <label class="tv-filter-item {% if pr.count == 0 and not is_active_pr %}tv-filter-empty{% endif %}" data-filter-name="{{ pr.label }}">
+            <label class="tv-filter-item" data-filter-name="{{ pr.label }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="promotion" value="{{ pr.key }}" {% if is_active_pr %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ pr.label }}</span>
@@ -295,7 +295,7 @@
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
           <div class="tv-filter-list" id="filter-runflat-list">
-            <label class="tv-filter-item {% if (filter_runflat_count or 0) == 0 and not active_runflat %}tv-filter-empty{% endif %}" data-filter-name="Run Flat">
+            <label class="tv-filter-item" data-filter-name="Run Flat">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
                 <span>RunFlat</span>
@@ -317,7 +317,7 @@
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
           <div class="tv-filter-list" id="filter-ev-list">
-            <label class="tv-filter-item {% if (filter_ev_tyre_count or 0) == 0 and not active_ev_tyre %}tv-filter-empty{% endif %}" data-filter-name="EV Tyre">
+            <label class="tv-filter-item" data-filter-name="EV Tyre">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="ev_tyre" value="ev" {% if active_ev_tyre %}checked{% endif %} onchange="filterProducts()">
                 <span>EV Tyre</span>
@@ -344,7 +344,7 @@
             {% endif %}
             {% for w in filter_warranties %}
             {% set is_active_w = active_warranties and (w.warranty in active_warranties or (w.warranty|lower) in active_warranties) %}
-            <label class="tv-filter-item {% if w.count == 0 and not is_active_w %}tv-filter-empty{% endif %}" data-filter-name="{{ w.warranty }}">
+            <label class="tv-filter-item" data-filter-name="{{ w.warranty }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="warranty" value="{{ w.warranty }}" {% if is_active_w %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ w.warranty }}</span>
@@ -375,7 +375,7 @@
             {% endif %}
             {% for y in filter_years %}
             {% set is_active_y = active_years and (y.year|string in active_years) %}
-            <label class="tv-filter-item {% if y.count == 0 and not is_active_y %}tv-filter-empty{% endif %}" data-filter-name="{{ y.year }}">
+            <label class="tv-filter-item" data-filter-name="{{ y.year }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="year" value="{{ y.year }}" {% if is_active_y %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ y.year }}</span>
@@ -406,7 +406,7 @@
             {% endif %}
             {% for org in filter_origins %}
             {% set is_active_org = active_origins and (org.origin in active_origins or (org.origin|lower) in active_origins or (org.origin|lower|replace(' ', '-')) in active_origins or (org.origin|lower|replace('-', ' ')) in active_origins) %}
-            <label class="tv-filter-item {% if org.count == 0 and not is_active_org %}tv-filter-empty{% endif %}" data-filter-name="{{ org.origin }}">
+            <label class="tv-filter-item" data-filter-name="{{ org.origin }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="origin" value="{{ org.origin }}" {% if is_active_org %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ org.origin }}</span>
