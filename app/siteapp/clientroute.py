@@ -1453,13 +1453,15 @@ def _fetch_catalog_products(args, locale='en'):
                 clauses['warranty'][0].append("(" + " OR ".join(w_clauses) + ")")
                 clauses['warranty'][1].extend(w_params)
 
-            # 7. Year filter (uses idx_products_year)
-            raw_years = args.getlist('year') or args.getlist('years')
+            # 7. Year filter (uses idx_products_year) - tyre DOT manufacturing year only
+            # Car model years (from vehicle search, e.g. 2012, 2018) must never be compared to tyre year
+            has_vehicle_context = bool(args.get('make') or args.get('model') or args.get('trim') or args.get('modification') or args.get('car_year') or args.get('vehicle_year'))
+            raw_years = [] if has_vehicle_context else (args.getlist('year') or args.getlist('years'))
             years = []
             for y_entry in raw_years:
                 for y_part in y_entry.split(','):
                     yp = y_part.strip()
-                    if yp and yp not in years:
+                    if yp and yp.isdigit() and int(yp) >= 2024 and yp not in years:
                         years.append(yp)
 
             if years:
@@ -2039,7 +2041,9 @@ def _render_product_listing(locale, filter_path=None):
             active_warranties.extend(['5 Year Warranty', '5 Years Warranty'])
         elif '1 year' in w_clean.lower():
             active_warranties.extend(['1 Year Warranty', '1 Years Warranty'])
-    active_years = [str(y).strip() for y in (combined_args.getlist('year') or combined_args.getlist('years'))]
+    has_vehicle_context = bool(combined_args.get('make') or combined_args.get('model') or combined_args.get('trim') or combined_args.get('modification') or combined_args.get('car_year') or combined_args.get('vehicle_year'))
+    raw_active_years = [] if has_vehicle_context else (combined_args.getlist('year') or combined_args.getlist('years'))
+    active_years = [str(y).strip() for y in raw_active_years if str(y).strip().isdigit() and int(str(y).strip()) >= 2024]
     active_origins = [org.strip() for org in (combined_args.getlist('origin') or combined_args.getlist('country') or combined_args.getlist('origins'))]
     active_vehicles = [v.lower() for v in (combined_args.getlist('vehicle') or combined_args.getlist('vehicle_type'))]
     active_sizes = []
@@ -3791,21 +3795,14 @@ def _render_vehicle_page(slug_path, locale):
     return resp
 
 
-@site_bp.route('/car-tyres', strict_slashes=False)
-@site_bp.route('/car-tyres/', strict_slashes=False)
 @site_bp.route('/tyres', strict_slashes=False)
-@site_bp.route('/tyres/', strict_slashes=False)
-@site_bp.route('/products', strict_slashes=False)
-@site_bp.route('/products/', strict_slashes=False)
 def car_tyres_listing():
     """Client storefront Car Tyres / Product Listing catalog."""
     locale = _get_locale()
     return _render_product_listing(locale)
 
 
-@site_bp.route('/car-tyres/<path:filter_path>', strict_slashes=False)
 @site_bp.route('/tyres/<path:filter_path>', strict_slashes=False)
-@site_bp.route('/products/<path:filter_path>', strict_slashes=False)
 def car_tyres_listing_slug(filter_path):
     """Client storefront Car Tyres / Product Listing catalog with URL slug filters."""
     clean_path = (filter_path or '').strip('/')
@@ -3836,26 +3833,21 @@ def car_tyres_listing_slug(filter_path):
             if re.match(r'^size-', s, re.IGNORECASE):
                 s = re.sub(r'[-/ ]*r(\d+)', r'-\1', s, flags=re.IGNORECASE)
             cleaned_segments.append(s)
-        prefix = '/car-tyres' if request.path.startswith('/car-tyres') else ('/products' if request.path.startswith('/products') else '/tyres')
+        prefix = '/tyres'
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
         return redirect(clean_url, code=301)
 
     # If URL contains uppercase characters (e.g. /tyres/oem-Mercedes-Benz), 301 redirect to lowercase slug
     if clean_path != clean_path.lower():
-        prefix = '/car-tyres' if request.path.startswith('/car-tyres') else ('/products' if request.path.startswith('/products') else '/tyres')
+        prefix = '/tyres'
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         return redirect(f"{prefix}/{clean_path.lower()}{query_str}", code=301)
     locale = _get_locale()
     return _render_product_listing(locale, filter_path=clean_path)
 
 
-@site_bp.route('/<string(length=2):lang_code>/car-tyres', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/car-tyres/', strict_slashes=False)
 @site_bp.route('/<string(length=2):lang_code>/tyres', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/tyres/', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/products', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/products/', strict_slashes=False)
 def car_tyres_listing_locale(lang_code):
     """Client storefront Car Tyres / Product Listing catalog with dynamic locale."""
     code = lang_code.lower()
@@ -3863,9 +3855,7 @@ def car_tyres_listing_locale(lang_code):
     return _render_product_listing(code)
 
 
-@site_bp.route('/<string(length=2):lang_code>/car-tyres/<path:filter_path>', strict_slashes=False)
 @site_bp.route('/<string(length=2):lang_code>/tyres/<path:filter_path>', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/products/<path:filter_path>', strict_slashes=False)
 def car_tyres_listing_locale_slug(lang_code, filter_path):
     """Client storefront Car Tyres / Product Listing catalog with dynamic locale and URL slug filters."""
     code = lang_code.lower()
@@ -3897,17 +3887,34 @@ def car_tyres_listing_locale_slug(lang_code, filter_path):
             if re.match(r'^size-', s, re.IGNORECASE):
                 s = re.sub(r'[-/ ]*r(\d+)', r'-\1', s, flags=re.IGNORECASE)
             cleaned_segments.append(s)
-        prefix = f'/{code}/car-tyres' if f'/{code}/car-tyres' in request.path else (f'/{code}/products' if f'/{code}/products' in request.path else f'/{code}/tyres')
+        prefix = f'/{code}/tyres'
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         clean_url = f"{prefix}/{'/'.join(cleaned_segments).lower()}{query_str}" if cleaned_segments else f"{prefix}{query_str}"
         return redirect(clean_url, code=301)
 
-    # If URL contains uppercase characters, 301 redirect to lowercase slug
     if clean_path != clean_path.lower():
-        prefix = f'/{code}/car-tyres' if f'/{code}/car-tyres' in request.path else (f'/{code}/products' if f'/{code}/products' in request.path else f'/{code}/tyres')
+        prefix = f'/{code}/tyres'
         query_str = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
         return redirect(f"{prefix}/{clean_path.lower()}{query_str}", code=301)
+
     return _render_product_listing(code, filter_path=clean_path)
+
+
+# Legacy redirects: redirect old /car-tyres and /products cleanly to canonical /tyres
+@site_bp.route('/car-tyres', defaults={'filter_path': None}, strict_slashes=False)
+@site_bp.route('/car-tyres/<path:filter_path>', strict_slashes=False)
+def legacy_car_tyres_redirect(filter_path):
+    target = f"/tyres/{filter_path.strip('/')}" if filter_path else "/tyres"
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"{target}{qs}", code=301)
+
+
+@site_bp.route('/products', defaults={'filter_path': None}, strict_slashes=False)
+@site_bp.route('/products/<path:filter_path>', strict_slashes=False)
+def legacy_products_redirect(filter_path):
+    target = f"/tyres/{filter_path.strip('/')}" if filter_path else "/tyres"
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"{target}{qs}", code=301)
 
 
 # ============================================================================
@@ -4951,8 +4958,8 @@ def vs_tyres():
                 # UI helpers
                 "title": flabel + (f" / Rear: {rlabel}" if is_staggered else ""),
                 "badge": "Standard / OEM" if is_factory else (f"{frim}\" Optional" if frim else "Optional"),
-                "front_slug": f"{fw}-{fh}-r{frim}",
-                "rear_slug": f"{rw}-{rh}-r{rrim}" if is_staggered else None,
+                "front_slug": f"{fw}-{fh}-{frim}",
+                "rear_slug": f"{rw}-{rh}-{rrim}" if is_staggered else None,
                 "rim_spec": f.get('rim', ''),
                 "is_staggered": is_staggered,
                 "is_stock": is_factory
@@ -5008,8 +5015,6 @@ def client_api_brands():
         conn.close()
 
 
-@site_bp.route('/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
-@site_bp.route('/api/tyrefinder/ajax/buytyresearch', methods=['GET', 'POST'])
 @site_bp.route('/api/wheel-search', methods=['GET', 'POST'])
 def ajax_buy_tyre_search():
     """Fetches compatible vehicles for a tyre size from Wheel-API using POST method, with fallback."""

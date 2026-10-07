@@ -179,6 +179,7 @@
   if(form){
     form.addEventListener('submit', function(e){
       e.preventDefault();
+      var mobileEl = document.getElementById('MobileNumer');
       var sizeEl = document.getElementById('tyreSize');
       var size = sizeEl ? sizeEl.value.trim() : '';
       if(!size){ if(sizeEl){ sizeEl.focus(); sizeEl.style.borderColor = '#C0392B'; } return; }
@@ -204,6 +205,7 @@
             'Accept': 'application/json'
           },
           body: JSON.stringify({
+            Phone: mobileEl ? mobileEl.value.trim() : '',
             tyre_size: size,
             vehicle: make,
             city: emirate,
@@ -1255,13 +1257,16 @@ var TV_COUNTRY_FLAG_CODES = {
 function tvCardOriginHTML(originName) {
   var safeName = escapeHtml(originName);
   var code = TV_COUNTRY_FLAG_CODES[originName];
+  var inner = '';
   if (code) {
-    return '<span class="tv-card-origin-row" title="Origin: ' + safeName + '">'
-      + '<img src="https://flags.restcountries.com/v5/w640/' + code + '.png" alt="' + safeName + '" class="tv-card-origin-flag" loading="lazy" onerror="this.closest(\'.tv-card-origin-row\').querySelector(\'.tv-card-origin-fallback-text\').style.display=\'inline\';this.style.display=\'none\';">'
-      + '<span class="tv-card-origin-fallback-text" style="display:none;">' + safeName + '</span>'
-      + '</span>';
+    inner = '<img src="https://flags.restcountries.com/v5/w640/' + code + '.png" alt="' + safeName + '" class="tv-card-origin-flag" loading="lazy" onerror="this.closest(\'.tv-card-origin-row\').querySelector(\'.tv-card-origin-fallback-text\').style.display=\'inline\';this.style.display=\'none\';">'
+      + '<span class="tv-card-origin-fallback-text" style="display:none;">' + safeName + '</span>';
+  } else {
+    inner = '<span>' + safeName + '</span>';
   }
-  return '<span class="tv-card-origin-row" title="Origin: ' + safeName + '"><span>' + safeName + '</span></span>';
+  return '<div class="tv-card-origin-row-wrap">'
+    + '<span class="tv-card-origin-row" title="Origin: ' + safeName + '">' + inner + '</span>'
+    + '</div>';
 }
 
 function tvCardCategoryBadgeHTML(categoryName) {
@@ -1315,26 +1320,21 @@ function renderSkeletons(count) {
         <!-- 3. Bottom Detail Wrapper -->
         <div class="product-bottom-detail">
           <div class="tv-card-info-block">
-            <!-- Pattern Title -->
-            <div class="tv-skeleton-box" style="width: 68%; height: 20px; border-radius: 6px; margin-bottom: 8px;"></div>
+            <!-- Row 1: Origin Flag on the right -->
+            <div class="tv-card-origin-row-wrap" style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
+              <div class="tv-skeleton-box" style="width: 26px; height: 18px; border-radius: 3px;"></div>
+            </div>
 
-            <!-- Size Row: Size (Left) & Year (Right) -->
+            <!-- Row 2: Pattern Title (Left) & Run Flat (Right) -->
+            <div class="tv-card-pattern-row" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
+              <div class="tv-skeleton-box" style="width: 58%; height: 20px; border-radius: 6px;"></div>
+              <div class="tv-skeleton-box" style="width: 50px; height: 18px; border-radius: 4px;"></div>
+            </div>
+
+            <!-- Row 3: Size Row: Size (Left) & Year (Right) -->
             <div class="tv-card-size-row" style="margin-bottom: 6px;">
               <div class="tv-skeleton-box" style="width: 110px; height: 16px; border-radius: 4px;"></div>
               <div class="tv-skeleton-box" style="width: 48px; height: 16px; border-radius: 4px;"></div>
-            </div>
-
-            <!-- Meta Row: 3 columns (Country, Runflat, Premium) -->
-            <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-country">
-                <div class="tv-skeleton-box" style="width: 44px; height: 14px; border-radius: 4px;"></div>
-              </span>
-              <span class="tv-meta-item tv-meta-runflat">
-                <div class="tv-skeleton-box" style="width: 58px; height: 14px; border-radius: 4px; margin: auto;"></div>
-              </span>
-              <span class="tv-meta-item tv-meta-premium">
-                <div class="tv-skeleton-box" style="width: 48px; height: 14px; border-radius: 4px; margin-left: auto;"></div>
-              </span>
             </div>
           </div>
 
@@ -1492,9 +1492,12 @@ function createStaggeredCombinedCardHTML(p) {
           <div class="tv-card-info-block">
             ${tvCardOriginHTML(itemOrigin)}
 
-            <a href="/${itemSlug}" class="tv-card-pattern-link" title="${itemPattern}">
-              <h3 class="tv-card-pattern">${itemPattern}</h3>
-            </a>
+            <div class="tv-card-pattern-row">
+              <a href="/${itemSlug}" class="tv-card-pattern-link" title="${itemPattern}">
+                <h3 class="tv-card-pattern">${itemPattern}</h3>
+              </a>
+              ${isRunflat ? `<span class="tv-meta-item tv-meta-runflat" title="Technology"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>` : ''}
+            </div>
 
             <div class="tv-card-size-row">
               <span class="tv-card-spec-text">${itemSize}</span>
@@ -1506,12 +1509,6 @@ function createStaggeredCombinedCardHTML(p) {
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
                 <span>${itemYear}</span>
-              </span>
-            </div>
-
-            <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                ${isRunflat ? `<span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span>` : ''}
               </span>
             </div>
           </div>
@@ -1819,21 +1816,17 @@ function createProductCardHTML(p) {
             <div class="tv-card-info-block">
               ${tvCardOriginHTML(originVal)}
 
-              <!-- Product Pattern / Model Name (Brand name removed) -->
-              <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
-                <h3 class="tv-card-pattern">
-                  ${patternTitle}
-                </h3>
-              </a>
+              <!-- Product Pattern / Model Name (Left) & Run Flat (Right) -->
+              <div class="tv-card-pattern-row">
+                <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
+                  <h3 class="tv-card-pattern">
+                    ${patternTitle}
+                  </h3>
+                </a>
+                ${isRunflat ? `<span class="tv-meta-item tv-meta-runflat" title="Technology"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>` : ''}
+              </div>
 
               ${sizeBlockHTML}
-
-              <!-- 4. Runflat (country of origin and category moved elsewhere on the card) -->
-              <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                  ${runflatContent}
-                </span>
-              </div>
             </div>
 
             <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
@@ -2323,10 +2316,6 @@ function buildFilterPath(page = 1) {
   const pathParts = currentPath.split('/').filter(Boolean);
   if (pathParts.length > 0 && ['ar', 'en', 'de', 'fr', 'es', 'ru', 'zh'].includes(pathParts[0].toLowerCase())) {
     basePath = '/' + pathParts[0].toLowerCase() + '/tyres';
-  } else if (currentPath.startsWith('/car-tyres')) {
-    basePath = '/car-tyres';
-  } else if (currentPath.startsWith('/products')) {
-    basePath = '/products';
   } else {
     basePath = '/tyres';
   }
@@ -2531,10 +2520,41 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
     params.set('max_price', maxPrice);
   }
 
+  // Preserve search query (?search=... or ?q=...) and vehicle/custom query params
+  const preservedParams = new URLSearchParams();
+  const facetKeys = new Set([
+    'page', 'per_page', 'sort', 'rear', 'size', 'brand', 'brands', 'pattern', 'patterns',
+    'marking', 'markings', 'tyre_marking', 'tyre_markings', 'oem', 'oems', 'warranty', 'warranties',
+    'origin', 'origins', 'vehicle', 'vehicle_type', 'type', 'tire_type', 'types',
+    'promotion', 'promotions', 'runflat', 'ev', 'ev_tyre', 'min_price', 'max_price',
+    'category', 'tyres_category'
+  ]);
+  for (const [key, val] of currentUrlParams.entries()) {
+    if (!facetKeys.has(key.toLowerCase())) {
+      preservedParams.append(key, val);
+    }
+  }
+
+  const searchQuery = currentUrlParams.get('search') || currentUrlParams.get('q');
+  if (searchQuery) {
+    if (!preservedParams.has('search') && !preservedParams.has('q')) {
+      preservedParams.set('search', searchQuery);
+    }
+    params.set('search', searchQuery);
+  }
+
+  for (const [k, v] of preservedParams.entries()) {
+    if (!params.has(k)) {
+      params.append(k, v);
+    }
+  }
+
   // Update browser URL using buildFilterPath to preserve size, page, brand, ev, and all facets
   const cleanBasePath = buildFilterPath(page);
-  if (window.location.pathname !== cleanBasePath || window.location.search) {
-    window.history.replaceState({ page: page, path: cleanBasePath }, '', cleanBasePath);
+  const preservedQs = preservedParams.toString() ? `?${preservedParams.toString()}` : '';
+  const targetUrl = `${cleanBasePath}${preservedQs}`;
+  if (window.location.pathname + window.location.search !== targetUrl) {
+    window.history.replaceState({ page: page, path: cleanBasePath }, '', targetUrl);
   }
 
   try {
@@ -3314,8 +3334,9 @@ function initProductCatalog(config) {
     // Clean up any legacy page-X or page-X-Y segment from the browser URL
     if (window.location.pathname.match(/\/page-\d+/i)) {
       const cleanInitPath = buildFilterPath(window.currentPage || 1);
-      if (cleanInitPath && window.location.pathname !== cleanInitPath) {
-        window.history.replaceState({ page: window.currentPage || 1, path: cleanInitPath }, '', cleanInitPath);
+      const initQs = window.location.search || '';
+      if (cleanInitPath && (window.location.pathname + window.location.search !== cleanInitPath + initQs)) {
+        window.history.replaceState({ page: window.currentPage || 1, path: cleanInitPath }, '', cleanInitPath + initQs);
       }
     }
 

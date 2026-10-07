@@ -308,9 +308,8 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyres in millimeters.';
     badgeLabel = isWheel ? 'Wheel Rim' : 'Tyre Width';
     badgeUnit = isWheel ? '"' : ' mm';
-    defaultVal = isWheel ? '17' : '195';
-    if (!s.width && isTyre) s.width = '195';
-    currentSelectedVal = s.width || (isTyre ? '195' : defaultVal);
+    defaultVal = '';
+    currentSelectedVal = s.width || '';
     selectorLabel = isWheel ? 'SELECT RIM SIZE (INCHES)' : 'SELECT TYRE WIDTH (MM)';
     searchPlaceholder = isWheel ? 'Search rim...' : 'Search width...';
   } else if (s.step === 2) {
@@ -318,9 +317,8 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = isWheel ? 'Choose the rim width in inches (J).' : 'Choose the aspect ratio (height as % of width).';
     badgeLabel = isWheel ? 'Wheel Width' : 'Tyre Height';
     badgeUnit = isWheel ? '' : '%';
-    defaultVal = isWheel ? '7.5J' : '55';
-    if (!s.profile && isTyre) s.profile = '55';
-    currentSelectedVal = s.profile || (isTyre ? '55' : defaultVal);
+    defaultVal = '';
+    currentSelectedVal = s.profile || '';
     selectorLabel = isWheel ? 'SELECT WHEEL WIDTH' : 'SELECT TYRE HEIGHT (%)';
     searchPlaceholder = isWheel ? 'Search width...' : 'Search height...';
   } else if (s.step === 3) {
@@ -328,10 +326,9 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = 'Choose the diameter of the wheel rim in inches.';
     badgeLabel = 'Rim Size';
     badgeUnit = '"';
-    defaultVal = '16';
+    defaultVal = '';
     if (s.rim) s.rim = String(s.rim).replace(/^R/i, '').trim();
-    if (!s.rim && isTyre) s.rim = '16';
-    currentSelectedVal = s.rim || (isTyre ? '16' : defaultVal);
+    currentSelectedVal = s.rim || '';
     selectorLabel = 'SELECT RIM SIZE (INCHES)';
     searchPlaceholder = 'Search rim...';
   }
@@ -376,14 +373,14 @@ function _tvRenderSizePanel(body, tab) {
     } else if (!options || !options.length) {
       chipsHtml = '<div class="tvhm-empty-note" style="grid-column: 1 / -1; text-align: center; padding: 24px;">No options found for this selection.</div>';
     } else {
-      if (options.indexOf(currentSelectedVal) === -1) {
-        currentSelectedVal = options[0];
-        if (s.step === 1) s.width = currentSelectedVal;
-        else if (s.step === 2) s.profile = currentSelectedVal;
-        else if (s.step === 3) s.rim = currentSelectedVal;
+      if (currentSelectedVal && options.indexOf(currentSelectedVal) === -1) {
+        currentSelectedVal = '';
+        if (s.step === 1) s.width = null;
+        else if (s.step === 2) s.profile = null;
+        else if (s.step === 3) s.rim = null;
       }
       options.forEach(function(opt) {
-        var isSel = opt === currentSelectedVal;
+        var isSel = Boolean(currentSelectedVal && opt === currentSelectedVal);
         chipsHtml += '<button type="button" class="tvhm-size-chip' + (isSel ? ' selected' : '') + '"'
           + ' data-val="' + opt + '"'
           + ' onclick="tvSelectSizeChip(\'' + opt + '\')"'
@@ -464,7 +461,7 @@ function _tvRenderSizePanel(body, tab) {
       +      pillsHtml
       + '  </div>'
       + '  <div class="tvhm-tyre-visual">'
-      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge">'
+      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge"' + (currentSelectedVal ? '' : ' style="display:none;"') + '>'
       + '      <span id="tvBadgeLabel">' + badgeLabel + '</span>'
       + '      <strong id="tvBadgeVal">' + (currentSelectedVal ? currentSelectedVal + badgeUnit : '') + '</strong>'
       + '    </div>'
@@ -604,6 +601,8 @@ function tvSelectSizeChip(val, autoAdvance) {
     });
   }
 
+  var badgeEl = document.getElementById('tvhmTyreBadge');
+  if (badgeEl) badgeEl.style.display = '';
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal) {
     var cleanVal = (s.step === 3 && !isWheel) ? String(val).replace(/^R/i, '').trim() : val;
@@ -646,6 +645,8 @@ function tvHoverSizeChip(val) {
   var s = _tvState;
   var isWheel = s.tab === 'car-wheels';
   var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
+  var badgeEl = document.getElementById('tvhmTyreBadge');
+  if (badgeEl) badgeEl.style.display = '';
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal) {
     var cleanVal = (s.step === 3 && !isWheel) ? String(val).replace(/^R/i, '').trim() : val;
@@ -658,10 +659,18 @@ function tvLeaveSizeChip() {
   var isWheel = s.tab === 'car-wheels';
   var currentVal = s.step === 1 ? s.width : (s.step === 2 ? s.profile : s.rim);
   var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
+  var badgeEl = document.getElementById('tvhmTyreBadge');
+  if (badgeEl) {
+    badgeEl.style.display = currentVal ? '' : 'none';
+  }
   var badgeVal = document.getElementById('tvBadgeVal');
-  if (badgeVal && currentVal) {
-    var cleanVal = (s.step === 3 && !isWheel) ? String(currentVal).replace(/^R/i, '').trim() : currentVal;
-    badgeVal.textContent = cleanVal + badgeUnit;
+  if (badgeVal) {
+    if (currentVal) {
+      var cleanVal = (s.step === 3 && !isWheel) ? String(currentVal).replace(/^R/i, '').trim() : currentVal;
+      badgeVal.textContent = cleanVal + badgeUnit;
+    } else {
+      badgeVal.textContent = '';
+    }
   }
 }
 
@@ -809,7 +818,7 @@ function _tvRenderVehiclePanel(body, tab) {
       + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.makeName || s.makeSlug) + ' ✕</span></button>';
     if (s.modelSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'model\')" title="Change Model"><span class="tvhm-size-badge-lbl">Model</span>'
       + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.modelName || s.modelSlug) + ' ✕</span></button>';
-    if (s.year) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'year\')" title="Change Year"><span class="tvhm-size-badge-lbl">Year</span>'
+    if (s.year) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'year\')" title="Change Car Year"><span class="tvhm-size-badge-lbl">Car Year</span>'
       + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.year) + ' ✕</span></button>';
     if (s.engineTrim) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'engine\')" title="Change Engine"><span class="tvhm-size-badge-lbl">Engine</span>'
       + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.engineTrim) + ' ✕</span></button>';
@@ -970,7 +979,7 @@ function _renderModelChips(body, models, breadcrumb) {
 /* Year chips */
 function _renderYearChips(body, years, breadcrumb) {
   var html = breadcrumb;
-  html += '<p class="tvhm-section-lbl">Select Year</p><div class="tvhm-chips">';
+  html += '<p class="tvhm-section-lbl">Select Car Model Year</p><div class="tvhm-chips">';
   years.forEach(function(y) {
     html += '<button class="tvhm-chip" onclick="tvSelectYear(\'' + y + '\')">' + y + '</button>';
   });
@@ -1095,21 +1104,24 @@ function tvSelectEngine(slug, trim, dest) {
   _tvState.engineTrim = trim;
   _tvRenderModal();
 }
+function tvCleanSizeSlug(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/^size-/i, '')
+    .replace(/[-/ ]*r(\d+)/i, '-$1')
+    .toLowerCase()
+    .trim();
+}
 function tvSelectTyreSize(frontSlug, rearSlug, dest) {
-  var s = _tvState;
-  var url = dest;
-  if (frontSlug) {
-    url += '/size-' + encodeURIComponent(frontSlug);
-  }
-  var qParams = [];
-  if (s.makeSlug) qParams.push('make=' + encodeURIComponent(s.makeSlug));
-  if (s.modelSlug) qParams.push('model=' + encodeURIComponent(s.modelSlug));
-  if (s.year) qParams.push('year=' + encodeURIComponent(s.year));
-  if (s.engineTrim) qParams.push('trim=' + encodeURIComponent(s.engineTrim));
-  if (rearSlug) qParams.push('rear=' + encodeURIComponent(rearSlug));
-
-  if (qParams.length) {
-    url += '?' + qParams.join('&');
+  var cleanFront = tvCleanSizeSlug(frontSlug);
+  var cleanRear = tvCleanSizeSlug(rearSlug);
+  var base = (dest || '/tyres').replace(/\/+$/, '');
+  var url = base;
+  if (cleanFront) {
+    url += '/' + encodeURIComponent(cleanFront);
+    if (cleanRear) {
+      url += '/' + encodeURIComponent(cleanRear);
+    }
   }
   window.location.href = url;
 }

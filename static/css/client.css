@@ -1334,6 +1334,7 @@ header {
 
 /* Body Container with signature top-left curve matching screenshot */
 .tv-hsearch-body {
+  margin-top: 20px;
   padding: 20px 18px;
   background: #FFFFFF;
   border-top-left-radius: 21px;
@@ -10456,7 +10457,15 @@ body.filter-open .float-wa {
   text-transform: uppercase;
 }
 
-/* Country-of-origin line, shown above the product title */
+/* Country-of-origin line, aligned top-right above pattern title */
+.tv-card-origin-row-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 20px;
+  margin-bottom: 4px;
+}
+
 .tv-card-origin-row {
   display: inline-flex;
   align-items: center;
@@ -10466,7 +10475,7 @@ body.filter-open .float-wa {
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .tv-card-origin-row svg {
@@ -10677,6 +10686,36 @@ body.filter-open .float-wa {
   /* min-height: 2.56em; */
   cursor: pointer;
   transition: color 0.15s ease;
+}
+
+.tv-card-pattern-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  min-height: 24px;
+}
+
+.tv-card-pattern-row .tv-card-pattern-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.tv-card-pattern-row .tv-card-pattern {
+  margin: 0;
+}
+
+.tv-card-pattern-row .tv-meta-runflat {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tv-card-pattern-row .tv-meta-runflat img {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
 .tv-card-pattern:hover,
@@ -19385,6 +19424,36 @@ body.tv-scroll-locked {
   text-overflow: ellipsis;
   cursor: pointer;
   transition: color 0.15s ease;
+}
+
+.tv-staggered-side .tv-card-pattern-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 5px;
+  min-height: 22px;
+}
+
+.tv-staggered-side .tv-card-pattern-row .tv-card-pattern-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.tv-staggered-side .tv-card-pattern-row .tv-card-pattern {
+  margin: 0;
+}
+
+.tv-staggered-side .tv-card-pattern-row .tv-meta-runflat {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tv-staggered-side .tv-card-pattern-row .tv-meta-runflat img {
+  height: 16px;
+  width: auto;
+  display: block;
 }
 
 .tv-staggered-side .tv-card-pattern:hover,

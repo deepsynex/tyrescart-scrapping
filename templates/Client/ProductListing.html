@@ -613,22 +613,31 @@
               <!-- 3. Product Info Block & Bottom Details -->
               <div class="product-bottom-detail">
                 <div class="tv-card-info-block">
-                  {% set origin_name = p.front.country_of_origin or 'USA' %}
-                  {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
-                  <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
-                    {% if origin_code %}
-                    <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
-                    <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
-                    {% else %}
-                    <span>{{ origin_name }}</span>
-                    {% endif %}
-                  </span>
+                  <div class="tv-card-origin-row-wrap">
+                    {% set origin_name = p.front.country_of_origin or 'USA' %}
+                    {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+                    <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                      {% if origin_code %}
+                      <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                      <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                      {% else %}
+                      <span>{{ origin_name }}</span>
+                      {% endif %}
+                    </span>
+                  </div>
 
-                  <a href="/{{ p.front.slug }}" class="tv-card-pattern-link" title="{{ p.front.pattern_name or p.front.display_name }}">
-                    <h3 class="tv-card-pattern">
-                      {{ p.front.pattern_name or p.front.display_name }}
-                    </h3>
-                  </a>
+                  <div class="tv-card-pattern-row">
+                    <a href="/{{ p.front.slug }}" class="tv-card-pattern-link" title="{{ p.front.pattern_name or p.front.display_name }}">
+                      <h3 class="tv-card-pattern">
+                        {{ p.front.pattern_name or p.front.display_name }}
+                      </h3>
+                    </a>
+                    {% if p.front.is_runflat or p.front.runflat_text == 'Runflat' %}
+                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                    </span>
+                    {% endif %}
+                  </div>
 
                   <div class="tv-card-size-row">
                     <span class="tv-card-spec-text">{{ p.front.full_size_spec }}</span>
@@ -640,14 +649,6 @@
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                       </svg>
                       <span>{{ p.front.year or '2025' }}</span>
-                    </span>
-                  </div>
-
-                  <div class="tv-card-meta-row">
-                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                      {% if p.front.is_runflat or p.front.runflat_text == 'Runflat' %}
-                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                      {% endif %}
                     </span>
                   </div>
                 </div>
@@ -753,22 +754,31 @@
               <!-- 3. Product Info Block & Bottom Details -->
               <div class="product-bottom-detail">
                 <div class="tv-card-info-block">
-                  {% set origin_name = p.rear.country_of_origin or 'USA' %}
-                  {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
-                  <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
-                    {% if origin_code %}
-                    <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
-                    <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
-                    {% else %}
-                    <span>{{ origin_name }}</span>
-                    {% endif %}
-                  </span>
+                  <div class="tv-card-origin-row-wrap">
+                    {% set origin_name = p.rear.country_of_origin or 'USA' %}
+                    {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+                    <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                      {% if origin_code %}
+                      <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                      <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                      {% else %}
+                      <span>{{ origin_name }}</span>
+                      {% endif %}
+                    </span>
+                  </div>
 
-                  <a href="/{{ p.rear.slug }}" class="tv-card-pattern-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
-                    <h3 class="tv-card-pattern">
-                      {{ p.rear.pattern_name or p.rear.display_name }}
-                    </h3>
-                  </a>
+                  <div class="tv-card-pattern-row">
+                    <a href="/{{ p.rear.slug }}" class="tv-card-pattern-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
+                      <h3 class="tv-card-pattern">
+                        {{ p.rear.pattern_name or p.rear.display_name }}
+                      </h3>
+                    </a>
+                    {% if p.rear.is_runflat or p.rear.runflat_text == 'Runflat' %}
+                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                    </span>
+                    {% endif %}
+                  </div>
 
                   <div class="tv-card-size-row">
                     <span class="tv-card-spec-text">{{ p.rear.full_size_spec }}</span>
@@ -780,14 +790,6 @@
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                       </svg>
                       <span>{{ p.rear.year or '2025' }}</span>
-                    </span>
-                  </div>
-
-                  <div class="tv-card-meta-row">
-                    <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                      {% if p.rear.is_runflat or p.rear.runflat_text == 'Runflat' %}
-                      <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                      {% endif %}
                     </span>
                   </div>
                 </div>
@@ -1003,26 +1005,35 @@
           <div class="product-bottom-detail">
           <!-- 3. Product Info Block -->
           <div class="tv-card-info-block">
-            <!-- Country of Origin (shown above the product title) -->
-            {% set origin_name = p.country_of_origin or 'USA' %}
-            {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
-            <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
-              {% if origin_code %}
-              <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
-              <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
-              {% else %}
-              <span>{{ origin_name }}</span>
+            <!-- Country of Origin (shown top-right) -->
+            <div class="tv-card-origin-row-wrap">
+              {% set origin_name = p.country_of_origin or 'USA' %}
+              {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+              <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                {% if origin_code %}
+                <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                {% else %}
+                <span>{{ origin_name }}</span>
+                {% endif %}
+              </span>
+            </div>
+
+            <!-- Product Pattern / Model Name (Left) & Run Flat (Right) -->
+            <div class="tv-card-pattern-row">
+              <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.pattern_name or p.display_name }}">
+                <h3 class="tv-card-pattern">
+                  {{ p.pattern_name or p.display_name }}
+                </h3>
+              </a>
+              {% if p.is_runflat or p.runflat_text == 'Runflat' %}
+              <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+              </span>
               {% endif %}
-            </span>
+            </div>
 
-            <!-- Product Pattern / Model Name (Brand name removed) -->
-            <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.pattern_name or p.display_name }}">
-              <h3 class="tv-card-pattern">
-                {{ p.pattern_name or p.display_name }}
-              </h3>
-            </a>
-
-            <!-- 3. Product Size -->
+            <!-- 3. Product Size (Left) & Year (Right) -->
             <div class="tv-card-size-row">
               <span class="tv-card-spec-text">{{ p.full_size_spec }}</span>
               <span class="tv-card-year-meta" title="Manufacturing Year">
@@ -1033,15 +1044,6 @@
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
                 <span>{{ p.year or '2025' }}</span>
-              </span>
-            </div>
-
-            <!-- 4. Runflat (country of origin and category moved elsewhere on the card) -->
-            <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                {% if p.is_runflat or p.runflat_text == 'Runflat' %}
-                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                {% endif %}
               </span>
             </div>
           </div>
