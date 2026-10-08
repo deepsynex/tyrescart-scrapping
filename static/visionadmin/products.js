@@ -40,6 +40,8 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
     selectedCsvFile: null,
     csvUploading: false,
     csvResult: null,
+    csvJobStatus: null,
+    csvPollTimer: null,
 
     resolveProductImage(img) {
       if (!img || !img.toString().trim()) {
@@ -1384,12 +1386,36 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       }
     },
 
-    openCsvModal() {
+    async openCsvModal() {
       this.csvModalOpen = true;
       this.selectedCsvFile = null;
       this.csvResult = null;
+      this.csvJobStatus = null;
+      this.csvUploading = false;
+      this.stopCsvPolling();
       const el = document.getElementById('prod-csv-file-input');
       if (el) el.value = '';
+
+      // Another admin/tab may already have an import running -- pick it up
+      // rather than letting this tab try to start a second one.
+      try {
+        const res = await fetch('/visionadmin/api/products/import-csv/status');
+        const data = await res.json();
+        if (data.success && data.status === 'running') {
+          this.csvUploading = true;
+          this.csvJobStatus = data;
+          this.pollCsvStatus();
+        }
+      } catch (err) {
+        console.error('CSV status check error:', err);
+      }
+    },
+
+    stopCsvPolling() {
+      if (this.csvPollTimer) {
+        clearInterval(this.csvPollTimer);
+        this.csvPollTimer = null;
+      }
     },
 
     async submitCsvUpload() {
@@ -1400,6 +1426,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
 
       this.csvUploading = true;
       this.csvResult = null;
+      this.csvJobStatus = null;
       const fd = new FormData();
       fd.append('file', this.selectedCsvFile);
 
@@ -1409,29 +1436,78 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
           body: fd
         });
         const data = await res.json();
-        this.csvResult = data;
-        if (data.success) {
-          if (data.extra_attributes && data.extra_attributes.length > 0) {
-            this.showToast(`Imported ${data.imported || 0} products. Notice: ${data.extra_attributes.length} unrecognized attribute(s) found.`, 'success');
-          } else {
-            this.showToast(data.message || `Successfully imported ${data.imported} products!`, 'success');
-            setTimeout(() => {
-              this.csvModalOpen = false;
-            }, 2000);
-          }
-          this.fetchProducts();
-          this.fetchBrands();
-          this.fetchCategories();
-        } else {
-          this.showToast(data.error || 'Failed to import CSV.', 'error');
+
+        if (res.status === 409) {
+          this.showToast(data.error || 'An import is already running.', 'error');
+          this.csvResult = { success: false, message: data.error };
+          this.csvUploading = false;
+          return;
         }
+
+        if (!data.success) {
+          this.showToast(data.error || 'Failed to start CSV import.', 'error');
+          this.csvResult = { success: false, message: data.error };
+          this.csvUploading = false;
+          return;
+        }
+
+        // Import accepted and running in the background -- poll for progress.
+        this.csvJobStatus = {
+          status: 'running',
+          total_rows: data.total_rows,
+          total_chunks: data.total_chunks,
+          current_chunk: 0,
+          processed_rows: 0,
+          message: data.message
+        };
+        this.pollCsvStatus();
       } catch (err) {
         console.error('CSV import error:', err);
-        this.csvResult = { success: false, message: 'Network error while importing CSV.' };
-        this.showToast('Network error while importing CSV.', 'error');
-      } finally {
+        this.csvResult = { success: false, message: 'Network error while starting the CSV import.' };
+        this.showToast('Network error while starting the CSV import.', 'error');
         this.csvUploading = false;
       }
+    },
+
+    pollCsvStatus() {
+      this.stopCsvPolling();
+      this.csvPollTimer = setInterval(async () => {
+        try {
+          const res = await fetch('/visionadmin/api/products/import-csv/status');
+          const data = await res.json();
+          if (!data.success) return;
+          this.csvJobStatus = data;
+
+          if (data.status === 'completed' || data.status === 'failed') {
+            this.stopCsvPolling();
+            this.csvUploading = false;
+            this.csvResult = {
+              success: data.status === 'completed',
+              message: data.message,
+              imported: data.imported,
+              updated: data.updated,
+              matched_attributes: data.matched_attributes,
+              extra_attributes: data.extra_attributes,
+              missing_attributes: data.missing_attributes,
+              errors: data.errors
+            };
+
+            if (data.status === 'completed') {
+              this.showToast(data.message || `Successfully imported ${data.imported} products!`, 'success');
+              if (!(data.extra_attributes && data.extra_attributes.length > 0)) {
+                setTimeout(() => { this.csvModalOpen = false; }, 2500);
+              }
+              this.fetchProducts();
+              this.fetchBrands();
+              this.fetchCategories();
+            } else {
+              this.showToast(data.message || 'CSV import failed.', 'error');
+            }
+          }
+        } catch (err) {
+          console.error('CSV status poll error:', err);
+        }
+      }, 1500);
     },
 
     showToast(message, type = 'success') {

@@ -4815,7 +4815,14 @@ def register_visionadmin_api_routes(app):
 
     @app.route('/visionadmin/api/products/import-csv', methods=['POST'])
     def visionadmin_api_import_products_csv():
-        """Import multiple products and hierarchical categories from CSV file."""
+        """
+        Starts a background, chunked import of a product CSV (max 50,000 rows,
+        processed 5,000 rows per chunk) and returns immediately. Only one import
+        may run at a time across the whole app; poll
+        GET /visionadmin/api/products/import-csv/status for progress.
+        """
+        from services import product_import_job
+
         try:
             if 'file' not in request.files:
                 return jsonify({'success': False, 'error': 'No file uploaded'}), 400
@@ -4823,28 +4830,38 @@ def register_visionadmin_api_routes(app):
             if not file or not file.filename:
                 return jsonify({'success': False, 'error': 'No file selected'}), 400
 
-            from services.product_importer import ProductImporter
             user_id = session.get('admin_user_id') or session.get('user_id') or 1
-            res = ProductImporter.import_csv(file.stream.read(), user_id=user_id)
-
-            if not res.get('success'):
-                return jsonify({'success': False, 'error': res.get('error', 'Import failed')}), 400
+            job_info = product_import_job.start_import(file.stream.read(), user_id=user_id)
 
             return jsonify({
                 'success': True,
-                'imported': res.get('imported', 0),
-                'updated': res.get('updated', 0),
-                'total_rows': res.get('total_rows', 0),
-                'matched_attributes': res.get('matched_attributes', []),
-                'extra_attributes': res.get('extra_attributes', []),
-                'missing_attributes': res.get('missing_attributes', []),
-                'warning': res.get('warning'),
-                'errors': res.get('errors', []),
-                'message': res.get('message') or f"Successfully processed {res.get('total_rows', 0)} products ({res.get('imported', 0)} imported, {res.get('updated', 0)} updated)!"
-            })
+                'status': 'started',
+                'total_rows': job_info['total_rows'],
+                'total_chunks': job_info['total_chunks'],
+                'chunk_size': job_info['chunk_size'],
+                'message': f"Import started: {job_info['total_rows']} rows in {job_info['total_chunks']} chunk(s) of {job_info['chunk_size']}."
+            }), 202
+        except product_import_job.ImportAlreadyRunningError:
+            return jsonify({
+                'success': False,
+                'error': 'A product CSV import is already running. Please wait for it to finish before starting another.'
+            }), 409
+        except product_import_job.ImportTooLargeError as e:
+            return jsonify({
+                'success': False,
+                'error': f'CSV has {e.row_count} rows, which exceeds the {product_import_job.MAX_ROWS} row limit. Please split it into smaller files.'
+            }), 400
+        except ValueError as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
         except Exception as e:
-            app.logger.exception(f"Error importing CSV: {e}")
+            app.logger.exception(f"Error starting CSV import: {e}")
             return jsonify({'success': False, 'error': f'Failed to process CSV: {str(e)}'}), 500
+
+    @app.route('/visionadmin/api/products/import-csv/status', methods=['GET'])
+    def visionadmin_api_import_products_csv_status():
+        """Returns the current (or most recently finished) import job's progress."""
+        from services import product_import_job
+        return jsonify({'success': True, **product_import_job.get_status()})
 
     @app.route('/visionadmin/api/products', methods=['GET'])
     @app.route('/visionadmin/api/v1/products', methods=['GET'])
