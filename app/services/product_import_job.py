@@ -146,8 +146,13 @@ def _run_job(fieldnames, chunks, user_id):
                 message=f"Importing chunk {idx} of {total_chunks} ({len(chunk_rows)} rows)...",
             )
 
+            chunk_base = processed_rows
+
+            def _on_row_progress(rows_done_in_chunk, _chunk_total, _base=chunk_base):
+                _set_state(processed_rows=_base + rows_done_in_chunk)
+
             chunk_csv = _rows_to_csv(fieldnames, chunk_rows)
-            result = ProductImporter.import_csv(chunk_csv, user_id=user_id)
+            result = ProductImporter.import_csv(chunk_csv, user_id=user_id, progress_callback=_on_row_progress)
 
             if not result.get("success"):
                 all_errors.append(f"Chunk {idx}: {result.get('error', 'Import failed')}")

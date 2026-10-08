@@ -116,10 +116,14 @@ class ProductImporter:
         return matched_headers, missing_attributes, extra_headers
 
     @classmethod
-    def import_csv(cls, file_content, user_id: int = 1) -> dict:
+    def import_csv(cls, file_content, user_id: int = 1, progress_callback=None) -> dict:
         """
         Imports products of ANY type (Batteries, Wheels, Tyres, etc.) from CSV.
         Supports bytes, str, or file-like stream.
+
+        progress_callback, if given, is called as progress_callback(rows_done, total_rows)
+        after every row so a caller can report fine-grained progress rather than only
+        knowing when the whole call (and therefore a whole chunk) has finished.
         """
         if isinstance(file_content, bytes):
             text = file_content.decode('utf-8-sig', errors='replace')
@@ -489,6 +493,12 @@ class ProductImporter:
 
             except Exception as ex:
                 errors.append(f"Row {idx} ({row.get('sku')}): {str(ex)}")
+
+            if progress_callback:
+                try:
+                    progress_callback(idx - 1, len(rows))
+                except Exception:
+                    pass
 
         warning_msg = None
         if extra_headers:
