@@ -8,13 +8,13 @@
   <script>
     window.VISION_STORE = {
       id: {{ (current_store.id if current_store else None) | tojson }},
-    code: { { (current_store.code if current_store else '') | tojson } },
-    name: { { (current_store.name if current_store else '') | tojson } },
-    website_id: { { (current_website.id if current_website else None) | tojson } },
-    store_view_id: { { (current_store_view.id if current_store_view else None) | tojson } },
-    store_view_name: { { (current_store_view.name if current_store_view else '') | tojson } },
-    language_code: { { (current_language or 'en') | tojson } },
-    direction: 'ltr',
+      code: {{ (current_store.code if current_store else '') | tojson }},
+      name: {{ (current_store.name if current_store else '') | tojson }},
+      website_id: {{ (current_website.id if current_website else None) | tojson }},
+      store_view_id: {{ (current_store_view.id if current_store_view else None) | tojson }},
+      store_view_name: {{ (current_store_view.name if current_store_view else '') | tojson }},
+      language_code: {{ (current_language or 'en') | tojson }},
+      direction: 'ltr',
       is_rtl: false
     };
   </script>
