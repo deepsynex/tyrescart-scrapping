@@ -627,7 +627,7 @@
                       </template>
 
                       <!-- 13. Regular Text Input (Item Code, Display Name, Load/Speed Index, etc.) -->
-                      <template x-if="(attr.type === 'text' || attr.type === 'string' || attr.type === 'varchar') && attr.code !== 'sku' && attr.code !== 'product_name' && attr.code !== 'url_key' && attr.code !== 'price' && attr.code !== 'price_per_item' && attr.code !== 'weight'">
+                      <template x-if="(attr.type === 'text' || attr.type === 'string' || attr.type === 'varchar') && attr.code !== 'sku' && attr.code !== 'product_name' && attr.code !== 'name' && attr.code !== 'url_key' && attr.code !== 'price' && attr.code !== 'price_per_item' && attr.code !== 'weight'">
                         <input 
                           type="text" 
                           :value="form.dynamic_attributes[attr.code] !== undefined && form.dynamic_attributes[attr.code] !== null ? form.dynamic_attributes[attr.code] : (attr.code === 'display_name' ? form.display_name : '')"

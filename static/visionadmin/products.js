@@ -1012,7 +1012,9 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       if ((p.display_name || p.name_en) && !dynAttrs.product_name) dynAttrs.product_name = p.display_name || p.name_en;
       if ((p.display_name || p.name_en) && !dynAttrs.display_name) dynAttrs.display_name = p.display_name || p.name_en;
       if (p.slug && !dynAttrs.url_key) dynAttrs.url_key = p.slug;
-      if (p.status && !dynAttrs.status) dynAttrs.status = p.status;
+      // Always derive from the real status column, never from a raw scraped
+      // attributes_json value (e.g. "Yes"/"No"), which is not a valid enum value.
+      dynAttrs.status = p.status === 'active' ? 'active' : 'inactive';
       if (p.price != null && dynAttrs.price === undefined) dynAttrs.price = p.price;
       if (p.price != null && dynAttrs.price_per_item === undefined) dynAttrs.price_per_item = p.price;
       if (p.sale_price != null && dynAttrs.sale_price === undefined) dynAttrs.sale_price = p.sale_price;
@@ -1221,9 +1223,10 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
           payload.url_key = this.form.slug;
           payload.slug = this.form.slug;
         }
-        if (this.form.dynamic_attributes && this.form.dynamic_attributes.status) {
-          payload.status = this.form.dynamic_attributes.status;
-        }
+        // form.status is always the authoritative 'active'/'inactive' value (driven by the
+        // Enable Product switch); dynamic_attributes.status can hold a raw scraped string
+        // like "Yes"/"No" from attributes_json, which must never overwrite it here.
+        payload.status = this.form.status === 'active' ? 'active' : 'inactive';
         if (this.form.dynamic_attributes && this.form.dynamic_attributes.price) {
           payload.price = this.form.dynamic_attributes.price;
         }

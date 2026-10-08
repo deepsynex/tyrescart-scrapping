@@ -2072,9 +2072,9 @@ def _render_product_listing(locale, filter_path=None):
         active_sizes_match.add(s_slug_r.upper())
     active_types = [t.lower() for t in (combined_args.getlist('type') or combined_args.getlist('tire_type'))]
     active_runflat = [r.lower() for r in (combined_args.getlist('runflat') or combined_args.getlist('run_flat') or combined_args.getlist('is_runflat'))]
-    filter_runflat_count = 0
+    filter_runflat_count = catalog_data.get('facets', {}).get('runflat', 0)
     active_ev_tyre = [e.lower() for e in (combined_args.getlist('ev_tyre') or combined_args.getlist('ev') or combined_args.getlist('is_ev') or combined_args.getlist('ev_rated')) if e.strip()]
-    filter_ev_tyre_count = 0
+    filter_ev_tyre_count = catalog_data.get('facets', {}).get('ev_tyre', 0)
     active_max_price = combined_args.get('max_price')
     active_min_price = combined_args.get('min_price')
     active_sort = combined_args.get('sort') or 'price-asc'
@@ -2501,6 +2501,7 @@ def _render_product_detail(slug_or_id, locale=None):
                 LEFT JOIN brands b ON p.brand_id = b.id
                 WHERE (p.slug = %s OR p.sku = %s OR p.id = %s OR p.slug LIKE %s)
                   AND p.deleted_at IS NULL
+                  AND p.status = 'active'
                 ORDER BY (p.slug = %s) DESC, p.id ASC
                 LIMIT 1
             """, [clean_s, clean_s, int(slug_or_id) if is_digit_id else -1, f"{clean_s}%", clean_s])
