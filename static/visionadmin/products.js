@@ -41,7 +41,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
     csvUploading: false,
     csvResult: null,
     csvJobStatus: null,
-    csvPollTimer: null,
+    csvEventSource: null,
 
     resolveProductImage(img) {
       if (!img || !img.toString().trim()) {
@@ -1412,9 +1412,9 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
     },
 
     stopCsvPolling() {
-      if (this.csvPollTimer) {
-        clearInterval(this.csvPollTimer);
-        this.csvPollTimer = null;
+      if (this.csvEventSource) {
+        this.csvEventSource.close();
+        this.csvEventSource = null;
       }
     },
 
@@ -1471,43 +1471,65 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
 
     pollCsvStatus() {
       this.stopCsvPolling();
-      this.csvPollTimer = setInterval(async () => {
+      const es = new EventSource('/visionadmin/api/products/import-csv/events');
+      this.csvEventSource = es;
+
+      es.onmessage = (evt) => {
+        let data;
         try {
-          const res = await fetch('/visionadmin/api/products/import-csv/status');
-          const data = await res.json();
-          if (!data.success) return;
-          this.csvJobStatus = data;
-
-          if (data.status === 'completed' || data.status === 'failed') {
-            this.stopCsvPolling();
-            this.csvUploading = false;
-            this.csvResult = {
-              success: data.status === 'completed',
-              message: data.message,
-              imported: data.imported,
-              updated: data.updated,
-              matched_attributes: data.matched_attributes,
-              extra_attributes: data.extra_attributes,
-              missing_attributes: data.missing_attributes,
-              errors: data.errors
-            };
-
-            if (data.status === 'completed') {
-              this.showToast(data.message || `Successfully imported ${data.imported} products!`, 'success');
-              if (!(data.extra_attributes && data.extra_attributes.length > 0)) {
-                setTimeout(() => { this.csvModalOpen = false; }, 2500);
-              }
-              this.fetchProducts();
-              this.fetchBrands();
-              this.fetchCategories();
-            } else {
-              this.showToast(data.message || 'CSV import failed.', 'error');
-            }
-          }
+          data = JSON.parse(evt.data);
         } catch (err) {
-          console.error('CSV status poll error:', err);
+          return;
         }
-      }, 1500);
+        this.csvJobStatus = data;
+
+        if (data.status === 'completed' || data.status === 'failed') {
+          this.stopCsvPolling();
+          this.csvUploading = false;
+          this.csvResult = {
+            success: data.status === 'completed',
+            message: data.message,
+            imported: data.imported,
+            updated: data.updated,
+            matched_attributes: data.matched_attributes,
+            extra_attributes: data.extra_attributes,
+            missing_attributes: data.missing_attributes,
+            errors: data.errors
+          };
+
+          if (data.status === 'completed') {
+            this.showToast(data.message || `Successfully imported ${data.imported} products!`, 'success');
+            if (!(data.extra_attributes && data.extra_attributes.length > 0)) {
+              setTimeout(() => { this.csvModalOpen = false; }, 2500);
+            }
+            this.fetchProducts();
+            this.fetchBrands();
+            this.fetchCategories();
+          } else {
+            this.showToast(data.message || 'CSV import failed.', 'error');
+          }
+        }
+      };
+
+      es.onerror = () => {
+        // Connection dropped (e.g. network blip) -- fall back to a one-off
+        // status check rather than leaving the UI stuck mid-import.
+        this.stopCsvPolling();
+        if (this.csvUploading) {
+          fetch('/visionadmin/api/products/import-csv/status')
+            .then(res => res.json())
+            .then(data => {
+              if (!data.success) return;
+              this.csvJobStatus = data;
+              if (data.status === 'running') {
+                this.pollCsvStatus();
+              } else {
+                this.csvUploading = false;
+              }
+            })
+            .catch(() => { this.csvUploading = false; });
+        }
+      };
     },
 
     showToast(message, type = 'success') {

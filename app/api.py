@@ -4863,6 +4863,42 @@ def register_visionadmin_api_routes(app):
         from services import product_import_job
         return jsonify({'success': True, **product_import_job.get_status()})
 
+    @app.route('/visionadmin/api/products/import-csv/events', methods=['GET'])
+    def visionadmin_api_import_products_csv_events():
+        """
+        Server-Sent Events stream of the running import job's progress, so the
+        admin UI gets pushed updates instead of polling /status on an interval.
+        Emits one event per status change (plus an occasional keepalive ping),
+        then a final event and closes once the job completes or fails.
+        """
+        from services import product_import_job
+
+        def event_stream():
+            last_sent = None
+            try:
+                while True:
+                    status = product_import_job.get_status()
+                    if status != last_sent:
+                        yield f"data: {json.dumps(status)}\n\n"
+                        last_sent = status
+                        if status.get('status') in ('completed', 'failed', 'idle'):
+                            break
+                    else:
+                        yield ": ping\n\n"
+                    time.sleep(0.5)
+            except GeneratorExit:
+                pass
+
+        return Response(
+            stream_with_context(event_stream()),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'X-Accel-Buffering': 'no',
+                'Connection': 'keep-alive',
+            }
+        )
+
     @app.route('/visionadmin/api/products', methods=['GET'])
     @app.route('/visionadmin/api/v1/products', methods=['GET'])
     def visionadmin_api_list_products():
