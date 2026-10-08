@@ -4899,6 +4899,59 @@ def register_visionadmin_api_routes(app):
             }
         )
 
+    @app.route('/visionadmin/api/products/export-csv', methods=['GET', 'POST'])
+    def visionadmin_api_export_products_csv():
+        """
+        Exports products in Magento 2 catalog CSV format (identical 138-column structure of
+        C:\\Users\\admin\\Downloads\\export_catalog_product_20261008_100327.csv).
+        Supports exporting selected products by ID or filtering by active query params.
+        """
+        from datetime import datetime, timezone
+        from services.product_exporter import ProductExporter
+
+        ids_param = request.args.get('ids') or (request.json.get('ids') if request.is_json else None)
+        product_ids = None
+        if ids_param:
+            if isinstance(ids_param, str):
+                product_ids = [i.strip() for i in ids_param.split(',') if i.strip().isdigit()]
+            elif isinstance(ids_param, (list, tuple)):
+                product_ids = [int(i) for i in ids_param if str(i).isdigit()]
+
+        filters = {
+            'search': request.args.get('search'),
+            'brand_id': request.args.get('brand_id'),
+            'category_id': request.args.get('category_id'),
+            'status': request.args.get('status'),
+            'stock_status': request.args.get('stock_status'),
+            'vehicle_type': request.args.get('vehicle_type'),
+            'attribute_set_id': request.args.get('attribute_set_id'),
+            'trash': request.args.get('trash'),
+            'tyres_category': request.args.get('tyres_category'),
+            'parts_category': request.args.get('parts_category'),
+            'run_flat': request.args.get('run_flat'),
+            'ev_rated': request.args.get('ev_rated'),
+            'year': request.args.get('year'),
+            'country_of_origin': request.args.get('country_of_origin'),
+        }
+
+        timestamp_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"export_catalog_product_{timestamp_str}.csv"
+
+        def stream_csv():
+            for chunk in ProductExporter.generate_csv_stream(product_ids=product_ids, filters=filters):
+                yield chunk
+
+        return Response(
+            stream_with_context(stream_csv()),
+            mimetype='text/csv; charset=utf-8',
+            headers={
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        )
+
     @app.route('/visionadmin/api/products', methods=['GET'])
     @app.route('/visionadmin/api/v1/products', methods=['GET'])
     def visionadmin_api_list_products():

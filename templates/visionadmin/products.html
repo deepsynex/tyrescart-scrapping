@@ -35,6 +35,17 @@
         <span>Import CSV</span>
       </button>
 
+      <button 
+        type="button" 
+        @click="exportCsv()" 
+        :disabled="exporting"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer active:scale-95 disabled:opacity-50"
+        title="Export catalog products to Magento 2 CSV"
+      >
+        <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span x-text="exporting ? 'Exporting...' : 'Export CSV'"></span>
+      </button>
+
       <a 
         href="/visionadmin/products/create" 
         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#4B237B] hover:bg-[#2b1247] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer active:scale-95"
@@ -463,6 +474,7 @@
       <div class="flex items-center gap-2">
         <select x-model="bulkActionChoice" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-indigo-300 text-indigo-900 focus:ring-2 focus:ring-indigo-400 outline-hidden">
           <option value="">Select Bulk Action...</option>
+          <option value="export">Export Selected (CSV)</option>
           <template x-if="currentTab !== 'trash'">
             <optgroup label="Status &amp; Stock">
               <option value="in_stock">Mark as In Stock</option>

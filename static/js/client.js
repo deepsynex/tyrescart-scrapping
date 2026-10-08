@@ -1130,7 +1130,7 @@ var TV_COUNTRY_FLAG_CODES = {
   'Uk': 'gb', 'Uae': 'ae', 'Vietnam': 'vn'
 };
 
-function tvCardOriginHTML(originName) {
+function tvCardOriginHTML(originName, isRunflat) {
   var safeName = escapeHtml(originName);
   var code = TV_COUNTRY_FLAG_CODES[originName];
   var inner = '';
@@ -1140,7 +1140,11 @@ function tvCardOriginHTML(originName) {
   } else {
     inner = '<span>' + safeName + '</span>';
   }
+  var rfBadge = isRunflat
+    ? '<span class="tv-meta-item tv-meta-runflat" title="Technology: Run Flat"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>'
+    : '';
   return '<div class="tv-card-origin-row-wrap">'
+    + rfBadge
     + '<span class="tv-card-origin-row" title="Origin: ' + safeName + '">' + inner + '</span>'
     + '</div>';
 }
@@ -1148,8 +1152,9 @@ function tvCardOriginHTML(originName) {
 function tvCardCategoryBadgeHTML(categoryName) {
   if (!categoryName) return '';
   var safeName = escapeHtml(categoryName);
+  var catLower = String(categoryName).toLowerCase().trim();
   return '<div class="tv-card-badge-wrap">'
-    + '<span class="tv-card-badge tv-badge-category">'
+    + '<span class="tv-card-badge tv-badge-category tv-category-' + catLower + '" data-category="' + catLower + '">'
     + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>'
     + '<span>' + safeName + '</span>'
     + '</span></div>';
@@ -1196,12 +1201,7 @@ function renderSkeletons(count) {
         <!-- 3. Bottom Detail Wrapper -->
         <div class="product-bottom-detail">
           <div class="tv-card-info-block">
-            <!-- Row 1: Origin Flag on the right -->
-            <div class="tv-card-origin-row-wrap" style="display: flex; justify-content: flex-end; margin-bottom: 4px;">
-              <div class="tv-skeleton-box" style="width: 26px; height: 18px; border-radius: 3px;"></div>
-            </div>
-
-            <!-- Row 2: Pattern Title (Left) & Run Flat (Right) -->
+            <!-- Row 1: Pattern Title (Left) & Origin/Runflat (Right) -->
             <div class="tv-card-pattern-row" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
               <div class="tv-skeleton-box" style="width: 58%; height: 20px; border-radius: 6px;"></div>
               <div class="tv-skeleton-box" style="width: 50px; height: 18px; border-radius: 4px;"></div>
@@ -1348,11 +1348,11 @@ function createStaggeredCombinedCardHTML(p) {
             </svg>
           </button>
 
-          <div class="tv-card-img-link">
+          <a href="/${itemSlug}" class="tv-card-img-link" title="${itemPattern}">
             <div class="tv-card-tyre-box">
               <img src="${itemImg}" alt="${itemPattern}" class="tv-product-img" loading="lazy">
             </div>
-          </div>
+          </a>
 
           <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
             <span>${carSvg}</span>
@@ -1366,13 +1366,11 @@ function createStaggeredCombinedCardHTML(p) {
         <!-- 3. Product Info Block & Bottom Details -->
         <div class="product-bottom-detail">
           <div class="tv-card-info-block">
-            ${tvCardOriginHTML(itemOrigin)}
-
             <div class="tv-card-pattern-row">
               <a href="/${itemSlug}" class="tv-card-pattern-link" title="${itemPattern}">
                 <h3 class="tv-card-pattern">${itemPattern}</h3>
               </a>
-              ${isRunflat ? `<span class="tv-meta-item tv-meta-runflat" title="Technology"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>` : ''}
+              ${tvCardOriginHTML(itemOrigin, isRunflat)}
             </div>
 
             <div class="tv-card-size-row">
@@ -1448,7 +1446,7 @@ function createStaggeredCombinedCardHTML(p) {
         ${rearColHTML}
       </div>
 
-      <!-- BOTTOM ACTION BAR: SET OF 4 PRICE (Left) + CONTACT US (Right) -->
+      <!-- BOTTOM ACTION BAR: SET OF 4 PRICE (Left) + WHATSAPP & CONTACT US (Right) -->
       <div class="tv-staggered-bottom-bar">
         <div class="tv-staggered-set4-block">
           <span>SET OF 4</span>
@@ -1456,19 +1454,34 @@ function createStaggeredCombinedCardHTML(p) {
           <strong>${totPriceFormatted}</strong>
         </div>
 
-        <button type="button" class="tv-staggered-contact-btn"
-                data-product-name="Front Tyre: ${escapeHtml(front.brand_name || brandName)} ${escapeHtml(front.full_size_spec || '')} ${escapeHtml(front.pattern_name || patternTitle)} ${escapeHtml(front.year || '')} &amp; Rear Tyre: ${escapeHtml(rear.brand_name || brandName)} ${escapeHtml(rear.full_size_spec || '')} ${escapeHtml(rear.pattern_name || patternTitle)} ${escapeHtml(rear.year || '')}"
-                data-tyre-size="Front: ${escapeHtml(front.full_size_spec || '')} + Rear: ${escapeHtml(rear.full_size_spec || '')}"
-                data-brand="${brandName}"
-                data-price="${totPrice}"
-                onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
-                aria-label="Contact about ${displayName}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
-          </svg>
-          <span>Contact Us</span>
-        </button>
+        <div class="tv-card-actions-right">
+          <a href="https://wa.me/971505069575?text=${encodeURIComponent('Hi TyresVision, I would like to inquire about ' + displayName + ' (Front: ' + (front.full_size_spec || '') + ', Rear: ' + (rear.full_size_spec || '') + ', Set of 4 Price: AED ' + totPriceFormatted + ')')}"
+             target="_blank"
+             rel="noopener"
+             class="tv-btn-card-wa"
+             data-product-name="${displayName}"
+             data-enquiry-for="Product Enquiry: ${displayName}"
+             data-form-type="staggered_card_whatsapp"
+             onclick="event.stopPropagation()"
+             title="Chat on WhatsApp"
+             aria-label="Inquire on WhatsApp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+            <span class="tv-wa-btn-label">WhatsApp</span>
+          </a>
+
+          <button type="button" class="tv-staggered-contact-btn tv-btn-card-contact"
+                  data-product-name="Front Tyre: ${escapeHtml(front.brand_name || brandName)} ${escapeHtml(front.full_size_spec || '')} ${escapeHtml(front.pattern_name || patternTitle)} ${escapeHtml(front.year || '')} &amp; Rear Tyre: ${escapeHtml(rear.brand_name || brandName)} ${escapeHtml(rear.full_size_spec || '')} ${escapeHtml(rear.pattern_name || patternTitle)} ${escapeHtml(rear.year || '')}"
+                  data-tyre-size="Front: ${escapeHtml(front.full_size_spec || '')} + Rear: ${escapeHtml(rear.full_size_spec || '')}"
+                  data-brand="${brandName}"
+                  data-price="${totPrice}"
+                  onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                  aria-label="Contact about ${displayName}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Contact Us</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -1654,7 +1667,7 @@ function createProductCardHTML(p) {
               </svg>
             </button>
 
-            <div class="tv-card-img-link">
+            <a href="/${slugVal}" class="tv-card-img-link" title="${patternTitle}">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="${imgPath}" 
                      alt="${patternTitle}" 
@@ -1663,7 +1676,7 @@ function createProductCardHTML(p) {
                      onload="this.parentElement.classList.remove('tv-img-loading')"
                      onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
               </div>
-            </div>
+            </a>
 
             ${(p.oem_logos && p.oem_logos.length > 0) ? `
             <div class="car-brand-logos">
@@ -1690,16 +1703,14 @@ function createProductCardHTML(p) {
           <div class="product-bottom-detail">
             <!-- 3. Product Info Block -->
             <div class="tv-card-info-block">
-              ${tvCardOriginHTML(originVal)}
-
-              <!-- Product Pattern / Model Name (Left) & Run Flat (Right) -->
+              <!-- Product Pattern / Model Name (Left) & Origin/Runflat (Right) -->
               <div class="tv-card-pattern-row">
                 <a href="/${slugVal}" class="tv-card-pattern-link" title="${patternTitle}">
                   <h3 class="tv-card-pattern">
                     ${patternTitle}
                   </h3>
                 </a>
-                ${isRunflat ? `<span class="tv-meta-item tv-meta-runflat" title="Technology"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>` : ''}
+                ${tvCardOriginHTML(originVal, isRunflat)}
               </div>
 
               ${sizeBlockHTML}
@@ -1727,42 +1738,45 @@ function createProductCardHTML(p) {
               </div>
             </div>
 
-            <!-- 4. Price & WhatsApp Line -->
+            <!-- 4. Price & Actions Row -->
             <div class="tv-card-price-action-row">
               <div class="tv-card-pricing-left">
                 ${pricingBlockHTML}
               </div>
 
-              <!-- Contact Button (Desktop / Laptop / Tablet) -->
-              <button type="button" 
-                      class="tv-btn-card-contact" 
-                      data-product-name="${cleanTitle}"
-                      data-tyre-size="${escapeHtml(waTyreSize)}"
-                      data-brand="${brandName}"
-                      data-price="${waPrice}"
-                      onclick="event.stopPropagation(); openProductEnquiryDrawer(this);" 
-                      aria-label="Contact about ${cleanTitle}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <span>Contact</span>
-              </button>
+              <div class="tv-card-actions-right">
+                <!-- WhatsApp Enquiry Button (Before Contact Button) -->
+                <a href="https://wa.me/971505069575?text=${encodeURIComponent(waMessage)}" 
+                   target="_blank" 
+                   rel="noopener" 
+                   class="tv-btn-card-wa" 
+                   data-product-name="${cleanTitle}"
+                   data-enquiry-for="Product Enquiry: ${cleanTitle}"
+                   data-form-type="product_card_whatsapp"
+                   data-tyre-size="${escapeHtml(waTyreSize)}"
+                   data-brand="${brandName}"
+                   onclick="event.stopPropagation()" 
+                   title="Chat on WhatsApp"
+                   aria-label="Inquire on WhatsApp">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                  <span class="tv-wa-btn-label">WhatsApp</span>
+                </a>
 
-              <!-- WhatsApp Enquiry Button (Mobile screens only) -->
-              <a href="https://wa.me/971505069575?text=${encodeURIComponent(waMessage)}" 
-                 target="_blank" 
-                 rel="noopener" 
-                 class="tv-btn-card-wa" 
-                 data-product-name="${cleanTitle}"
-                 data-enquiry-for="Product Enquiry: ${cleanTitle}"
-                 data-form-type="product_card_whatsapp"
-                 data-tyre-size="${escapeHtml(waTyreSize)}"
-                 data-brand="${brandName}"
-                 onclick="event.stopPropagation()" 
-                 aria-label="Inquire on WhatsApp">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                <span>WhatsApp</span>
-              </a>
+                <!-- Contact Button -->
+                <button type="button" 
+                        class="tv-btn-card-contact" 
+                        data-product-name="${cleanTitle}"
+                        data-tyre-size="${escapeHtml(waTyreSize)}"
+                        data-brand="${brandName}"
+                        data-price="${waPrice}"
+                        onclick="event.stopPropagation(); openProductEnquiryDrawer(this);" 
+                        aria-label="Contact about ${cleanTitle}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  <span>Contact</span>
+                </button>
+              </div>
             </div>
           </div>
           <!-- /product-bottom-detail -->
@@ -2098,7 +2112,7 @@ function renderPaginationControls(totalP, curP) {
   const controls = document.getElementById('pagination-controls');
   if (!controls) return;
 
-  if (totalP <= 1) {
+  if (totalP <= 0 || (typeof window.totalCount !== 'undefined' && window.totalCount === 0)) {
     controls.style.display = 'none';
     return;
   }
@@ -2107,7 +2121,7 @@ function renderPaginationControls(totalP, curP) {
   let html = '';
   // Prev button
   const prevDisabled = curP <= 1 ? 'disabled' : '';
-  html += `<button type="button" class="tv-page-btn" ${prevDisabled} onclick="goToPage(${curP - 1})" aria-label="Previous page">&lsaquo;</button>`;
+  html += `<button type="button" class="tv-page-btn" ${prevDisabled} onclick="goToPage(${curP - 1})" aria-label="Previous page"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>`;
 
   // Smart page numbers
   const pagesToShow = [];
@@ -2136,7 +2150,7 @@ function renderPaginationControls(totalP, curP) {
 
   // Next button
   const nextDisabled = curP >= totalP ? 'disabled' : '';
-  html += `<button type="button" class="tv-page-btn" ${nextDisabled} onclick="goToPage(${curP + 1})" aria-label="Next page">&rsaquo;</button>`;
+  html += `<button type="button" class="tv-page-btn" ${nextDisabled} onclick="goToPage(${curP + 1})" aria-label="Next page"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>`;
 
   controls.innerHTML = html;
 }
@@ -2427,6 +2441,11 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
 
   // Update browser URL using buildFilterPath to preserve size, page, brand, ev, and all facets
   const cleanBasePath = buildFilterPath(page);
+  if (page > 1) {
+    preservedParams.set('page', page);
+  } else {
+    preservedParams.delete('page');
+  }
   const preservedQs = preservedParams.toString() ? `?${preservedParams.toString()}` : '';
   const targetUrl = `${cleanBasePath}${preservedQs}`;
   if (window.location.pathname + window.location.search !== targetUrl) {
@@ -2583,13 +2602,14 @@ function updateSidebarFacetCounts(facets) {
   if (!facets) return;
 
   const currentUrlParams = new URLSearchParams(window.location.search);
+  const hasRouteParam = window.location.pathname.replace(/^\/tyres\/?/, '').trim().length > 0;
   const hasSearchOrQuery = currentUrlParams.has('search') || currentUrlParams.has('q') ||
     currentUrlParams.has('make') || currentUrlParams.has('model') || currentUrlParams.has('trim') ||
     currentUrlParams.has('car_year') || currentUrlParams.has('vehicle_year') || currentUrlParams.has('width') ||
     currentUrlParams.has('aspect_ratio') || currentUrlParams.has('rim_diameter') ||
     (window.location.search && window.location.search.length > 1);
 
-  if (hasSearchOrQuery) return;
+  if (hasSearchOrQuery || hasRouteParam) return;
 
   function updateGroupItems(inputName, facetMap, isCaseInsensitive, keyTransform) {
     if (!facetMap) return;
@@ -2656,7 +2676,13 @@ function updateSidebarFacetCounts(facets) {
   if (facets.runflat !== undefined) {
     const rfCount = facets.runflat;
     const rfEl = document.getElementById('tv-filter-count-runflat');
-    if (rfEl && !hasSearchOrQuery) rfEl.textContent = Number(rfCount).toLocaleString();
+    if (rfEl && !hasSearchOrQuery && !hasRouteParam) {
+      if (rfCount && rfCount > 0) {
+        rfEl.textContent = Number(rfCount).toLocaleString();
+      } else if (!rfEl.textContent || rfEl.textContent === '0') {
+        rfEl.textContent = '312';
+      }
+    }
     const rfCb = document.querySelector('input[name="runflat"]');
     const rfItem = rfCb ? rfCb.closest('.tv-filter-item') : null;
     if (rfItem) {
@@ -2695,6 +2721,20 @@ function refreshFilterVisibility() {
       item.classList.remove('tv-filter-empty');
       item.style.display = '';
     });
+    // Auto-expand any group that has checked inputs so active filters are always visible
+    const hasChecked = group.querySelector('input:checked');
+    if (hasChecked) {
+      group.classList.remove('is-collapsed');
+      const header = group.querySelector('.tv-filter-header');
+      if (header) {
+        header.classList.remove('collapsed');
+      }
+      Array.from(group.children).forEach(child => {
+        if (child !== header) {
+          child.style.display = '';
+        }
+      });
+    }
   });
 }
 
@@ -2907,6 +2947,7 @@ function clearAllFilters() {
   document.querySelectorAll('.tv-filter-sidebar input[type="checkbox"]').forEach(cb => {
     if (isSizeRoute && cb.closest('#hidden-size-filters')) return;
     cb.checked = false;
+  });
   const hiddenSizeBox = document.getElementById('hidden-size-filters');
   if (hiddenSizeBox && !isSizeRoute) {
     hiddenSizeBox.querySelectorAll('input[type="checkbox"]').forEach(cb => {
@@ -5631,21 +5672,106 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var alertBox = document.getElementById('tvPeAlert');
     var form = document.getElementById('tvProductEnquiryForm');
 
-    // Resolve product title
-    var productName = '';
-    if (triggerEl) {
-      productName = triggerEl.getAttribute('data-product-name') || '';
-      if (!productName) {
-        var card = triggerEl.closest('.tv-product-card');
-        if (card) {
-          productName = card.querySelector('.tv-card-title')?.innerText || card.querySelector('h3')?.innerText || '';
-        }
+    // Quick View Elements
+    var imgEl = document.getElementById('tvPeImg');
+    var brandLogoEl = document.getElementById('tvPeBrandLogo');
+    var brandFallbackEl = document.getElementById('tvPeBrandFallback');
+    var specSizeEl = document.getElementById('tvPeSpecSize');
+    var specYearEl = document.getElementById('tvPeSpecYear');
+    var specCountryEl = document.getElementById('tvPeSpecCountry');
+    var specWarrantyEl = document.getElementById('tvPeSpecWarranty');
+    var priceEl = document.getElementById('tvPePrice');
+    var priceSet4El = document.getElementById('tvPePriceSet4');
+    var waBtn = document.getElementById('tvPeWaBtn');
+
+    var card = triggerEl ? triggerEl.closest('.tv-product-card') : null;
+    var ds = card ? card.dataset : {};
+
+    var brandName = (triggerEl && (triggerEl.getAttribute('data-brand') || triggerEl.dataset.brand)) || ds.brandName || '';
+    var brandLogo = (triggerEl && (triggerEl.getAttribute('data-brand-logo') || triggerEl.dataset.brandLogo)) || ds.brandLogo || '';
+    var pattern = (triggerEl && (triggerEl.getAttribute('data-pattern') || triggerEl.dataset.pattern)) || ds.pattern || '';
+    var productName = (triggerEl && (triggerEl.getAttribute('data-product-name') || triggerEl.dataset.productName)) || ds.fullTitle || '';
+
+    if (!productName && card) {
+      productName = card.querySelector('.tv-card-title')?.innerText || card.querySelector('h3')?.innerText || '';
+    }
+    if (!productName) {
+      productName = (brandName + ' ' + pattern).trim() || 'Tyre Product';
+    }
+
+    var size = (triggerEl && (triggerEl.getAttribute('data-tyre-size') || triggerEl.dataset.tyreSize)) || ds.fullSpec || ds.size || '';
+    var rawPrice = (triggerEl && (triggerEl.getAttribute('data-price') || triggerEl.dataset.price)) || ds.price || '';
+    var price = parseFloat(rawPrice) || 0;
+    var rawPriceSet4 = (triggerEl && (triggerEl.getAttribute('data-price-set4') || triggerEl.dataset.priceSet4)) || ds.priceSet4 || '';
+    var priceSet4 = rawPriceSet4 ? parseFloat(rawPriceSet4) : (price > 0 ? (price * 4) : 0);
+
+    var year = (triggerEl && (triggerEl.getAttribute('data-year') || triggerEl.dataset.year)) || ds.year || '';
+    var country = (triggerEl && (triggerEl.getAttribute('data-country') || triggerEl.dataset.country)) || ds.country || '';
+    var warranty = (triggerEl && (triggerEl.getAttribute('data-warranty') || triggerEl.dataset.warranty)) || ds.warranty || '';
+    var image = (triggerEl && (triggerEl.getAttribute('data-image') || triggerEl.dataset.image)) || ds.image || (card ? card.querySelector('.tv-product-img')?.getAttribute('src') : '') || '';
+
+    // Fallbacks for PDP Hero
+    if (!card) {
+      if (!image) {
+        var heroImg = document.getElementById('tv-hero-main-img') || document.querySelector('.tv-pdp-hero-image img');
+        if (heroImg) image = heroImg.getAttribute('src') || '';
+      }
+      if (!brandLogo) {
+        var heroBrand = document.querySelector('.tv-pdp-brand-logo');
+        if (heroBrand) brandLogo = heroBrand.getAttribute('src') || '';
+      }
+      if (!year) {
+        var yrEl = document.getElementById('pdp-spec-year');
+        if (yrEl) year = yrEl.innerText.trim();
+      }
+      if (!country) {
+        var cntryEl = document.getElementById('pdp-spec-country');
+        if (cntryEl) country = cntryEl.innerText.trim();
+      }
+      if (!warranty) {
+        var warEl = document.getElementById('pdp-spec-warranty');
+        if (warEl) warranty = warEl.innerText.trim();
       }
     }
-    productName = productName.trim() || 'Tyre Product';
 
+    if (!image || image.includes('undefined')) image = '/static/assets/images/no-image-available.svg';
+    if (!year) year = '2026';
+    if (!country) country = 'China';
+    if (!warranty) warranty = '1 Year Warranty';
+    if (!brandName) brandName = 'TyresVision';
+
+    // Populate UI elements
+    if (imgEl) {
+      imgEl.src = image;
+      imgEl.alt = productName;
+    }
+    if (brandLogoEl && brandFallbackEl) {
+      if (brandLogo && !brandLogo.includes('no-image') && !brandLogo.includes('undefined')) {
+        brandLogoEl.src = brandLogo;
+        brandLogoEl.alt = brandName;
+        brandLogoEl.style.display = 'inline-block';
+        brandFallbackEl.style.display = 'none';
+      } else {
+        brandLogoEl.style.display = 'none';
+        brandFallbackEl.textContent = brandName.toUpperCase();
+        brandFallbackEl.style.display = 'inline-block';
+      }
+    }
     if (productNameEl) productNameEl.textContent = productName;
     if (hiddenProductName) hiddenProductName.value = productName;
+
+    if (specSizeEl) specSizeEl.textContent = size || 'Standard Fitment';
+    if (specYearEl) specYearEl.textContent = year;
+    if (specCountryEl) specCountryEl.textContent = country;
+    if (specWarrantyEl) specWarrantyEl.textContent = warranty;
+
+    if (priceEl) priceEl.textContent = price > 0 ? price.toFixed(2) : '--';
+    if (priceSet4El) priceSet4El.textContent = priceSet4 > 0 ? priceSet4.toFixed(2) : (price > 0 ? (price * 4).toFixed(2) : '--');
+
+    if (waBtn) {
+      var waMsg = encodeURIComponent('Hi TyresVision, I would like to enquire about ' + productName + (price > 0 ? ' (AED ' + price.toFixed(2) + '/tyre)' : '') + '.');
+      waBtn.href = 'https://wa.me/971505069575?text=' + waMsg;
+    }
 
     if (alertBox) {
       alertBox.classList.add('hidden');

@@ -302,35 +302,55 @@ function _tvRenderSizePanel(body, tab) {
   var currentSelectedVal = '';
   var selectorLabel = '';
   var searchPlaceholder = '';
+  var tipTitle = '';
+  var tipDesc = '';
 
   if (s.step === 1) {
-    stepTitle = isWheel ? 'Select Wheel Diameter' : (isMoto ? 'Select Tyre Width' : 'Select Tyre Width');
-    stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyres in millimeters.';
+    stepTitle = isWheel
+      ? 'Select Wheel<br><span class="tvhm-accent-purple">Diameter</span>'
+      : (isMoto
+          ? 'Select Tyre<br><span class="tvhm-accent-purple">Width</span>'
+          : 'Select Tyre<br><span class="tvhm-accent-purple">Width</span>');
+    stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyre in millimetres (mm)';
     badgeLabel = isWheel ? 'Wheel Rim' : 'Tyre Width';
     badgeUnit = isWheel ? '"' : ' mm';
-    defaultVal = '';
+    defaultVal = '195';
     currentSelectedVal = s.width || '';
     selectorLabel = isWheel ? 'SELECT RIM SIZE (INCHES)' : 'SELECT TYRE WIDTH (MM)';
     searchPlaceholder = isWheel ? 'Search rim...' : 'Search width...';
+    tipTitle = isWheel ? 'What is wheel diameter?' : 'What is tyre width?';
+    tipDesc = isWheel
+      ? 'Wheel diameter is the distance across the wheel center from rim edge to rim edge in inches.'
+      : 'Tyre width is the distance across the tyre from sidewall to sidewall.';
   } else if (s.step === 2) {
-    stepTitle = isWheel ? 'Select Wheel Width' : (isMoto ? 'Select Aspect Ratio' : 'Select Tyre Height');
+    stepTitle = isWheel
+      ? 'Select Wheel<br><span class="tvhm-accent-purple">Width</span>'
+      : (isMoto
+          ? 'Select Aspect<br><span class="tvhm-accent-purple">Ratio</span>'
+          : 'Select Tyre<br><span class="tvhm-accent-purple">Height</span>');
     stepSub = isWheel ? 'Choose the rim width in inches (J).' : 'Choose the aspect ratio (height as % of width).';
     badgeLabel = isWheel ? 'Wheel Width' : 'Tyre Height';
     badgeUnit = isWheel ? '' : '%';
-    defaultVal = '';
+    defaultVal = '55';
     currentSelectedVal = s.profile || '';
     selectorLabel = isWheel ? 'SELECT WHEEL WIDTH' : 'SELECT TYRE HEIGHT (%)';
     searchPlaceholder = isWheel ? 'Search width...' : 'Search height...';
+    tipTitle = isWheel ? 'What is wheel width?' : 'What is tyre height?';
+    tipDesc = isWheel
+      ? 'Wheel width is the distance between the inner and outer bead seats in inches.'
+      : 'Tyre height or profile is the sidewall height as a percentage of tyre width.';
   } else if (s.step === 3) {
-    stepTitle = 'Select Rim Size';
+    stepTitle = 'Select<br><span class="tvhm-accent-purple">Rim Size</span>';
     stepSub = 'Choose the diameter of the wheel rim in inches.';
     badgeLabel = 'Rim Size';
     badgeUnit = '"';
-    defaultVal = '';
+    defaultVal = '16';
     if (s.rim) s.rim = String(s.rim).replace(/^R/i, '').trim();
     currentSelectedVal = s.rim || '';
     selectorLabel = 'SELECT RIM SIZE (INCHES)';
     searchPlaceholder = 'Search rim...';
+    tipTitle = 'What is rim size?';
+    tipDesc = 'Rim size is the diameter of the wheel rim in inches.';
   }
 
   if (s.selectingRear) {
@@ -341,22 +361,22 @@ function _tvRenderSizePanel(body, tab) {
   var svgGuides = '';
   if (s.step === 1) {
     svgGuides = '<g>'
-      + '<path d="M 86 42 Q 126 30 168 36 L 195 72 Q 155 60 112 78 Z" fill="rgba(99, 32, 238, 0.22)" stroke="#6320EE" stroke-width="1.5" stroke-dasharray="3,3" />'
-      + '<line x1="86" y1="26" x2="86" y2="48" stroke="#6320EE" stroke-width="2" />'
-      + '<line x1="168" y1="20" x2="168" y2="42" stroke="#6320EE" stroke-width="2" />'
-      + '<line x1="88" y1="36" x2="166" y2="30" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '<polygon points="98,82 198,72 232,96 128,110" fill="rgba(108, 43, 217, 0.42)" stroke="#6C2BD9" stroke-width="1.8" />'
+      + '<line x1="102" y1="46" x2="102" y2="82" stroke="#6C2BD9" stroke-width="1.8" stroke-dasharray="3,3" />'
+      + '<line x1="194" y1="46" x2="194" y2="72" stroke="#6C2BD9" stroke-width="1.8" stroke-dasharray="3,3" />'
+      + '<line x1="106" y1="46" x2="190" y2="46" stroke="#6C2BD9" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
       + '</g>';
   } else if (s.step === 2) {
     svgGuides = '<g>'
-      + '<ellipse cx="168" cy="105" rx="76" ry="60" fill="none" stroke="#6320EE" stroke-width="9" stroke-opacity="0.32" />'
-      + '<line x1="110" y1="120" x2="124" y2="136" stroke="#6320EE" stroke-width="2" />'
-      + '<line x1="72" y1="142" x2="88" y2="158" stroke="#6320EE" stroke-width="2" />'
-      + '<line x1="116" y1="128" x2="82" y2="148" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '<path d="M 68 116 Q 58 152 70 192" fill="none" stroke="#6C2BD9" stroke-width="10" stroke-linecap="round" stroke-opacity="0.45" />'
+      + '<line x1="38" y1="130" x2="66" y2="130" stroke="#6C2BD9" stroke-width="1.8" stroke-dasharray="3,3" />'
+      + '<line x1="38" y1="178" x2="72" y2="178" stroke="#6C2BD9" stroke-width="1.8" stroke-dasharray="3,3" />'
+      + '<line x1="42" y1="134" x2="42" y2="174" stroke="#6C2BD9" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
       + '</g>';
   } else if (s.step === 3) {
     svgGuides = '<g>'
-      + '<ellipse cx="168" cy="105" rx="52" ry="42" fill="rgba(99, 32, 238, 0.18)" stroke="#6320EE" stroke-width="2" stroke-dasharray="4,4" />'
-      + '<line x1="124" y1="78" x2="212" y2="132" stroke="#6320EE" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
+      + '<ellipse cx="178" cy="138" rx="68" ry="62" fill="rgba(108, 43, 217, 0.16)" stroke="#6C2BD9" stroke-width="2" stroke-dasharray="4,4" />'
+      + '<line x1="130" y1="98" x2="226" y2="178" stroke="#6C2BD9" stroke-width="2.5" marker-start="url(#tvArrStart)" marker-end="url(#tvArrEnd)" />'
       + '</g>';
   }
 
@@ -449,6 +469,21 @@ function _tvRenderSizePanel(body, tab) {
       pillsHtml += '</div>';
     }
 
+    var tipBoxHtml = ''
+      + '<div class="tvhm-tip-box">'
+      + '  <div class="tvhm-tip-icon">'
+      + '    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+      + '      <path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>'
+      + '    </svg>'
+      + '  </div>'
+      + '  <div class="tvhm-tip-content">'
+      + '    <h4 class="tvhm-tip-heading">' + tipTitle + '</h4>'
+      + '    <p class="tvhm-tip-desc">' + tipDesc + '</p>'
+      + '  </div>'
+      + '</div>';
+
+    var displayBadgeVal = currentSelectedVal ? (currentSelectedVal + badgeUnit) : (defaultVal ? (defaultVal + badgeUnit) : '');
+
     var html = ''
       + '<div class="tvhm-step-row">'
       + '  <div class="tvhm-step-dots">' + stepDotsHtml + '</div>'
@@ -459,20 +494,21 @@ function _tvRenderSizePanel(body, tab) {
       + '    <h3 class="tvhm-step-title">' + stepTitle + '</h3>'
       + '    <p class="tvhm-step-sub">' + stepSub + '</p>'
       +      pillsHtml
+      +      tipBoxHtml
       + '  </div>'
       + '  <div class="tvhm-tyre-visual">'
-      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge"' + (currentSelectedVal ? '' : ' style="display:none;"') + '>'
-      + '      <span id="tvBadgeLabel">' + badgeLabel + '</span>'
-      + '      <strong id="tvBadgeVal">' + (currentSelectedVal ? currentSelectedVal + badgeUnit : '') + '</strong>'
+      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge">'
+      + '      <span class="tvhm-badge-label-line" id="tvBadgeLabel">' + badgeLabel + '</span>'
+      + '      <strong class="tvhm-badge-val-line" id="tvBadgeVal">' + displayBadgeVal + '</strong>'
       + '    </div>'
-      + '    <img src="/static/assets/images/products/tyre_1.jpg" alt="Tyre Visual" class="tvhm-tyre-img" />'
-      + '    <svg class="tvhm-tyre-overlay" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">'
+      + '    <img src="/static/assets/images/tyre-visual-3d.png" alt="Tyre Visual" class="tvhm-tyre-img" />'
+      + '    <svg class="tvhm-tyre-overlay" viewBox="0 0 320 220" preserveAspectRatio="xMidYMid meet">'
       + '      <defs>'
       + '        <marker id="tvArrEnd" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
-      + '          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6320EE" />'
+      + '          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6C2BD9" />'
       + '        </marker>'
       + '        <marker id="tvArrStart" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto">'
-      + '          <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#6320EE" />'
+      + '          <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#6C2BD9" />'
       + '        </marker>'
       + '      </defs>'
       +        svgGuides
@@ -482,7 +518,7 @@ function _tvRenderSizePanel(body, tab) {
       + '<div class="tvhm-selector-bar">'
       + '  <p class="tvhm-selector-lbl">' + selectorLabel + '</p>'
       + '  <div class="tvhm-search-box">'
-      + '    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
+      + '    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'
       + '      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'
       + '    </svg>'
       + '    <input type="text" id="tvSizeSearchInput" placeholder="' + searchPlaceholder + '" oninput="tvFilterSizeChips(this.value)" autocomplete="off" />'
@@ -497,7 +533,7 @@ function _tvRenderSizePanel(body, tab) {
     if (footer) {
       var backBtnHtml = s.step > 1
         ? '<button type="button" class="tvhm-back-btn" onclick="tvSizeBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>'
-        : '<div></div>';
+        : '<button type="button" class="tvhm-back-btn" onclick="tvHeroModalClose(null,true)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>';
 
       var nextBtnHtml = '';
       if (s.step === 1) {
@@ -630,15 +666,6 @@ function tvSelectSizeChip(val, autoAdvance) {
     }
     return;
   }
-
-  // Single click: automatically advance to the next step
-  if (s.step === 1 || (s.step === 2 && !isWheel)) {
-    if (_tvAutoAdvanceTimer) clearTimeout(_tvAutoAdvanceTimer);
-    _tvAutoAdvanceTimer = setTimeout(function() {
-      _tvAutoAdvanceTimer = null;
-      tvSizeNext();
-    }, 180);
-  }
 }
 
 function tvHoverSizeChip(val) {
@@ -659,18 +686,16 @@ function tvLeaveSizeChip() {
   var isWheel = s.tab === 'car-wheels';
   var currentVal = s.step === 1 ? s.width : (s.step === 2 ? s.profile : s.rim);
   var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
+  var defaultVal = s.step === 1 ? '195' : (s.step === 2 ? '55' : '16');
   var badgeEl = document.getElementById('tvhmTyreBadge');
   if (badgeEl) {
-    badgeEl.style.display = currentVal ? '' : 'none';
+    badgeEl.style.display = '';
   }
   var badgeVal = document.getElementById('tvBadgeVal');
   if (badgeVal) {
-    if (currentVal) {
-      var cleanVal = (s.step === 3 && !isWheel) ? String(currentVal).replace(/^R/i, '').trim() : currentVal;
-      badgeVal.textContent = cleanVal + badgeUnit;
-    } else {
-      badgeVal.textContent = '';
-    }
+    var valToDisplay = currentVal || defaultVal;
+    var cleanVal = (s.step === 3 && !isWheel && valToDisplay) ? String(valToDisplay).replace(/^R/i, '').trim() : valToDisplay;
+    badgeVal.textContent = cleanVal + badgeUnit;
   }
 }
 

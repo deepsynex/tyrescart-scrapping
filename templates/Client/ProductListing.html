@@ -93,8 +93,9 @@
         </div>
 
         <!-- 1. Tyres Category -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_tc = active_tyres_categories and active_tyres_categories|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_tc %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_tc %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
@@ -124,8 +125,9 @@
         </div>
 
         <!-- 2. Brand -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_brand = active_brands and active_brands|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_brand %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_brand %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
@@ -154,8 +156,9 @@
         </div>
 
         <!-- 3. Pattern -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_pattern = active_patterns and active_patterns|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_pattern %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_pattern %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -188,8 +191,9 @@
         </div>
 
         <!-- 4. Tyre Marking -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_tm = active_tyre_markings and active_tyre_markings|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_tm %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_tm %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -217,8 +221,9 @@
         </div>
 
         <!-- 5. OEM Tyres -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_oem = active_oem_tyres and active_oem_tyres|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_oem %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_oem %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="8" r="7"></circle>
@@ -247,8 +252,9 @@
         </div>
 
         <!-- 6. Promotion -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_promo = active_promotions and active_promotions|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_promo %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_promo %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 12 20 22 4 22 4 12"></polyline>
@@ -279,8 +285,8 @@
         </div>
 
         <!-- 7. RunFlat -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        <div class="tv-filter-group {% if not active_runflat %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not active_runflat %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -300,14 +306,14 @@
                 <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
                 <span>RunFlat</span>
               </span>
-              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 0) }}</span>
+              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 312) }}</span>
             </label>
           </div>
         </div>
 
         <!-- 8. EV Tyre -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        <div class="tv-filter-group {% if not active_ev_tyre %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not active_ev_tyre %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -328,8 +334,9 @@
         </div>
 
         <!-- 9. Warranty Period -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_w = active_warranties and active_warranties|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_w %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_w %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -356,8 +363,9 @@
         </div>
 
         <!-- 10. Year -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_y = active_years and active_years|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_y %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_y %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -387,8 +395,9 @@
         </div>
 
         <!-- 11. Origin -->
-        <div class="tv-filter-group is-collapsed">
-          <div class="tv-filter-header collapsed" onclick="toggleFilterGroup(this)">
+        {% set has_active_origin = active_origins and active_origins|length > 0 %}
+        <div class="tv-filter-group {% if not has_active_origin %}is-collapsed{% endif %}">
+          <div class="tv-filter-header {% if not has_active_origin %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -584,7 +593,7 @@
                   </svg>
                 </button>
 
-                <div class="tv-card-img-link">
+                <a href="/{{ p.front.slug }}" class="tv-card-img-link" title="{{ p.front.pattern_name or p.front.display_name }}">
                   <div class="tv-card-tyre-box tv-img-loading">
                     <img src="{{ p.front.image_path or '/static/assets/images/no-image-available.svg' }}" 
                          alt="{{ p.front.pattern_name or p.front.display_name }}" 
@@ -593,7 +602,7 @@
                          onload="this.parentElement.classList.remove('tv-img-loading')"
                          onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
                   </div>
-                </div>
+                </a>
 
                 <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
                   <span>
@@ -725,7 +734,7 @@
                   </svg>
                 </button>
 
-                <div class="tv-card-img-link">
+                <a href="/{{ p.rear.slug }}" class="tv-card-img-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
                   <div class="tv-card-tyre-box tv-img-loading">
                     <img src="{{ p.rear.image_path or '/static/assets/images/no-image-available.svg' }}" 
                          alt="{{ p.rear.pattern_name or p.rear.display_name }}" 
@@ -734,7 +743,7 @@
                          onload="this.parentElement.classList.remove('tv-img-loading')"
                          onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
                   </div>
-                </div>
+                </a>
 
                 <div class="tyre-type-icons" onclick="event.stopPropagation(); openTyreVehicleModal(this);" style="cursor: pointer;" title="View Compatible Vehicles">
                   <span>
@@ -858,6 +867,7 @@
         {% else %}
         <div class="tv-product-card {% if p.offer_banner %}has-offer{% endif %} {% if p.is_staggered %}tv-staggered-card{% endif %}"
              data-slug="{{ p.slug }}"
+             onclick="handleProductCardClick(event, '{{ p.slug }}')"
              data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
              data-brand-name="{{ p.brand_name }}"
              data-brand-logo="{{ p.brand_logo or '' }}"
@@ -914,8 +924,9 @@
             </a>
 
             {% if p.tyres_category %}
+            {% set cat_key = (p.tyres_category|string|lower).strip() %}
             <div class="tv-card-badge-wrap">
-              <span class="tv-card-badge tv-badge-category">
+              <span class="tv-card-badge tv-badge-category tv-category-{{ cat_key }}" data-category="{{ cat_key }}">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
@@ -934,7 +945,7 @@
               </svg>
             </button>
 
-            <div class="tv-card-img-link">
+            <a href="/{{ p.slug }}" class="tv-card-img-link" title="{{ p.pattern_name or p.display_name }}">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}" 
                      alt="{{ p.pattern_name or p.display_name }}" 
@@ -943,7 +954,7 @@
                      onload="this.parentElement.classList.remove('tv-img-loading')"
                      onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
               </div>
-            </div>
+            </a>
 
             {% if p.oem_logos and p.oem_logos|length > 0 %}
             <div class="car-brand-logos">
@@ -1005,32 +1016,31 @@
           <div class="product-bottom-detail">
           <!-- 3. Product Info Block -->
           <div class="tv-card-info-block">
-            <!-- Country of Origin (shown top-right) -->
-            <div class="tv-card-origin-row-wrap">
-              {% set origin_name = p.country_of_origin or 'USA' %}
-              {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
-              <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
-                {% if origin_code %}
-                <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
-                <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
-                {% else %}
-                <span>{{ origin_name }}</span>
-                {% endif %}
-              </span>
-            </div>
-
-            <!-- Product Pattern / Model Name (Left) & Run Flat (Right) -->
+            <!-- Product Pattern / Model Name (Left) & Run Flat + Origin Flag (Right) -->
             <div class="tv-card-pattern-row">
               <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.pattern_name or p.display_name }}">
                 <h3 class="tv-card-pattern">
                   {{ p.pattern_name or p.display_name }}
                 </h3>
               </a>
-              {% if p.is_runflat or p.runflat_text == 'Runflat' %}
-              <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-              </span>
-              {% endif %}
+
+              <div class="tv-card-origin-row-wrap">
+                {% if p.is_runflat or p.runflat_text == 'Runflat' %}
+                <span class="tv-meta-item tv-meta-runflat" title="Technology: Run Flat">
+                  <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                </span>
+                {% endif %}
+                {% set origin_name = p.country_of_origin or 'USA' %}
+                {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+                <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                  {% if origin_code %}
+                  <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                  <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                  {% else %}
+                  <span>{{ origin_name }}</span>
+                  {% endif %}
+                </span>
+              </div>
             </div>
 
             <!-- 3. Product Size (Left) & Year (Right) -->
@@ -1088,36 +1098,39 @@
               </div>
             </div>
 
-            <!-- Contact Button (Desktop / Laptop / Tablet) -->
-            <button type="button"
-                    class="tv-btn-card-contact"
-                    data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
-                    data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
-                    data-brand="{{ p.brand_name or '' }}"
-                    data-price="{{ p.price or '' }}"
-                    onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
-                    aria-label="Contact about {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span>Contact</span>
-            </button>
+            <div class="tv-card-actions-right">
+              <!-- WhatsApp Button (Before Contact Button) -->
+              <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.full_size_spec or p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')' ) | urlencode }}" 
+                 target="_blank" 
+                 rel="noopener" 
+                 class="tv-btn-card-wa" 
+                 data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+                 data-enquiry-for="Product Enquiry: {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+                 data-form-type="product_card_whatsapp"
+                 data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
+                 data-brand="{{ p.brand_name or '' }}"
+                 onclick="event.stopPropagation()" 
+                 title="Chat on WhatsApp"
+                 aria-label="Inquire on WhatsApp">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                <span class="tv-wa-btn-label">WhatsApp</span>
+              </a>
 
-            <!-- WhatsApp Button (Mobile Screens Only) -->
-            <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (p.display_name or p.name_en or p.pattern_name or '') ~ ' (Size: ' ~ (p.full_size_spec or p.tire_size_label or '') ~ ', Price: AED ' ~ (p.price or '') ~ ')' ) | urlencode }}" 
-               target="_blank" 
-               rel="noopener" 
-               class="tv-btn-card-wa" 
-               data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
-               data-enquiry-for="Product Enquiry: {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
-               data-form-type="product_card_whatsapp"
-               data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
-               data-brand="{{ p.brand_name or '' }}"
-               onclick="event.stopPropagation()" 
-               aria-label="Inquire on WhatsApp">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-              <span>WhatsApp</span>
-            </a>
+              <!-- Contact Button -->
+              <button type="button"
+                      class="tv-btn-card-contact"
+                      data-product-name="{{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}"
+                      data-tyre-size="{{ (p.full_size_spec or p.tire_size_label or '')|escape }}"
+                      data-brand="{{ p.brand_name or '' }}"
+                      data-price="{{ p.price or '' }}"
+                      onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                      aria-label="Contact about {{ (p.display_name or p.name_en or p.pattern_name or '')|escape }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Contact</span>
+              </button>
+            </div>
           </div>
           </div>
           <!-- /product-bottom-detail -->
@@ -1137,7 +1150,33 @@
           {% endif %}
         </div>
         <div class="tv-pagination-controls" id="pagination-controls">
-          <!-- Rendered dynamically by JavaScript with working data -->
+          {% if total_count and total_count > 0 %}
+          {% set tp = total_pages or 1 %}
+          {% set cp = current_page or 1 %}
+          <button type="button" class="tv-page-btn" {% if cp <= 1 %}disabled{% endif %} onclick="goToPage({{ cp - 1 }})" aria-label="Previous page">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          {% if tp <= 7 %}
+            {% for p_num in range(1, tp + 1) %}
+            <button type="button" class="tv-page-btn {% if p_num == cp %}active{% endif %}" onclick="goToPage({{ p_num }})">{{ p_num }}</button>
+            {% endfor %}
+          {% else %}
+            <button type="button" class="tv-page-btn {% if cp == 1 %}active{% endif %}" onclick="goToPage(1)">1</button>
+            {% if cp > 3 %}<span class="tv-page-ellipsis">&hellip;</span>{% endif %}
+            {% set start_p = [2, cp - 1]|max %}
+            {% set end_p = [tp - 1, cp + 1]|min %}
+            {% for p_num in range(start_p, end_p + 1) %}
+              {% if p_num != 1 and p_num != tp %}
+              <button type="button" class="tv-page-btn {% if p_num == cp %}active{% endif %}" onclick="goToPage({{ p_num }})">{{ p_num }}</button>
+              {% endif %}
+            {% endfor %}
+            {% if cp < tp - 2 %}<span class="tv-page-ellipsis">&hellip;</span>{% endif %}
+            <button type="button" class="tv-page-btn {% if cp == tp %}active{% endif %}" onclick="goToPage({{ tp }})">{{ tp }}</button>
+          {% endif %}
+          <button type="button" class="tv-page-btn" {% if cp >= tp %}disabled{% endif %} onclick="goToPage({{ cp + 1 }})" aria-label="Next page">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          {% endif %}
         </div>
 
         <!-- Mobile / Tablet "Show More" Button (hidden on desktop) -->

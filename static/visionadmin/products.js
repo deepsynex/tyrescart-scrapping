@@ -19,6 +19,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
     },
     counts: { total: 0, in_stock: 0, out_of_stock: 0, inactive: 0, trash: 0 },
     loading: false,
+    exporting: false,
     isSubmitting: false,
     currentTab: 'active',
     currentPage: 1,
@@ -1349,6 +1350,44 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       }
     },
 
+    exportCsv(selectedOnly = false) {
+      this.exporting = true;
+      const params = new URLSearchParams();
+
+      if (selectedOnly && this.selectedIds.length > 0) {
+        params.set('ids', this.selectedIds.join(','));
+      } else if (this.selectedIds.length > 0) {
+        params.set('ids', this.selectedIds.join(','));
+      } else {
+        if (this.currentTab === 'trash') params.set('trash', '1');
+        if (this.currentTab === 'out_of_stock') params.set('stock_status', 'out_of_stock');
+        if (this.filters.search) params.set('search', this.filters.search);
+        if (this.filters.brand_id) params.set('brand_id', this.filters.brand_id);
+        if (this.filters.category_id) params.set('category_id', this.filters.category_id);
+        if (this.filters.attribute_set_id) params.set('attribute_set_id', this.filters.attribute_set_id);
+        if (this.filters.vehicle_type) params.set('vehicle_type', this.filters.vehicle_type);
+        if (this.filters.tyres_category) params.set('tyres_category', this.filters.tyres_category);
+        if (this.filters.parts_category) params.set('parts_category', this.filters.parts_category);
+        if (this.filters.run_flat !== '') params.set('run_flat', this.filters.run_flat);
+        if (this.filters.ev_rated !== '') params.set('ev_rated', this.filters.ev_rated);
+        if (this.filters.year) params.set('year', this.filters.year);
+        if (this.filters.country_of_origin) params.set('country_of_origin', this.filters.country_of_origin);
+      }
+
+      const url = '/visionadmin/api/products/export-csv?' + params.toString();
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', '');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      this.showToast('Preparing products CSV export...', 'info');
+      setTimeout(() => {
+        this.exporting = false;
+      }, 1500);
+    },
+
     async applyBulkAction() {
       if (!this.bulkActionChoice) {
         this.showToast('Please select a bulk action.', 'error');
@@ -1356,6 +1395,12 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       }
       if (this.selectedIds.length === 0) {
         this.showToast('No products selected.', 'error');
+        return;
+      }
+
+      if (this.bulkActionChoice === 'export') {
+        this.exportCsv(true);
+        this.bulkActionChoice = '';
         return;
       }
 

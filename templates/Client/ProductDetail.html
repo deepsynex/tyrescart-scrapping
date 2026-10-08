@@ -226,29 +226,30 @@
 
 .tv-ref-zoom-btn {
   background: #ffffff;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #E2E8F0;
   position: absolute;
-  left: 0;
-  border-radius: 20px;
-  width: 30px;
-  height: 30px;
-  font-size: 12.5px;
-  font-weight: 600;
+  top: 12px;
+  right: 12px;
+  left: auto;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
   color: #475569;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
-  top: 0;
+  z-index: 5;
 }
 
 .tv-ref-zoom-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: 0 3px 8px rgba(0, 102, 255, 0.12);
+  border-color: #8229DE;
+  color: #8229DE;
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(130, 41, 222, 0.2);
 }
 
 /* 4 Feature Props Stack */
@@ -929,36 +930,77 @@
   width: 100%;
 }
 
-.tv-pdp-wa-btn {
+.tv-pdp-actions-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 480px) {
+  .tv-pdp-actions-wrap {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.tv-pdp-actions-wrap .tv-pdp-wa-btn {
+  flex: 1;
   background: #25D366;
   color: #ffffff !important;
   border: none;
-  border-radius: 8px;
-  height: 50px;
-  font-size: 16px;
+  border-radius: 10px;
+  height: 48px;
+  font-size: 15px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   width: 100%;
   text-decoration: none;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.28);
   font-family: inherit;
   box-sizing: border-box;
 }
 
-.tv-pdp-wa-btn:hover {
+.tv-pdp-actions-wrap .tv-pdp-wa-btn:hover {
   background: #1eb956;
   color: #ffffff !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.38);
 }
 
-.tv-pdp-wa-btn:active {
-  transform: scale(0.99);
+.tv-pdp-actions-wrap .tv-pdp-contact-btn {
+  flex: 1;
+  background: #4B237B;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 10px;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(75, 35, 123, 0.28);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tv-pdp-actions-wrap .tv-pdp-contact-btn:hover {
+  background: #3B125E;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(75, 35, 123, 0.38);
 }
 
 .tv-ref-buy-now-wrap {
@@ -2085,14 +2127,14 @@
                      class="tv-ref-main-tyre-img"
                      id="pdp-main-image"
                      onerror="this.src='/static/uploads/products/michelin_energy_xm2_wheel.jpg'">
-                                   <button type="button" class="tv-ref-zoom-btn" onclick="openZoomModal()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  <line x1="11" y1="8" x2="11" y2="14"></line>
-                  <line x1="8" y1="11" x2="14" y2="11"></line>
-                </svg>
-              </button>
+                <button type="button" class="tv-ref-zoom-btn" onclick="openZoomModal()" title="Zoom tyre image" aria-label="Zoom tyre image">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                  </svg>
+                </button>
               </div>
 
             </div>
@@ -2355,8 +2397,8 @@
           </div>
           #}
 
-          <!-- WhatsApp Enquiry Button -->
-          <div class="tv-pdp-wa-action-wrap">
+          <!-- WhatsApp Enquiry and Contact Us Buttons -->
+          <div class="tv-pdp-actions-wrap">
             <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (product.display_name or product.title or '') ~ ' (Size: ' ~ (product.tire_size_label or product.size or '') ~ ', Price: AED ' ~ (product.price or '') ~ ')') | urlencode }}" 
                target="_blank" 
                rel="noopener" 
@@ -2367,9 +2409,24 @@
                data-tyre-size="{{ product.tire_size_label or product.size or '' }}"
                data-brand="{{ product.brand_name or '' }}"
                aria-label="Inquire on WhatsApp">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
               <span>WhatsApp Enquiry</span>
             </a>
+
+            <button type="button" 
+                    class="tv-pdp-contact-btn" 
+                    onclick="openProductEnquiryDrawer(this)"
+                    data-product-name="{{ (product.display_name or product.title or '')|escape }}"
+                    data-tyre-size="{{ product.tire_size_label or product.size or '' }}"
+                    data-brand="{{ product.brand_name or '' }}"
+                    data-price="{{ product.price or '' }}"
+                    aria-label="Contact Us about {{ (product.display_name or product.title or '')|escape }}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>Contact Us</span>
+            </button>
           </div>
 
           <!-- Split in 4 Payment with Tabby & Tamara (Below Buy Now) -->
@@ -2775,8 +2832,9 @@
               {% endif %}
             </a>
             {% if rp.tyres_category %}
+            {% set cat_key = (rp.tyres_category|string|lower).strip() %}
             <div class="tv-card-badge-wrap">
-              <span class="tv-card-badge tv-badge-category">
+              <span class="tv-card-badge tv-badge-category tv-category-{{ cat_key }}" data-category="{{ cat_key }}">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
@@ -2795,7 +2853,7 @@
               </svg>
             </button>
 
-            <div class="tv-card-img-link">
+            <a href="/{{ rp.slug }}" class="tv-card-img-link" title="{{ rp.pattern_name or rp.display_name }}">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="{{ rp.image_path or '/static/assets/images/no-image-available.svg' }}" 
                      alt="{{ rp.pattern_name or rp.display_name }}" 
@@ -2804,7 +2862,7 @@
                      onload="this.parentElement.classList.remove('tv-img-loading')"
                      onerror="this.src='/static/assets/images/no-image-available.svg'; this.parentElement.classList.remove('tv-img-loading'); this.onerror=null;">
               </div>
-            </div>
+            </a>
 
             {% if rp.oem_logos and rp.oem_logos|length > 0 %}
             <div class="car-brand-logos">
@@ -2834,25 +2892,34 @@
           <div class="product-bottom-detail">
             <!-- 3. Product Info Block -->
             <div class="tv-card-info-block">
-              {% set origin_name = rp.country_of_origin or 'USA' %}
-              {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
-              <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
-                {% if origin_code %}
-                <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
-                <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
-                {% else %}
-                <span>{{ origin_name }}</span>
-                {% endif %}
-              </span>
+              <!-- Product Pattern / Model Name (Left) & Run Flat + Origin Flag (Right) -->
+              <div class="tv-card-pattern-row">
+                <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
+                  <h3 class="tv-card-pattern">
+                    {{ rp.pattern_name or rp.display_name }}
+                  </h3>
+                </a>
 
-              <!-- Product Pattern / Model Name (Brand name removed) -->
-              <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
-                <h3 class="tv-card-pattern">
-                  {{ rp.pattern_name or rp.display_name }}
-                </h3>
-              </a>
+                <div class="tv-card-origin-row-wrap">
+                  {% if rp.is_runflat or rp.runflat_text == 'Runflat' %}
+                  <span class="tv-meta-item tv-meta-runflat" title="Technology: Run Flat">
+                    <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+                  </span>
+                  {% endif %}
+                  {% set origin_name = rp.country_of_origin or 'USA' %}
+                  {% set origin_code = COUNTRY_FLAG_CODES.get(origin_name) %}
+                  <span class="tv-card-origin-row" title="Origin: {{ origin_name }}">
+                    {% if origin_code %}
+                    <img src="https://flags.restcountries.com/v5/w640/{{ origin_code }}.png" alt="{{ origin_name }}" class="tv-card-origin-flag" loading="lazy" onerror="this.closest('.tv-card-origin-row').querySelector('.tv-card-origin-fallback-text').style.display='inline';this.style.display='none';">
+                    <span class="tv-card-origin-fallback-text" style="display:none;">{{ origin_name }}</span>
+                    {% else %}
+                    <span>{{ origin_name }}</span>
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
 
-              <!-- 3. Product Size -->
+              <!-- 3. Product Size (Left) & Year (Right) -->
               <div class="tv-card-size-row">
                 <span class="tv-card-spec-text">{{ rp.full_size_spec }}</span>
                 <span class="tv-card-year-meta" title="Manufacturing Year">
@@ -2863,15 +2930,6 @@
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
                   <span>{{ rp.year or '2025' }}</span>
-                </span>
-              </div>
-
-              <!-- 4. Runflat (country of origin and category moved elsewhere on the card) -->
-              <div class="tv-card-meta-row">
-                <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                  {% if rp.is_runflat or rp.runflat_text == 'Runflat' %}
-                  <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                  {% endif %}
                 </span>
               </div>
             </div>
@@ -2898,7 +2956,7 @@
               </div>
             </div>
 
-            <!-- 4. Price & Add to Cart Line -->
+            <!-- 4. Price & Actions Line -->
             <div class="tv-card-price-action-row">
               <div class="tv-card-pricing-left">
                 <div class="tv-card-main-price-line">
@@ -2911,30 +2969,39 @@
                 </div>
               </div>
 
-              {#
-              <button type="button" class="tv-btn-card-add" onclick="event.stopPropagation(); addToCartWithCard(this, '{{ rp.pattern_name or rp.display_name }}', {{ rp.price }});" aria-label="Add to cart">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="9" cy="21" r="1"></circle>
-                  <circle cx="20" cy="21" r="1"></circle>
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span>Add to Cart</span>
-              </button>
-              #}
-              <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (rp.display_name or rp.name_en or rp.pattern_name or '') ~ ' (Size: ' ~ (rp.tire_size_label or '') ~ ', Price: AED ' ~ (rp.price or '') ~ ')') | urlencode }}" 
-                 target="_blank" 
-                 rel="noopener" 
-                 class="tv-btn-card-wa" 
-                 data-product-name="{{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
-                 data-enquiry-for="Related Product Enquiry: {{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
-                 data-form-type="related_product_whatsapp"
-                 data-tyre-size="{{ rp.tire_size_label or '' }}"
-                 data-brand="{{ rp.brand_name or '' }}"
-                 onclick="event.stopPropagation()" 
-                 aria-label="Inquire on WhatsApp">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                <span>WhatsApp</span>
-              </a>
+              <div class="tv-card-actions-right">
+                <!-- WhatsApp Button (Before Contact Button) -->
+                <a href="https://wa.me/971505069575?text={{ ('Hi TyresVision, I would like to inquire about ' ~ (rp.display_name or rp.name_en or rp.pattern_name or '') ~ ' (Size: ' ~ (rp.full_size_spec or rp.tire_size_label or '') ~ ', Price: AED ' ~ (rp.price or '') ~ ')' ) | urlencode }}" 
+                   target="_blank" 
+                   rel="noopener" 
+                   class="tv-btn-card-wa" 
+                   data-product-name="{{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
+                   data-enquiry-for="Related Product Enquiry: {{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
+                   data-form-type="related_product_whatsapp"
+                   data-tyre-size="{{ (rp.full_size_spec or rp.tire_size_label or '')|escape }}"
+                   data-brand="{{ rp.brand_name or '' }}"
+                   onclick="event.stopPropagation()" 
+                   title="Chat on WhatsApp"
+                   aria-label="Inquire on WhatsApp">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                  <span class="tv-wa-btn-label">WhatsApp</span>
+                </a>
+
+                <!-- Contact Button -->
+                <button type="button"
+                        class="tv-btn-card-contact"
+                        data-product-name="{{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}"
+                        data-tyre-size="{{ (rp.full_size_spec or rp.tire_size_label or '')|escape }}"
+                        data-brand="{{ rp.brand_name or '' }}"
+                        data-price="{{ rp.price or '' }}"
+                        onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                        aria-label="Contact about {{ (rp.display_name or rp.name_en or rp.pattern_name or '')|escape }}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  
+                </button>
+              </div>
             </div>
           </div>
           <!-- /product-bottom-detail -->
