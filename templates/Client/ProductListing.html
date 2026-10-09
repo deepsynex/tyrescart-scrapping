@@ -61,10 +61,15 @@
       <!-- Sidebar Top Header (Matching Reference Design) -->
       <div class="tv-filter-card-header">
         <div class="tv-filter-header-left">
-          <svg class="tv-filter-funnel-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-          <span class="tv-filter-header-title">Filters</span>
+          <div class="tv-filter-header-icon-box">
+            <svg class="tv-filter-funnel-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </div>
+          <div class="tv-filter-title-wrap">
+            <span class="tv-filter-header-title">Filters</span>
+            <div class="tv-qv-title-bar"></div>
+          </div>
           <span class="tv-filter-badge" id="tv-drawer-badge" style="display:none;">0</span>
         </div>
         <div class="tv-filter-header-right">
@@ -75,7 +80,7 @@
             <span>Clear All</span>
           </button>
           <button type="button" class="tv-btn-drawer-close" onclick="closeMobileFilter()" aria-label="Close filters">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -1128,7 +1133,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span>Contact</span>
+                <span class="tv-btn-contact-text">Contact</span>
               </button>
             </div>
           </div>

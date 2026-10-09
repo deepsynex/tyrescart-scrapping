@@ -1119,20 +1119,37 @@ function capitalize(str) {
 // templates/Client/ProductListing.html so client-rendered cards (after a
 // filter/sort re-render) show the same flag as the initial server render.
 var TV_COUNTRY_FLAG_CODES = {
-  'Brazil': 'br', 'China': 'cn', 'Czech Republic': 'cz', 'France': 'fr',
-  'Germany': 'de', 'Great Britain': 'gb', 'Hungary': 'hu', 'India': 'in',
-  'Indonesia': 'id', 'Italy': 'it', 'Japan': 'jp', 'Luxembourg': 'lu',
-  'Malaysia': 'my', 'Mexico': 'mx', 'Netherlands': 'nl', 'Philippines': 'ph',
-  'Poland': 'pl', 'Portugal': 'pt', 'Romania': 'ro', 'Serbia': 'rs',
-  'Slovakia': 'sk', 'Slovenia': 'si', 'South Africa': 'za', 'South Korea': 'kr',
-  'Spain': 'es', 'Taiwan': 'tw', 'Thailand': 'th', 'Turkey': 'tr',
-  'United Kingdom': 'gb', 'United States': 'us', 'USA': 'us', 'Usa': 'us',
-  'Uk': 'gb', 'Uae': 'ae', 'Vietnam': 'vn'
+  'Brazil': 'br', 'China': 'cn', 'Czech Republic': 'cz', 'Czechia': 'cz',
+  'France': 'fr', 'Germany': 'de', 'Great Britain': 'gb', 'Hungary': 'hu',
+  'India': 'in', 'Indonesia': 'id', 'Italy': 'it', 'Japan': 'jp',
+  'Korea': 'kr', 'Luxembourg': 'lu', 'Malaysia': 'my', 'Mexico': 'mx',
+  'Netherlands': 'nl', 'Philippines': 'ph', 'Poland': 'pl', 'Portugal': 'pt',
+  'Romania': 'ro', 'Russia': 'ru', 'Russian Federation': 'ru', 'Saudi Arabia': 'sa',
+  'Serbia': 'rs', 'Slovakia': 'sk', 'Slovenia': 'si', 'South Africa': 'za',
+  'South Korea': 'kr', 'Spain': 'es', 'Taiwan': 'tw', 'Thailand': 'th',
+  'Turkey': 'tr', 'Turkiye': 'tr', 'United Kingdom': 'gb', 'United States': 'us',
+  'USA': 'us', 'Usa': 'us', 'US': 'us', 'Uk': 'gb', 'UK': 'gb',
+  'Uae': 'ae', 'UAE': 'ae', 'United Arab Emirates': 'ae', 'Vietnam': 'vn',
+  'Belgium': 'be', 'Austria': 'at', 'Finland': 'fi', 'Sweden': 'se',
+  'Canada': 'ca', 'Australia': 'au'
 };
+
+function tvGetCountryFlagCode(countryName) {
+  if (!countryName) return '';
+  var clean = String(countryName).trim();
+  if (TV_COUNTRY_FLAG_CODES[clean]) return TV_COUNTRY_FLAG_CODES[clean];
+  var lower = clean.toLowerCase();
+  for (var k in TV_COUNTRY_FLAG_CODES) {
+    if (k.toLowerCase() === lower) {
+      return TV_COUNTRY_FLAG_CODES[k];
+    }
+  }
+  return '';
+}
 
 function tvCardOriginHTML(originName, isRunflat) {
   var safeName = escapeHtml(originName);
-  var code = TV_COUNTRY_FLAG_CODES[originName];
+  var code = tvGetCountryFlagCode(originName);
   var inner = '';
   if (code) {
     inner = '<img src="https://flags.restcountries.com/v5/w640/' + code + '.png" alt="' + safeName + '" class="tv-card-origin-flag" loading="lazy" onerror="this.closest(\'.tv-card-origin-row\').querySelector(\'.tv-card-origin-fallback-text\').style.display=\'inline\';this.style.display=\'none\';">'
@@ -1479,7 +1496,7 @@ function createStaggeredCombinedCardHTML(p) {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            <span>Contact Us</span>
+            <span class="tv-btn-contact-text">Contact Us</span>
           </button>
         </div>
       </div>
@@ -1774,7 +1791,7 @@ function createProductCardHTML(p) {
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                   </svg>
-                  <span>Contact</span>
+                  <span class="tv-btn-contact-text">Contact</span>
                 </button>
               </div>
             </div>
@@ -5679,6 +5696,8 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var specSizeEl = document.getElementById('tvPeSpecSize');
     var specYearEl = document.getElementById('tvPeSpecYear');
     var specCountryEl = document.getElementById('tvPeSpecCountry');
+    var specCountryFlagEl = document.getElementById('tvPeSpecCountryFlag');
+    var countryIconEl = document.getElementById('tvPeCountryIcon');
     var specWarrantyEl = document.getElementById('tvPeSpecWarranty');
     var priceEl = document.getElementById('tvPePrice');
     var priceSet4El = document.getElementById('tvPePriceSet4');
@@ -5706,7 +5725,24 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var priceSet4 = rawPriceSet4 ? parseFloat(rawPriceSet4) : (price > 0 ? (price * 4) : 0);
 
     var year = (triggerEl && (triggerEl.getAttribute('data-year') || triggerEl.dataset.year)) || ds.year || '';
-    var country = (triggerEl && (triggerEl.getAttribute('data-country') || triggerEl.dataset.country)) || ds.country || '';
+    var country = (triggerEl && (triggerEl.getAttribute('data-country') || triggerEl.dataset.country || triggerEl.getAttribute('data-origin') || triggerEl.dataset.origin)) || ds.country || ds.origin || '';
+    if (!country && card) {
+      var originRow = card.querySelector('.tv-card-origin-row');
+      if (originRow) {
+        var originTitle = originRow.getAttribute('title') || '';
+        var match = originTitle.match(/Origin:\s*(.+)/i);
+        if (match && match[1]) {
+          country = match[1].trim();
+        } else {
+          var originImg = originRow.querySelector('img');
+          if (originImg && originImg.alt) {
+            country = originImg.alt.trim();
+          } else {
+            country = originRow.textContent.trim();
+          }
+        }
+      }
+    }
     var warranty = (triggerEl && (triggerEl.getAttribute('data-warranty') || triggerEl.dataset.warranty)) || ds.warranty || '';
     var image = (triggerEl && (triggerEl.getAttribute('data-image') || triggerEl.dataset.image)) || ds.image || (card ? card.querySelector('.tv-product-img')?.getAttribute('src') : '') || '';
 
@@ -5726,7 +5762,18 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       }
       if (!country) {
         var cntryEl = document.getElementById('pdp-spec-country');
-        if (cntryEl) country = cntryEl.innerText.trim();
+        if (cntryEl) {
+          country = cntryEl.innerText.trim();
+        } else {
+          var specTableCells = document.querySelectorAll('.tv-pdp-specs-table td, .product-specifications td, table td');
+          for (var i = 0; i < specTableCells.length; i++) {
+            var prevTh = specTableCells[i].previousElementSibling;
+            if (prevTh && /country/i.test(prevTh.textContent || '')) {
+              country = specTableCells[i].textContent.trim();
+              break;
+            }
+          }
+        }
       }
       if (!warranty) {
         var warEl = document.getElementById('pdp-spec-warranty');
@@ -5764,6 +5811,21 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     if (specYearEl) specYearEl.textContent = year;
     if (specCountryEl) specCountryEl.textContent = country;
     if (specWarrantyEl) specWarrantyEl.textContent = warranty;
+
+    // Resolve country flag
+    if (specCountryFlagEl) {
+      var flagCode = tvGetCountryFlagCode(country);
+      if (flagCode) {
+        specCountryFlagEl.src = 'https://flags.restcountries.com/v5/w640/' + flagCode.toLowerCase() + '.png';
+        specCountryFlagEl.alt = country;
+        specCountryFlagEl.style.display = 'inline-block';
+        if (countryIconEl) countryIconEl.style.display = 'none';
+      } else {
+        specCountryFlagEl.style.display = 'none';
+        specCountryFlagEl.src = '';
+        if (countryIconEl) countryIconEl.style.display = 'inline-block';
+      }
+    }
 
     if (priceEl) priceEl.textContent = price > 0 ? price.toFixed(2) : '--';
     if (priceSet4El) priceSet4El.textContent = priceSet4 > 0 ? priceSet4.toFixed(2) : (price > 0 ? (price * 4).toFixed(2) : '--');

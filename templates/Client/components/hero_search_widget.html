@@ -314,7 +314,7 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = isWheel ? 'Choose the wheel rim size in inches.' : 'Choose the width of your tyre in millimetres (mm)';
     badgeLabel = isWheel ? 'Wheel Rim' : 'Tyre Width';
     badgeUnit = isWheel ? '"' : ' mm';
-    defaultVal = '195';
+    defaultVal = '';
     currentSelectedVal = s.width || '';
     selectorLabel = isWheel ? 'SELECT RIM SIZE (INCHES)' : 'SELECT TYRE WIDTH (MM)';
     searchPlaceholder = isWheel ? 'Search rim...' : 'Search width...';
@@ -331,7 +331,7 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = isWheel ? 'Choose the rim width in inches (J).' : 'Choose the aspect ratio (height as % of width).';
     badgeLabel = isWheel ? 'Wheel Width' : 'Tyre Height';
     badgeUnit = isWheel ? '' : '%';
-    defaultVal = '55';
+    defaultVal = '';
     currentSelectedVal = s.profile || '';
     selectorLabel = isWheel ? 'SELECT WHEEL WIDTH' : 'SELECT TYRE HEIGHT (%)';
     searchPlaceholder = isWheel ? 'Search width...' : 'Search height...';
@@ -344,7 +344,7 @@ function _tvRenderSizePanel(body, tab) {
     stepSub = 'Choose the diameter of the wheel rim in inches.';
     badgeLabel = 'Rim Size';
     badgeUnit = '"';
-    defaultVal = '16';
+    defaultVal = '';
     if (s.rim) s.rim = String(s.rim).replace(/^R/i, '').trim();
     currentSelectedVal = s.rim || '';
     selectorLabel = 'SELECT RIM SIZE (INCHES)';
@@ -482,7 +482,7 @@ function _tvRenderSizePanel(body, tab) {
       + '  </div>'
       + '</div>';
 
-    var displayBadgeVal = currentSelectedVal ? (currentSelectedVal + badgeUnit) : (defaultVal ? (defaultVal + badgeUnit) : '');
+    var displayBadgeVal = currentSelectedVal ? (currentSelectedVal + badgeUnit) : '';
 
     var html = ''
       + '<div class="tvhm-step-row">'
@@ -497,7 +497,7 @@ function _tvRenderSizePanel(body, tab) {
       +      tipBoxHtml
       + '  </div>'
       + '  <div class="tvhm-tyre-visual">'
-      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge">'
+      + '    <div class="tvhm-tyre-badge" id="tvhmTyreBadge"' + (displayBadgeVal ? '' : ' style="display:none;"') + '>'
       + '      <span class="tvhm-badge-label-line" id="tvBadgeLabel">' + badgeLabel + '</span>'
       + '      <strong class="tvhm-badge-val-line" id="tvBadgeVal">' + displayBadgeVal + '</strong>'
       + '    </div>'
@@ -654,17 +654,19 @@ function tvSelectSizeChip(val, autoAdvance) {
     rearBtn.removeAttribute('disabled');
   }
 
-  if (autoAdvance) {
-    if (_tvAutoAdvanceTimer) {
-      clearTimeout(_tvAutoAdvanceTimer);
-      _tvAutoAdvanceTimer = null;
-    }
-    if (s.step === 3 || (s.step === 2 && isWheel)) {
-      tvSizeSearch();
-    } else {
+  if (_tvAutoAdvanceTimer) {
+    clearTimeout(_tvAutoAdvanceTimer);
+    _tvAutoAdvanceTimer = null;
+  }
+
+  // Auto advance to next step while selecting value
+  var totalSteps = isWheel ? 2 : 3;
+  if (autoAdvance !== false && s.step < totalSteps) {
+    _tvAutoAdvanceTimer = setTimeout(function() {
       tvSizeNext();
-    }
-    return;
+    }, 200);
+  } else if (autoAdvance === true && (s.step === totalSteps || (s.step === 2 && isWheel))) {
+    tvSizeSearch();
   }
 }
 
@@ -686,16 +688,17 @@ function tvLeaveSizeChip() {
   var isWheel = s.tab === 'car-wheels';
   var currentVal = s.step === 1 ? s.width : (s.step === 2 ? s.profile : s.rim);
   var badgeUnit = s.step === 1 ? (isWheel ? '"' : ' mm') : (s.step === 2 ? (isWheel ? '' : '%') : '"');
-  var defaultVal = s.step === 1 ? '195' : (s.step === 2 ? '55' : '16');
   var badgeEl = document.getElementById('tvhmTyreBadge');
-  if (badgeEl) {
-    badgeEl.style.display = '';
-  }
   var badgeVal = document.getElementById('tvBadgeVal');
-  if (badgeVal) {
-    var valToDisplay = currentVal || defaultVal;
-    var cleanVal = (s.step === 3 && !isWheel && valToDisplay) ? String(valToDisplay).replace(/^R/i, '').trim() : valToDisplay;
-    badgeVal.textContent = cleanVal + badgeUnit;
+  if (!currentVal) {
+    if (badgeEl) badgeEl.style.display = 'none';
+    if (badgeVal) badgeVal.textContent = '';
+  } else {
+    if (badgeEl) badgeEl.style.display = '';
+    if (badgeVal) {
+      var cleanVal = (s.step === 3 && !isWheel && currentVal) ? String(currentVal).replace(/^R/i, '').trim() : currentVal;
+      badgeVal.textContent = cleanVal + badgeUnit;
+    }
   }
 }
 
