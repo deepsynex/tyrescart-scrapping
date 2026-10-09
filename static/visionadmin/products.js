@@ -43,6 +43,8 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
     csvResult: null,
     csvJobStatus: null,
     csvEventSource: null,
+    sortBy: 'created_at',
+    sortDir: 'DESC',
 
     resolveProductImage(img) {
       if (!img || !img.toString().trim()) {
@@ -767,8 +769,8 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         const params = new URLSearchParams({
           page: this.currentPage,
           per_page: this.perPage,
-          sort_by: 'created_at',
-          sort_dir: 'DESC'
+          sort_by: this.sortBy,
+          sort_dir: this.sortDir
         });
 
         if (this.filters.search) params.append('search', this.filters.search);
@@ -853,6 +855,17 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         attr_code: '',
         attr_value: ''
       };
+      this.currentPage = 1;
+      this.fetchProducts();
+    },
+
+    toggleSort(column) {
+      if (this.sortBy === column) {
+        this.sortDir = this.sortDir === 'ASC' ? 'DESC' : 'ASC';
+      } else {
+        this.sortBy = column;
+        this.sortDir = 'ASC';
+      }
       this.currentPage = 1;
       this.fetchProducts();
     },

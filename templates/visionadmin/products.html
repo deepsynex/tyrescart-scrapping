@@ -549,13 +549,38 @@
             <th class="p-4 w-10 text-center">
               <input type="checkbox" @change="toggleSelectAll($event)" :checked="isAllSelected()" class="w-4 h-4 rounded-sm border-slate-300 text-[#4B237B] focus:ring-[#4B237B]" />
             </th>
-            <th class="py-4 px-3">Product</th>
-            <th class="py-4 px-3">SKU</th>
+            <th class="py-4 px-3 cursor-pointer select-none hover:text-slate-700" @click="toggleSort('display_name')">
+              <span class="inline-flex items-center gap-1">
+                Product
+                <svg x-show="sortBy === 'display_name'" class="w-3 h-3" :class="sortDir === 'ASC' ? '' : 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+              </span>
+            </th>
+            <th class="py-4 px-3 cursor-pointer select-none hover:text-slate-700" @click="toggleSort('sku')">
+              <span class="inline-flex items-center gap-1">
+                SKU
+                <svg x-show="sortBy === 'sku'" class="w-3 h-3" :class="sortDir === 'ASC' ? '' : 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+              </span>
+            </th>
             <th class="py-4 px-3">Brand &amp; Set</th>
             <th class="py-4 px-3">Specs &amp; Attributes</th>
-            <th class="py-4 px-3">Price (AED)</th>
-            <th class="py-4 px-3">Stock</th>
-            <th class="py-4 px-3">Status</th>
+            <th class="py-4 px-3 cursor-pointer select-none hover:text-slate-700" @click="toggleSort('price')">
+              <span class="inline-flex items-center gap-1">
+                Price (AED)
+                <svg x-show="sortBy === 'price'" class="w-3 h-3" :class="sortDir === 'ASC' ? '' : 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+              </span>
+            </th>
+            <th class="py-4 px-3 cursor-pointer select-none hover:text-slate-700" @click="toggleSort('stock_qty')">
+              <span class="inline-flex items-center gap-1">
+                Stock
+                <svg x-show="sortBy === 'stock_qty'" class="w-3 h-3" :class="sortDir === 'ASC' ? '' : 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+              </span>
+            </th>
+            <th class="py-4 px-3 cursor-pointer select-none hover:text-slate-700" @click="toggleSort('status')">
+              <span class="inline-flex items-center gap-1">
+                Status
+                <svg x-show="sortBy === 'status'" class="w-3 h-3" :class="sortDir === 'ASC' ? '' : 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+              </span>
+            </th>
             <th class="py-4 px-4 text-right">Actions</th>
           </tr>
         </thead>
