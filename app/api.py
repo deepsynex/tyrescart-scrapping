@@ -4930,6 +4930,7 @@ def register_visionadmin_api_routes(app):
             'parts_category': request.args.get('parts_category'),
             'run_flat': request.args.get('run_flat'),
             'ev_rated': request.args.get('ev_rated'),
+            'has_image': request.args.get('has_image'),
             'year': request.args.get('year'),
             'country_of_origin': request.args.get('country_of_origin'),
         }
@@ -4979,6 +4980,7 @@ def register_visionadmin_api_routes(app):
         parts_category = request.args.get('parts_category')
         run_flat = request.args.get('run_flat')
         ev_rated = request.args.get('ev_rated')
+        has_image = request.args.get('has_image')
         rim_size = request.args.get('rim_size')
         speed_rating = request.args.get('speed_rating')
         country_of_origin = request.args.get('country_of_origin')
@@ -5008,6 +5010,7 @@ def register_visionadmin_api_routes(app):
             parts_category=parts_category if parts_category else None,
             run_flat=run_flat if run_flat not in (None, '') else None,
             ev_rated=ev_rated if ev_rated not in (None, '') else None,
+            has_image=has_image if has_image not in (None, '') else None,
             rim_size=rim_size if rim_size else None,
             speed_rating=speed_rating if speed_rating else None,
             country_of_origin=country_of_origin if country_of_origin else None,

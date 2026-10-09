@@ -138,6 +138,11 @@ class ProductExporter:
                     where_clauses.append("p.ev_rated = 1")
                 elif filters.get('ev_rated') in ('0', 'false', 0, False):
                     where_clauses.append("p.ev_rated = 0")
+
+                if filters.get('has_image') in ('1', 'true', 1, True):
+                    where_clauses.append("(p.image_path IS NOT NULL AND p.image_path != '')")
+                elif filters.get('has_image') in ('0', 'false', 0, False):
+                    where_clauses.append("(p.image_path IS NULL OR p.image_path = '')")
             else:
                 where_clauses.append("p.deleted_at IS NULL")
 

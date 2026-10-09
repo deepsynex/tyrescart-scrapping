@@ -330,7 +330,7 @@ class Product:
                  stock_status: str = None, vehicle_type: str = None, attribute_set_id: int = None,
                  is_trash: bool = False, sort_by: str = 'created_at', sort_dir: str = 'DESC',
                  tyres_category: str = None, parts_category: str = None,
-                 run_flat = None, ev_rated = None,
+                 run_flat = None, ev_rated = None, has_image = None,
                  rim_size: str = None, speed_rating: str = None,
                  country_of_origin: str = None, year = None,
                  oem_tyres = None,
@@ -484,6 +484,13 @@ class Product:
                     else:
                         where_clauses.append(f"NOT {ev_cond}")
                         params.extend(['% ev %', '%elect%', '%Elect%', '%EV%'])
+
+                if has_image is not None and str(has_image).strip() != '':
+                    wants_image = str(has_image).strip().lower() in ('1', 'true', 'yes')
+                    if wants_image:
+                        where_clauses.append("(p.image_path IS NOT NULL AND p.image_path != '')")
+                    else:
+                        where_clauses.append("(p.image_path IS NULL OR p.image_path = '')")
 
                 if rim_size:
                     clean_rim = str(rim_size).strip().upper().replace('R', '').replace('"', '')

@@ -285,6 +285,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       parts_category: '',
       run_flat: '',
       ev_rated: '',
+      has_image: '',
       rim_size: '',
       speed_rating: '',
       country_of_origin: '',
@@ -781,6 +782,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         if (this.filters.parts_category) params.append('parts_category', this.filters.parts_category);
         if (this.filters.run_flat) params.append('run_flat', this.filters.run_flat);
         if (this.filters.ev_rated) params.append('ev_rated', this.filters.ev_rated);
+        if (this.filters.has_image !== '') params.append('has_image', this.filters.has_image);
         if (this.filters.rim_size) params.append('rim_size', this.filters.rim_size);
         if (this.filters.speed_rating) params.append('speed_rating', this.filters.speed_rating);
         if (this.filters.country_of_origin) params.append('country_of_origin', this.filters.country_of_origin);
@@ -842,6 +844,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         parts_category: '',
         run_flat: '',
         ev_rated: '',
+        has_image: '',
         rim_size: '',
         speed_rating: '',
         country_of_origin: '',
@@ -1370,6 +1373,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
         if (this.filters.parts_category) params.set('parts_category', this.filters.parts_category);
         if (this.filters.run_flat !== '') params.set('run_flat', this.filters.run_flat);
         if (this.filters.ev_rated !== '') params.set('ev_rated', this.filters.ev_rated);
+        if (this.filters.has_image !== '') params.set('has_image', this.filters.has_image);
         if (this.filters.year) params.set('year', this.filters.year);
         if (this.filters.country_of_origin) params.set('country_of_origin', this.filters.country_of_origin);
       }

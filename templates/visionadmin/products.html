@@ -224,7 +224,7 @@
           </button>
           <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Filter by tyres category, run-flat, EV rating, rim size, or dynamic attribute</span>
           <span 
-            x-show="filters.tyres_category || filters.parts_category || filters.run_flat || filters.ev_rated || filters.rim_size || filters.speed_rating || filters.country_of_origin || filters.year || (filters.attr_code && filters.attr_value)" 
+            x-show="filters.tyres_category || filters.parts_category || filters.run_flat || filters.ev_rated || filters.has_image || filters.rim_size || filters.speed_rating || filters.country_of_origin || filters.year || (filters.attr_code && filters.attr_value)"
             class="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#f7f4fd] text-[#2b1247] border border-[#c0a8ed]"
           >
             Active Filters
@@ -292,6 +292,20 @@
               <option value="">All EV Types</option>
               <option value="1">EV Ready Only</option>
               <option value="0">Standard Only</option>
+            </select>
+          </div>
+
+          <!-- Image Filter -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Image</label>
+            <select
+              x-model="filters.has_image"
+              @change="onFilterChange()"
+              class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#4B237B] focus:ring-2 focus:ring-[#4B237B]/20 outline-hidden transition"
+            >
+              <option value="">All Products</option>
+              <option value="1">Has Image</option>
+              <option value="0">No Image</option>
             </select>
           </div>
 
