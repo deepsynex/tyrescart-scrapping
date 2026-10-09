@@ -1463,7 +1463,7 @@ function createStaggeredCombinedCardHTML(p) {
         ${rearColHTML}
       </div>
 
-      <!-- BOTTOM ACTION BAR: SET OF 4 PRICE (Left) + WHATSAPP & CONTACT US (Right) -->
+      <!-- BOTTOM ACTION BAR: SET OF 4 PRICE (Left) + CONTACT US (Right) -->
       <div class="tv-staggered-bottom-bar">
         <div class="tv-staggered-set4-block">
           <span>SET OF 4</span>
@@ -1471,34 +1471,19 @@ function createStaggeredCombinedCardHTML(p) {
           <strong>${totPriceFormatted}</strong>
         </div>
 
-        <div class="tv-card-actions-right">
-          <a href="https://wa.me/971505069575?text=${encodeURIComponent('Hi TyresVision, I would like to inquire about ' + displayName + ' (Front: ' + (front.full_size_spec || '') + ', Rear: ' + (rear.full_size_spec || '') + ', Set of 4 Price: AED ' + totPriceFormatted + ')')}"
-             target="_blank"
-             rel="noopener"
-             class="tv-btn-card-wa"
-             data-product-name="${displayName}"
-             data-enquiry-for="Product Enquiry: ${displayName}"
-             data-form-type="staggered_card_whatsapp"
-             onclick="event.stopPropagation()"
-             title="Chat on WhatsApp"
-             aria-label="Inquire on WhatsApp">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-            <span class="tv-wa-btn-label">WhatsApp</span>
-          </a>
-
-          <button type="button" class="tv-staggered-contact-btn tv-btn-card-contact"
-                  data-product-name="Front Tyre: ${escapeHtml(front.brand_name || brandName)} ${escapeHtml(front.full_size_spec || '')} ${escapeHtml(front.pattern_name || patternTitle)} ${escapeHtml(front.year || '')} &amp; Rear Tyre: ${escapeHtml(rear.brand_name || brandName)} ${escapeHtml(rear.full_size_spec || '')} ${escapeHtml(rear.pattern_name || patternTitle)} ${escapeHtml(rear.year || '')}"
-                  data-tyre-size="Front: ${escapeHtml(front.full_size_spec || '')} + Rear: ${escapeHtml(rear.full_size_spec || '')}"
-                  data-brand="${brandName}"
-                  data-price="${totPrice}"
-                  onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
-                  aria-label="Contact about ${displayName}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <span class="tv-btn-contact-text">Contact Us</span>
-          </button>
-        </div>
+        <button type="button" class="tv-staggered-contact-btn"
+                data-product-name="Front Tyre: ${escapeHtml(front.brand_name || brandName)} ${escapeHtml(front.full_size_spec || '')} ${escapeHtml(front.pattern_name || patternTitle)} ${escapeHtml(front.year || '')} &amp; Rear Tyre: ${escapeHtml(rear.brand_name || brandName)} ${escapeHtml(rear.full_size_spec || '')} ${escapeHtml(rear.pattern_name || patternTitle)} ${escapeHtml(rear.year || '')}"
+                data-tyre-size="Front: ${escapeHtml(front.full_size_spec || '')} + Rear: ${escapeHtml(rear.full_size_spec || '')}"
+                data-brand="${brandName}"
+                data-price="${totPrice}"
+                onclick="event.stopPropagation(); openProductEnquiryDrawer(this);"
+                aria-label="Contact about ${displayName}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>Contact Us</span>
+        </button>
       </div>
 
     </div>

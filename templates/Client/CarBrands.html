@@ -160,7 +160,7 @@
       >
         {% for m in makes %}
         <a 
-          href="/tyres/cars/{{ m.slug }}"
+          href="cars/{{ m.slug }}"
           class="tv-carbrand-card group bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-lg hover:border-[#7C3AED] hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center relative overflow-hidden h-28 sm:h-32 block no-underline"
           data-name="{{ m.name|lower }}"
           data-tier="{{ m.tier or 'all' }}"

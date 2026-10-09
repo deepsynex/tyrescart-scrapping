@@ -96,6 +96,11 @@ def sitemap_xml():
     return send_from_directory(BASE_DIR, 'sitemap.xml', mimetype='application/xml')
 
 
+@site_bp.route('/favicon.ico')
+def favicon_ico():
+    return send_from_directory(os.path.join(BASE_DIR, 'static', 'assets', 'images', 'logo'), 'favicon.ico', mimetype='image/x-icon')
+
+
 # ============================================================================
 # CLIENT STOREFRONT (HOME, BLOG, STATIC CMS PAGES WITH DYNAMIC MULTI-LOCALE)
 # ============================================================================
