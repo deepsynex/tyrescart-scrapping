@@ -178,6 +178,26 @@ class ProductImporter:
                 # Cache product table columns
                 cur.execute("DESCRIBE products")
                 product_columns = {r['Field'].strip().lower() for r in cur.fetchall()}
+
+                # Cache existing products by SKU and by display_name for fast matching
+                # (avoids a DB round-trip per row for both the primary SKU match and the
+                # name fallback match below).
+                cur.execute("SELECT id, sku, display_name, slug FROM products WHERE deleted_at IS NULL")
+                existing_products_by_sku = {}
+                existing_products_by_name = {}
+                for p in cur.fetchall():
+                    record = {
+                        'id': p['id'],
+                        'sku': p.get('sku'),
+                        'display_name': p.get('display_name'),
+                        'slug': p.get('slug')
+                    }
+                    p_sku = (p.get('sku') or '').strip().upper()
+                    if p_sku:
+                        existing_products_by_sku[p_sku] = record
+                    p_name = (p.get('display_name') or '').strip().lower()
+                    if p_name:
+                        existing_products_by_name[p_name] = record
         finally:
             conn.close()
 
@@ -235,14 +255,15 @@ class ProductImporter:
 
         for idx, row in enumerate(rows, start=2):
             try:
-                sku = (row.get('sku') or '').strip().upper()
+                sku = (row.get('sku') or row.get('item_code') or '').strip().upper()
+                raw_name = (row.get('name') or row.get('product_name') or row.get('display_name') or row.get('title') or row.get('product_title') or '').strip()
+                name = (raw_name or sku).strip()
+                display_name = (row.get('display_name') or row.get('product_name') or row.get('name') or row.get('title') or row.get('pattern') or name).strip()
+                item_code = (row.get('item_code') or sku).strip()
+
                 if not sku:
                     errors.append(f"Row {idx}: Missing SKU, skipped.")
                     continue
-
-                item_code = (row.get('item_code') or sku).strip()
-                name = (row.get('name') or row.get('product_name') or row.get('display_name') or sku).strip()
-                display_name = (row.get('display_name') or row.get('pattern') or name).strip()
                 
                 raw_price = row.get('price') or '0'
                 try:
@@ -482,14 +503,51 @@ class ProductImporter:
                 if country_val:
                     product_payload['country_of_origin'] = country_val
 
+                # Match existing product by SKU first, then fall back to an exact
+                # display_name match (e.g. the same tyre re-exported under a new SKU)
+                # so re-imports update the existing row instead of duplicating it.
+                # Both lookups go through the in-memory caches built above so a 17k-row
+                # import doesn't do two DB round-trips per row.
+                existing_p = existing_products_by_sku.get(sku)
+                if not existing_p:
+                    existing_p = Product.find_by_sku(sku)
+                if not existing_p and display_name:
+                    existing_p = existing_products_by_name.get(display_name.strip().lower())
+                if not existing_p and display_name:
+                    existing_p = Product.find_by_name(display_name)
+
+                # If updating an existing product and the CSV row did not provide an explicit url_key/slug,
+                # preserve the existing product's slug so products sharing the same name keep their unique URLs.
+                if existing_p and not (row.get('url_key') or row.get('slug')):
+                    product_payload['slug'] = existing_p.get('slug') or product_payload['slug']
+
                 # Insert or Update product
-                existing_p = Product.find_by_sku(sku)
                 if existing_p:
                     Product.update(existing_p['id'], product_payload, user_id=user_id)
                     updated += 1
+                    # Keep in-memory caches synchronized for subsequent rows in the same CSV
+                    cached_record = {
+                        'id': existing_p['id'],
+                        'sku': sku,
+                        'display_name': display_name,
+                        'slug': product_payload['slug']
+                    }
+                    existing_products_by_sku[sku] = cached_record
+                    if display_name:
+                        existing_products_by_name[display_name.strip().lower()] = cached_record
                 else:
-                    Product.create(product_payload, user_id=user_id)
+                    new_p_id = Product.create(product_payload, user_id=user_id)
                     imported += 1
+                    # Add to in-memory caches
+                    cached_record = {
+                        'id': new_p_id,
+                        'sku': sku,
+                        'display_name': display_name,
+                        'slug': product_payload['slug']
+                    }
+                    existing_products_by_sku[sku] = cached_record
+                    if display_name:
+                        existing_products_by_name[display_name.strip().lower()] = cached_record
 
             except Exception as ex:
                 errors.append(f"Row {idx} ({row.get('sku')}): {str(ex)}")

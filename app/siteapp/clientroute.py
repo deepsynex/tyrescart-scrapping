@@ -5,6 +5,7 @@
 # live in this file (/api/blogs, /api/blogs/<slug>) now live in the unified
 # app/api.py alongside the tcsadmin and visionadmin APIs.
 import json
+import html
 import os
 import math
 import re
@@ -804,6 +805,53 @@ def resolve_oem_car_logos(product_or_dict):
     return resolved_logos
 
 
+def _clean_multilingual_text(val, locale='en'):
+    """
+    Recursively unwrap and clean multilingual JSON strings or dicts,
+    stripping double-encoded JSON like '{"en": "{\"en\": \"...\"}"}'
+    and replacing legacy domain branding (e.g. Tyrescart -> TyresVision UAE).
+    """
+    if not val:
+        return ""
+    cur = val
+    if isinstance(cur, str):
+        cur = html.unescape(cur).strip()
+    for _ in range(5):
+        if isinstance(cur, dict):
+            cur = cur.get(locale) or cur.get('en') or (next(iter(cur.values())) if cur else '')
+        elif isinstance(cur, str):
+            s = cur.strip()
+            if (s.startswith('{') and s.endswith('}')) or (s.startswith('[') and s.endswith(']')):
+                try:
+                    cur = json.loads(s)
+                    continue
+                except Exception:
+                    m = re.search(r'["\'](?:' + (locale or 'en') + r'|en)["\']\s*:\s*["\']([^"\']+)["\']', s)
+                    if m:
+                        cur = m.group(1).strip()
+                    break
+            else:
+                if s.startswith('{') and ('"en"' in s or "'en'" in s):
+                    m = re.search(r'["\'](?:' + (locale or 'en') + r'|en)["\']\s*:\s*["\']([^"\']+)["\']', s)
+                    if m:
+                        cur = m.group(1).strip()
+                break
+        else:
+            break
+
+    if isinstance(cur, dict):
+        cur = cur.get(locale) or cur.get('en') or (next(iter(cur.values())) if cur else '')
+
+    res = str(cur).strip() if cur is not None else ""
+    if res in ('None', 'null', '{}', '[]'):
+        return ""
+
+    res = re.sub(r'\|\s*tyrescart(?:\s*uae)?\b', '| TyresVision UAE', res, flags=re.IGNORECASE)
+    res = re.sub(r'from\s+tyrescart\s+uae\b', 'from TyresVision UAE', res, flags=re.IGNORECASE)
+    res = re.sub(r'\btyrescart\b', 'TyresVision', res, flags=re.IGNORECASE)
+    return res
+
+
 def _format_product_for_client(p, locale='en'):
     p_dict = dict(p)
     attr = p_dict.get('attributes_json')
@@ -920,19 +968,9 @@ def _format_product_for_client(p, locale='en'):
     p_dict['price_set_of_8'] = f"{p_dict.get('set_of_8_price', price_val * 8):.2f}"
     p_dict['list_price'] = float(p_dict['list_price']) if p_dict.get('list_price') else None
 
-    # Ensure display_name is readable
-    if not p_dict.get('display_name'):
-        name_raw = p_dict.get('name')
-        if isinstance(name_raw, dict):
-            p_dict['display_name'] = name_raw.get(locale) or name_raw.get('en') or list(name_raw.values())[0] if name_raw else p_dict.get('sku')
-        elif isinstance(name_raw, str) and name_raw.strip().startswith('{'):
-            try:
-                n_json = json.loads(name_raw)
-                p_dict['display_name'] = n_json.get(locale) or n_json.get('en') or list(n_json.values())[0]
-            except Exception:
-                p_dict['display_name'] = name_raw
-        else:
-            p_dict['display_name'] = name_raw or p_dict.get('sku')
+    # Ensure display_name is readable and free of JSON artifacts
+    d_name = p_dict.get('display_name') or p_dict.get('name') or p_dict.get('sku')
+    p_dict['display_name'] = _clean_multilingual_text(d_name, locale) or str(d_name)
 
     # Pattern / Model Name (e.g. "Atrezzo Eco") - strip brand name as requested
     b_name = (p_dict.get('brand_name') or '').strip()
@@ -2532,78 +2570,27 @@ def _render_product_detail(slug_or_id, locale=None):
             price_f = float(p_row.get('price') or 121.0)
 
             # Short desc and full description faithfully from DB
-            short_desc = ""
-            if p_row.get('short_desc'):
-                try:
-                    sd = json.loads(p_row['short_desc']) if isinstance(p_row['short_desc'], str) else p_row['short_desc']
-                    if isinstance(sd, dict):
-                        short_desc = sd.get(locale) or sd.get('en') or next(iter(sd.values()), '')
-                    else:
-                        short_desc = str(sd)
-                except Exception:
-                    short_desc = str(p_row['short_desc'])
-            if not short_desc or str(short_desc).strip() in ('{}', 'None', ''):
-                short_desc = raw_attrs.get('short_description') or ''
+            short_desc = _clean_multilingual_text(p_row.get('short_desc') or raw_attrs.get('short_description'), locale)
 
-            desc = ""
-            if p_row.get('description'):
-                try:
-                    d = json.loads(p_row['description']) if isinstance(p_row['description'], str) else p_row['description']
-                    if isinstance(d, dict):
-                        desc = d.get(locale) or d.get('en') or next(iter(d.values()), '')
-                    else:
-                        desc = str(d)
-                except Exception:
-                    desc = str(p_row['description'])
-
-            if not desc or str(desc).strip() in ('{}', 'None', ''):
-                desc = raw_attrs.get('description') or ''
-            if not desc or str(desc).strip() in ('{}', 'None', ''):
-                desc = short_desc
-            if not desc or str(desc).strip() in ('{}', 'None', ''):
-                if p_row.get('meta_desc'):
-                    try:
-                        md = json.loads(p_row['meta_desc']) if isinstance(p_row['meta_desc'], str) else p_row['meta_desc']
-                        if isinstance(md, dict):
-                            desc = md.get(locale) or md.get('en') or next(iter(md.values()), '')
-                        else:
-                            desc = str(md)
-                    except Exception:
-                        desc = str(p_row['meta_desc'])
-            if not desc or str(desc).strip() in ('{}', 'None', ''):
-                desc = raw_attrs.get('meta_description') or ''
-            if not desc or str(desc).strip() in ('{}', 'None', ''):
+            desc = _clean_multilingual_text(p_row.get('description') or raw_attrs.get('description'), locale)
+            if not desc:
+                desc = short_desc or _clean_multilingual_text(p_row.get('meta_desc') or raw_attrs.get('meta_description'), locale)
+            if not desc:
                 desc = f"The {brand_name} {pattern_name} is designed for a safer and smoother drive with outstanding wet braking, long-lasting performance and excellent fuel efficiency. Ideal for everyday driving."
 
             # Parse meta_desc and meta_title for SEO
-            meta_desc_val = ""
-            if p_row.get('meta_desc'):
-                try:
-                    md = json.loads(p_row['meta_desc']) if isinstance(p_row['meta_desc'], str) else p_row['meta_desc']
-                    if isinstance(md, dict):
-                        meta_desc_val = md.get(locale) or md.get('en') or next(iter(md.values()), '')
-                    else:
-                        meta_desc_val = str(md)
-                except Exception:
-                    meta_desc_val = str(p_row['meta_desc'])
+            meta_desc_val = _clean_multilingual_text(p_row.get('meta_desc') or raw_attrs.get('meta_description'), locale)
             if not meta_desc_val:
-                meta_desc_val = raw_attrs.get('meta_description') or f"{p_row.get('display_name') or (brand_name + ' ' + size_label)} in stock with free delivery, warranty and mobile fitting across UAE."
+                meta_desc_val = f"{_clean_multilingual_text(p_row.get('display_name'), locale) or (brand_name + ' ' + size_label)} in stock with free delivery, warranty and mobile fitting across UAE."
 
-            meta_title_val = ""
-            if p_row.get('meta_title'):
-                try:
-                    mt = json.loads(p_row['meta_title']) if isinstance(p_row['meta_title'], str) else p_row['meta_title']
-                    if isinstance(mt, dict):
-                        meta_title_val = mt.get(locale) or mt.get('en') or next(iter(mt.values()), '')
-                    else:
-                        meta_title_val = str(mt)
-                except Exception:
-                    meta_title_val = str(p_row['meta_title'])
+            meta_title_val = _clean_multilingual_text(p_row.get('meta_title'), locale) or _clean_multilingual_text(raw_attrs.get('meta_title'), locale)
             if not meta_title_val:
-                meta_title_val = raw_attrs.get('meta_title') or f"{p_row.get('display_name') or (brand_name + ' ' + size_label)} | Buy Online at TyresVision UAE"
+                meta_title_val = f"{_clean_multilingual_text(p_row.get('display_name'), locale) or (brand_name + ' ' + size_label)} | Buy Online at TyresVision UAE"
 
-            # Image
-            img_path = p_row.get('image_path') or '/static/uploads/products/michelin_energy_xm2_wheel.jpg'
+            # Image. Falls back to the neutral placeholder rather than a real
+            # Michelin product shot -- the old default put a branded photo on
+            # products of other brands.
+            img_path = p_row.get('image_path') or '/static/assets/images/no-image-available.svg'
             if not img_path.startswith('/'):
                 img_path = '/' + img_path.replace('\\', '/')
 
@@ -2640,7 +2627,8 @@ def _render_product_detail(slug_or_id, locale=None):
                 'id': p_row['id'],
                 'slug': p_row['slug'],
                 'sku': p_row['sku'],
-                'title': p_row.get('display_name') or f"{brand_name} {size_label} {load_speed}",
+                'title': _clean_multilingual_text(p_row.get('display_name') or p_row.get('name'), locale) or f"{brand_name} {size_label} {load_speed}",
+                'display_name': _clean_multilingual_text(p_row.get('display_name') or p_row.get('name'), locale) or f"{brand_name} {size_label} {load_speed}",
                 'brand_name': brand_name,
                 'brand_logo': brand_logo,
                 'pattern_name': pattern_name,
@@ -2748,10 +2736,70 @@ def _render_product_detail(slug_or_id, locale=None):
 
             related_products = [_format_product_for_client(r, locale) for r in rel_rows]
 
+            canonical_url = f"https://www.tyresvision.com/product/{product['slug']}"
+            raw_img = product.get('image_path') or '/static/assets/images/online-tyres-shop-dubai.png'
+            if raw_img.startswith('http://') or raw_img.startswith('https://'):
+                full_image_url = raw_img
+            else:
+                if not raw_img.startswith('/'):
+                    raw_img = '/' + raw_img
+                full_image_url = f"https://www.tyresvision.com{raw_img}"
+
+            og_title = product.get('meta_title') or f"{product.get('title')} | Buy Online at TyresVision UAE"
+            og_description = product.get('meta_description') or product.get('description') or f"Buy {product.get('title')} online in UAE with free fitting and warranty. Best tyre prices at TyresVision."
+
+            page_og_tags = {
+                'og_type': 'product',
+                'og_url': canonical_url,
+                'og_title': og_title,
+                'og_description': og_description,
+                'og_image': full_image_url,
+                'og_locale': 'ar_AE' if locale == 'ar' else 'en_AE',
+                'og_image_width': 800,
+                'og_image_height': 800,
+            }
+
+            page_twitter_tags = {
+                'twitter_card': 'summary_large_image',
+                'twitter_title': og_title,
+                'twitter_description': og_description,
+                'twitter_image': full_image_url,
+            }
+
+            product_schema = {
+                "@context": "https://schema.org/",
+                "@type": "Product",
+                "name": product.get('title') or product.get('display_name'),
+                "image": [full_image_url],
+                "description": og_description,
+                "sku": product.get('sku') or f"TYRE-{product.get('id')}",
+                "brand": {
+                    "@type": "Brand",
+                    "name": product.get('brand_name') or "TyresVision"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "url": canonical_url,
+                    "priceCurrency": "AED",
+                    "price": f"{product.get('price'):.2f}" if product.get('price') else "0.00",
+                    "itemCondition": "https://schema.org/NewCondition",
+                    "availability": "https://schema.org/InStock" if product.get('in_stock') else "https://schema.org/OutOfStock",
+                    "seller": {
+                        "@type": "Organization",
+                        "name": "TyresVision"
+                    }
+                }
+            }
+            page_schema_json = json.dumps(product_schema, ensure_ascii=False)
+
             resp = make_response(render_template(
                 'Client/ProductDetail.html',
                 product=product,
                 related_products=related_products,
+                page_og_tags=page_og_tags,
+                page_twitter_tags=page_twitter_tags,
+                page_schema_json=page_schema_json,
+                canonical_url=canonical_url,
                 locale=locale
             ))
             resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
@@ -4702,6 +4750,14 @@ def api_tyre_sizes_cascade():
             except ValueError:
                 return (1, str(x))
         options = sorted(cleaned_vals, key=_sort_key)
+
+    if not options:
+        if step == 'width':
+            options = ['155', '165', '175', '185', '195', '205', '215', '225', '235', '245', '255', '265', '275', '285', '295', '305', '315', '325']
+        elif step == 'profile':
+            options = ['30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85']
+        elif step == 'rim':
+            options = ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
 
     return jsonify({'success': True, 'step': step, 'options': options})
 

@@ -5,12 +5,15 @@ Phase 2.1 & 3.1 & 6.4 Catalog Product Implementation
 """
 
 import json
+import logging
 import re
 from datetime import datetime, timezone
 from decimal import Decimal
 from db import get_connection
 from services.attribute_service import AttributeService
 from i18n import localize_value
+
+logger = logging.getLogger(__name__)
 try:
     from services.es_service import es_service
 except Exception:
@@ -694,6 +697,50 @@ class Product:
             conn.close()
 
     @classmethod
+    def find_by_name(cls, display_name: str, exclude_id: int = None):
+        """Exact, case-insensitive match on display_name, localized name, or slug --
+        used for imports where a product may have been re-assigned a new SKU or
+        identified by product name."""
+        if not display_name or not str(display_name).strip():
+            return None
+        clean_name = str(display_name).strip()
+        slug_val = cls.slugify(clean_name)
+        conn = get_connection()
+        try:
+            with conn.cursor() as cursor:
+                sql = """
+                    SELECT id, sku, display_name, slug 
+                    FROM products 
+                    WHERE (
+                        LOWER(TRIM(display_name)) = LOWER(%s)
+                        OR JSON_UNQUOTE(JSON_EXTRACT(name, '$.en')) = %s
+                        OR (slug = %s AND %s != '')
+                    ) AND deleted_at IS NULL
+                """
+                params = [clean_name, clean_name, slug_val, slug_val]
+                if exclude_id:
+                    sql += " AND id != %s"
+                    params.append(exclude_id)
+                sql += " LIMIT 1"
+                cursor.execute(sql, tuple(params))
+                return cursor.fetchone()
+        finally:
+            conn.close()
+
+    @classmethod
+    def find_by_sku_or_name(cls, sku: str = None, name: str = None, exclude_id: int = None):
+        """
+        Finds existing product by SKU first, then by product name / display_name / slug.
+        """
+        if sku and str(sku).strip():
+            p = cls.find_by_sku(str(sku).strip(), exclude_id=exclude_id)
+            if p:
+                return p
+        if name and str(name).strip():
+            return cls.find_by_name(str(name).strip(), exclude_id=exclude_id)
+        return None
+
+    @classmethod
     def find_by_slug(cls, slug: str, exclude_id: int = None):
         conn = get_connection()
         try:
@@ -974,8 +1021,8 @@ class Product:
                 if es_service:
                     try:
                         es_service.index_single_product(new_id)
-                    except Exception:
-                        pass
+                    except Exception as _es_err:
+                        logger.warning("Elasticsearch index failed for product %s: %s", new_id, _es_err)
 
                 return new_id
         finally:
@@ -1041,6 +1088,11 @@ class Product:
                     slug_candidate = dyn_attrs.get('url_key')
                 if slug_candidate:
                     clean_slug = cls.slugify(slug_candidate)
+                    base_slug = clean_slug
+                    counter = 1
+                    while cls.find_by_slug(clean_slug, exclude_id=product_id):
+                        clean_slug = f"{base_slug}-{counter}"
+                        counter += 1
                     fields.append("slug = %s")
                     params.append(clean_slug)
 
@@ -1331,8 +1383,8 @@ class Product:
                 if es_service:
                     try:
                         es_service.index_single_product(product_id)
-                    except Exception:
-                        pass
+                    except Exception as _es_err:
+                        logger.warning("Elasticsearch index failed for product %s: %s", product_id, _es_err)
 
                 return True
         finally:
@@ -1354,8 +1406,8 @@ class Product:
                 if deleted and es_service:
                     try:
                         es_service.delete_single_product(product_id)
-                    except Exception:
-                        pass
+                    except Exception as _es_err:
+                        logger.warning("Elasticsearch delete failed for product %s: %s", product_id, _es_err)
                 return deleted
         finally:
             conn.close()
@@ -1376,8 +1428,8 @@ class Product:
                 if restored and es_service:
                     try:
                         es_service.index_single_product(product_id)
-                    except Exception:
-                        pass
+                    except Exception as _es_err:
+                        logger.warning("Elasticsearch index failed for product %s: %s", product_id, _es_err)
                 return restored
         finally:
             conn.close()
@@ -1393,8 +1445,8 @@ class Product:
                 if purged and es_service:
                     try:
                         es_service.delete_single_product(product_id)
-                    except Exception:
-                        pass
+                    except Exception as _es_err:
+                        logger.warning("Elasticsearch delete failed for product %s: %s", product_id, _es_err)
                 return purged
         finally:
             conn.close()
@@ -1429,15 +1481,17 @@ class Product:
                 conn.commit()
                 affected = cursor.rowcount
                 if es_service and ids:
-                    try:
-                        if action in ('delete', 'inactive'):
-                            for pid in ids:
+                    # Per item: one product failing to sync must not skip the rest.
+                    removing = action in ('delete', 'inactive')
+                    for pid in ids:
+                        try:
+                            if removing:
                                 es_service.delete_single_product(int(pid))
-                        else:
-                            for pid in ids:
+                            else:
                                 es_service.index_single_product(int(pid))
-                    except Exception:
-                        pass
+                        except Exception as _es_err:
+                            logger.warning("Elasticsearch %s failed for product %s: %s",
+                                           'delete' if removing else 'index', pid, _es_err)
                 return affected
         finally:
             conn.close()
