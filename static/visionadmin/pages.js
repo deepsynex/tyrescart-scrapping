@@ -223,6 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTable(pages) {
+    if (window.jQuery && $.fn.DataTable && $.fn.DataTable.isDataTable('#pages-table')) {
+      try {
+        $('#pages-table').DataTable().destroy();
+      } catch (e) {
+        console.warn('DataTable destroy error:', e);
+      }
+    }
+
     if (!pages.length) {
       tableBody.innerHTML = `
         <tr>
@@ -351,29 +359,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
 
     if (window.jQuery && $.fn.DataTable) {
-      if ($.fn.DataTable.isDataTable('#pages-table')) {
-        $('#pages-table').DataTable().destroy();
+      try {
+        $('#pages-table').DataTable({
+          responsive: true,
+          pageLength: 10,
+          lengthMenu: [10, 25, 50, 100],
+          pagingType: 'full_numbers',
+          autoWidth: false,
+          columnDefs: [
+            { orderable: false, targets: [1, 4] }
+          ],
+          order: [[3, 'desc']],
+          language: {
+            search: '',
+            searchPlaceholder: 'Search pages...',
+            lengthMenu: 'Show _MENU_ per page',
+            info: 'Showing _START_ to _END_ of _TOTAL_ pages',
+            infoEmpty: 'No pages to show',
+            infoFiltered: '(filtered from _MAX_ total)',
+            paginate: { first: 'First', last: 'Last', next: 'Next', previous: 'Previous' }
+          }
+        });
+      } catch (e) {
+        console.warn('DataTable init error:', e);
       }
-      $('#pages-table').DataTable({
-        responsive: true,
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        pagingType: 'full_numbers',
-        autoWidth: false,
-        columnDefs: [
-          { orderable: false, targets: [1, 4] }
-        ],
-        order: [[3, 'desc']],
-        language: {
-          search: '',
-          searchPlaceholder: 'Search pages...',
-          lengthMenu: 'Show _MENU_ per page',
-          info: 'Showing _START_ to _END_ of _TOTAL_ pages',
-          infoEmpty: 'No pages to show',
-          infoFiltered: '(filtered from _MAX_ total)',
-          paginate: { first: 'First', last: 'Last', next: 'Next', previous: 'Previous' }
-        }
-      });
     }
   }
 

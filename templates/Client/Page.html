@@ -2,7 +2,7 @@
 
 {% set _raw_seo_title = (page.get_seo_title(locale) if page else '') %}
 {% set page_title = _raw_seo_title or ((page.get_title(locale) if page else (slug | replace('-', ' ') | title)) + ' | TyresVision UAE') %}
-{% set page_desc = (page.get_meta_desc(locale) if page else '') or "TyresVision UAE — 60+ genuine tyre brands with upfront pricing and free fitting across Dubai, Abu Dhabi and all Emirates." %}
+{% set page_desc = (page.get_meta_desc(locale) if page else '') or "TyresVision UAE — 60+ genuine tyre brands with upfront pricing and  fitting across Dubai, Abu Dhabi and all Emirates." %}
 {% set page_h1 = (page.get_title(locale) if page else '') or (slug | replace('-', ' ') | title) %}
 {% set page_body = page.get_content(locale) if page else '' %}
 
@@ -60,7 +60,7 @@
             <h1 class="tv-page-h1">{{ page_h1 }}</h1>
           </header>
           <div class="tv-page-content article-prose">
-            <p>{{ _("TyresVision is the UAE's premier tyre fitting and ecommerce platform, providing access to 60+ global tyre brands with transparent pricing and free doorstep mobile fitting across Dubai, Abu Dhabi, and Sharjah.") }}</p>
+            <p>{{ _("TyresVision is the UAE's premier tyre fitting and ecommerce platform, providing access to 60+ global tyre brands with transparent pricing and  doorstep mobile fitting across Dubai, Abu Dhabi, and Sharjah.") }}</p>
           </div>
         </div>
       </div>

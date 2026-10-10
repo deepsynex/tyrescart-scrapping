@@ -1,10 +1,20 @@
 {% extends 'Client/layout.html' %}
 
-{% block title %}{% if active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE - Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
+{% block title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
 
-{% block meta_description %}{% if active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium car tyres online in UAE. Leading brands including Michelin, Bridgestone, Continental, Pirelli & Goodyear with free doorstep mobile fitting.{% endif %}{% endblock %}
+{% block meta_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
 
-{% block canonical_url %}{% if active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
+{% block canonical_url %}{% if active_ev_tyre %}https://www.tyresvision.com/tyres/ev{% elif active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
+
+{% block og_title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
+
+{% block og_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
+
+{% block og_url %}{% if active_ev_tyre %}https://www.tyresvision.com/tyres/ev{% elif active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
+
+{% block twitter_title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
+
+{% block twitter_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap">
@@ -25,6 +35,8 @@
         <span class="sep">&rsaquo;</span>
         {% if is_staggered %}
         <span class="current" id="tv-breadcrumb-current">Staggered ({{ front_size_label }} + {{ rear_size_label }})</span>
+        {% elif active_ev_tyre %}
+        <span class="current" id="tv-breadcrumb-current">EV Tyres</span>
         {% elif active_brand_name %}
         <span class="current" id="tv-breadcrumb-current">{{ active_brand_name }}</span>
         {% else %}
@@ -33,19 +45,16 @@
       </nav>
 
       <h1 class="tv-cat-hero-title" id="tv-hero-title">
-        {% if active_brand_name %}
+        {% if active_ev_tyre %}
+        Electric Vehicle Tyres Online in UAE
+        {% elif active_brand_name %}
         Buy {{ active_brand_name }} Tyres Online UAE
         {% else %}
         Buy All Types of Tyres Online in UAE
         {% endif %}
       </h1>
     </div>
-
-    <!-- Floating Script Badge in Sky: "Drive with Confidence" -->
-    <div class="tv-cat-sky-badge" aria-hidden="true">
-      <span>Drive</span>
-      <span>with Confidence</span>
-    </div>
+    
   </div>
 </section>
 
@@ -99,7 +108,12 @@
 
         <!-- 1. Tyres Category -->
         {% set has_active_tc = active_tyres_categories and active_tyres_categories|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_tc %}is-collapsed{% endif %}">
+        {% set ns_tc = namespace(has_visible=false) %}
+        {% for tc in filter_tyres_categories %}
+          {% set is_active_tc = active_tyres_categories and (tc.category in active_tyres_categories or (tc.category|lower) in active_tyres_categories or (tc.category|capitalize) in active_tyres_categories) %}
+          {% if tc.count > 0 or is_active_tc %}{% set ns_tc.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_tc %}is-collapsed{% endif %} {% if not ns_tc.has_visible %}tv-group-empty{% endif %}" {% if not ns_tc.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_tc %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -118,7 +132,7 @@
             {% endif %}
             {% for tc in filter_tyres_categories %}
             {% set is_active_tc = active_tyres_categories and (tc.category in active_tyres_categories or (tc.category|lower) in active_tyres_categories or (tc.category|capitalize) in active_tyres_categories) %}
-            <label class="tv-filter-item" data-filter-name="{{ tc.category }}">
+            <label class="tv-filter-item {% if tc.count == 0 and not is_active_tc %}tv-filter-empty{% endif %}" {% if tc.count == 0 and not is_active_tc %}style="display:none;"{% endif %} data-filter-name="{{ tc.category }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="tyres_category" value="{{ tc.category }}" {% if is_active_tc %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ tc.category }}</span>
@@ -131,7 +145,12 @@
 
         <!-- 2. Brand -->
         {% set has_active_brand = active_brands and active_brands|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_brand %}is-collapsed{% endif %}">
+        {% set ns_b = namespace(has_visible=false) %}
+        {% for b in filter_brands %}
+          {% set is_active_b = active_brands and (b.slug in active_brands or (b.name|lower) in active_brands) %}
+          {% if b.count > 0 or is_active_b %}{% set ns_b.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_brand %}is-collapsed{% endif %} {% if not ns_b.has_visible %}tv-group-empty{% endif %}" {% if not ns_b.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_brand %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -149,7 +168,7 @@
             {% endif %}
             {% for b in filter_brands %}
             {% set is_active_b = active_brands and (b.slug in active_brands or (b.name|lower) in active_brands) %}
-            <label class="tv-filter-item" data-filter-name="{{ b.name }}">
+            <label class="tv-filter-item {% if b.count == 0 and not is_active_b %}tv-filter-empty{% endif %}" {% if b.count == 0 and not is_active_b %}style="display:none;"{% endif %} data-filter-name="{{ b.name }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="brand" value="{{ b.slug }}" {% if is_active_b %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ b.name }}</span>
@@ -162,7 +181,12 @@
 
         <!-- 3. Pattern -->
         {% set has_active_pattern = active_patterns and active_patterns|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_pattern %}is-collapsed{% endif %}">
+        {% set ns_p = namespace(has_visible=false) %}
+        {% for p in filter_patterns %}
+          {% set is_active_p = active_patterns and (p.pattern in active_patterns or (p.pattern|lower) in active_patterns or (p.pattern|lower|replace(' ', '-')) in active_patterns or (p.pattern|lower|replace('-', ' ')) in active_patterns) %}
+          {% if p.count > 0 or is_active_p %}{% set ns_p.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_pattern %}is-collapsed{% endif %} {% if not ns_p.has_visible %}tv-group-empty{% endif %}" {% if not ns_p.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_pattern %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -184,7 +208,7 @@
             {% endif %}
             {% for p in filter_patterns %}
             {% set is_active_p = active_patterns and (p.pattern in active_patterns or (p.pattern|lower) in active_patterns or (p.pattern|lower|replace(' ', '-')) in active_patterns or (p.pattern|lower|replace('-', ' ')) in active_patterns) %}
-            <label class="tv-filter-item" data-filter-name="{{ p.pattern }}">
+            <label class="tv-filter-item {% if p.count == 0 and not is_active_p %}tv-filter-empty{% endif %}" {% if p.count == 0 and not is_active_p %}style="display:none;"{% endif %} data-filter-name="{{ p.pattern }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="pattern" value="{{ p.pattern }}" {% if is_active_p %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ p.pattern }}</span>
@@ -197,7 +221,12 @@
 
         <!-- 4. Tyre Marking -->
         {% set has_active_tm = active_tyre_markings and active_tyre_markings|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_tm %}is-collapsed{% endif %}">
+        {% set ns_tm = namespace(has_visible=false) %}
+        {% for tm in filter_tyre_markings %}
+          {% set is_active_tm = active_tyre_markings and (tm.marking in active_tyre_markings or (tm.marking|lower) in active_tyre_markings) %}
+          {% if tm.count > 0 or is_active_tm %}{% set ns_tm.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_tm %}is-collapsed{% endif %} {% if not ns_tm.has_visible %}tv-group-empty{% endif %}" {% if not ns_tm.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_tm %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -214,7 +243,7 @@
             {% endif %}
             {% for tm in filter_tyre_markings %}
             {% set is_active_tm = active_tyre_markings and (tm.marking in active_tyre_markings or (tm.marking|lower) in active_tyre_markings) %}
-            <label class="tv-filter-item" data-filter-name="{{ tm.marking }}">
+            <label class="tv-filter-item {% if tm.count == 0 and not is_active_tm %}tv-filter-empty{% endif %}" {% if tm.count == 0 and not is_active_tm %}style="display:none;"{% endif %} data-filter-name="{{ tm.marking }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="tyre_marking" value="{{ tm.marking }}" {% if is_active_tm %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ tm.marking }}</span>
@@ -227,7 +256,12 @@
 
         <!-- 5. OEM Tyres -->
         {% set has_active_oem = active_oem_tyres and active_oem_tyres|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_oem %}is-collapsed{% endif %}">
+        {% set ns_oem = namespace(has_visible=false) %}
+        {% for o in filter_oem_tyres %}
+          {% set is_active_o = active_oem_tyres and (o.oem in active_oem_tyres or (o.oem|lower) in active_oem_tyres or (o.oem|lower|replace(' ', '-')) in active_oem_tyres or (o.oem|lower|replace('-', ' ')) in active_oem_tyres) %}
+          {% if o.count > 0 or is_active_o %}{% set ns_oem.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_oem %}is-collapsed{% endif %} {% if not ns_oem.has_visible %}tv-group-empty{% endif %}" {% if not ns_oem.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_oem %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -245,7 +279,7 @@
             {% endif %}
             {% for o in filter_oem_tyres %}
             {% set is_active_o = active_oem_tyres and (o.oem in active_oem_tyres or (o.oem|lower) in active_oem_tyres or (o.oem|lower|replace(' ', '-')) in active_oem_tyres or (o.oem|lower|replace('-', ' ')) in active_oem_tyres) %}
-            <label class="tv-filter-item" data-filter-name="{{ o.oem }}">
+            <label class="tv-filter-item {% if o.count == 0 and not is_active_o %}tv-filter-empty{% endif %}" {% if o.count == 0 and not is_active_o %}style="display:none;"{% endif %} data-filter-name="{{ o.oem }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="oem" value="{{ o.oem }}" {% if is_active_o %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ o.oem }}</span>
@@ -258,7 +292,12 @@
 
         <!-- 6. Promotion -->
         {% set has_active_promo = active_promotions and active_promotions|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_promo %}is-collapsed{% endif %}">
+        {% set ns_pr = namespace(has_visible=false) %}
+        {% for pr in filter_promotions %}
+          {% set is_active_pr = active_promotions and (pr.key in active_promotions or (pr.key|replace('_', '-')) in active_promotions) %}
+          {% if pr.count > 0 or is_active_pr %}{% set ns_pr.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_promo %}is-collapsed{% endif %} {% if not ns_pr.has_visible %}tv-group-empty{% endif %}" {% if not ns_pr.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_promo %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -278,7 +317,7 @@
             {% endif %}
             {% for pr in filter_promotions %}
             {% set is_active_pr = active_promotions and (pr.key in active_promotions or (pr.key|replace('_', '-')) in active_promotions) %}
-            <label class="tv-filter-item" data-filter-name="{{ pr.label }}">
+            <label class="tv-filter-item {% if pr.count == 0 and not is_active_pr %}tv-filter-empty{% endif %}" {% if pr.count == 0 and not is_active_pr %}style="display:none;"{% endif %} data-filter-name="{{ pr.label }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="promotion" value="{{ pr.key }}" {% if is_active_pr %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ pr.label }}</span>
@@ -290,7 +329,9 @@
         </div>
 
         <!-- 7. RunFlat -->
-        <div class="tv-filter-group {% if not active_runflat %}is-collapsed{% endif %}">
+        {% set is_active_rf = active_runflat and active_runflat|length > 0 %}
+        {% set rf_has_count = filter_runflat_count and filter_runflat_count > 0 %}
+        <div class="tv-filter-group {% if not active_runflat %}is-collapsed{% endif %} {% if not rf_has_count and not is_active_rf %}tv-group-empty{% endif %}" {% if not rf_has_count and not is_active_rf %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not active_runflat %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -306,18 +347,20 @@
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
           <div class="tv-filter-list" id="filter-runflat-list">
-            <label class="tv-filter-item" data-filter-name="Run Flat">
+            <label class="tv-filter-item {% if not rf_has_count and not is_active_rf %}tv-filter-empty{% endif %}" {% if not rf_has_count and not is_active_rf %}style="display:none;"{% endif %} data-filter-name="Run Flat">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="runflat" value="runflat" {% if active_runflat %}checked{% endif %} onchange="filterProducts()">
                 <span>RunFlat</span>
               </span>
-              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 312) }}</span>
+              <span class="tv-filter-count" id="tv-filter-count-runflat">{{ "{:,}".format(filter_runflat_count or 0) }}</span>
             </label>
           </div>
         </div>
 
         <!-- 8. EV Tyre -->
-        <div class="tv-filter-group {% if not active_ev_tyre %}is-collapsed{% endif %}">
+        {% set is_active_ev = active_ev_tyre and active_ev_tyre|length > 0 %}
+        {% set ev_has_count = filter_ev_tyre_count and filter_ev_tyre_count > 0 %}
+        <div class="tv-filter-group {% if not active_ev_tyre %}is-collapsed{% endif %} {% if not ev_has_count and not is_active_ev %}tv-group-empty{% endif %}" {% if not ev_has_count and not is_active_ev %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not active_ev_tyre %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -328,7 +371,7 @@
             <svg class="tv-filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
           </div>
           <div class="tv-filter-list" id="filter-ev-list">
-            <label class="tv-filter-item" data-filter-name="EV Tyre">
+            <label class="tv-filter-item {% if not ev_has_count and not is_active_ev %}tv-filter-empty{% endif %}" {% if not ev_has_count and not is_active_ev %}style="display:none;"{% endif %} data-filter-name="EV Tyre">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="ev_tyre" value="ev" {% if active_ev_tyre %}checked{% endif %} onchange="filterProducts()">
                 <span>EV Tyre</span>
@@ -340,7 +383,12 @@
 
         <!-- 9. Warranty Period -->
         {% set has_active_w = active_warranties and active_warranties|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_w %}is-collapsed{% endif %}">
+        {% set ns_w = namespace(has_visible=false) %}
+        {% for w in filter_warranties %}
+          {% set is_active_w = active_warranties and (w.warranty in active_warranties or (w.warranty|lower) in active_warranties) %}
+          {% if w.count > 0 or is_active_w %}{% set ns_w.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_w %}is-collapsed{% endif %} {% if not ns_w.has_visible %}tv-group-empty{% endif %}" {% if not ns_w.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_w %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -356,7 +404,7 @@
             {% endif %}
             {% for w in filter_warranties %}
             {% set is_active_w = active_warranties and (w.warranty in active_warranties or (w.warranty|lower) in active_warranties) %}
-            <label class="tv-filter-item" data-filter-name="{{ w.warranty }}">
+            <label class="tv-filter-item {% if w.count == 0 and not is_active_w %}tv-filter-empty{% endif %}" {% if w.count == 0 and not is_active_w %}style="display:none;"{% endif %} data-filter-name="{{ w.warranty }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="warranty" value="{{ w.warranty }}" {% if is_active_w %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ w.warranty }}</span>
@@ -369,7 +417,12 @@
 
         <!-- 10. Year -->
         {% set has_active_y = active_years and active_years|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_y %}is-collapsed{% endif %}">
+        {% set ns_y = namespace(has_visible=false) %}
+        {% for y in filter_years %}
+          {% set is_active_y = active_years and (y.year|string in active_years) %}
+          {% if y.count > 0 or is_active_y %}{% set ns_y.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_y %}is-collapsed{% endif %} {% if not ns_y.has_visible %}tv-group-empty{% endif %}" {% if not ns_y.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_y %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -388,7 +441,7 @@
             {% endif %}
             {% for y in filter_years %}
             {% set is_active_y = active_years and (y.year|string in active_years) %}
-            <label class="tv-filter-item" data-filter-name="{{ y.year }}">
+            <label class="tv-filter-item {% if y.count == 0 and not is_active_y %}tv-filter-empty{% endif %}" {% if y.count == 0 and not is_active_y %}style="display:none;"{% endif %} data-filter-name="{{ y.year }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="year" value="{{ y.year }}" {% if is_active_y %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ y.year }}</span>
@@ -401,7 +454,12 @@
 
         <!-- 11. Origin -->
         {% set has_active_origin = active_origins and active_origins|length > 0 %}
-        <div class="tv-filter-group {% if not has_active_origin %}is-collapsed{% endif %}">
+        {% set ns_org = namespace(has_visible=false) %}
+        {% for org in filter_origins %}
+          {% set is_active_org = active_origins and (org.origin in active_origins or (org.origin|lower) in active_origins or (org.origin|lower|replace(' ', '-')) in active_origins or (org.origin|lower|replace('-', ' ')) in active_origins) %}
+          {% if org.count > 0 or is_active_org %}{% set ns_org.has_visible = true %}{% endif %}
+        {% endfor %}
+        <div class="tv-filter-group {% if not has_active_origin %}is-collapsed{% endif %} {% if not ns_org.has_visible %}tv-group-empty{% endif %}" {% if not ns_org.has_visible %}style="display:none;"{% endif %}>
           <div class="tv-filter-header {% if not has_active_origin %}collapsed{% endif %}" onclick="toggleFilterGroup(this)">
             <div class="tv-filter-header-title">
               <svg class="tv-filter-group-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -420,7 +478,7 @@
             {% endif %}
             {% for org in filter_origins %}
             {% set is_active_org = active_origins and (org.origin in active_origins or (org.origin|lower) in active_origins or (org.origin|lower|replace(' ', '-')) in active_origins or (org.origin|lower|replace('-', ' ')) in active_origins) %}
-            <label class="tv-filter-item" data-filter-name="{{ org.origin }}">
+            <label class="tv-filter-item {% if org.count == 0 and not is_active_org %}tv-filter-empty{% endif %}" {% if org.count == 0 and not is_active_org %}style="display:none;"{% endif %} data-filter-name="{{ org.origin }}">
               <span class="tv-filter-item-left">
                 <input type="checkbox" name="origin" value="{{ org.origin }}" {% if is_active_org %}checked{% endif %} onchange="filterProducts()">
                 <span>{{ org.origin }}</span>
@@ -646,6 +704,11 @@
                         {{ p.front.pattern_name or p.front.display_name }}
                       </h3>
                     </a>
+                    {% if p.front.is_ev or p.front.ev_text == 'EV' %}
+                    <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
+                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                    </span>
+                    {% endif %}
                     {% if p.front.is_runflat or p.front.runflat_text == 'Runflat' %}
                     <span class="tv-meta-item tv-meta-runflat" title="Technology">
                       <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
@@ -676,13 +739,13 @@
                     <span>In Stock</span>
                   </div>
 
-                  <div class="tv-fitted-status">
+                  <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                       <line x1="7" y1="7" x2="7.01" y2="7"></line>
                     </svg>
                     <span>Fitted Included</span>
-                    <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                    <span class="tv-fitted-info-btn" >
                       <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
                     </span>
                   </div>
@@ -787,6 +850,11 @@
                         {{ p.rear.pattern_name or p.rear.display_name }}
                       </h3>
                     </a>
+                    {% if p.rear.is_ev or p.rear.ev_text == 'EV' %}
+                    <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
+                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                    </span>
+                    {% endif %}
                     {% if p.rear.is_runflat or p.rear.runflat_text == 'Runflat' %}
                     <span class="tv-meta-item tv-meta-runflat" title="Technology">
                       <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
@@ -817,13 +885,13 @@
                     <span>In Stock</span>
                   </div>
 
-                  <div class="tv-fitted-status">
+                  <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                       <line x1="7" y1="7" x2="7.01" y2="7"></line>
                     </svg>
                     <span>Fitted Included</span>
-                    <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+                    <span class="tv-fitted-info-btn" >
                       <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
                     </span>
                   </div>
@@ -872,7 +940,6 @@
         {% else %}
         <div class="tv-product-card {% if p.offer_banner %}has-offer{% endif %} {% if p.is_staggered %}tv-staggered-card{% endif %}"
              data-slug="{{ p.slug }}"
-             onclick="handleProductCardClick(event, '{{ p.slug }}')"
              data-brand="{{ p.brand_slug or (p.brand_name|lower) }}"
              data-brand-name="{{ p.brand_name }}"
              data-brand-logo="{{ p.brand_logo or '' }}"
@@ -1030,6 +1097,11 @@
               </a>
 
               <div class="tv-card-origin-row-wrap">
+                {% if p.is_ev or p.ev_text == 'EV' %}
+                <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
+                  <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                </span>
+                {% endif %}
                 {% if p.is_runflat or p.runflat_text == 'Runflat' %}
                 <span class="tv-meta-item tv-meta-runflat" title="Technology: Run Flat">
                   <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
@@ -1074,13 +1146,13 @@
             </div>
 
 
-            <div class="tv-fitted-status">
+            <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                 <line x1="7" y1="7" x2="7.01" y2="7"></line>
               </svg>
               <span>Fitted Included</span>
-              <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+              <span class="tv-fitted-info-btn">
                 <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
               </span>
             </div>
@@ -1275,7 +1347,7 @@
             <span class="tv-check-icon-wrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </span>
-            <span>On purchase of 4 tyres, 1 FREE scheduled instance of tyre rotation every 20,000kms per year</span>
+            <span>On purchase of 4 tyres, 1  scheduled instance of tyre rotation every 20,000kms per year</span>
           </li>
         </ul>
         <div class="tv-fitted-modal-footer">
@@ -1518,14 +1590,14 @@
               </div>
             </div>
 
-            <!-- Trust Strip (Free Standard Installation, Free Wheel Balancing, Fast & Reliable Delivery) -->
+            <!-- Trust Strip ( Standard Installation,  Wheel Balancing, Fast & Reliable Delivery) -->
             <div class="tv-qv-trust-strip">
               <div class="tv-qv-trust-col">
                 <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
                 </div>
                 <div class="tv-qv-trust-info">
-                  <strong>Free Standard Installation</strong>
+                  <strong> Standard Installation</strong>
                   <p>At our partner garages across UAE</p>
                 </div>
               </div>
@@ -1534,7 +1606,7 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="3" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="21"></line></svg>
                 </div>
                 <div class="tv-qv-trust-info">
-                  <strong>Free Wheel Balancing</strong>
+                  <strong> Wheel Balancing</strong>
                   <p>With every tyre installation</p>
                 </div>
               </div>

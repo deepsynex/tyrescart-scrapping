@@ -49,7 +49,7 @@ def _is_valid_url(url):
 
 
 def parse_text_urls(text):
-    """Splits free-form pasted text into cleaned URL tokens -- one per line,
+    """Splits -form pasted text into cleaned URL tokens -- one per line,
     also splitting each line on commas so "url1, url2" on one line still works.
     """
     tokens = []

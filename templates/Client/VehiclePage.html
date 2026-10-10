@@ -16,7 +16,7 @@
 
 {% block meta_description %}
   {% if level == 4 %}
-    Find official tyre sizes and prices for {{ make.name }} {{ model.name }} {{ year }} ({{ trim.display or trim.trim }}) in UAE. Genuine GCC tyres with free doorstep fitting in Dubai & Abu Dhabi.
+    Find official tyre sizes and prices for {{ make.name }} {{ model.name }} {{ year }} ({{ trim.display or trim.trim }}) in UAE. Genuine tyres with  doorstep fitting in Dubai & Abu Dhabi.
   {% elif level == 3 %}
     Select your {{ make.name }} {{ model.name }} {{ year }} engine or trim to view certified tyre sizes, OEM markings, and verified prices in UAE.
   {% elif level == 2 %}
@@ -242,17 +242,9 @@
       width: 360px;
     }
   }
-  .tv-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    max-width: 640px;
-  }
+ 
   @media (min-width: 640px) {
-    .tv-stats-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-    }
+    
   }
   .tv-brand-glow {
     box-shadow: 0 0 50px -10px rgba(124, 58, 237, 0.35);
@@ -412,25 +404,7 @@
             Explore certified factory tyre fitments for your {{ make.name }}. Select your model to discover genuine OEM and recommended tyre sizes, real-time in-stock inventory, and transparent UAE pricing. Fitted with complimentary mobile doorstep installation across Dubai, Abu Dhabi, and Sharjah.
           </p>
 
-          {# Trust Stat Matrix (4 Spatial Metric Cards) #}
-          <div class="tv-stats-grid">
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">{{ models|length }}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Models</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">{{ make_stats.total_tyres or '240+' }}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">In-Stock Tyres</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #D8B4FE;">{% if make_stats.min_price %}AED {{ make_stats.min_price|int }}{% else %}AED 330{% endif %}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Starting Price</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">Free</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Doorstep Fitment</span>
-            </div>
-          </div>
+         
         </div>
 
         {# Right Column: Floating Brand Emblem Showcase #}
@@ -678,11 +652,11 @@
             <h3 class="text-lg font-black text-slate-900">Gulf Heat Resistance</h3>
           </div>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Every tyre is GCC compliant and built with thermal-resistant silica compounds capable of withstanding UAE summer tarmac temperatures exceeding 55&deg;C.
+            Every tyre is UAE compliant and built with thermal-resistant silica compounds capable of withstanding UAE summer tarmac temperatures exceeding 55&deg;C.
           </p>
         </div>
         <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] font-bold text-[#7C3AED]">
-          100% Genuine GCC Certified
+          100% Genuine Certified
         </div>
       </div>
 
@@ -695,7 +669,7 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-black text-slate-900">Scratch-Free Mounting</h3>
+            <h3 class="text-lg font-black text-slate-900">Scratch- Mounting</h3>
           </div>
           <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Our high-spec mobile vans utilize polymer-protected bead levers and laser 3D road-force balancers to protect delicate 20&quot; to 24&quot; bespoke alloy rims.
@@ -911,24 +885,7 @@
           </p>
 
           {# Trust Stat Matrix (4 Spatial Metric Cards) #}
-          <div class="tv-stats-grid mb-8">
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">{{ years|length }}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Production Years</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">{{ model_stats.total_tyres or '34+' }}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">In-Stock Tyres</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #D8B4FE;">{% if model_stats.min_price %}AED {{ model_stats.min_price|int }}{% else %}AED 298{% endif %}</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Starting Price</span>
-            </div>
-            <div class="tv-glass-stat p-4 text-center">
-              <span class="block text-2xl sm:text-3xl font-black" style="color: #FFFFFF;">400+ km/h</span>
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: #E9D5FF;">Speed Rated</span>
-            </div>
-          </div>
+        
 
           {# Primary Action Buttons #}
           <div class="flex flex-wrap items-center gap-3">
@@ -1149,7 +1106,7 @@
           Featured Tyres for {{ make.name }} {{ model.name }}
         </h2>
         <p class="text-sm text-slate-500 mt-1">
-          Genuine, manufacturer-approved tyres in stock. All prices include free doorstep installation &amp; digital wheel balancing.
+          Genuine, manufacturer-approved tyres in stock. All prices include  doorstep installation &amp; digital wheel balancing.
         </p>
       </div>
 
@@ -1289,11 +1246,16 @@
             </div>
 
             <div class="tv-card-meta-row">
-              <span class="tv-meta-item tv-meta-runflat" title="Technology">
-                {% if p.is_runflat or p.runflat_text == 'Runflat' %}
-                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
-                {% endif %}
+              {% if p.is_ev or p.ev_text == 'EV' %}
+              <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
+                <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
               </span>
+              {% endif %}
+              {% if p.is_runflat or p.runflat_text == 'Runflat' %}
+              <span class="tv-meta-item tv-meta-runflat" title="Technology">
+                <span><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat"></span>
+              </span>
+              {% endif %}
             </div>
           </div>
 
@@ -1412,7 +1374,7 @@
 
         <div class="p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
           <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-black mb-3">
-            GCC
+            UAE
           </div>
           <h3 class="text-base font-bold text-white mb-1.5">Gulf Thermal Stability</h3>
           <p class="text-xs text-purple-200/80 leading-relaxed">
@@ -1466,7 +1428,7 @@
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
     <div class="bg-white rounded-3xl border border-slate-200 p-8 sm:p-10 shadow-sm">
       <div class="text-center max-w-2xl mx-auto mb-10">
-        <span class="text-xs font-black uppercase text-[#7C3AED] tracking-wider">Hassle-Free Fitting Process</span>
+        <span class="text-xs font-black uppercase text-[#7C3AED] tracking-wider">Hassle- Fitting Process</span>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">How TyresVision Fits Your {{ model.name }}</h2>
         <p class="text-sm text-slate-500 mt-1">Luxury service delivered directly to your villa, office, or private garage across the UAE.</p>
       </div>
@@ -1495,7 +1457,7 @@
               <h3 class="text-base font-black text-slate-900">Select Genuine Tyres</h3>
             </div>
             <p class="text-xs text-slate-600 leading-relaxed">
-              Select manufacturer-homologated Michelin or Pirelli sets with 100% fresh manufacture date codes and GCC conformity warranty.
+              Select manufacturer-homologated Michelin or Pirelli sets with 100% fresh manufacture date codes and UAE conformity warranty.
             </p>
           </div>
         </div>
@@ -1641,11 +1603,11 @@
         </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {% for eng in engines %}
         <a 
           href="{{ year }}/{{ eng.slug or eng.trim|lower|replace(' ', '-') }}" 
-          class="p-5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-[#7C3AED] transition-all hover:shadow-lg group flex items-center justify-between"
+          class="p-4.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-[#7C3AED] transition-all hover:shadow-lg group flex items-center justify-between max-w-sm w-full"
         >
           <div>
             <div class="flex items-center gap-2 mb-1.5">

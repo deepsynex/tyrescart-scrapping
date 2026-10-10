@@ -438,7 +438,7 @@ window.AdminShared = (function () {
     tableEl.classList.remove('hidden');
   }
 
-  const USERS_CACHE_KEY = 'tyrescart_users_cache';
+  const USERS_CACHE_KEY = 'tyresvision_users_cache';
 
   function loadCachedUsers() {
     try {

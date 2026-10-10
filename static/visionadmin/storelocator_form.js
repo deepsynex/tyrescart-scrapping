@@ -566,7 +566,7 @@
               }
             }
             if (!inserted) {
-              this.showToast('No free time slot available on this day.', 'error');
+              this.showToast('No  time slot available on this day.', 'error');
               return;
             }
           }

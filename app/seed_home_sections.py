@@ -18,7 +18,7 @@ HOME_SECTIONS = [
             "ar": "اشترِ الإطارات عبر الإنترنت.\n<em>تركيب محلي</em> في جميع أنحاء الإمارات."
         },
         "content": {
-            "en": "TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices — delivered free to a fitting centre near you, or fitted at your home or office by our mobile vans.",
+            "en": "TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices — delivered  to a fitting centre near you, or fitted at your home or office by our mobile vans.",
             "ar": "تايرز فيجن هو متجر إطارات إلكتروني رائد في الإمارات. إطارات أصلية وتواريخ إنتاج حديثة من أكثر من 60 علامة تجارية بأقل الأسعار — توصيل مجاني إلى مركز تركيب قريب منك، أو تركيب متنقل عند باب منزلك أو مكتبك."
         },
         "button_text": {
@@ -32,7 +32,7 @@ HOME_SECTIONS = [
             "badges": [
                 {"icon": "dollar", "text": {"en": "Lowest price guaranteed", "ar": "أقل سعر مضمون"}},
                 {"icon": "shield", "text": {"en": "Warranty on eligible tyres", "ar": "ضمان على الإطارات المؤهلة"}},
-                {"icon": "truck", "text": {"en": "Free delivery to fitter", "ar": "توصيل مجاني لمركز التركيب"}}
+                {"icon": "truck", "text": {"en": "Delivery to fitting centre", "ar": "توصيل لمركز التركيب"}}
             ],
             "quote_card": {
                 "title": {"en": "Get your tyre price in minutes", "ar": "احصل على سعر إطاراتك في دقائق"},
@@ -316,7 +316,7 @@ HOME_SECTIONS = [
                         "ar": "هل التركيب مشمول في السعر؟"
                     },
                     "answer": {
-                        "en": "Delivery to your chosen fitting centre is free and fitting is arranged for you. Mobile fitting at your own location and extras such as alignment are quoted upfront — no surprises at the till.",
+                        "en": "Delivery to your chosen fitting centre is  and fitting is arranged for you. Mobile fitting at your own location and extras such as alignment are quoted upfront — no surprises at the till.",
                         "ar": "التوصيل والتركيب في مركز الشريك المعتمد مشمول ومجاني. أما التركيب المتنقل والخدمات الإضافية كالترصيص فيتم تحديد أسعارها بوضوح مسبقاً."
                     }
                 },

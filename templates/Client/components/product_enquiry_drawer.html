@@ -139,7 +139,11 @@
               id="tvPePhone" 
               name="phone" 
               required 
-              placeholder="+971 50 123 4567"
+              inputmode="numeric"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
+              placeholder="0501234567"
               class="tv-pe-input"
               autocomplete="tel"
             />

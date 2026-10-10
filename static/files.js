@@ -291,7 +291,7 @@
     }, intervalMs);
   }
 
-  const FILES_CACHE_KEY = 'tyrescart_files_cache';
+  const FILES_CACHE_KEY = 'tyresvision_files_cache';
 
   function loadCachedFiles() {
     try {
@@ -666,7 +666,7 @@
 
   function loadCachedScraperLogs(fileId) {
     try {
-      const raw = localStorage.getItem(`tyrescart_scraper_logs_${fileId}`);
+      const raw = localStorage.getItem(`tyresvision_scraper_logs_${fileId}`);
       if (!raw) return false;
       const data = JSON.parse(raw);
       const logs = (data && data.logs) || [];
@@ -734,7 +734,7 @@
       const logs = (data && data.logs) || [];
       currentDrawerLogs = new Map(logs.map((l) => [l.id, l]));
       try {
-        localStorage.setItem(`tyrescart_scraper_logs_${fileId}`, JSON.stringify(data));
+        localStorage.setItem(`tyresvision_scraper_logs_${fileId}`, JSON.stringify(data));
       } catch (e) {}
 
       if (!logs.length) {

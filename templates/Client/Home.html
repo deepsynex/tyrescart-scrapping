@@ -87,7 +87,7 @@
               <div class="field-row" bis_skin_checked="1">
               <div class="field" bis_skin_checked="1">
                 <label for="MobileNumer">Contact Number</label>
-                <input id="MobileNumer" name="MobileNumer" type="tel" placeholder="+971505069575" autocomplete="off" required="">
+                <input id="MobileNumer" name="MobileNumer" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)" placeholder="0505069575" autocomplete="tel" required>
               </div>
               <div class="field" bis_skin_checked="1">
                 <label for="tyreSize">Tyre size (e.g. 235/55 R19)</label>
@@ -521,12 +521,12 @@
             {% for opt in options %}
             <div class="coverage-option-card">
               <div class="coverage-card-head">
-                <span class="coverage-tag {% if 'free' in (opt.tag|lower) %}coverage-tag-free{% endif %}">{{ opt.tag }}</span>
+                <span class="coverage-tag {% if '' in (opt.tag|lower) %}coverage-tag-{% endif %}">{{ opt.tag }}</span>
                 <h3>{{ opt.heading }}</h3>
               </div>
               <p class="coverage-card-desc">{{ opt.description }}</p>
               <div class="coverage-card-action">
-                <a class="btn {% if 'free' in (opt.tag|lower) %}btn-wa{% else %}btn-ghost{% endif %} btn-sm"
+                <a class="btn {% if '' in (opt.tag|lower) %}btn-wa{% else %}btn-ghost{% endif %} btn-sm"
                    href="https://wa.me/971505069575?text={{ (opt.wa_msg or 'Hi TyresVision, I\'d like to ask about tyre delivery and fitting.') | urlencode }}"
                    target="_blank"
                    rel="noopener"
@@ -754,7 +754,7 @@
       <div>
         <span class="eyebrow">Dubai &middot; Abu Dhabi &middot; Sharjah &middot; Ajman</span>
         <h1>Buy tyres online.<br><em>Fitted locally</em> across the UAE.</h1>
-        <p class="lead">TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices &mdash; delivered free to a fitting centre near you, or fitted at your home or office by our mobile vans.</p>
+        <p class="lead">TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices &mdash; delivered  to a fitting centre near you, or fitted at your home or office by our mobile vans.</p>
         <div class="cta-row">
           <a class="btn btn-wa" href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote." target="_blank" rel="noopener">WhatsApp for a quote</a>
           <a class="btn btn-ghost-light" href="tel:+971505069575">+971 50 506 9575</a>

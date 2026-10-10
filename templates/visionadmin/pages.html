@@ -71,7 +71,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     
     <!-- 1. Total Pages Card -->
-    <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
+    <div onclick="document.querySelector('.tab-filter[data-status=\'all\']')?.click()" class="cursor-pointer bg-white rounded-3xl p-5 border border-[#E8EDE4] hover:border-slate-300 transition shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-[#f7f4fd] text-[#2b1247] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -91,7 +91,7 @@
     </div>
 
     <!-- 2. Active (Live) Card -->
-    <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
+    <div onclick="document.querySelector('.tab-filter[data-status=\'active\']')?.click()" class="cursor-pointer bg-white rounded-3xl p-5 border border-[#E8EDE4] hover:border-blue-200 transition shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-[#f7f4fd] text-[#2b1247] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
@@ -111,7 +111,7 @@
     </div>
 
     <!-- 3. Inactive Card -->
-    <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
+    <div onclick="document.querySelector('.tab-filter[data-status=\'inactive\']')?.click()" class="cursor-pointer bg-white rounded-3xl p-5 border border-[#E8EDE4] hover:border-amber-200 transition shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
@@ -131,7 +131,7 @@
     </div>
 
     <!-- 4. Trash Card -->
-    <div class="bg-white rounded-3xl p-5 border border-[#E8EDE4] shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
+    <div onclick="document.querySelector('.tab-filter[data-status=\'trash\']')?.click()" class="cursor-pointer bg-white rounded-3xl p-5 border border-[#E8EDE4] hover:border-rose-200 transition shadow-[0_4px_16px_rgba(14,17,8,0.02)] flex flex-col justify-between relative overflow-hidden">
       <div class="flex items-start gap-3.5">
         <div class="w-10 h-10 rounded-2xl bg-[#FFE4E6] text-[#E11D48] flex items-center justify-center shrink-0">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>

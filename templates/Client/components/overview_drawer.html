@@ -108,7 +108,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="tv-warranty-shield-icon">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          <span>Free Manufacturer Warranty Included</span>
+          <span> Manufacturer Warranty Included</span>
         </div>
         <p class="tv-warranty-sub">Our fitment specialist will contact you on WhatsApp regarding appointment updates.</p>
       </div>
@@ -211,7 +211,7 @@
             </svg>
           </div>
           <h4 class="tv-empty-title">Your cart is empty</h4>
-          <p class="tv-empty-text">You haven't added any tyres to your cart yet. Explore our genuine tyres with free local fitment.</p>
+          <p class="tv-empty-text">You haven't added any tyres to your cart yet. Explore our genuine tyres with  local fitment.</p>
           <button
             type="button"
             onclick="closeOverviewDrawer(); window.location.href='/tyres';"
@@ -295,9 +295,9 @@
               <span class="tv-summary-row-lbl">Subtotal</span>
               <span id="tv-calc-subtotal" class="tv-summary-row-val">AED 0.00</span>
             </div>
-            <div class="tv-summary-row tv-summary-row-free">
+            <div class="tv-summary-row tv-summary-row-">
               <span>Professional Fitting</span>
-              <span class="font-black">FREE</span>
+              <span class="font-black"></span>
             </div>
             <div id="tv-calc-discount-row" class="tv-summary-row tv-summary-row-discount">
               <span>Discount</span>
@@ -393,7 +393,7 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <h4 class="tv-mode-title">Install at Outlet</h4>
-            <p class="tv-mode-desc">Visit partner outlet for free installation</p>
+            <p class="tv-mode-desc">Visit partner outlet for  installation</p>
           </button>
 
           <!-- Mode 2: Mobile Van Service -->
@@ -410,17 +410,17 @@
             <p class="tv-mode-desc">Van fitted at your home or office</p>
           </button>
 
-          <!-- Mode 3: Free Shipping -->
+          <!-- Mode 3:  Shipping -->
           <button
             type="button"
             id="tv-mode-btn-shipping"
-            onclick="setDrawerDeliveryMode('free_shipping')"
+            onclick="setDrawerDeliveryMode('_shipping')"
             class="tv-mode-card"
           >
             <div class="tv-mode-icon-circle">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
             </div>
-            <h4 class="tv-mode-title">Free Shipping</h4>
+            <h4 class="tv-mode-title"> Shipping</h4>
             <p class="tv-mode-desc">Delivery without fitment service</p>
           </button>
         </div>
@@ -439,22 +439,22 @@
           </div>
         </div>
 
-        <!-- Mode 3 Content: Free Shipping -->
+        <!-- Mode 3 Content:  Shipping -->
         <div id="tv-mode-content-shipping" class="tv-mode-content-block">
-          <div class="tv-free-shipping-card">
-            <div class="tv-free-shipping-head">
+          <div class="tv--shipping-card">
+            <div class="tv--shipping-head">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tv-shipping-icon">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
-              <h4 class="tv-free-shipping-title">Free Standard Tyre Delivery</h4>
+              <h4 class="tv--shipping-title"> Standard Tyre Delivery</h4>
             </div>
-            <p class="tv-free-shipping-desc">
+            <p class="tv--shipping-desc">
               Your tyres will be delivered directly to your doorstep anywhere across the UAE within 24–48 hours. Please note that this option does not include professional tyre mounting, balancing, or valve replacement.
             </p>
             <button
               type="button"
-              onclick="handleConfirmFreeShipping()"
+              onclick="handleConfirmShipping()"
               class="tv-btn-confirm-shipping"
             >
               <span>CONFIRM &amp; PROCEED TO CHECKOUT</span>
@@ -518,7 +518,7 @@
                 <label class="tv-form-label">Mobile Number <span class="tv-required-star">*</span></label>
                 <div class="tv-phone-input-wrap">
                   <span class="tv-phone-prefix">+971</span>
-                  <input type="tel" id="tv-input-phone" placeholder="50 123 4567" class="tv-phone-input" required />
+                  <input type="tel" id="tv-input-phone" inputmode="numeric" maxlength="10" pattern="[0-9]{9,10}" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)" placeholder="501234567" class="tv-phone-input" required />
                 </div>
               </div>
               <div>

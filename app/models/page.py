@@ -62,7 +62,7 @@ class SoftDeleteMixin:
 
     @classmethod
     def soft_delete(cls, page_id: int) -> bool:
-        """Marks a page as deleted and frees its slug for new pages."""
+        """Marks a page as deleted and s its slug for new pages."""
         conn = get_connection()
         try:
             with conn.cursor() as cursor:

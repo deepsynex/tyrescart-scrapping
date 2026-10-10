@@ -870,7 +870,7 @@ def _format_product_for_client(p, locale='en'):
     p_dict['attr'] = attr
     p_dict['rating'] = float(attr.get('rating', 4.5))
 
-    # Top Offer Banner (e.g. FREE WHEEL ALIGNMENT / BUY 3 GET 1 FREE / TOP SAVINGS)
+    # Top Offer Banner (e.g.  WHEEL ALIGNMENT / BUY 3 GET 1  / TOP SAVINGS)
     raw_offer = (attr.get('offers') or attr.get('promotion') or attr.get('badge') or '').strip()
     if raw_offer and raw_offer.lower() not in ('none', '0', '', 'null'):
         offer_banner = raw_offer.upper()
@@ -888,8 +888,8 @@ def _format_product_for_client(p, locale='en'):
     p_dict['badge'] = offer_banner
 
     # Calculate Set of 4 Price according to offer rules:
-    # - Buy 2 Get 2 Free: customer pays for 2 (2 * unit_price) = 500.00 if unit is 250.00
-    # - Buy 3 Get 1 Free: customer pays for 3 (3 * unit_price) = 750.00 if unit is 250.00
+    # - Buy 2 Get 2 : customer pays for 2 (2 * unit_price) = 500.00 if unit is 250.00
+    # - Buy 3 Get 1 : customer pays for 3 (3 * unit_price) = 750.00 if unit is 250.00
     # - Else: customer pays for 4 (4 * unit_price) = 1000.00 if unit is 250.00
     try:
         unit_p = float(p_dict.get('price') or 0)
@@ -973,7 +973,7 @@ def _format_product_for_client(p, locale='en'):
     p_dict['price_set_of_8'] = f"{p_dict.get('set_of_8_price', price_val * 8):.2f}"
     p_dict['list_price'] = float(p_dict['list_price']) if p_dict.get('list_price') else None
 
-    # Ensure display_name is readable and free of JSON artifacts
+    # Ensure display_name is readable and  of JSON artifacts
     d_name = p_dict.get('display_name') or p_dict.get('name') or p_dict.get('sku')
     p_dict['display_name'] = _clean_multilingual_text(d_name, locale) or str(d_name)
 
@@ -1047,11 +1047,19 @@ def _format_product_for_client(p, locale='en'):
     p_dict['country_of_origin'] = origin_val.title()
 
     # Runflat tyre detection
-    rf_val = str(attr.get('runflat') or attr.get('is_runflat') or '').strip().lower()
+    rf_val = str(attr.get('runflat') or attr.get('is_runflat') or attr.get('run_flat') or '').strip().lower()
     full_name_str = (str(p_dict.get('name') or '') + ' ' + str(p_dict.get('display_name') or '') + ' ' + pat).lower()
     is_rf = (p_dict.get('run_flat') in (1, '1', True)) or rf_val in ('yes', '1', 'true', 'rft', 'runflat') or 'runflat' in full_name_str or 'run flat' in full_name_str or ' rft' in full_name_str
     p_dict['is_runflat'] = bool(is_rf)
     p_dict['runflat_text'] = 'Runflat' if is_rf else ''
+
+    # EV tyre detection
+    ev_val = str(attr.get('ev') or attr.get('ev_tyre') or attr.get('ev_rated') or attr.get('is_ev') or '').strip().lower()
+    is_ev_attr = ev_val in ('yes', '1', 'true', 'ev') or (p_dict.get('ev_rated') in (1, '1', True, 'yes', 'Yes'))
+    is_ev_name = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', full_name_str, re.IGNORECASE))
+    is_ev = is_ev_attr or is_ev_name
+    p_dict['is_ev'] = bool(is_ev)
+    p_dict['ev_text'] = 'EV' if is_ev else ''
 
     # Tyre Category (e.g. "Premium", "Budget", "Mid-Range")
     cat_val = str(attr.get('tyres_category') or attr.get('category') or '').strip()
@@ -1602,10 +1610,10 @@ def _fetch_catalog_products(args, locale='en'):
             if promos:
                 pr_clauses = []
                 for pr in promos:
-                    if pr in ('buy_3_get_1_free', 'buy-3-get-1-free', 'buy 3 get 1 free'):
-                        pr_clauses.append("(p.attributes_json LIKE '%%Buy 3 Get 1 Free%%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%')")
-                    elif pr in ('free_wheel_alignment', 'free-wheel-alignment', 'free wheel alignment'):
-                        pr_clauses.append("(p.attributes_json LIKE '%%Free Wheel Alignment%%' OR p.attributes_json LIKE '%%FREE WHEEL ALIGNMENT%%')")
+                    if pr in ('buy_3_get_1_', 'buy-3-get-1-', 'buy 3 get 1 '):
+                        pr_clauses.append("(p.attributes_json LIKE '%%Buy 3 Get 1 %%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%')")
+                    elif pr in ('_wheel_alignment', '-wheel-alignment', ' wheel alignment'):
+                        pr_clauses.append("(p.attributes_json LIKE '%% Wheel Alignment%%' OR p.attributes_json LIKE '%% WHEEL ALIGNMENT%%')")
                     elif pr in ('top_savings', 'top-savings', 'top savings'):
                         pr_clauses.append("(p.attributes_json LIKE '%%Top Savings%%' OR p.attributes_json LIKE '%%TOP SAVINGS%%')")
                     else:
@@ -1831,16 +1839,16 @@ def _fetch_catalog_products(args, locale='en'):
             pr_where, pr_params = get_where_except('promo')
             cur.execute(f"""
                 SELECT 
-                    SUM(CASE WHEN p.attributes_json LIKE '%%Buy 3 Get 1 Free%%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%' THEN 1 ELSE 0 END) as buy_3_get_1_free,
-                    SUM(CASE WHEN p.attributes_json LIKE '%%Free Wheel Alignment%%' OR p.attributes_json LIKE '%%FREE WHEEL ALIGNMENT%%' THEN 1 ELSE 0 END) as free_wheel_alignment
+                    SUM(CASE WHEN p.attributes_json LIKE '%%Buy 3 Get 1 %%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%' THEN 1 ELSE 0 END) as buy_3_get_1_,
+                    SUM(CASE WHEN p.attributes_json LIKE '%% Wheel Alignment%%' OR p.attributes_json LIKE '%% WHEEL ALIGNMENT%%' THEN 1 ELSE 0 END) as _wheel_alignment
                 FROM products p
                 LEFT JOIN brands b ON p.brand_id = b.id
                 WHERE {pr_where}
             """, pr_params)
             pr_row = cur.fetchone() or {}
             facets['promotions'] = {
-                'buy_3_get_1_free': int(pr_row.get('buy_3_get_1_free') or 0),
-                'free_wheel_alignment': int(pr_row.get('free_wheel_alignment') or 0)
+                'buy_3_get_1_': int(pr_row.get('buy_3_get_1_') or 0),
+                '_wheel_alignment': int(pr_row.get('_wheel_alignment') or 0)
             }
 
             # 8. Runflat facet
@@ -2448,8 +2456,43 @@ def _render_product_listing(locale, filter_path=None):
             pr_row = cur.fetchone()
             min_price = int(pr_row['min_p']) if pr_row and pr_row['min_p'] is not None else 100
             max_price = int(pr_row['max_p']) if pr_row and pr_row['max_p'] is not None else 2000
-            if min_price >= max_price:
-                max_price = min_price + 1000
+            # Synchronize sidebar filter counts with computed dynamic facets
+            if facets:
+                if 'tyres_categories' in facets and facets['tyres_categories']:
+                    for tc in filter_tyres_categories:
+                        cat_k = tc['category']
+                        tc['count'] = facets['tyres_categories'].get(cat_k, facets['tyres_categories'].get(cat_k.capitalize(), facets['tyres_categories'].get(cat_k.lower(), 0)))
+                if 'brands' in facets and facets['brands']:
+                    for b in filter_brands:
+                        b_slug = (b.get('slug') or '').lower()
+                        b_name = (b.get('name') or '').lower()
+                        b['count'] = facets['brands'].get(b_slug, facets['brands'].get(b_name, 0))
+                if 'patterns' in facets and facets['patterns']:
+                    for p in filter_patterns:
+                        p['count'] = facets['patterns'].get(p['pattern'], 0)
+                if 'tyre_markings' in facets and facets['tyre_markings']:
+                    for tm in filter_tyre_markings:
+                        tm['count'] = facets['tyre_markings'].get(tm['marking'], 0)
+                if 'oems' in facets and facets['oems']:
+                    for o in filter_oem_tyres:
+                        o['count'] = facets['oems'].get(o['oem'], 0)
+                if 'warranties' in facets and facets['warranties']:
+                    for w in filter_warranties:
+                        w['count'] = facets['warranties'].get(w['warranty'], 0)
+                if 'years' in facets and facets['years']:
+                    for y in filter_years:
+                        y['count'] = facets['years'].get(str(y['year']), 0)
+                if 'origins' in facets and facets['origins']:
+                    for org in filter_origins:
+                        org_k = (org.get('origin') or '').lower()
+                        org['count'] = facets['origins'].get(org_k, facets['origins'].get(org.get('origin'), 0))
+                if 'promotions' in facets and facets['promotions']:
+                    for pr in filter_promotions:
+                        pr['count'] = facets['promotions'].get(pr['key'], 0)
+                if 'runflat' in facets:
+                    filter_runflat_count = facets.get('runflat', 0)
+                if 'ev_tyre' in facets:
+                    filter_ev_tyre_count = facets.get('ev_tyre', 0)
 
             active_brand_name = ''
             active_brand_slug = ''
@@ -2586,7 +2629,7 @@ def _render_product_detail(slug_or_id, locale=None):
             # Parse meta_desc and meta_title for SEO
             meta_desc_val = _clean_multilingual_text(p_row.get('meta_desc') or raw_attrs.get('meta_description'), locale)
             if not meta_desc_val:
-                meta_desc_val = f"{_clean_multilingual_text(p_row.get('display_name'), locale) or (brand_name + ' ' + size_label)} in stock with free delivery, warranty and mobile fitting across UAE."
+                meta_desc_val = f"{_clean_multilingual_text(p_row.get('display_name'), locale) or (brand_name + ' ' + size_label)} in stock with warranty, expert fitting at partner centres and mobile van service across UAE."
 
             meta_title_val = _clean_multilingual_text(p_row.get('meta_title'), locale) or _clean_multilingual_text(raw_attrs.get('meta_title'), locale)
             if not meta_title_val:
@@ -2619,7 +2662,7 @@ def _render_product_detail(slug_or_id, locale=None):
             raw_offer = (raw_attrs.get('offers') or raw_attrs.get('promotion') or raw_attrs.get('badge') or p_row.get('offer_banner') or '').strip()
             offer_banner = raw_offer.upper() if raw_offer and raw_offer.lower() not in ('none', '0', '', 'null') else ''
             # if not offer_banner:
-            #     offer_banner = 'BUY 3 GET 1 FREE'
+            #     offer_banner = 'BUY 3 GET 1 '
 
             if 'BUY 3' in offer_banner:
                 price_set4 = round(price_f * 3, 2)
@@ -2627,6 +2670,17 @@ def _render_product_detail(slug_or_id, locale=None):
                 price_set4 = round(price_f * 2, 2)
             else:
                 price_set4 = round(price_f * 4, 2)
+
+            # Runflat technology detection
+            rf_val = str(raw_attrs.get('runflat') or raw_attrs.get('is_runflat') or raw_attrs.get('run_flat') or '').strip().lower()
+            p_full_name = (str(p_row.get('name') or '') + ' ' + str(p_row.get('display_name') or '') + ' ' + pattern_name).lower()
+            is_rf = (p_row.get('run_flat') in (1, '1', True, 'yes', 'Yes')) or rf_val in ('yes', '1', 'true', 'rft', 'runflat') or 'runflat' in p_full_name or 'run flat' in p_full_name or ' rft' in p_full_name
+
+            # EV compatibility detection
+            ev_val = str(raw_attrs.get('ev') or raw_attrs.get('ev_tyre') or raw_attrs.get('ev_rated') or raw_attrs.get('is_ev') or '').strip().lower()
+            is_ev_attr = ev_val in ('yes', '1', 'true', 'ev') or (p_row.get('ev_rated') in (1, '1', True, 'yes', 'Yes'))
+            is_ev_name = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', p_full_name, re.IGNORECASE))
+            is_ev = is_ev_attr or is_ev_name
 
             product = {
                 'id': p_row['id'],
@@ -2660,7 +2714,11 @@ def _render_product_detail(slug_or_id, locale=None):
                 'season': season_label,
                 'year': p_row.get('year') or 2024,
                 'country': p_row.get('country_of_origin') or 'France',
-                'run_flat': 'Yes' if p_row.get('run_flat') == 1 else 'No',
+                'run_flat': 'Yes' if is_rf else 'No',
+                'is_runflat': bool(is_rf),
+                'runflat_text': 'Runflat' if is_rf else '',
+                'is_ev': bool(is_ev),
+                'ev_text': 'EV' if is_ev else '',
                 'warranty': warranty_str,
                 'tire_size_label': size_label or f"{width_val}/{profile_val} {rim_val}",
                 'faqs': raw_attrs.get('faqs') if isinstance(raw_attrs.get('faqs'), list) else ([] if not raw_attrs.get('faqs') else [raw_attrs.get('faqs')]),
@@ -2751,7 +2809,7 @@ def _render_product_detail(slug_or_id, locale=None):
                 full_image_url = f"https://www.tyresvision.com{raw_img}"
 
             og_title = product.get('meta_title') or f"{product.get('title')} | Buy Online at TyresVision UAE"
-            og_description = product.get('meta_description') or product.get('description') or f"Buy {product.get('title')} online in UAE with free fitting and warranty. Best tyre prices at TyresVision."
+            og_description = product.get('meta_description') or product.get('description') or f"Buy {product.get('title')} online in UAE with  fitting and warranty. Best tyre prices at TyresVision."
 
             page_og_tags = {
                 'og_type': 'product',
@@ -4126,7 +4184,7 @@ def api_store_locator():
             "lng": 55.2708,
             "phone": "+971 50 506 9575",
             "whatsapp": "+971505069575",
-            "shipping_fee": "FREE",
+            "shipping_fee": "",
             "installer_type": "Mobile Van",
             "delivery_mode": "mobile_van"
         },
@@ -4139,7 +4197,7 @@ def api_store_locator():
             "lng": 54.3773,
             "phone": "+971 50 506 9575",
             "whatsapp": "+971505069575",
-            "shipping_fee": "FREE",
+            "shipping_fee": "",
             "installer_type": "Mobile Van",
             "delivery_mode": "mobile_van"
         }
@@ -4318,7 +4376,7 @@ def api_cart():
         elif code in ('WELCOME50', 'SAVE50'):
             discount = min(subtotal, 50.0)
             applied_label = 'AED 50 Discount Applied'
-        elif code in ('FREEFIT', 'TYRESVISION'):
+        elif code in ('FIT', 'TYRESVISION'):
             discount = min(subtotal, 40.0)
             applied_label = 'Special Fitment Discount'
         else:

@@ -122,7 +122,11 @@
             type="tel" 
             id="tvContactPhone" 
             name="phone" 
-            placeholder="+971 50 123 4567" 
+            inputmode="numeric"
+            maxlength="10"
+            pattern="[0-9]{10}"
+            oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
+            placeholder="0501234567" 
             class="tv-form-input"
             autocomplete="tel"
           />
@@ -171,7 +175,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-600 flex-shrink-0">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        <span>100% Genuine tyres, official GCC warranties &amp; transparent upfront pricing.</span>
+        <span>100% Genuine tyres, official manufacturer warranties &amp; transparent upfront pricing.</span>
       </div>
 
       <!-- Feedback Alert Banner -->

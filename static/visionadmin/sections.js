@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
       emoji: '🧩', 
       badgeBg: 'bg-violet-50 text-violet-800 border-violet-200/80',
       tagColor: 'bg-violet-500',
-      desc: 'Stack any combination of Cards, Metrics, Chips, FAQs, and CTAs freely' 
+      desc: 'Stack any combination of Cards, Metrics, Chips, FAQs, and CTAs ly' 
     },
     mission_vision: { 
       label: 'Mission & Team', 
@@ -1030,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (bType === 'comparison_split') {
       newBlock.heading = 'Choose Your Fitting Option';
       newBlock.options = [
-        { tag: 'FREE FITTING', heading: 'Partner Centre Fitting', description: 'Mounting, balancing and new valves included free at 25+ centres.', button_text: 'Book Centre', wa_msg: 'Hi TyresVision, I would like to book free fitting at a partner centre.' },
+        { tag: ' FITTING', heading: 'Partner Centre Fitting', description: 'Mounting, balancing and new valves included  at 25+ centres.', button_text: 'Book Centre', wa_msg: 'Hi TyresVision, I would like to book  fitting at a partner centre.' },
         { tag: 'MOBILE VAN', heading: 'Mobile Van at Your Doorstep', description: 'Fully equipped tyre van visits your location across UAE.', button_text: 'Book Mobile Van', wa_msg: 'Hi TyresVision, I would like to book mobile van fitting at my location.' }
       ];
     } else if (bType === 'process_steps') {
@@ -2223,11 +2223,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!sectionData.options) {
         sectionData.options = [
           {
-            tag: "FREE Delivery & Fitting",
-            heading: "Free fitting at a partner centre",
-            description: "Choose any centre on our network and we deliver your tyres there free of charge. Fitting, balancing, new valves and disposal of your old tyres are all included at no extra cost — the price we quote on WhatsApp is the price you pay.",
+            tag: " Delivery & Fitting",
+            heading: " fitting at a partner centre",
+            description: "Choose any centre on our network and we deliver your tyres there  of charge. Fitting, balancing, new valves and disposal of your old tyres are all included at no extra cost — the price we quote on WhatsApp is the price you pay.",
             button_text: "Book at Partner Centre",
-            wa_msg: "Hi TyresVision, I'd like to book free tyre fitting at a partner centre."
+            wa_msg: "Hi TyresVision, I'd like to book  tyre fitting at a partner centre."
           },
           {
             tag: "Mobile Van Service",

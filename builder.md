@@ -149,7 +149,7 @@ Every section edit modal includes the following standard top-level fields:
       },
       {
         "icon": "truck",
-        "title": { "en": "Free Fitting & Delivery", "ar": "توصيل وتركيب مجاني" }
+        "title": { "en": " Fitting & Delivery", "ar": "توصيل وتركيب مجاني" }
       },
       {
         "icon": "clock",
@@ -329,7 +329,7 @@ Every section edit modal includes the following standard top-level fields:
 
 ### 5.8 Delivery & Fitting Coverage (`coverage`)
 - **Emoji / Badge**: 📍 `Fitting Coverage`
-- **Storefront Output**: 2 Service Comparison cards (*Partner Centre Free Fitting* vs *Mobile Van Fitting*) and 3 geographic coverage chip groups (*Dubai*, *Abu Dhabi*, *Northern Emirates*).
+- **Storefront Output**: 2 Service Comparison cards (*Partner Centre  Fitting* vs *Mobile Van Fitting*) and 3 geographic coverage chip groups (*Dubai*, *Abu Dhabi*, *Northern Emirates*).
 - **Top-Level Fields Used**: `section_title`, `section_subtitle`, `content`.
 - **Repeater Items (`section_data.areas`)**:
   - **Area Group Heading**: e.g. `Dubai coverage`, `Abu Dhabi coverage`.
@@ -341,11 +341,11 @@ Every section edit modal includes the following standard top-level fields:
   {
     "options": [
       {
-        "tag": "FREE Delivery & Fitting",
-        "heading": "Free fitting at a partner centre",
-        "description": "Choose any centre on our network and we deliver your tyres there free of charge. Fitting, balancing, new valves and disposal included.",
+        "tag": " Delivery & Fitting",
+        "heading": " fitting at a partner centre",
+        "description": "Choose any centre on our network and we deliver your tyres there  of charge. Fitting, balancing, new valves and disposal included.",
         "button_text": "Book at Partner Centre",
-        "wa_msg": "Hi TyresVision, I'd like to book free tyre fitting at a partner centre."
+        "wa_msg": "Hi TyresVision, I'd like to book  tyre fitting at a partner centre."
       },
       {
         "tag": "Mobile Van Service",
@@ -518,7 +518,7 @@ When editing cards, steps, or features, the following vector icon presets are se
 |---|---|---|
 | `shield` | Shield / Warranty | Guarantee, official warranty, genuine products |
 | `dollar` | Dollar / Price | Competitive pricing, price matching, budget tiers |
-| `truck` | Truck / Delivery | Free delivery, mobile vans, same-day fitting |
+| `truck` | Truck / Delivery |  delivery, mobile vans, same-day fitting |
 | `clock` | Clock / 24-7 | Manufacturing DOT date code, response speed, hours |
 | `award` | Award / Brands | 60+ brands, certified specialists, high ratings |
 | `zap` | Zap / Fast | Quick turnaround, emergency response, fast fitting |
@@ -617,7 +617,7 @@ Currently, adding or extending page sections on TyresVision requires manual code
 Enable any administrator to:
 - Create **unlimited new sections** from the admin dashboard with **zero code changes**.
 - **Mix and match any components** (e.g., Cards + Chips + Comparison Cards + FAQs + Multiple Buttons) inside any single section.
-- Freely add **custom attributes/fields** (secondary buttons, tags, highlight text, colors).
+- ly add **custom attributes/fields** (secondary buttons, tags, highlight text, colors).
 - Preview and publish instantly without deploying or editing code.
 
 ---
@@ -875,7 +875,7 @@ In `/visionadmin/sections`:
 
 ### Phase 4: Presets & Auto-Migration
 - Pre-configure 1-click presets in the admin (e.g., *"Buying Advice + Vehicle Chips"*, *"Service Options + Area Coverage"*, *"Hero + Stat Strip"*).
-- Admins can click any preset as a starting template, then freely modify blocks.
+- Admins can click any preset as a starting template, then ly modify blocks.
 
 ### Phase 5: Verification & Quality Assurance
 - Test creating 3 completely new, composite sections with mixed blocks (e.g. Cards + Chips + FAQ + CTA) strictly from the browser.
@@ -887,6 +887,6 @@ In `/visionadmin/sections`:
 ## 16. Summary of Business & Technical Benefits
 
 1. **Zero Code Touched**: New sections with any combination of content are created directly from the browser.
-2. **Infinite Flexibility**: No longer restricted to rigid "cards-only" or "chips-only" layouts — components can be stacked freely.
+2. **Infinite Flexibility**: No longer restricted to rigid "cards-only" or "chips-only" layouts — components can be stacked ly.
 3. **Multilingual by Default**: Every block element inherently supports English and Arabic.
 4. **Instant Turnaround**: Marketing or content updates take seconds instead of requiring developer deployments.

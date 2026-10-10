@@ -265,7 +265,7 @@ class CartPriceRuleService:
                 discount_qty_step = int(data['discount_qty_step']) if data.get('discount_qty_step') else None
                 max_discount_qty = int(data['max_discount_qty']) if data.get('max_discount_qty') else None
                 apply_to_shipping = 1 if data.get('apply_to_shipping') in (1, '1', True, 'true') else 0
-                free_shipping = data.get('free_shipping') if data.get('free_shipping') in ('no', 'matching_items', 'shipment') else 'no'
+                _shipping = data.get('_shipping') if data.get('_shipping') in ('no', 'matching_items', 'shipment') else 'no'
                 discard_subsequent_rules = 1 if data.get('discard_subsequent_rules') in (1, '1', True, 'true') else 0
 
                 conditions_json = data.get('conditions_json')
@@ -285,7 +285,7 @@ class CartPriceRuleService:
                         name, description, is_active, coupon_type, uses_per_customer,
                         from_date, to_date, priority, conditions_json, discount_type,
                         discount_amount, discount_qty_step, max_discount_qty, apply_to_shipping,
-                        free_shipping, discard_subsequent_rules, item_conditions_json,
+                        _shipping, discard_subsequent_rules, item_conditions_json,
                         label_default, created_by, updated_by, created_at, updated_at
                     ) VALUES (
                         %s, %s, %s, %s, %s,
@@ -298,7 +298,7 @@ class CartPriceRuleService:
                     name, description, is_active, coupon_type, uses_per_customer,
                     from_date, to_date, priority, conditions_json, discount_type,
                     discount_amount, discount_qty_step, max_discount_qty, apply_to_shipping,
-                    free_shipping, discard_subsequent_rules, item_conditions_json,
+                    _shipping, discard_subsequent_rules, item_conditions_json,
                     label_default, admin_id, admin_id
                 ))
                 rule_id = cur.lastrowid
@@ -377,7 +377,7 @@ class CartPriceRuleService:
                 discount_qty_step = int(data['discount_qty_step']) if data.get('discount_qty_step') else None
                 max_discount_qty = int(data['max_discount_qty']) if data.get('max_discount_qty') else None
                 apply_to_shipping = 1 if data.get('apply_to_shipping') in (1, '1', True, 'true') else 0
-                free_shipping = data.get('free_shipping') if data.get('free_shipping') in ('no', 'matching_items', 'shipment') else 'no'
+                _shipping = data.get('_shipping') if data.get('_shipping') in ('no', 'matching_items', 'shipment') else 'no'
                 discard_subsequent_rules = 1 if data.get('discard_subsequent_rules') in (1, '1', True, 'true') else 0
 
                 conditions_json = data.get('conditions_json')
@@ -394,7 +394,7 @@ class CartPriceRuleService:
                         uses_per_customer = %s, from_date = %s, to_date = %s, priority = %s,
                         conditions_json = %s, discount_type = %s, discount_amount = %s,
                         discount_qty_step = %s, max_discount_qty = %s, apply_to_shipping = %s,
-                        free_shipping = %s, discard_subsequent_rules = %s, item_conditions_json = %s,
+                        _shipping = %s, discard_subsequent_rules = %s, item_conditions_json = %s,
                         label_default = %s, updated_by = %s, updated_at = NOW()
                     WHERE id = %s AND deleted_at IS NULL
                 """, (
@@ -402,7 +402,7 @@ class CartPriceRuleService:
                     uses_per_customer, from_date, to_date, priority,
                     conditions_json, discount_type, discount_amount,
                     discount_qty_step, max_discount_qty, apply_to_shipping,
-                    free_shipping, discard_subsequent_rules, item_conditions_json,
+                    _shipping, discard_subsequent_rules, item_conditions_json,
                     label_default, admin_id, rule_id
                 ))
 

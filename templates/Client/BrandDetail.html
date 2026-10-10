@@ -47,25 +47,6 @@
       <p class="text-base sm:text-lg text-purple-100 font-normal leading-relaxed mb-8 max-w-3xl">
         {{ brand.description }}
       </p>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm">
-          <span class="block text-2xl sm:text-3xl font-black text-white">{{ tyre_count }}</span>
-          <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">In Stock</span>
-        </div>
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm">
-          <span class="block text-2xl sm:text-3xl font-black text-white">{% if min_price %}AED {{ min_price|int }}{% else %}&mdash;{% endif %}</span>
-          <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">From</span>
-        </div>
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm">
-          <span class="block text-2xl sm:text-3xl font-black text-emerald-300">100%</span>
-          <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">Genuine</span>
-        </div>
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 text-center shadow-sm">
-          <span class="block text-2xl sm:text-3xl font-black text-white">{{ brand.country or 'UAE-Wide' }}</span>
-          <span class="text-xs font-bold text-purple-200 uppercase tracking-wider">{% if brand.country %}Origin{% else %}Delivery{% endif %}</span>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -77,7 +58,7 @@
           {{ brand.name }} Tyres In Stock
         </h2>
         <p class="text-sm text-slate-500 mt-1">
-          Genuine tyres with free doorstep or workshop fitting across the UAE.
+          Genuine tyres with  doorstep or workshop fitting across the UAE.
         </p>
       </div>
       {% if tyre_count > products|length %}

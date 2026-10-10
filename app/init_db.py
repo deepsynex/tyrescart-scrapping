@@ -727,7 +727,7 @@ def seed_default_home_sections(cursor):
             "hero",
             json.dumps({"en": "Buy tyres online.\n<em>Fitted locally</em> across the UAE.", "ar": "اشترِ الإطارات عبر الإنترنت.\n<em>تركيب محلي</em> في جميع أنحاء الإمارات."}, ensure_ascii=False),
             json.dumps({"en": "Dubai · Abu Dhabi · Sharjah · Ajman", "ar": "دبي · أبوظبي · الشارقة · عجمان"}, ensure_ascii=False),
-            json.dumps({"en": "TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices — delivered free to a fitting centre near you, or fitted at your home or office by our mobile vans.", "ar": "تايرز فيجن هو متجر إطارات إلكتروني رائد في الإمارات. إطارات أصلية وتواريخ إنتاج حديثة من أكثر من 60 علامة تجارية بأقل الأسعار — توصيل مجاني إلى مركز تركيب قريب منك، أو تركيب متنقل عند باب منزلك أو مكتبك."}, ensure_ascii=False),
+            json.dumps({"en": "TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices — delivered  to a fitting centre near you, or fitted at your home or office by our mobile vans.", "ar": "تايرز فيجن هو متجر إطارات إلكتروني رائد في الإمارات. إطارات أصلية وتواريخ إنتاج حديثة من أكثر من 60 علامة تجارية بأقل الأسعار — توصيل مجاني إلى مركز تركيب قريب منك، أو تركيب متنقل عند باب منزلك أو مكتبك."}, ensure_ascii=False),
             None,
             "right",
             json.dumps({"en": "WhatsApp for a quote", "ar": "اطلب عرض سعر عبر واتساب"}, ensure_ascii=False),
@@ -738,7 +738,7 @@ def seed_default_home_sections(cursor):
                 "badges": [
                     {"icon": "dollar", "text": {"en": "Lowest price guaranteed", "ar": "أقل سعر مضمون"}},
                     {"icon": "shield", "text": {"en": "Warranty on eligible tyres", "ar": "ضمان على الإطارات المؤهلة"}},
-                    {"icon": "truck", "text": {"en": "Free delivery to fitter", "ar": "توصيل مجاني لمركز التركيب"}}
+                    {"icon": "truck", "text": {"en": "Delivery to fitting centre", "ar": "توصيل لمركز التركيب"}}
                 ]
             }, ensure_ascii=False),
             1,
@@ -832,7 +832,7 @@ def seed_default_home_sections(cursor):
                 "value_cards": [
                     {
                         "icon": "truck",
-                        "title": {"en": "FREE Delivery", "ar": "توصيل مجاني"},
+                        "title": {"en": " Delivery", "ar": "توصيل مجاني"},
                         "subtitle": {"en": "Across Dubai & Abu Dhabi", "ar": "في دبي وأبوظبي"}
                     },
                     {
@@ -1086,7 +1086,7 @@ def seed_default_home_sections(cursor):
             "coverage",
             json.dumps({"en": "Delivery and Fitting Across Dubai and Abu Dhabi"}, ensure_ascii=False),
             json.dumps({"en": "Delivery & Fitting Coverage"}, ensure_ascii=False),
-            json.dumps({"en": "Free delivery and free fitting at any of our 25+ partner centres across Dubai and Abu Dhabi. Prefer not to leave home? Our mobile vans come to you for a call-out fee, confirmed on WhatsApp before we dispatch. Not sure if we reach you? Send a location pin and we’ll confirm in a minute."}, ensure_ascii=False),
+            json.dumps({"en": " delivery and  fitting at any of our 25+ partner centres across Dubai and Abu Dhabi. Prefer not to leave home? Our mobile vans come to you for a call-out fee, confirmed on WhatsApp before we dispatch. Not sure if we reach you? Send a location pin and we’ll confirm in a minute."}, ensure_ascii=False),
             None,
             "right",
             None,
@@ -1094,11 +1094,11 @@ def seed_default_home_sections(cursor):
             json.dumps({
                 "options": [
                     {
-                        "tag": "FREE Delivery & Fitting",
-                        "heading": "Free fitting at a partner centre",
-                        "description": "Choose any centre on our network and we deliver your tyres there free of charge. Fitting, balancing, new valves and disposal of your old tyres are all included at no extra cost — the price we quote on WhatsApp is the price you pay.",
+                        "tag": " Delivery & Fitting",
+                        "heading": " fitting at a partner centre",
+                        "description": "Choose any centre on our network and we deliver your tyres there  of charge. Fitting, balancing, new valves and disposal of your old tyres are all included at no extra cost — the price we quote on WhatsApp is the price you pay.",
                         "button_text": "Book at Partner Centre",
-                        "wa_msg": "Hi TyresVision, I'd like to book free tyre fitting at a partner centre."
+                        "wa_msg": "Hi TyresVision, I'd like to book  tyre fitting at a partner centre."
                     },
                     {
                         "tag": "Mobile Van Service",
@@ -1313,7 +1313,7 @@ def seed_default_home_sections(cursor):
                     },
                     {
                         "question": {"en": "Is fitting included in the price?"},
-                        "answer": {"en": "Fitting at one of our partner centres is free and included, along with delivery, mounting, balancing, new valves and disposal of your old tyres. Mobile fitting at your own location is charged as a call-out fee on top of the tyre price, always confirmed on WhatsApp before we dispatch a van."}
+                        "answer": {"en": "Fitting at one of our partner centres is  and included, along with delivery, mounting, balancing, new valves and disposal of your old tyres. Mobile fitting at your own location is charged as a call-out fee on top of the tyre price, always confirmed on WhatsApp before we dispatch a van."}
                     },
                     {
                         "question": {"en": "Do you really match other tyre prices?"},
@@ -1333,7 +1333,7 @@ def seed_default_home_sections(cursor):
                     },
                     {
                         "question": {"en": "Do you deliver to Abu Dhabi as well as Dubai?"},
-                        "answer": {"en": "Yes. We deliver free to partner centres across both emirates, and our mobile vans cover most of Abu Dhabi including Al Reem Island, Khalifa City, Yas Island, Mohammed Bin Zayed City and Musaffah, alongside full Dubai coverage. Send a location pin and we’ll confirm immediately."}
+                        "answer": {"en": "Yes. We deliver  to partner centres across both emirates, and our mobile vans cover most of Abu Dhabi including Al Reem Island, Khalifa City, Yas Island, Mohammed Bin Zayed City and Musaffah, alongside full Dubai coverage. Send a location pin and we’ll confirm immediately."}
                     },
                     {
                         "question": {"en": "Can you fit tyres at my home or office?"},

@@ -1890,18 +1890,26 @@ header {
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .field-row,
+  .quote-card .field-row,
+  .tv-hero-quote-box .field-row {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .quote-card .btn {
-  width: 100%
+  width: 100%;
 }
 
 .form-note {
   font-size: .78rem;
   color: var(--slate);
   margin: 12px 0 0;
-  text-align: center
+  text-align: center;
 }
 
 /* ---------------- STATS ---------------- */
@@ -6165,7 +6173,7 @@ html[dir="rtl"] .category-badge-pill {
   margin-bottom: 12px;
 }
 
-.coverage-tag-free {
+.coverage-tag- {
   background: var(--bg-light-blue, #ede5fa);
   color: var(--primary, #4B237B);
   border: 1px solid #c0a8ed;
@@ -9303,11 +9311,11 @@ details.tv-faq-item[open] {
 }
 
 .tv-filter-item.tv-filter-empty {
-  display: flex !important;
+  display: none !important;
 }
 
 .tv-filter-group.tv-group-empty {
-  display: block !important;
+  display: none !important;
 }
 
 .tv-search-size-box,
@@ -10285,10 +10293,10 @@ body.filter-open .float-wa {
 
 /* Card body wrapper: info, bottom strip, price row */
 .product-bottom-detail {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  /* flex: 1; */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: space-between; */
   min-width: 0;
   padding: 16px 10px 10px 10px;
 }
@@ -10609,6 +10617,21 @@ body.filter-open .float-wa {
 }
 
 .tv-card-origin-row-wrap .tv-meta-runflat img {
+  height: 18px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.tv-card-origin-row-wrap .tv-meta-ev {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.tv-card-origin-row-wrap .tv-meta-ev img,
+.tv-card-ev-icon {
   height: 18px;
   width: auto;
   display: block;
@@ -10940,7 +10963,7 @@ body.filter-open .float-wa {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: auto;
+  /* margin-top: 5px; */
   padding-top: 7px;
 }
 
@@ -12246,7 +12269,7 @@ body.tv-modal-active {
   color: #ffffff;
 }
 
-/* Trust Strip (Free Standard Installation, Free Wheel Balancing, Fast & Reliable Delivery) */
+/* Trust Strip ( Standard Installation,  Wheel Balancing, Fast & Reliable Delivery) */
 .tv-qv-trust-strip {
   /* background: #f0f7ff; */
   border: 1px solid #daccf5;
@@ -16134,7 +16157,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   font-weight: 700;
 }
 
-.tv-cart-drawer .tv-summary-row-free {
+.tv-cart-drawer .tv-summary-row- {
   color: #059669;
   font-weight: 600;
 }
@@ -16539,15 +16562,15 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   box-shadow: 0 4px 14px rgba(91, 33, 182, 0.3) !important;
 }
 
-/* ── Free Shipping Card ── */
-.tv-cart-drawer .tv-free-shipping-card {
+/* ──  Shipping Card ── */
+.tv-cart-drawer .tv--shipping-card {
   padding: 16px;
   border-radius: 12px;
   background: #FAF5FF;
   border: 1px solid #DDD6FE;
 }
 
-.tv-cart-drawer .tv-free-shipping-head {
+.tv-cart-drawer .tv--shipping-head {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -16558,14 +16581,14 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   color: #6D28D9;
 }
 
-.tv-cart-drawer .tv-free-shipping-title {
+.tv-cart-drawer .tv--shipping-title {
   font-size: 13px;
   font-weight: 800;
   color: #0f172a;
   margin: 0;
 }
 
-.tv-cart-drawer .tv-free-shipping-desc {
+.tv-cart-drawer .tv--shipping-desc {
   font-size: 11px;
   color: #64748b;
   line-height: 1.45;

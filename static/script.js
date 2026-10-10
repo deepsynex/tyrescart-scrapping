@@ -293,7 +293,7 @@
           <svg class="icon-done" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <circle cx="12" cy="12" r="10" fill="#10B981" opacity="0.16" />
             <path d="M7 13.5l3 3 7-7" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <animate attributeName="stroke-dasharray" from="0 20" to="20 0" dur="0.4s" fill="freeze" />
+              <animate attributeName="stroke-dasharray" from="0 20" to="20 0" dur="0.4s" fill="ze" />
             </path>
           </svg>
         `;
@@ -303,7 +303,7 @@
           <svg class="icon-blocked" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <circle cx="12" cy="12" r="10" fill="#EF4444" opacity="0.16" />
             <path d="M9 9l6 6M15 9l-6 6" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round">
-              <animate attributeName="opacity" values="0;1;1" dur="0.4s" fill="freeze" />
+              <animate attributeName="opacity" values="0;1;1" dur="0.4s" fill="ze" />
             </path>
           </svg>
         `;
@@ -609,7 +609,7 @@
   // SSE Webhook Client (Real-time Push Stream)
   // ==============================================================================
 
-  const getCacheKey = () => fileScraperId ? `tyrescart_scraper_cache_file_${fileScraperId}` : null;
+  const getCacheKey = () => fileScraperId ? `tyresvision_scraper_cache_file_${fileScraperId}` : null;
 
   const saveStateToLocalStorage = (summary, statuses) => {
     const key = getCacheKey();

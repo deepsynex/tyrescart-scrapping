@@ -93,7 +93,7 @@
     tableEl.classList.remove('hidden');
   }
 
-  const TRASH_CACHE_KEY = 'tyrescart_trash_cache';
+  const TRASH_CACHE_KEY = 'tyresvision_trash_cache';
 
   function loadCachedTrash() {
     try {

@@ -152,7 +152,7 @@
               type="text" 
               x-model="form.name" 
               required
-              placeholder="e.g. Buy 3 Get 1 Free on MatraX Romero Tyres" 
+              placeholder="e.g. Buy 3 Get 1  on MatraX Romero Tyres" 
               class="w-full px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <p class="text-[11px] text-slate-400">Internal name displayed in admin dashboards and reports.</p>
@@ -166,14 +166,14 @@
             <input 
               type="text" 
               x-model="form.label_default" 
-              placeholder="e.g. BUY 3 GET 1 FREE" 
+              placeholder="e.g. BUY 3 GET 1 " 
               class="w-full px-3.5 py-2.5 text-xs font-black tracking-wide uppercase bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
             <!-- Quick Preset Chips -->
             <div class="flex items-center gap-1.5 flex-wrap pt-1">
               <span class="text-[10px] text-slate-400 font-bold">Quick Presets:</span>
-              <button type="button" @click="form.label_default = 'BUY 3 GET 1 FREE'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">BUY 3 GET 1 FREE</button>
-              <button type="button" @click="form.label_default = 'FREE WHEEL ALIGNMENT'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition cursor-pointer">FREE WHEEL ALIGNMENT</button>
+              <button type="button" @click="form.label_default = 'BUY 3 GET 1 '" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">BUY 3 GET 1 </button>
+              <button type="button" @click="form.label_default = ' WHEEL ALIGNMENT'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition cursor-pointer"> WHEEL ALIGNMENT</button>
               <button type="button" @click="form.label_default = 'SPECIAL PROMOTION'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-[#f7f4fd] text-purple-700 border border-purple-200 hover:bg-[#ede5fa] transition cursor-pointer">SPECIAL PROMOTION</button>
               <button type="button" @click="form.label_default = 'BUY 2 GET 10% OFF'" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition cursor-pointer">BUY 2 GET 10% OFF</button>
             </div>
@@ -282,7 +282,7 @@
               <input type="radio" name="coupon_type" value="NO_COUPON" x-model="form.coupon_type" class="mt-1 text-[#4B237B] focus:ring-0">
               <div>
                 <div class="text-xs font-black text-slate-900">Auto-Apply (No Coupon Required)</div>
-                <p class="text-[11px] text-slate-500 mt-0.5">Promotion automatically activates in store &amp; checkout when criteria are satisfied (e.g. Buy 3 Get 1 Free, Free Wheel Alignment).</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Promotion automatically activates in store &amp; checkout when criteria are satisfied (e.g. Buy 3 Get 1 ,  Wheel Alignment).</p>
               </div>
             </label>
 
@@ -393,7 +393,7 @@
       <div class="bg-white p-6 rounded-3xl border border-[#E8EDE4] shadow-xs space-y-6">
         <div>
           <h2 class="text-base font-black text-slate-900">Discount Calculation &amp; Promotions Engine</h2>
-          <p class="text-xs text-slate-500 mt-1">Configure whether this rule gives a percentage discount, fixed amount, or Buy X Get Y Free promotion.</p>
+          <p class="text-xs text-slate-500 mt-1">Configure whether this rule gives a percentage discount, fixed amount, or Buy X Get Y  promotion.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -436,16 +436,16 @@
               placeholder="Leave blank for regular discount" 
               class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition"
             >
-            <p class="text-[10px] text-slate-400">e.g. 4 for "Buy 3 Get 1 Free" (groups of 4).</p>
+            <p class="text-[10px] text-slate-400">e.g. 4 for "Buy 3 Get 1 " (groups of 4).</p>
           </div>
         </div>
 
-        <!-- Buy X Get Y Free Helper Table & Presets -->
+        <!-- Buy X Get Y  Helper Table & Presets -->
         <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-2">
               <svg class="w-4 h-4 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <span class="text-xs font-black text-emerald-900">Buy X Get Y Free Quick Presets</span>
+              <span class="text-xs font-black text-emerald-900">Buy X Get Y  Quick Presets</span>
             </div>
             <span class="text-[11px] text-emerald-700 font-semibold">Click a preset below to auto-fill formula:</span>
           </div>
@@ -453,55 +453,55 @@
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button 
               type="button" 
-              @click="applyPreset(4, 25, 'BUY 3 GET 1 FREE')" 
+              @click="applyPreset(4, 25, 'BUY 3 GET 1 ')" 
               class="p-2.5 rounded-xl bg-white border border-emerald-300 text-left hover:border-emerald-600 hover:shadow-xs transition cursor-pointer"
             >
-              <div class="text-xs font-black text-slate-900">Buy 3 Get 1 Free</div>
+              <div class="text-xs font-black text-slate-900">Buy 3 Get 1 </div>
               <div class="text-[10px] text-emerald-700 font-bold mt-0.5">Step: 4 &bull; 25.00% Off</div>
             </button>
 
             <button 
               type="button" 
-              @click="applyPreset(2, 50, 'BUY 1 GET 1 FREE')" 
+              @click="applyPreset(2, 50, 'BUY 1 GET 1 ')" 
               class="p-2.5 rounded-xl bg-white border border-emerald-300 text-left hover:border-emerald-600 hover:shadow-xs transition cursor-pointer"
             >
-              <div class="text-xs font-black text-slate-900">Buy 1 Get 1 Free</div>
+              <div class="text-xs font-black text-slate-900">Buy 1 Get 1 </div>
               <div class="text-[10px] text-emerald-700 font-bold mt-0.5">Step: 2 &bull; 50.00% Off</div>
             </button>
 
             <button 
               type="button" 
-              @click="applyPreset(3, 33.3333, 'BUY 2 GET 1 FREE')" 
+              @click="applyPreset(3, 33.3333, 'BUY 2 GET 1 ')" 
               class="p-2.5 rounded-xl bg-white border border-emerald-300 text-left hover:border-emerald-600 hover:shadow-xs transition cursor-pointer"
             >
-              <div class="text-xs font-black text-slate-900">Buy 2 Get 1 Free</div>
+              <div class="text-xs font-black text-slate-900">Buy 2 Get 1 </div>
               <div class="text-[10px] text-emerald-700 font-bold mt-0.5">Step: 3 &bull; 33.33% Off</div>
             </button>
 
             <button 
               type="button" 
-              @click="applyPreset(5, 20, 'BUY 4 GET 1 FREE')" 
+              @click="applyPreset(5, 20, 'BUY 4 GET 1 ')" 
               class="p-2.5 rounded-xl bg-white border border-emerald-300 text-left hover:border-emerald-600 hover:shadow-xs transition cursor-pointer"
             >
-              <div class="text-xs font-black text-slate-900">Buy 4 Get 1 Free</div>
+              <div class="text-xs font-black text-slate-900">Buy 4 Get 1 </div>
               <div class="text-[10px] text-emerald-700 font-bold mt-0.5">Step: 5 &bull; 20.00% Off</div>
             </button>
           </div>
         </div>
 
-        <!-- Free Service / Free Shipping & Rules Stacking -->
+        <!--  Service /  Shipping & Rules Stacking -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-t border-slate-100">
           <div class="space-y-1.5">
-            <label class="block text-xs font-bold text-slate-700">Free Service / Free Shipping Grant</label>
+            <label class="block text-xs font-bold text-slate-700"> Service /  Shipping Grant</label>
             <select 
-              x-model="form.free_shipping" 
+              x-model="form._shipping" 
               class="w-full px-3.5 py-2.5 text-xs font-bold bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#4B237B] transition cursor-pointer"
             >
-              <option value="no">No Free Service</option>
-              <option value="matching_items">Free Service / Fitting for Matching Items Only</option>
-              <option value="shipment">Free Service / Fitting for Entire Order</option>
+              <option value="no">No  Service</option>
+              <option value="matching_items"> Service / Fitting for Matching Items Only</option>
+              <option value="shipment"> Service / Fitting for Entire Order</option>
             </select>
-            <p class="text-[11px] text-slate-400">e.g. Free wheel alignment granted on qualifying tyres.</p>
+            <p class="text-[11px] text-slate-400">e.g.  wheel alignment granted on qualifying tyres.</p>
           </div>
 
           <div class="space-y-1.5">
@@ -674,7 +674,7 @@ function cartPriceRuleFormApp(mode) {
       discount_qty_step: existingRule?.discount_qty_step || null,
       max_discount_qty: existingRule?.max_discount_qty || null,
       apply_to_shipping: existingRule?.apply_to_shipping == 1,
-      free_shipping: existingRule?.free_shipping || 'no',
+      _shipping: existingRule?._shipping || 'no',
       discard_subsequent_rules: existingRule?.discard_subsequent_rules == 1,
     },
 

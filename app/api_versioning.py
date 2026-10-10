@@ -32,7 +32,6 @@ API_MODULE_MANIFEST = {
             "routes": [
                 {"path": "/api/v1/blogs", "method": "GET", "desc": "List published blogs with pagination"},
                 {"path": "/api/v1/blogs/<slug>", "method": "GET", "desc": "Fetch single blog post by slug"},
-                {"path": "/api/v1/sections/<slug>", "method": "GET", "desc": "Fetch active dynamic page sections"},
                 {"path": "/api/v1/version", "method": "GET", "desc": "API version manifest"}
             ]
         },

@@ -67,7 +67,7 @@ class SoftDeleteMixin:
 
     @classmethod
     def soft_delete(cls, blog_id: int) -> bool:
-        """Marks a blog as deleted and prefixes slug to free it for reuse."""
+        """Marks a blog as deleted and prefixes slug to  it for reuse."""
         conn = get_connection()
         try:
             with conn.cursor() as cursor:

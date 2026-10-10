@@ -175,12 +175,135 @@
     }
   }, { passive: false });
 
+  // ── Universal 10-Digit Phone Number Input Sanitizer (Digits Only) ────
+  function isPhoneField(el) {
+    if (!el || el.tagName !== 'INPUT') return false;
+    if (el.id === 'MobileNumer' || el.name === 'MobileNumer') return true;
+    if (el.id === 'tvContactPhone' || el.id === 'tvPePhone' || el.id === 'tv-input-phone') return true;
+    if (el.type === 'tel') return true;
+    if (el.name === 'phone' || el.name === 'mobile' || el.name === 'contact_number') return true;
+    if (el.classList && el.classList.contains('tv-phone-input')) return true;
+    return false;
+  }
+
+  function setupPhoneInput(el) {
+    if (!el || el.dataset.tvPhoneReady === 'true') return;
+    el.dataset.tvPhoneReady = 'true';
+    el.setAttribute('inputmode', 'numeric');
+    el.setAttribute('maxlength', '10');
+    el.setAttribute('pattern', '[0-9]{10}');
+    if (el.value) {
+      el.value = el.value.replace(/\D/g, '').slice(0, 10);
+    }
+  }
+
+  // Keydown listener: Block any non-digit character and prevent typing beyond 10 digits
+  document.addEventListener('keydown', function(e) {
+    if (!isPhoneField(e.target)) return;
+
+    // Allow modifier key combinations (Ctrl+A, Ctrl+C, Ctrl+V, Cmd+A, etc.)
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    // Allow essential editing / navigation keys
+    var allowedKeys = [
+      'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+      'Home', 'End'
+    ];
+    if (allowedKeys.indexOf(e.key) !== -1) return;
+
+    // If key is not a single digit 0-9, prevent character insertion completely
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
+    // If already at 10 digits and no text is selected to be overwritten, block extra digit
+    var currentDigits = (e.target.value || '').replace(/\D/g, '');
+    var selStart = e.target.selectionStart;
+    var selEnd = e.target.selectionEnd;
+    var isReplacingSelection = selStart !== null && selEnd !== null && selEnd > selStart;
+    if (currentDigits.length >= 10 && !isReplacingSelection) {
+      e.preventDefault();
+    }
+  }, true);
+
+  // Input listener: Strip non-digits in real-time (for mobile virtual keyboards, autofill, IME)
+  document.addEventListener('input', function(e) {
+    if (!isPhoneField(e.target)) return;
+    var raw = e.target.value || '';
+    var clean = raw.replace(/\D/g, '').slice(0, 10);
+    if (raw !== clean) {
+      var selStart = e.target.selectionStart;
+      e.target.value = clean;
+      if (selStart !== null) {
+        var newPos = Math.min(selStart, clean.length);
+        e.target.setSelectionRange(newPos, newPos);
+      }
+    }
+  }, true);
+
+  // Paste listener: Extract digits only, slice to 10 max
+  document.addEventListener('paste', function(e) {
+    if (!isPhoneField(e.target)) return;
+    e.preventDefault();
+    var clipboardData = e.clipboardData || window.clipboardData;
+    var pastedText = clipboardData ? clipboardData.getData('text') : '';
+    var pastedDigits = (pastedText || '').replace(/\D/g, '');
+    var el = e.target;
+    var currentVal = el.value || '';
+    var selStart = el.selectionStart || 0;
+    var selEnd = el.selectionEnd || 0;
+    var combined = (currentVal.slice(0, selStart) + pastedDigits + currentVal.slice(selEnd)).replace(/\D/g, '').slice(0, 10);
+    el.value = combined;
+    var nextPos = Math.min(selStart + pastedDigits.length, combined.length);
+    el.setSelectionRange(nextPos, nextPos);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }, true);
+
+  // Drop listener: Prevent dragging and dropping non-digit text
+  document.addEventListener('drop', function(e) {
+    if (!isPhoneField(e.target)) return;
+    e.preventDefault();
+    var dropText = (e.dataTransfer && e.dataTransfer.getData('text')) || '';
+    var dropDigits = dropText.replace(/\D/g, '');
+    var el = e.target;
+    var currentVal = el.value || '';
+    var combined = (currentVal + dropDigits).replace(/\D/g, '').slice(0, 10);
+    el.value = combined;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }, true);
+
+  // Auto-init all existing phone fields on DOM ready
+  function initAllPhoneInputs() {
+    var inputs = document.querySelectorAll('input#MobileNumer, input[name="MobileNumer"], input[type="tel"], input[name="phone"], input[name="mobile"], #tvContactPhone, #tvPePhone, #tv-input-phone, .tv-phone-input');
+    inputs.forEach(setupPhoneInput);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllPhoneInputs);
+  } else {
+    initAllPhoneInputs();
+  }
+
   var form = document.getElementById('quoteForm');
   if(form){
+    var mobileInputEl = document.getElementById('MobileNumer');
+    if(mobileInputEl){
+      mobileInputEl.addEventListener('input', function(){ this.style.borderColor = ''; });
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var mobileEl = document.getElementById('MobileNumer');
-      var mobile = mobileEl ? mobileEl.value.trim() : '';
+      var mobile = mobileEl ? mobileEl.value.trim().replace(/\D/g, '').slice(0, 10) : '';
+      if(!mobile || mobile.length !== 10){
+        if(mobileEl){
+          mobileEl.focus();
+          mobileEl.style.borderColor = '#C0392B';
+        }
+        return;
+      }
+
       var sizeEl = document.getElementById('tyreSize');
       var size = sizeEl ? sizeEl.value.trim() : '';
       if(!size){ if(sizeEl){ sizeEl.focus(); sizeEl.style.borderColor = '#C0392B'; } return; }
@@ -193,6 +316,7 @@
       var fitting = fittingEl ? fittingEl.value : '';
 
       var lines = ["Hi TyresVision, I'd like a tyre quote."];
+      if(mobile) lines.push("Contact: " + mobile);
       lines.push("Tyre size: " + size);
       if(make) lines.push("Car: " + make);
       if(emirate) lines.push("Emirate: " + emirate);
@@ -961,8 +1085,20 @@ window.initTvPageComponents = function() {
         if (qForm.dataset.bound === 'true') return;
         qForm.dataset.bound = 'true';
 
+        var mobileInput = qForm.querySelector('input[name="MobileNumer"], input[name="phone"], input[name="mobile"]');
+        if (mobileInput) {
+            mobileInput.addEventListener('input', function() { this.style.borderColor = ''; });
+        }
+
         qForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            var mobile = mobileInput ? mobileInput.value.trim().replace(/\D/g, '').slice(0, 10) : '';
+            if (mobileInput && (!mobile || mobile.length !== 10)) {
+                mobileInput.focus();
+                mobileInput.style.borderColor = '#ef4444';
+                return;
+            }
+
             var sizeInput = qForm.querySelector('input[name="tyreSize"]');
             var size = sizeInput ? sizeInput.value.trim() : '';
             if (!size) {
@@ -979,12 +1115,11 @@ window.initTvPageComponents = function() {
             var emirate = emirateSelect ? emirateSelect.value : '';
 
             var pageTitle = document.title ? document.title.split('|')[0].trim() : 'TyresVision UAE';
-            var mobileInput = qForm.querySelector('input[name="MobileNumer"], input[name="phone"], input[name="mobile"]');
-            var mobile = mobileInput ? mobileInput.value.trim() : '';
 
             var msgLines = [
                 "Hi TyresVision, I would like a tyre quote."
             ];
+            if (mobile) msgLines.push("Contact: " + mobile);
             msgLines.push("Tyre size: " + size);
             if (make) msgLines.push("Car: " + make);
             if (emirate) msgLines.push("Emirate: " + emirate);
@@ -1273,14 +1408,14 @@ function calculateSetPrice(unitPrice, qty, offerText = '') {
   let paidQty = q;
 
   if (offer.includes('BUY 3 GET 1')) {
-    // Buy 3 Get 1 Free: for set of 3 or set of 4, customer pays for 3.
+    // Buy 3 Get 1 : for set of 3 or set of 4, customer pays for 3.
     // Handles up to 8 product qty (and beyond):
     // q=1->1, q=2->2, q=3->3, q=4->3, q=5->4, q=6->5, q=7->6, q=8->6
     const fullSets = Math.floor(q / 4);
     const remainder = q % 4;
     paidQty = (fullSets * 3) + (remainder >= 3 ? 3 : remainder);
   } else if (offer.includes('BUY 2 GET 2')) {
-    // Buy 2 Get 2 Free: customer pays for 2 in every 4 tyres
+    // Buy 2 Get 2 : customer pays for 2 in every 4 tyres
     // q=1->1, q=2->2, q=3->2, q=4->2, q=5->3, q=6->4, q=7->4, q=8->4
     const fullSets = Math.floor(q / 4);
     const remainder = q % 4;
@@ -1413,13 +1548,13 @@ function createStaggeredCombinedCardHTML(p) {
               <span>In Stock</span>
             </div>
 
-            <div class="tv-fitted-status">
+            <div class="tv-fitted-status onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details"">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                 <line x1="7" y1="7" x2="7.01" y2="7"></line>
               </svg>
               <span>Fitted Included</span>
-              <span class="tv-fitted-info-btn" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
+              <span class="tv-fitted-info-btn">
                 <svg class="w-[0.713rem] md:w-[0.813rem] h-auto" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 32a224 224 0 1 1 0 448 224 224 0 1 1 0-448zm0 480A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM208 352c-8.8 0-16 7.2-16 16s7.2 16 16 16h96c8.8 0 16-7.2 16-16s-7.2-16-16-16H272V240c0-8.8-7.2-16-16-16H216c-8.8 0-16 7.2-16 16s7.2 16 16 16h24v96H208zm48-168a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg>
               </span>
             </div>
@@ -2276,7 +2411,7 @@ function buildFilterPath(page = 1) {
     segments.push('type-' + selectedTypes.map(t => encodeURIComponent(t.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
 
-  // 11. Promotion segment: promotion-buy-3-get-1-free
+  // 11. Promotion segment: promotion-buy-3-get-1-
   if (selectedPromotions.length > 0) {
     segments.push('promotion-' + selectedPromotions.map(pr => encodeURIComponent(pr.toLowerCase().replace(/[\s_]+/g, '-'))).join(','));
   }
@@ -2547,7 +2682,7 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
       } else {
         document.title = 'Car Tyres Dubai & Abu Dhabi | Buy Premium Tyres Online | TyresVision';
         if (metaDesc) {
-          metaDesc.setAttribute('content', 'Shop premium car tyres online in UAE. Leading brands including Michelin, Bridgestone, Continental, Pirelli & Goodyear with free doorstep mobile fitting.');
+          metaDesc.setAttribute('content', 'Shop premium car tyres online in UAE. Leading brands including Michelin, Bridgestone, Continental, Pirelli & Goodyear with  doorstep mobile fitting.');
         }
         if (breadcrumbCurrent) {
           breadcrumbCurrent.textContent = 'Car Tyres';
@@ -2603,19 +2738,11 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
 function updateSidebarFacetCounts(facets) {
   if (!facets) return;
 
-  const currentUrlParams = new URLSearchParams(window.location.search);
-  const hasRouteParam = window.location.pathname.replace(/^\/tyres\/?/, '').trim().length > 0;
-  const hasSearchOrQuery = currentUrlParams.has('search') || currentUrlParams.has('q') ||
-    currentUrlParams.has('make') || currentUrlParams.has('model') || currentUrlParams.has('trim') ||
-    currentUrlParams.has('car_year') || currentUrlParams.has('vehicle_year') || currentUrlParams.has('width') ||
-    currentUrlParams.has('aspect_ratio') || currentUrlParams.has('rim_diameter') ||
-    (window.location.search && window.location.search.length > 1);
-
-  if (hasSearchOrQuery || hasRouteParam) return;
-
   function updateGroupItems(inputName, facetMap, isCaseInsensitive, keyTransform) {
     if (!facetMap) return;
     const inputs = document.querySelectorAll(`input[name="${inputName}"]`);
+    let visibleCount = 0;
+
     inputs.forEach(cb => {
       let val = cb.value.trim();
       if (keyTransform) val = keyTransform(val);
@@ -2631,18 +2758,30 @@ function updateSidebarFacetCounts(facets) {
       const item = cb.closest('.tv-filter-item');
       if (item) {
         const countSpan = item.querySelector('.tv-filter-count');
-        if (countSpan && !hasSearchOrQuery) {
+        if (countSpan) {
           countSpan.textContent = count.toLocaleString();
         }
-        item.classList.remove('tv-filter-empty');
-        item.style.display = '';
+        if (count === 0 && !cb.checked) {
+          item.classList.add('tv-filter-empty');
+          item.style.display = 'none';
+        } else {
+          item.classList.remove('tv-filter-empty');
+          item.style.display = '';
+          visibleCount++;
+        }
       }
     });
 
     if (inputs.length > 0) {
       const groupEl = inputs[0].closest('.tv-filter-group');
       if (groupEl) {
-        groupEl.classList.remove('tv-group-empty');
+        if (visibleCount === 0) {
+          groupEl.classList.add('tv-group-empty');
+          groupEl.style.display = 'none';
+        } else {
+          groupEl.classList.remove('tv-group-empty');
+          groupEl.style.display = '';
+        }
       }
     }
   }
@@ -2676,53 +2815,82 @@ function updateSidebarFacetCounts(facets) {
 
   // 8. Run Flat
   if (facets.runflat !== undefined) {
-    const rfCount = facets.runflat;
+    const rfCount = Number(facets.runflat) || 0;
     const rfEl = document.getElementById('tv-filter-count-runflat');
-    if (rfEl && !hasSearchOrQuery && !hasRouteParam) {
-      if (rfCount && rfCount > 0) {
-        rfEl.textContent = Number(rfCount).toLocaleString();
-      } else if (!rfEl.textContent || rfEl.textContent === '0') {
-        rfEl.textContent = '312';
-      }
-    }
+    if (rfEl) rfEl.textContent = rfCount.toLocaleString();
     const rfCb = document.querySelector('input[name="runflat"]');
     const rfItem = rfCb ? rfCb.closest('.tv-filter-item') : null;
-    if (rfItem) {
-      rfItem.classList.remove('tv-filter-empty');
-      rfItem.style.display = '';
-    }
     const rfGroup = rfCb ? rfCb.closest('.tv-filter-group') : null;
-    if (rfGroup) {
-      rfGroup.classList.remove('tv-group-empty');
+    const isChecked = rfCb ? rfCb.checked : false;
+    if (rfItem) {
+      if (rfCount === 0 && !isChecked) {
+        rfItem.classList.add('tv-filter-empty');
+        rfItem.style.display = 'none';
+        if (rfGroup) {
+          rfGroup.classList.add('tv-group-empty');
+          rfGroup.style.display = 'none';
+        }
+      } else {
+        rfItem.classList.remove('tv-filter-empty');
+        rfItem.style.display = '';
+        if (rfGroup) {
+          rfGroup.classList.remove('tv-group-empty');
+          rfGroup.style.display = '';
+        }
+      }
     }
   }
 
   // 9. EV Tyre
   if (facets.ev_tyre !== undefined) {
-    const evCount = facets.ev_tyre;
+    const evCount = Number(facets.ev_tyre) || 0;
     const evEl = document.getElementById('tv-filter-count-ev');
-    if (evEl && !hasSearchOrQuery) evEl.textContent = Number(evCount).toLocaleString();
+    if (evEl) evEl.textContent = evCount.toLocaleString();
     const evCb = document.querySelector('input[name="ev_tyre"]');
     const evItem = evCb ? evCb.closest('.tv-filter-item') : null;
-    if (evItem) {
-      evItem.classList.remove('tv-filter-empty');
-      evItem.style.display = '';
-    }
     const evGroup = evCb ? evCb.closest('.tv-filter-group') : null;
-    if (evGroup) {
-      evGroup.classList.remove('tv-group-empty');
+    const isChecked = evCb ? evCb.checked : false;
+    if (evItem) {
+      if (evCount === 0 && !isChecked) {
+        evItem.classList.add('tv-filter-empty');
+        evItem.style.display = 'none';
+        if (evGroup) {
+          evGroup.classList.add('tv-group-empty');
+          evGroup.style.display = 'none';
+        }
+      } else {
+        evItem.classList.remove('tv-filter-empty');
+        evItem.style.display = '';
+        if (evGroup) {
+          evGroup.classList.remove('tv-group-empty');
+          evGroup.style.display = '';
+        }
+      }
     }
   }
 }
 
 function refreshFilterVisibility() {
   document.querySelectorAll('.tv-filter-group').forEach(group => {
-    group.classList.remove('tv-group-empty');
     const items = group.querySelectorAll('.tv-filter-item');
+    let visibleItems = 0;
     items.forEach(item => {
-      item.classList.remove('tv-filter-empty');
-      item.style.display = '';
+      const cb = item.querySelector('input[type="checkbox"]');
+      const isChecked = cb ? cb.checked : false;
+      if (item.classList.contains('tv-filter-empty') && !isChecked) {
+        item.style.display = 'none';
+      } else {
+        item.style.display = '';
+        visibleItems++;
+      }
     });
+    if (visibleItems === 0) {
+      group.classList.add('tv-group-empty');
+      group.style.display = 'none';
+    } else {
+      group.classList.remove('tv-group-empty');
+      group.style.display = '';
+    }
     // Auto-expand any group that has checked inputs so active filters are always visible
     const hasChecked = group.querySelector('input:checked');
     if (hasChecked) {
@@ -2732,7 +2900,7 @@ function refreshFilterVisibility() {
         header.classList.remove('collapsed');
       }
       Array.from(group.children).forEach(child => {
-        if (child !== header) {
+        if (child !== header && !child.classList.contains('tv-filter-empty')) {
           child.style.display = '';
         }
       });
@@ -2996,6 +3164,12 @@ function searchFilterList(inputEl, listSelector) {
   if (!container) return;
   const items = container.querySelectorAll('.tv-filter-item');
   items.forEach(it => {
+    const cb = it.querySelector('input[type="checkbox"]');
+    const isChecked = cb ? cb.checked : false;
+    if (it.classList.contains('tv-filter-empty') && !isChecked) {
+      it.style.display = 'none';
+      return;
+    }
     const text = (it.getAttribute('data-filter-name') || it.innerText || '').toLowerCase();
     if (!q || text.includes(q)) {
       it.style.display = '';
@@ -3293,7 +3467,7 @@ function openFittedPriceModal(e) {
                 <span class="tv-check-icon-wrap">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </span>
-                <span>On purchase of 4 tyres, 1 FREE scheduled instance of tyre rotation every 20,000kms per year</span>
+                <span>On purchase of 4 tyres, 1  scheduled instance of tyre rotation every 20,000kms per year</span>
               </li>
             </ul>
             <div class="tv-fitted-modal-footer">
@@ -3843,7 +4017,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       "06:00 PM - 08:00 PM"
     ]
   };
-  var deliveryMode = 'install_outlet'; // 'install_outlet' | 'mobile_van' | 'free_shipping'
+  var deliveryMode = 'install_outlet'; // 'install_outlet' | 'mobile_van' | '_shipping'
   var selectedCity = 'All';
   var searchQuery = '';
   var expandedStoreId = null;
@@ -4405,7 +4579,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
         if (ic2) ic2.classList.add('is-active');
       }
       if (contentVan) contentVan.style.display = 'block';
-    } else if (mode === 'free_shipping') {
+    } else if (mode === '_shipping') {
       if (btnShip) {
         btnShip.classList.add('is-active');
         var ic3 = btnShip.querySelector('.tv-mode-icon-circle');
@@ -4778,11 +4952,11 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     setOverviewActiveSection('contact');
   }
 
-  function handleConfirmFreeShipping() {
-    deliveryMode = 'free_shipping';
+  function handleConfirmShipping() {
+    deliveryMode = '_shipping';
     var summaryEl = document.getElementById('tv-fitting-summary-text');
     if (summaryEl) {
-      summaryEl.textContent = 'Free Delivery to Doorstep';
+      summaryEl.textContent = ' Delivery to Doorstep';
     }
     setOverviewActiveSection('contact');
   }
@@ -4911,8 +5085,8 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     var summaryEl = document.getElementById('tv-shipping-summary-text');
     if (!summaryEl) return;
 
-    if (deliveryMode === 'free_shipping') {
-      summaryEl.innerHTML = '<span><strong class="text-gray-900">Mode:</strong> Free Direct Shipping (Doorstep)</span>';
+    if (deliveryMode === '_shipping') {
+      summaryEl.innerHTML = '<span><strong class="text-gray-900">Mode:</strong>  Direct Shipping (Doorstep)</span>';
     } else if (deliveryMode === 'mobile_van') {
       var vName = selectedVan ? selectedVan.name : 'Mobile Fitting Fleet';
       summaryEl.innerHTML = `
@@ -5233,7 +5407,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   window.toggleDrawerBranch = toggleDrawerBranch;
   window.confirmBranchFitting = confirmBranchFitting;
   window.confirmVanFitting = confirmVanFitting;
-  window.handleConfirmFreeShipping = handleConfirmFreeShipping;
+  window.handleConfirmShipping = handleConfirmShipping;
   window.resetStoreFilters = resetStoreFilters;
   window.handleDrawerMakeChange = handleDrawerMakeChange;
   window.handleDrawerModelChange = handleDrawerModelChange;
@@ -5243,7 +5417,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
   window.addTyreToCart = addTyreToCart;
 
   /* ==========================================================================
-     Vehicle Compatibility Overlay Modal (Matching TyresCart Design)
+     Vehicle Compatibility Overlay Modal (Matching TyresVision Design)
      ========================================================================== */
   function ItemSizeClose() {
     var modal = document.getElementById("item-size");

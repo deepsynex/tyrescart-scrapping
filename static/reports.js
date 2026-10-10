@@ -152,7 +152,7 @@
     if (loadingEl) loadingEl.classList.add('hidden');
   }
 
-  const REPORTS_CACHE_KEY = 'tyrescart_reports_cache';
+  const REPORTS_CACHE_KEY = 'tyresvision_reports_cache';
 
   function loadCachedReports() {
     try {

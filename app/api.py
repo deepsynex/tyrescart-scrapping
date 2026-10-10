@@ -5357,50 +5357,6 @@ def register_client_api_routes(app):
         }
         return jsonify({'success': True, 'blog': data})
 
-    # =========================================================================
-    # 2. PUBLIC PAGE SECTIONS API (Returns active sections ordered by sort_order)
-    # =========================================================================
-
-    @app.route('/api/pages/<slug>/sections', methods=['GET'])
-    @app.route('/api/v1/pages/<slug>/sections', methods=['GET'])
-    @app.route('/api/sections/<slug>', methods=['GET'])
-    @app.route('/api/v1/sections/<slug>', methods=['GET'])
-    @app.route('/api/sections', methods=['GET'])
-    @app.route('/api/v1/sections', methods=['GET'])
-    @app.route('/api/pages/about-us/sections', methods=['GET'])
-    @app.route('/api/v1/pages/about-us/sections', methods=['GET'])
-    def public_get_page_sections(slug=None):
-        """Public API returning active sections and page metadata for a page ordered by sort_order."""
-        target_slug = request.args.get('page') or slug or 'about-us'
-        locale = request.args.get('locale') or request.args.get('lang') or get_locale()
-        sections = PageSection.all_for_page(page_slug=target_slug, include_inactive=False)
-        formatted = [PageSection.to_localized_dict(s, locale=locale) for s in sections]
-
-        page_obj = Page.find_by_slug(target_slug)
-        page_data = page_obj.to_dict(locale=locale) if page_obj else {
-            'slug': target_slug,
-            'title': target_slug.replace('-', ' ').title(),
-            'content': '',
-            'meta_description': '',
-            'seo_title': target_slug.replace('-', ' ').title()
-        }
-
-        labels = {
-            'home': translate('Home', locale),
-            'about_us': translate('About Us', locale),
-            'site_title': translate('TyresVision UAE', locale),
-            'loading': translate('Loading...', locale),
-            'notice': translate('Notice', locale),
-        }
-
-        return jsonify({
-            'success': True,
-            'locale': locale,
-            'labels': labels,
-            'page': page_data,
-            'sections': formatted,
-            'count': len(formatted)
-        })
 
     # =========================================================================
     # 3. ENQUIRY / WHATSAPP BANNER SUBMISSION API (hdweb_enquiry table)
