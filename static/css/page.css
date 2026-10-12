@@ -24,8 +24,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #d8b4fe5c;
-  color: #6902C7 !important;
+  background: #F3E8FF !important;
+  border: 1px solid #D8B4FE !important;
+  color: #4B237B !important;
   padding: 5px 14px;
   border-radius: 9999px;
   font-size: 0.76rem;
@@ -34,6 +35,22 @@
   text-transform: uppercase;
   margin-bottom: 12px;
 }
+
+/* Hero eyebrows on dark hero background: high contrast frosted glass with white text */
+#tv-page-content-root .tv-ev-hero .eyebrow,
+#tv-page-content-root .tvb-hero .eyebrow,
+#tv-page-content-root .tv-hero .eyebrow,
+#tv-page-content-root .tv-hero-left .eyebrow,
+#tv-page-content-root [class*="hero"] .eyebrow {
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
 
 #tv-page-content-root .tv-section-head h2 {
   color: #240B3A !important;
@@ -104,8 +121,9 @@
   gap: 6px;
   padding: 5px 14px;
   border-radius: 9999px;
-  background: #d8b4fe5c;
-  color: #6902C7;
+  background: #F3E8FF !important;
+  border: 1px solid #D8B4FE !important;
+  color: #4B237B !important;
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -348,13 +366,22 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(151, 37, 255, 0.22);
-  border: 1.5px solid rgba(157, 56, 248, 0.4);
-  color: #9D38F8;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+  color: #FFFFFF !important;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.tvb-badge-icon svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  fill: none;
 }
 
 .tvb-hero-tagline {
@@ -668,8 +695,9 @@
   gap: 6px;
   padding: 5px 14px;
   border-radius: 9999px;
-  background: #d8b4fe5c;
-  color: #6902C7;
+  background: #F3E8FF !important;
+  border: 1px solid #D8B4FE !important;
+  color: #4B237B !important;
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -856,7 +884,8 @@
 }
 
 .page-mobile-tyre-fitting .btn-hero-call:hover {
-  background: #0000000d;
+  background: var(--primary-light);
+  color:#fff;
   transform: translateY(-2px);
   box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.25);
 }
@@ -8429,5 +8458,281 @@
   letter-spacing: 0.05em !important;
 }
 
+/* ==========================================================================
+   About Us Page — Structured Sections & FAQ Component
+   ========================================================================== */
 
-
+/* Section headers & backgrounds */
+.page-about-us .about-section-head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-about-us .about-sub-max {
+  margin: 0 auto;
+  max-width: 680px;
+}
+
+.page-about-us .about-section-bg {
+  background: #F8FAFC;
+}
+
+/* Emirates Coverage Grid */
+.page-about-us .about-emirates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.page-about-us .about-emirate-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #0F172A;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.page-about-us .about-emirate-card:hover {
+  border-color: #7C3AED;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.12);
+}
+
+.page-about-us .about-emirate-name {
+  display: block;
+  font-size: 1.1rem;
+  color: #1E293B;
+  font-weight: 700;
+}
+
+.page-about-us .about-emirate-desc {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin-top: 2px;
+  display: block;
+}
+
+.page-about-us .about-emirate-arrow {
+  color: #7C3AED;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.page-about-us .about-emirate-card:hover .about-emirate-arrow {
+  transform: translateX(3px);
+}
+
+/* FAQ & Help Box Layout (Matching Screenshot) */
+.page-about-us .about-faq-section {
+  background: #F8FAFC;
+  padding: 80px 0;
+}
+
+.page-about-us .about-faq-badge-pill {
+  display: inline-block;
+  background: #F3E8FF;
+  color: #7C3AED;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  margin-bottom: 14px;
+  border: 1px solid #E9D5FF;
+}
+
+.page-about-us .about-faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  gap: 36px;
+  align-items: start;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* FAQ Accordion List (Left Column) */
+.page-about-us .about-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-about-us .about-faq-item {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.page-about-us .about-faq-item:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.page-about-us .about-faq-item.active {
+  border-color: #7C3AED;
+  box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.12);
+  background: #FDFAFF;
+}
+
+.page-about-us .about-faq-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 24px;
+  background: transparent;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.page-about-us .about-faq-item.active .about-faq-btn {
+  color: #7C3AED;
+}
+
+.page-about-us .about-faq-chevron {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #F3E8FF;
+  color: #7C3AED;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.page-about-us .about-faq-item.active .about-faq-chevron {
+  transform: rotate(180deg);
+  background: #7C3AED;
+  color: #ffffff;
+}
+
+.page-about-us .about-faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+}
+
+.page-about-us .about-faq-body {
+  padding: 0 24px 22px 24px;
+  font-size: 0.96rem;
+  line-height: 1.68;
+  color: #475569;
+}
+
+/* Still Have Questions Help Card (Right Column) */
+.page-about-us .about-faq-help-box {
+  position: sticky;
+  top: 96px;
+  background: linear-gradient(135deg, #1C0832 0%, #2A0B4A 50%, #3B1066 100%);
+  border-radius: 20px;
+  padding: 38px 28px;
+  color: #ffffff;
+  box-shadow: 0 16px 36px -6px rgba(28, 8, 50, 0.35);
+  text-align: center;
+}
+
+.page-about-us .about-faq-help-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #CB93FD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.page-about-us .about-faq-help-title {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.page-about-us .about-faq-help-desc {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.page-about-us .about-faq-wa-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  background: #22C55E;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.page-about-us .about-faq-wa-btn:hover {
+  background: #16A34A;
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+.page-about-us .about-faq-call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.page-about-us .about-faq-call-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+@media (max-width: 960px) {
+  .page-about-us .about-faq-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .page-about-us .about-faq-help-box {
+    position: static;
+    margin-top: 16px;
+  }
+}
+
+
+

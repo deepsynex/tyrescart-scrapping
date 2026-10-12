@@ -18,6 +18,7 @@ from models.blog import Blog
 from models.page import Page
 from models.page_section import PageSection
 from models.setting import Setting
+from services import seo_builder
 
 from i18n import (
     get_locale as _get_locale,
@@ -96,6 +97,31 @@ def sitemap_xml():
     return send_from_directory(BASE_DIR, 'sitemap.xml', mimetype='application/xml')
 
 
+@site_bp.route('/sitemap-cms-pages.xml')
+def sitemap_cms_pages_xml():
+    return send_from_directory(BASE_DIR, 'sitemap-cms-pages.xml', mimetype='application/xml')
+
+
+@site_bp.route('/sitemap-blogs.xml')
+def sitemap_blogs_xml():
+    return send_from_directory(BASE_DIR, 'sitemap-blogs.xml', mimetype='application/xml')
+
+
+@site_bp.route('/sitemap-brands.xml')
+def sitemap_brands_xml():
+    return send_from_directory(BASE_DIR, 'sitemap-brands.xml', mimetype='application/xml')
+
+
+@site_bp.route('/sitemap-products.xml')
+def sitemap_products_xml():
+    return send_from_directory(BASE_DIR, 'sitemap-products.xml', mimetype='application/xml')
+
+
+@site_bp.route('/sitemap-cars.xml')
+def sitemap_cars_xml():
+    return send_from_directory(BASE_DIR, 'sitemap-cars.xml', mimetype='application/xml')
+
+
 @site_bp.route('/favicon.ico')
 def favicon_ico():
     return send_from_directory(os.path.join(BASE_DIR, 'static', 'assets', 'images', 'logo'), 'favicon.ico', mimetype='image/x-icon')
@@ -125,7 +151,20 @@ def home():
     locale = _get_locale()
     sections = _get_home_sections(locale)
     page = Page.find_by_slug('home')
-    resp = make_response(render_template('Client/Home.html', sections=sections, locale=locale, page=page, slug='home'))
+    home_title = (page.get_seo_title(locale) if page else None) or 'Buy Tyres Online in Dubai & Abu Dhabi | TyresVision'
+    # Forced rather than falling back to page.get_meta_desc(): the brief
+    # explicitly calls out this exact old description (still sitting in the
+    # `pages` row for 'home') to be replaced with this text everywhere
+    # (meta description, og:description, twitter:description).
+    home_desc = (
+        'Buy genuine tyres online in Dubai, Abu Dhabi and across the UAE. Top global brands with free '
+        'fitting at a partner outlet, or mobile van fitting at your home.'
+    )
+    seo = seo_builder.build_homepage_seo(home_title, home_desc, faqs=None)
+    resp = make_response(render_template(
+        'Client/Home.html', sections=sections, locale=locale, page=page, slug='home',
+        page_title=home_title, page_desc=home_desc, **seo
+    ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
 
@@ -165,31 +204,23 @@ def blog_default():
 
     listing_title = translate('Tyre Care & Buying Guides | TyresVision Blog', code)
     listing_desc = translate('Straight answers on tyre sizing, maintenance, and buying the right set for UAE roads and heat — from the team behind TyresVision.', code)
-    listing_img = f"{base_url}/static/assets/images/online-tyres-shop-dubai.png"
 
-    page_og_tags = {
-        'og_type': 'website',
-        'og_url': canonical_url,
-        'og_title': listing_title,
-        'og_description': listing_desc,
-        'og_image': listing_img,
-        'og_locale': 'ar_AE' if code == 'ar' else 'en_AE',
-    }
-    page_twitter_tags = {
-        'twitter_card': 'summary_large_image',
-        'twitter_title': listing_title,
-        'twitter_description': listing_desc,
-        'twitter_image': listing_img,
-    }
+    # No ItemList node: the post grid on this page is loaded client-side via
+    # /api/blogs (see Blog.html), not rendered in the server HTML, and every
+    # schema fact must be visible on the page -- so this stays a plain
+    # CollectionPage + BreadcrumbList until that list is server-rendered.
+    seo = seo_builder.build_collection_page_seo(
+        canonical_url, listing_title, listing_desc,
+        breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Blog"}],
+        list_items=[],
+    )
 
     resp = make_response(render_template(
         'Client/Blog.html',
         locale=code,
         categories=categories,
         selected_category=selected_category,
-        canonical_url=canonical_url,
-        page_og_tags=page_og_tags,
-        page_twitter_tags=page_twitter_tags
+        **seo
     ))
     resp.set_cookie('site_locale', code, max_age=31536000, path='/')
     return resp
@@ -212,31 +243,23 @@ def blog_locale(lang_code):
 
     listing_title = translate('Tyre Care & Buying Guides | TyresVision Blog', code)
     listing_desc = translate('Straight answers on tyre sizing, maintenance, and buying the right set for UAE roads and heat — from the team behind TyresVision.', code)
-    listing_img = f"{base_url}/static/assets/images/online-tyres-shop-dubai.png"
 
-    page_og_tags = {
-        'og_type': 'website',
-        'og_url': canonical_url,
-        'og_title': listing_title,
-        'og_description': listing_desc,
-        'og_image': listing_img,
-        'og_locale': 'ar_AE' if code == 'ar' else 'en_AE',
-    }
-    page_twitter_tags = {
-        'twitter_card': 'summary_large_image',
-        'twitter_title': listing_title,
-        'twitter_description': listing_desc,
-        'twitter_image': listing_img,
-    }
+    # No ItemList node: the post grid on this page is loaded client-side via
+    # /api/blogs (see Blog.html), not rendered in the server HTML, and every
+    # schema fact must be visible on the page -- so this stays a plain
+    # CollectionPage + BreadcrumbList until that list is server-rendered.
+    seo = seo_builder.build_collection_page_seo(
+        canonical_url, listing_title, listing_desc,
+        breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Blog"}],
+        list_items=[],
+    )
 
     resp = make_response(render_template(
         'Client/Blog.html',
         locale=code,
         categories=categories,
         selected_category=selected_category,
-        canonical_url=canonical_url,
-        page_og_tags=page_og_tags,
-        page_twitter_tags=page_twitter_tags
+        **seo
     ))
     resp.set_cookie('site_locale', code, max_age=31536000, path='/')
     return resp
@@ -353,26 +376,27 @@ def _render_blog_detail(slug, locale):
     # Meta Title and Meta Description (fallback to title / short_description / default)
     meta_title = blog.get_meta_title(locale) or blog.get_title(locale)
     meta_desc = blog.get_meta_desc(locale) or blog.get_short_desc(locale) or f"{blog.get_title(locale)} — expert advice and tyre guide for UAE drivers."
+    # BlogDetail.html's own {% block title %} always appends "| TyresVision"
+    # to post.meta_title -- mirrored here so og:title/twitter:title match the
+    # real <title> exactly instead of missing that suffix.
+    full_title = f"{meta_title} | TyresVision"
 
     # Cover image and absolute OG image URL
     cover_image = blog.image or '/static/assets/images/online-tyres-shop-dubai.png'
     full_image_url = cover_image if cover_image.startswith('http') else f"{base_url}{cover_image}"
 
-    # Build Open Graph and Twitter tags
-    page_og_tags = {
-        'og_type': 'article',
-        'og_url': canonical_url,
-        'og_title': meta_title,
-        'og_description': meta_desc,
-        'og_image': full_image_url,
-        'og_locale': 'ar_AE' if locale == 'ar' else 'en_AE',
-    }
-    page_twitter_tags = {
-        'twitter_card': 'summary_large_image',
-        'twitter_title': meta_title,
-        'twitter_description': meta_desc,
-        'twitter_image': full_image_url,
-    }
+    # Structured data: no FAQPage here -- this page's FAQ accordion is built
+    # client-side from post.faqs (see BlogDetail.html), not rendered in the
+    # server HTML, and every schema fact must be visible on the page.
+    # Author: "Admin" is a generic role label, not a real named person, so
+    # this attributes the article to the Organization rather than inventing
+    # a Person identity for schema purposes.
+    seo = seo_builder.build_blog_post_seo(
+        canonical_url, full_title, meta_desc, full_image_url,
+        date_published=blog.published_at.isoformat() if blog.published_at else None,
+        date_modified=blog.updated_at.isoformat() if blog.updated_at else None,
+        author_name=None, is_person_author=False,
+    )
 
     blog_data = {
         'id': blog.id,
@@ -407,9 +431,7 @@ def _render_blog_detail(slug, locale):
         next_post=next_post,
         reviewer=reviewer_info,
         locale=locale,
-        canonical_url=canonical_url,
-        page_og_tags=page_og_tags,
-        page_twitter_tags=page_twitter_tags
+        **seo
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
@@ -577,7 +599,16 @@ def _build_about_us_context(page, locale=None):
 def about_us():
     locale = _get_locale()
     page = Page.find_by_slug('about-us')
-    resp = make_response(render_template('Client/AboutUs.html', page=page, slug='about-us', locale=locale))
+    title = 'About Us | TyresVision UAE'
+    description = (
+        'Learn about TyresVision UAE: genuine tyre brands, upfront pricing, certified technicians, '
+        'and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.'
+    )
+    seo = seo_builder.build_about_seo(
+        f"{seo_builder.SITE_URL}/about-us", title, description,
+        faqs=seo_builder.ABOUT_US_FAQS,
+    )
+    resp = make_response(render_template('Client/AboutUs.html', page=page, slug='about-us', locale=locale, **seo))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
 
@@ -598,7 +629,32 @@ def mobile_tyre_fitting():
     """Dedicated high-fidelity Mobile Tyre Fitting landing page."""
     locale = _get_locale()
     page = Page.find_by_slug('mobile-tyre-fitting')
-    resp = make_response(render_template('Client/MobileTyreFitting.html', page=page, slug='mobile-tyre-fitting', locale=locale))
+
+    # This slug already has a complete, admin-authored schema graph in the
+    # `pages` table (WebPage + ImageObject + Service + FAQPage, correctly
+    # @id-linked to #organization/#website) -- app.py's inject_page_seo()
+    # context processor serves it automatically, so this route only builds
+    # a fallback for the unlikely case that row is ever cleared.
+    if seo_builder.page_has_manual_seo('mobile-tyre-fitting'):
+        resp = make_response(render_template('Client/MobileTyreFitting.html', page=page, slug='mobile-tyre-fitting', locale=locale))
+    else:
+        title = 'Mobile Tyre Fitting in Dubai & Abu Dhabi | TyresVision'
+        description = (
+            'Mobile tyre fitting at your home, office or car park across Dubai and Abu Dhabi. '
+            'Send your tyre size and location on WhatsApp for a price in minutes.'
+        )
+        svc = seo_builder.SERVICE_PAGE_SLUGS['mobile-tyre-fitting']
+        seo = seo_builder.build_service_seo(
+            f"{seo_builder.SITE_URL}/mobile-tyre-fitting", title, description,
+            service_name=svc['name'], service_type=svc['service_type'],
+            area_served=svc['area_served'],
+            breadcrumb_items=[
+                {"label": "Home", "url": "/"},
+                {"label": "Mobile Tyre Fitting in Dubai and Abu Dhabi"},
+            ],
+            faqs=seo_builder.MOBILE_TYRE_FITTING_FAQS,
+        )
+        resp = make_response(render_template('Client/MobileTyreFitting.html', page=page, slug='mobile-tyre-fitting', locale=locale, **seo))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
 
@@ -1057,7 +1113,9 @@ def _format_product_for_client(p, locale='en'):
     ev_val = str(attr.get('ev') or attr.get('ev_tyre') or attr.get('ev_rated') or attr.get('is_ev') or '').strip().lower()
     is_ev_attr = ev_val in ('yes', '1', 'true', 'ev') or (p_dict.get('ev_rated') in (1, '1', True, 'yes', 'Yes'))
     is_ev_name = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', full_name_str, re.IGNORECASE))
-    is_ev = is_ev_attr or is_ev_name
+    tm_val = str(attr.get('tyre_marking') or p_dict.get('tyre_marking') or attr.get('oem_marking') or '').strip()
+    is_ev_mark = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', tm_val, re.IGNORECASE))
+    is_ev = is_ev_attr or is_ev_name or is_ev_mark
     p_dict['is_ev'] = bool(is_ev)
     p_dict['ev_text'] = 'EV' if is_ev else ''
 
@@ -2458,35 +2516,35 @@ def _render_product_listing(locale, filter_path=None):
             max_price = int(pr_row['max_p']) if pr_row and pr_row['max_p'] is not None else 2000
             # Synchronize sidebar filter counts with computed dynamic facets
             if facets:
-                if 'tyres_categories' in facets and facets['tyres_categories']:
+                if 'tyres_categories' in facets:
                     for tc in filter_tyres_categories:
                         cat_k = tc['category']
                         tc['count'] = facets['tyres_categories'].get(cat_k, facets['tyres_categories'].get(cat_k.capitalize(), facets['tyres_categories'].get(cat_k.lower(), 0)))
-                if 'brands' in facets and facets['brands']:
+                if 'brands' in facets:
                     for b in filter_brands:
                         b_slug = (b.get('slug') or '').lower()
                         b_name = (b.get('name') or '').lower()
                         b['count'] = facets['brands'].get(b_slug, facets['brands'].get(b_name, 0))
-                if 'patterns' in facets and facets['patterns']:
+                if 'patterns' in facets:
                     for p in filter_patterns:
                         p['count'] = facets['patterns'].get(p['pattern'], 0)
-                if 'tyre_markings' in facets and facets['tyre_markings']:
+                if 'tyre_markings' in facets:
                     for tm in filter_tyre_markings:
                         tm['count'] = facets['tyre_markings'].get(tm['marking'], 0)
-                if 'oems' in facets and facets['oems']:
+                if 'oems' in facets:
                     for o in filter_oem_tyres:
                         o['count'] = facets['oems'].get(o['oem'], 0)
-                if 'warranties' in facets and facets['warranties']:
+                if 'warranties' in facets:
                     for w in filter_warranties:
                         w['count'] = facets['warranties'].get(w['warranty'], 0)
-                if 'years' in facets and facets['years']:
+                if 'years' in facets:
                     for y in filter_years:
                         y['count'] = facets['years'].get(str(y['year']), 0)
-                if 'origins' in facets and facets['origins']:
+                if 'origins' in facets:
                     for org in filter_origins:
                         org_k = (org.get('origin') or '').lower()
                         org['count'] = facets['origins'].get(org_k, facets['origins'].get(org.get('origin'), 0))
-                if 'promotions' in facets and facets['promotions']:
+                if 'promotions' in facets:
                     for pr in filter_promotions:
                         pr['count'] = facets['promotions'].get(pr['key'], 0)
                 if 'runflat' in facets:
@@ -2507,9 +2565,46 @@ def _render_product_listing(locale, filter_path=None):
                     active_brand_name = active_brands[0].capitalize()
                     active_brand_slug = active_brands[0]
 
+            if active_ev_tyre:
+                listing_title = 'Buy EV Tyres Online in UAE with Top Brands | TyresVision'
+                listing_desc = 'Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.'
+                canonical_url = f"{seo_builder.SITE_URL}/tyres/ev"
+            elif active_brand_name:
+                listing_title = f"Buy {active_brand_name} tyres online. Fitted locally in UAE. | TyresVision"
+                listing_desc = f"Looking for {active_brand_name} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE."
+                canonical_url = f"{seo_builder.SITE_URL}/tyres/brand/{active_brand_slug}"
+            else:
+                listing_title = 'Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision'
+                listing_desc = 'Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.'
+                canonical_url = f"{seo_builder.SITE_URL}/tyres"
+
+            breadcrumb_items = [{"label": "Home", "url": "/"}]
+            if active_ev_tyre:
+                breadcrumb_items.append({"label": "EV Tyres"})
+            elif active_brand_name:
+                breadcrumb_items.append({"label": "Tyres", "url": "/tyres"})
+                breadcrumb_items.append({"label": active_brand_name})
+            else:
+                breadcrumb_items.append({"label": "Tyres"})
+
+            listing_items = [
+                {
+                    'name': p.get('display_name') or p.get('name') or p.get('title') or 'Tyre',
+                    'url': f"/{p.get('slug')}" if p.get('slug') else '/tyres',
+                }
+                for p in products
+            ]
+
+            seo = seo_builder.build_collection_page_seo(
+                canonical_url, listing_title, listing_desc, breadcrumb_items, listing_items,
+            )
+
             resp = make_response(render_template(
                 'Client/ProductListing.html',
                 products=products,
+                listing_title=listing_title,
+                listing_desc=listing_desc,
+                **seo,
                 total_count=total_count,
                 current_page=current_page,
                 per_page=per_page,
@@ -2680,7 +2775,9 @@ def _render_product_detail(slug_or_id, locale=None):
             ev_val = str(raw_attrs.get('ev') or raw_attrs.get('ev_tyre') or raw_attrs.get('ev_rated') or raw_attrs.get('is_ev') or '').strip().lower()
             is_ev_attr = ev_val in ('yes', '1', 'true', 'ev') or (p_row.get('ev_rated') in (1, '1', True, 'yes', 'Yes'))
             is_ev_name = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', p_full_name, re.IGNORECASE))
-            is_ev = is_ev_attr or is_ev_name
+            tm_val = str(raw_attrs.get('tyre_marking') or p_row.get('tyre_marking') or raw_attrs.get('oem_marking') or '').strip()
+            is_ev_mark = bool(re.search(r'(?:\bEV\b|\bELECT\b|\biON\b|E-V\b|EV-Ready|\bEVT\b)', tm_val, re.IGNORECASE))
+            is_ev = is_ev_attr or is_ev_name or is_ev_mark
 
             product = {
                 'id': p_row['id'],
@@ -2799,7 +2896,7 @@ def _render_product_detail(slug_or_id, locale=None):
 
             related_products = [_format_product_for_client(r, locale) for r in rel_rows]
 
-            canonical_url = f"https://www.tyresvision.com/product/{product['slug']}"
+            canonical_url = f"https://www.tyresvision.com/{product['slug']}"
             raw_img = product.get('image_path') or '/static/assets/images/online-tyres-shop-dubai.png'
             if raw_img.startswith('http://') or raw_img.startswith('https://'):
                 full_image_url = raw_img
@@ -2811,59 +2908,40 @@ def _render_product_detail(slug_or_id, locale=None):
             og_title = product.get('meta_title') or f"{product.get('title')} | Buy Online at TyresVision UAE"
             og_description = product.get('meta_description') or product.get('description') or f"Buy {product.get('title')} online in UAE with  fitting and warranty. Best tyre prices at TyresVision."
 
-            page_og_tags = {
-                'og_type': 'product',
-                'og_url': canonical_url,
-                'og_title': og_title,
-                'og_description': og_description,
-                'og_image': full_image_url,
-                'og_locale': 'ar_AE' if locale == 'ar' else 'en_AE',
-                'og_image_width': 800,
-                'og_image_height': 800,
-            }
+            breadcrumb_items = [
+                {"label": "Home", "url": "/"},
+                {"label": "Tyres", "url": "/tyres"},
+            ]
+            if product.get('brand_name'):
+                breadcrumb_items.append({
+                    "label": product['brand_name'],
+                    "url": f"/brands/{p_row.get('brand_slug')}" if p_row.get('brand_slug') else "/brands",
+                })
+            breadcrumb_items.append({"label": product.get('title')})
 
-            page_twitter_tags = {
-                'twitter_card': 'summary_large_image',
-                'twitter_title': og_title,
-                'twitter_description': og_description,
-                'twitter_image': full_image_url,
-            }
-
-            product_schema = {
-                "@context": "https://schema.org/",
-                "@type": "Product",
-                "name": product.get('title') or product.get('display_name'),
-                "image": [full_image_url],
-                "description": og_description,
-                "sku": product.get('sku') or f"TYRE-{product.get('id')}",
-                "brand": {
-                    "@type": "Brand",
-                    "name": product.get('brand_name') or "TyresVision"
-                },
-                "offers": {
-                    "@type": "Offer",
-                    "url": canonical_url,
-                    "priceCurrency": "AED",
-                    "price": f"{product.get('price'):.2f}" if product.get('price') else "0.00",
-                    "itemCondition": "https://schema.org/NewCondition",
-                    "availability": "https://schema.org/InStock" if product.get('in_stock') else "https://schema.org/OutOfStock",
-                    "seller": {
-                        "@type": "Organization",
-                        "name": "TyresVision"
-                    }
-                }
-            }
-            page_schema_json = json.dumps(product_schema, ensure_ascii=False)
+            seo = seo_builder.build_product_seo(
+                canonical_url, og_title, og_description, full_image_url,
+                brand_name=product.get('brand_name') or 'TyresVision',
+                sku=product.get('sku') or f"TYRE-{product.get('id')}",
+                price=product.get('price'),
+                in_stock=bool(product.get('in_stock')),
+                additional_properties=[
+                    ('Tyre size', product.get('tire_size_label')),
+                    ('Load index', p_row.get('tire_load_index')),
+                    ('Speed rating', p_row.get('tire_speed_rating')),
+                    ('Manufacture year', product.get('year')),
+                    ('Origin', product.get('country')),
+                    ('Warranty', product.get('warranty')),
+                ],
+                breadcrumb_items=breadcrumb_items,
+            )
 
             resp = make_response(render_template(
                 'Client/ProductDetail.html',
                 product=product,
                 related_products=related_products,
-                page_og_tags=page_og_tags,
-                page_twitter_tags=page_twitter_tags,
-                page_schema_json=page_schema_json,
-                canonical_url=canonical_url,
-                locale=locale
+                locale=locale,
+                **seo
             ))
             resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
             return resp
@@ -2871,15 +2949,15 @@ def _render_product_detail(slug_or_id, locale=None):
         conn.close()
 
 
-# Dedicated Product Detail Routes
+# Legacy Product Detail URLs -- 301 redirect to the canonical bare-slug route
+# (page_detail / page_detail_locale below) to eliminate duplicate-content URLs.
 @site_bp.route('/product/<slug>', strict_slashes=False)
 @site_bp.route('/product/<slug>/', strict_slashes=False)
 @site_bp.route('/tyres/product/<slug>', strict_slashes=False)
 @site_bp.route('/tyres/product/<slug>/', strict_slashes=False)
 def product_detail(slug):
-    """Client storefront Product Detail page."""
-    locale = _get_locale()
-    return _render_product_detail(slug, locale)
+    """Redirects legacy /product/<slug> and /tyres/product/<slug> URLs to the canonical /<slug>."""
+    return redirect(f'/{slug}', code=301)
 
 
 @site_bp.route('/<string(length=2):lang_code>/product/<slug>', strict_slashes=False)
@@ -2887,10 +2965,8 @@ def product_detail(slug):
 @site_bp.route('/<string(length=2):lang_code>/tyres/product/<slug>', strict_slashes=False)
 @site_bp.route('/<string(length=2):lang_code>/tyres/product/<slug>/', strict_slashes=False)
 def product_detail_locale(lang_code, slug):
-    """Client storefront Product Detail page with dynamic locale."""
-    code = lang_code.lower()
-    session['site_locale'] = code
-    return _render_product_detail(slug, code)
+    """Redirects legacy locale-prefixed product URLs to the canonical /<lang_code>/<slug>."""
+    return redirect(f'/{lang_code.lower()}/{slug}', code=301)
 
 
 
@@ -2955,12 +3031,20 @@ def brand_page():
                     'country': b.get('country') or ''
                 })
 
+            title = 'Shop Tyres by Brand in Dubai & Abu Dhabi | TyresVision'
+            description = 'Shop tyres by brand, from Michelin, Bridgestone and Pirelli to Hankook and Giti. Pick a brand to see its tyres and buy online with free fitting at a centre.'
+            seo = seo_builder.build_collection_page_seo(
+                f"{seo_builder.SITE_URL}/brands", title, description,
+                breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Brands"}],
+                list_items=[{'name': b['name'], 'url': f"/brands/{b['slug']}"} for b in brands],
+            )
             resp = make_response(render_template(
                 'Client/brand.html',
                 brands=brands,
                 total_brands=len(brands),
                 total_tyres=total_tyres,
-                locale=locale
+                locale=locale,
+                **seo
             ))
             resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
             return resp
@@ -3082,10 +3166,14 @@ def brand_detail_page(slug):
             f"at a centre near you or at your home or office anywhere in the UAE."
         )
 
-    meta_title = _loc(brand_row.get('meta_title')) or f"{brand_name} Tyres UAE | Genuine Stock & Fitting | TyresVision"
+    _brand_title_base = f"Buy {brand_name} Tyres Online in Dubai & Abu Dhabi"
+    _brand_title_full = f"{_brand_title_base} | TyresVision"
+    meta_title = _loc(brand_row.get('meta_title')) or (
+        _brand_title_full if len(_brand_title_full) <= 65 else _brand_title_base
+    )
     meta_desc = _loc(brand_row.get('meta_desc')) or (
-        f"Shop genuine {brand_name} tyres in the UAE. Compare sizes and prices, then book doorstep or "
-        f"workshop fitting with TyresVision."
+        f"Buy genuine {brand_name} tyres online in Dubai, Abu Dhabi & UAE. Compare {brand_name} patterns, "
+        f"sizes and prices, with free fitting at a partner centre near you."
     )
 
     base_url = "https://www.tyresvision.com"
@@ -3096,6 +3184,16 @@ def brand_detail_page(slug):
         {"label": "Brands", "url": "/brands"},
         {"label": brand_name, "url": f"/brands/{slug}"},
     ]
+
+    seo = seo_builder.build_brand_detail_seo(
+        canonical_url, meta_title, meta_desc,
+        brand_name=brand_name, brand_logo=brand_row.get('logo'),
+        breadcrumb_items=breadcrumbs,
+        list_items=[
+            {'name': p.get('display_name') or p.get('name') or p.get('title') or brand_name, 'url': f"/{p.get('slug')}"}
+            for p in products if p.get('slug')
+        ],
+    )
 
     resp = make_response(render_template(
         'Client/BrandDetail.html',
@@ -3113,17 +3211,10 @@ def brand_detail_page(slug):
         products=products,
         features=_BRAND_FEATURE_DEFAULTS,
         breadcrumbs=breadcrumbs,
-        canonical_url=canonical_url,
-        page_og_tags={
-            'og_type': 'website',
-            'og_url': canonical_url,
-            'og_title': meta_title,
-            'og_description': meta_desc,
-            'og_image': brand_row.get('logo') or f"{base_url}/static/assets/images/online-tyres-shop-dubai.png",
-        },
         meta_title=meta_title,
         meta_desc=meta_desc,
         locale=locale,
+        **seo,
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
@@ -3349,16 +3440,25 @@ def _render_car_brands(locale):
     # Sort alphabetically from A to Z to match OEM car makes directory
     makes.sort(key=lambda x: x['name'].lower())
 
-    base_url = "https://www.tyresvision.com"
-    canonical_url = f"{base_url}/{locale}/tyres/cars" if locale and locale != 'en' else f"{base_url}/tyres/cars"
-    canonical_url = canonical_url.rstrip('/')
+    # NOTE: this matches the canonical the template has always actually used
+    # (https://www.tyresvision.com/cars, the live registered route) rather
+    # than /tyres/cars -- see Part 5 of the SEO report for the known
+    # /cars vs /tyres/cars canonical mismatch, which this pass reports but
+    # does not change.
+    title = 'Shop Tyres by Car Make in Dubai & Abu Dhabi | TyresVision'
+    description = 'Choose your car make, such as Toyota, Nissan, BMW or Mercedes-Benz, then your model to find tyres that fit. Buy online with free fitting at a partner centre.'
+    seo = seo_builder.build_collection_page_seo(
+        f"{seo_builder.SITE_URL}/cars", title, description,
+        breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Cars"}],
+        list_items=[{'name': m['name'], 'url': f"/cars/{m['slug']}"} for m in makes],
+    )
 
     resp = make_response(render_template(
         'Client/CarBrands.html',
         makes=makes,
         total_makes=len(makes),
         locale=locale,
-        canonical_url=canonical_url
+        **seo
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
@@ -3885,8 +3985,44 @@ def _render_vehicle_page(slug_path, locale):
             current_app.logger.warning(f"Error fetching tyres for vehicle fitment: {e}")
 
     base_url = "https://www.tyresvision.com"
+    # NOTE: matches the canonical this template has always actually used
+    # (/tyres/cars/..., not /cars/...) -- see Part 5 of the SEO report for
+    # the known /cars vs /tyres/cars mismatch, reported but not changed here.
     canonical_url = f"{base_url}/{locale}/tyres/cars/{clean_path}" if locale and locale != 'en' else f"{base_url}/tyres/cars/{clean_path}"
     canonical_url = canonical_url.rstrip('/')
+
+    trim_label = (trim_info.get('display') or trim_info.get('trim')) if trim_info else None
+    if level == 4:
+        vp_title = f"{make_info['name']} {model_info['name']} {year} {trim_label} Tyres | TyresVision"
+        vp_desc = f"Find official tyre sizes and prices for {make_info['name']} {model_info['name']} {year} ({trim_label}) in UAE. Genuine tyres with doorstep fitting in Dubai & Abu Dhabi."
+    elif level == 3:
+        vp_title = f"{make_info['name']} {model_info['name']} {year} Tyres & Fitment | TyresVision"
+        vp_desc = f"Select your {make_info['name']} {model_info['name']} {year} engine or trim to view certified tyre sizes, OEM markings, and verified prices in UAE."
+    elif level == 2:
+        vp_title = f"{make_info['name']} {model_info['name']} Tyres & Models | TyresVision"
+        vp_desc = f"Explore all production years and tyre sizes for {make_info['name']} {model_info['name']}. Compare Michelin, Pirelli, Continental and more at TyresVision."
+    elif level == 1:
+        vp_title = f"{make_info['name']} Tyres Shop | Buy Tyres for {make_info['name']} in UAE | TyresVision"
+        vp_desc = f"Find tyres for your {make_info['name']} in the UAE. Select your {make_info['name']} model to view certified tyre sizes, verified prices, and mobile fitting at your doorstep."
+    else:
+        vp_title = 'Vehicle Tyres Fitment Guide | TyresVision'
+        vp_desc = 'Official vehicle tyre fitment guide for cars in the UAE.'
+
+    if level >= 2:
+        vp_list_items = [
+            {'name': p.get('display_name') or p.get('name') or p.get('title') or 'Tyre', 'url': f"/{p.get('slug')}"}
+            for p in (products or []) if p.get('slug')
+        ]
+    else:
+        vp_list_items = [{'name': m['name'], 'url': f"/cars/{make_slug}/{m['slug']}"} for m in (models or [])]
+
+    car_about = None
+    if level >= 2 and make_info:
+        car_about = {'make': make_info['name'], 'model': model_info.get('name') if model_info else None}
+
+    seo = seo_builder.build_vehicle_seo(
+        canonical_url, vp_title, vp_desc, breadcrumbs, vp_list_items, car_about=car_about,
+    )
 
     resp = make_response(render_template(
         'Client/VehiclePage.html',
@@ -3896,17 +4032,19 @@ def _render_vehicle_page(slug_path, locale):
         year=year,
         trim=trim_info,
         models=models,
+        vp_title=vp_title,
+        vp_desc=vp_desc,
         years=years,
         engines=engines,
         tyre_options=tyre_options,
         products=products,
         breadcrumbs=breadcrumbs,
-        canonical_url=canonical_url,
         make_stats=make_stats,
         model_stats=model_stats,
         oem_brands=oem_brands,
         oem_brands_by_slug=oem_brands_by_slug,
-        locale=locale
+        locale=locale,
+        **seo
     ))
     resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
     return resp
@@ -5342,7 +5480,7 @@ def _send_contact_enquiry_email(flask_app, name, email, phone, subject, message,
 
             # Clean up any static href attributes in template
             if clean_phone:
-                html_body = html_body.replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"')
+                html_body = html_body.replace('href="tel:+971505069575"', f'href="tel:{clean_phone}"').replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"').replace('href="tel:+971505065575"', f'href="tel:{clean_phone}"')
             if display_product:
                 encoded_prod = urllib.parse.quote(display_product)
                 html_body = html_body.replace('Continental%20Tyres', encoded_prod)
@@ -5403,7 +5541,46 @@ def page_detail(slug):
         template = 'Client/AboutUs.html' if slug == 'about-us' else 'Client/Page.html'
         raw_sections = PageSection.all_for_page(slug, include_inactive=False)
         sections = [PageSection.to_localized_dict(s, locale=locale) for s in raw_sections]
-        return render_template(template, page=page, slug=slug, locale=locale, sections=sections)
+
+        canonical_url = f"{seo_builder.SITE_URL}/{slug}"
+        title = page.get_seo_title(locale) or (page.get_title(locale) + ' | TyresVision UAE')
+        description = page.get_meta_desc(locale) or (
+            'TyresVision UAE — 60+ genuine tyre brands with upfront pricing and  fitting across '
+            'Dubai, Abu Dhabi and all Emirates.'
+        )
+        breadcrumb_items = [
+            {"label": "Home", "url": "/"},
+            {"label": page.get_title(locale) or slug},
+        ]
+
+        # Any CMS page -- service, location or otherwise: if this slug
+        # already has a complete, admin-authored schema graph (see
+        # seo_builder.page_has_manual_seo's docstring -- tyre-shop-<city> and
+        # a few others), leave it alone. app.py's inject_page_seo() context
+        # processor still supplies page_og_tags/page_twitter_tags/
+        # page_schema_json for it, since we don't pass those names here.
+        if seo_builder.page_has_manual_seo(slug):
+            return render_template(template, page=page, slug=slug, locale=locale, sections=sections)
+
+        if slug in seo_builder.SERVICE_PAGE_SLUGS:
+            svc = seo_builder.SERVICE_PAGE_SLUGS[slug]
+            seo = seo_builder.build_service_seo(
+                canonical_url, title, description,
+                service_name=svc['name'], service_type=svc['service_type'],
+                area_served=svc['area_served'], breadcrumb_items=breadcrumb_items,
+            )
+        elif slug in seo_builder.LOCATION_PAGE_SLUGS:
+            city = seo_builder.LOCATION_PAGE_SLUGS[slug]
+            seo = seo_builder.build_service_seo(
+                canonical_url, title, description,
+                service_name=f"Tyre Shop in {city}", service_type="Tyre sales and fitting",
+                area_served=city, breadcrumb_items=breadcrumb_items,
+            )
+        else:
+            # Nothing configured for this page at all: a generic
+            # WebPage + BreadcrumbList replaces the old sitewide-leak default.
+            seo = seo_builder.build_generic_page_seo(canonical_url, title, description, breadcrumb_items)
+        return render_template(template, page=page, slug=slug, locale=locale, sections=sections, **seo)
     blog = Blog.find_by_slug(slug)
     if blog:
         return redirect(f'/blog/{slug}')

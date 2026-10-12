@@ -1,20 +1,15 @@
 {% extends 'Client/layout.html' %}
 
-{% block title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
+{# title/meta_description/canonical_url and og:*/twitter:* are now built
+   centrally in app/services/seo_builder.py and passed in by
+   _render_product_listing() -- listing_title/listing_desc/canonical_url --
+   so this page has one source of truth instead of three copies of the
+   same EV/brand/default text. #}
+{% block title %}{{ listing_title }}{% endblock %}
 
-{% block meta_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
+{% block meta_description %}{{ listing_desc }}{% endblock %}
 
-{% block canonical_url %}{% if active_ev_tyre %}https://www.tyresvision.com/tyres/ev{% elif active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
-
-{% block og_title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
-
-{% block og_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
-
-{% block og_url %}{% if active_ev_tyre %}https://www.tyresvision.com/tyres/ev{% elif active_brand_slug %}https://www.tyresvision.com/tyres/brand/{{ active_brand_slug }}{% else %}https://www.tyresvision.com/tyres{% endif %}{% endblock %}
-
-{% block twitter_title %}{% if active_ev_tyre %}Buy EV Tyres Online in UAE with Top Brands | TyresVision{% elif active_brand_name %}Buy {{ active_brand_name }} tyres online. Fitted locally in Dubai & Abu Dhabi. | tyresvision{% else %}Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision{% endif %}{% endblock %}
-
-{% block twitter_description %}{% if active_ev_tyre %}Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.{% elif active_brand_name %}Looking for {{ active_brand_name }} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE.{% else %}Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.{% endif %}{% endblock %}
+{% block canonical_url %}{{ canonical_url }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap">
@@ -1189,7 +1184,7 @@
                  onclick="event.stopPropagation()" 
                  title="Chat on WhatsApp"
                  aria-label="Inquire on WhatsApp">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
                 <span class="tv-wa-btn-label">WhatsApp</span>
               </a>
 
@@ -1417,7 +1412,7 @@
             <h3 id="tv-qv-title" class="tv-qv-product-title">Windforce 155 R12C 8GQ Mile Max 2025</h3>
             <p class="tv-qv-product-subtitle" id="tv-qv-subtitle">Reliable performance for your daily drive. Built for durability and safety.</p>
 
-            <!-- 11 Specifications Grid (Exact 4 + 4 + 3 horizontal cards with solid blue circular icons) -->
+            <!-- 11 Specifications Grid (3x3 + 2 layout matching requested design) -->
             <div class="tv-qv-spec-grid">
               <!-- 1. WIDTH -->
               <div class="tv-qv-spec-card">
@@ -1452,18 +1447,7 @@
                 </div>
               </div>
 
-              <!-- 4. LOAD/SPEED -->
-              <div class="tv-qv-spec-card">
-                <div class="tv-qv-spec-glyph tv-glyph-blue">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
-                </div>
-                <div class="tv-qv-spec-meta">
-                  <span class="tv-qv-spec-key">LOAD/SPEED</span>
-                  <strong id="tv-qv-spec-loadspeed" class="tv-qv-spec-val">86Q</strong>
-                </div>
-              </div>
-
-              <!-- 5. BRAND -->
+              <!-- 4. BRAND -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1.5"></circle></svg>
@@ -1474,7 +1458,7 @@
                 </div>
               </div>
 
-              <!-- 6. PATTERN -->
+              <!-- 5. PATTERN -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -1485,7 +1469,7 @@
                 </div>
               </div>
 
-              <!-- 7. SIZE (i) -->
+              <!-- 6. SIZE (i) -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
@@ -1496,18 +1480,7 @@
                 </div>
               </div>
 
-              <!-- 8. YEAR -->
-              <div class="tv-qv-spec-card">
-                <div class="tv-qv-spec-glyph tv-glyph-blue">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                </div>
-                <div class="tv-qv-spec-meta">
-                  <span class="tv-qv-spec-key">YEAR</span>
-                  <strong id="tv-qv-spec-year" class="tv-qv-spec-val">2025</strong>
-                </div>
-              </div>
-
-              <!-- 9. COUNTRY -->
+              <!-- 7. COUNTRY -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -1518,7 +1491,7 @@
                 </div>
               </div>
 
-              <!-- 10. WARRANTY -->
+              <!-- 8. WARRANTY -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -1529,7 +1502,7 @@
                 </div>
               </div>
 
-              <!-- 11. SKU -->
+              <!-- 9. SKU -->
               <div class="tv-qv-spec-card">
                 <div class="tv-qv-spec-glyph tv-glyph-blue">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -1539,89 +1512,104 @@
                   <strong id="tv-qv-spec-sku" class="tv-qv-spec-val">TCKL-12726</strong>
                 </div>
               </div>
-            </div>
 
-            <!-- Pricing, Sets, Stepper & CTAs Box -->
-            <div class="tv-qv-price-cta-box">
-              <div class="tv-qv-price-info">
-                <div class="tv-qv-fitted-label" onclick="openFittedPriceModal(event)" role="button" tabindex="0">
-                  <span>Fitted Price</span>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <!-- 10. LOAD/SPEED -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
                 </div>
-                <div class="tv-qv-price-row">
-                  <div class="tv-qv-main-cost">
-                    <span class="currency-dirham tv-curr-glyph">&#xe900;</span>
-                    <strong id="tv-qv-price" class="tv-qv-price-num">148.00</strong>
-                    <span class="tv-qv-unit">/ per pcs</span>
-                  </div>
-                </div>
-                <div class="tv-qv-sets-line">
-                  <span class="tv-qv-curr-set-badge" id="tv-qv-selected-set-wrap">Set of <strong id="tv-qv-selected-qty-label">4</strong>: <strong id="tv-qv-total-price"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 592.00</strong></span>
-                  <span class="tv-qv-set-divider">|</span>
-                  <span>Set of 2 : <strong id="tv-qv-set2"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 296.00</strong></span>
-                  <span class="tv-qv-set-divider">|</span>
-                  <span>Set of 4 : <strong id="tv-qv-set4"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 592.00</strong></span>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">LOAD/SPEED</span>
+                  <strong id="tv-qv-spec-loadspeed" class="tv-qv-spec-val">86Q</strong>
                 </div>
               </div>
 
-              <!-- Controls on the right: Stepper + Add to Cart + Contact Us -->
-              <div class="tv-qv-cta-group">
-                {#
-                <div class="tv-qv-cta-top-row">
-                  <div class="tv-qv-stepper">
-                    <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(-1)" aria-label="Decrease quantity">&minus;</button>
-                    <input type="text" id="tv-qv-qty-input" class="tv-qv-step-val" value="4" readonly aria-label="Quantity">
-                    <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(1)" aria-label="Increase quantity">&plus;</button>
-                  </div>
-                  <button type="button" class="tv-qv-add-cart-btn" id="tv-qv-add-cart-btn" onclick="addQuickViewToCart(this)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    <span>Add to Cart</span>
-                  </button>
+              <!-- 11. YEAR -->
+              <div class="tv-qv-spec-card">
+                <div class="tv-qv-spec-glyph tv-glyph-blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 </div>
-                #}
-                <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20inquire%20about%20tyres" id="tv-qv-wa-btn" target="_blank" rel="noopener" class="tv-qv-wa-btn" aria-label="Inquire on WhatsApp">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                  <span>WhatsApp Enquiry</span>
-                </a>
-                <a href="/contact-us" id="tv-qv-contact-btn" class="tv-qv-contact-outline-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                  <span>Contact Us</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Trust Strip ( Standard Installation,  Wheel Balancing, Fast & Reliable Delivery) -->
-            <div class="tv-qv-trust-strip">
-              <div class="tv-qv-trust-col">
-                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                </div>
-                <div class="tv-qv-trust-info">
-                  <strong> Standard Installation</strong>
-                  <p>At our partner garages across UAE</p>
-                </div>
-              </div>
-              <div class="tv-qv-trust-col">
-                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="3" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="21"></line></svg>
-                </div>
-                <div class="tv-qv-trust-info">
-                  <strong> Wheel Balancing</strong>
-                  <p>With every tyre installation</p>
-                </div>
-              </div>
-              <div class="tv-qv-trust-col">
-                <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                </div>
-                <div class="tv-qv-trust-info">
-                  <strong>Fast &amp; Reliable Delivery</strong>
-                  <p>Across Dubai &amp; Abu Dhabi</p>
+                <div class="tv-qv-spec-meta">
+                  <span class="tv-qv-spec-key">YEAR</span>
+                  <strong id="tv-qv-spec-year" class="tv-qv-spec-val">2025</strong>
                 </div>
               </div>
             </div>
 
+          </div>
+        </div>
 
+        <!-- Pricing, Sets, Stepper & CTAs Box (Full Width) -->
+        <div class="tv-qv-price-cta-box">
+          <div class="tv-qv-price-info">
+            <div class="tv-qv-fitted-label" onclick="openFittedPriceModal(event)" role="button" tabindex="0">
+              <span>Fitted Price</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            <div class="tv-qv-price-row">
+              <div class="tv-qv-main-cost">
+                <span class="currency-dirham tv-curr-glyph">&#xe900;</span>
+                <strong id="tv-qv-price" class="tv-qv-price-num">148.00</strong>
+                <span class="tv-qv-unit">/ per pcs</span>
+              </div>
+            </div>
+            <div class="tv-qv-sets-line">
+              <span class="tv-qv-curr-set-badge" id="tv-qv-selected-set-wrap">Set of <strong id="tv-qv-selected-qty-label">4</strong>: <strong id="tv-qv-total-price"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 592.00</strong></span>
+              <span class="tv-qv-set-divider">|</span>
+              <span>Set of 2 : <strong id="tv-qv-set2"><span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> 296.00</strong></span>
+            </div>
+          </div>
+
+          <!-- Controls on the right: Stepper + Add to Cart + Contact Us -->
+          <div class="tv-qv-cta-group">
+            {#
+            <div class="tv-qv-cta-top-row">
+              <div class="tv-qv-stepper">
+                <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(-1)" aria-label="Decrease quantity">&minus;</button>
+                <input type="text" id="tv-qv-qty-input" class="tv-qv-step-val" value="4" readonly aria-label="Quantity">
+                <button type="button" class="tv-qv-step-btn" onclick="stepQuickViewQty(1)" aria-label="Increase quantity">&plus;</button>
+              </div>
+              <button type="button" class="tv-qv-add-cart-btn" id="tv-qv-add-cart-btn" onclick="addQuickViewToCart(this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span>Add to Cart</span>
+              </button>
+            </div>
+            #}
+            <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20inquire%20about%20tyres" id="tv-qv-wa-btn" target="_blank" rel="noopener" class="tv-qv-wa-btn" aria-label="Inquire on WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
+              <span>WhatsApp Enquiry</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Trust Strip ( Standard Installation,  Wheel Balancing, Fast & Reliable Delivery) -->
+        <div class="tv-qv-trust-strip">
+          <div class="tv-qv-trust-col">
+            <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            </div>
+            <div class="tv-qv-trust-info">
+              <strong> Standard Installation</strong>
+              <p>At our partner garages across UAE</p>
+            </div>
+          </div>
+          <div class="tv-qv-trust-col">
+            <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="3" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="21"></line></svg>
+            </div>
+            <div class="tv-qv-trust-info">
+              <strong> Wheel Balancing</strong>
+              <p>With every tyre installation</p>
+            </div>
+          </div>
+          <div class="tv-qv-trust-col">
+            <div class="tv-qv-trust-icon-wrap tv-glyph-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            </div>
+            <div class="tv-qv-trust-info">
+              <strong>Fast &amp; Reliable Delivery</strong>
+              <p>Across Dubai &amp; Abu Dhabi</p>
+            </div>
           </div>
         </div>
       </div>

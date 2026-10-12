@@ -2,128 +2,21 @@
 
 {% block title %}About Us | TyresVision UAE{% endblock %}
 
-{% block meta_description %}Learn about TyresVision UAE: 60+ genuine tyre brands, upfront pricing, certified technicians, and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.{% endblock %}
+{% block meta_description %}Learn about TyresVision UAE: genuine tyre brands, upfront pricing, certified technicians, and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.{% endblock %}
 
 {% block canonical_url %}https://www.tyresvision.com/about-us{% endblock %}
 
-{% block og_title %}About Us | TyresVision UAE{% endblock %}
-{% block og_description %}Learn about TyresVision UAE: 60+ genuine tyre brands, upfront pricing, certified technicians, and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.{% endblock %}
-{% block og_url %}https://www.tyresvision.com/about-us{% endblock %}
-{% block twitter_title %}About Us | TyresVision UAE{% endblock %}
-{% block twitter_description %}Learn about TyresVision UAE: 60+ genuine tyre brands, upfront pricing, certified technicians, and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.{% endblock %}
+{# og:*/twitter:* now come from page_og_tags/page_twitter_tags, built centrally
+   in app/services/seo_builder.py and passed in by the about_us() route. #}
 
 {% block extra_head %}
 <!-- Stylesheet for the dynamic CMS pages (this page's CSS lives under .page-mobile-tyre-fitting / .page-about-us) -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/page.css') }}?v={{ range(10000, 99999) | random }}">
 
-<!-- Structured Data: AboutPage + FAQPage + BreadcrumbList -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://www.tyresvision.com/about-us#breadcrumb",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://www.tyresvision.com/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "About Us",
-          "item": "https://www.tyresvision.com/about-us"
-        }
-      ]
-    },
-    {
-      "@type": "AboutPage",
-      "@id": "https://www.tyresvision.com/about-us#webpage",
-      "url": "https://www.tyresvision.com/about-us",
-      "name": "About TyresVision",
-      "description": "Learn about TyresVision UAE: 60+ genuine tyre brands, upfront pricing, certified technicians, and professional mobile doorstep fitting across Dubai, Abu Dhabi and all Emirates.",
-      "mainEntity": {
-        "@type": "AutomotiveBusiness",
-        "name": "TyresVision",
-        "legalName": "DSP Trade Hub FZ-LLC",
-        "url": "https://www.tyresvision.com/",
-        "logo": "https://www.tyresvision.com/static/assets/images/logo/tyresvision-logo-clean.png",
-        "telephone": "+971505069575",
-        "areaServed": [
-          "Dubai", "Abu Dhabi", "Sharjah", "Ajman",
-          "Ras Al Khaimah", "Fujairah", "Umm Al Quwain"
-        ],
-        "description": "Online tyre shop in the UAE offering genuine tyres from 60+ brands with fitting at partner centres or by mobile van."
-      }
-    },
-    {
-      "@type": "FAQPage",
-      "@id": "https://www.tyresvision.com/about-us#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Who is TyresVision?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "TyresVision is an online tyre shop serving drivers across the UAE. We supply genuine tyres from 60+ brands and arrange fitting at a partner centre near you or at your location with our mobile vans. TyresVision is operated by DSP Trade Hub FZ-LLC."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Are all tyres supplied by TyresVision genuine and brand new?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. All tyres are sourced through authorised UAE channels and come with manufacturer-backed warranty on eligible tyres. We supply fresh date codes, never old stock, and you can always verify the DOT date code before fitting."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What is included in your tyre price?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Our fitted price at a partner centre includes delivery, mounting, computerised dynamic wheel balancing, new valves and environmentally responsible disposal of your old tyres. There are no hidden fees."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can you fit tyres at my home, office or building car park?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Our mobile vans fit tyres in villa driveways, office car parks, apartment basements (subject to height clearance) and mall parking across Dubai, Abu Dhabi, Sharjah and Ajman."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which areas across the UAE do you cover?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "We deliver and fit tyres across all seven Emirates: Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah and Umm Al Quwain."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you supply and fit tyres for electric vehicles (EVs) and luxury SUVs?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. We offer specialized high-load, low-rolling-resistance EV tyres for Tesla, BYD, Porsche, and other electric vehicles. Our technicians carry EV jacking pucks to ensure safe battery protection."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I get a tyre price or book a fitting?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Send your tyre size (for example 245/45 R19) or vehicle make and model on WhatsApp to +971 50 506 9575. Our tyre advisors reply with budget, mid-range and premium options within minutes."
-          }
-        }
-      ]
-    }
-  ]
-}
-</script>
+<!-- Structured data (BreadcrumbList + AboutPage + FAQPage) is now built
+     centrally in app/services/seo_builder.py and printed once by
+     templates/Client/layout.html via page_schema_json, so it isn't
+     duplicated here. -->
 
 <!-- Google Fonts: Script Font for Callouts + Plus Jakarta Sans -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -169,7 +62,7 @@
 
           <div class="mtf-hero-actions">
             <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20to%20learn%20more%20about%20your%20tyres%20and%20services." target="_blank" rel="noopener" class="btn-hero-wa">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               <span>WhatsApp for a Tyre Quote</span>
               <svg class="btn-hero-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
             </a>
@@ -217,10 +110,10 @@
        ======================================================================== -->
   <section class="mtf-section">
     <div class="mtf-wrap">
-      <div style="text-align: center; margin-bottom: 48px;">
+      <div class="about-section-head">
         <span class="mtf-badge-pill">OUR COMMITMENT</span>
         <h2 class="mtf-h2">How TyresVision Works For You</h2>
-        <p class="mtf-sub-text" style="margin: 0 auto; max-width: 680px;">
+        <p class="mtf-sub-text about-sub-max">
           From browsing top tyre brands to professional installation at your driveway or local workshop, we deliver a smooth, reliable experience.
         </p>
       </div>
@@ -252,7 +145,7 @@
           <div class="mtf-step-card">
             <div class="mtf-step-number-chip">03</div>
             <div class="mtf-step-icon-wrap mtf-step-icon-blue">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24"/></svg>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
             </div>
             <h3 class="mtf-step-title">Fast WhatsApp Assistance</h3>
             <p class="mtf-step-desc">Get tailored options across budget, mid-range, and premium tiers within minutes from experienced tyre consultants.</p>
@@ -275,7 +168,7 @@
   <!-- ========================================================================
        3. WHAT SETS US APART (CORE PILLARS GRID)
        ======================================================================== -->
-  <section class="mtf-section" style="background: #F8FAFC;">
+  <section class="mtf-section about-section-bg">
     <div class="mtf-wrap">
       <div>
         <span class="mtf-badge-pill">WHY CHOOSE US</span>
@@ -395,178 +288,223 @@
        ======================================================================== -->
   <section class="mtf-section">
     <div class="mtf-wrap">
-      <div style="text-align: center; margin-bottom: 48px;">
+      <div class="about-section-head">
         <span class="mtf-badge-pill">NATIONWIDE REACH</span>
         <h2 class="mtf-h2">Fitted Across All 7 Emirates</h2>
-        <p class="mtf-sub-text" style="margin: 0 auto; max-width: 680px;">
+        <p class="mtf-sub-text about-sub-max">
           Find your nearest partner fitting centre or request a doorstep mobile van anywhere in the UAE.
         </p>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
-        <a href="/tyre-shop-dubai" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+      <div class="about-emirates-grid">
+        <a href="/tyre-shop-dubai" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop Dubai</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Fitting Hubs & Doorstep Mobile Vans</span>
+            <strong class="about-emirate-name">Tyre Shop Dubai</strong>
+            <span class="about-emirate-desc">Fitting Hubs & Doorstep Mobile Vans</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-abu-dhabi" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-abu-dhabi" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop Abu Dhabi</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Capital Fitting Network & Doorstep Vans</span>
+            <strong class="about-emirate-name">Tyre Shop Abu Dhabi</strong>
+            <span class="about-emirate-desc">Capital Fitting Network & Doorstep Vans</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-sharjah" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-sharjah" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop Sharjah</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Central Hubs & Same-Day Fitting</span>
+            <strong class="about-emirate-name">Tyre Shop Sharjah</strong>
+            <span class="about-emirate-desc">Central Hubs & Same-Day Fitting</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-ajman" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-ajman" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop Ajman</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Fast Local Delivery & Verified Dates</span>
+            <strong class="about-emirate-name">Tyre Shop Ajman</strong>
+            <span class="about-emirate-desc">Fast Local Delivery & Verified Dates</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-ras-al-khaimah" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-ras-al-khaimah" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop RAK</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Mountain & Highway Durability</span>
+            <strong class="about-emirate-name">Tyre Shop RAK</strong>
+            <span class="about-emirate-desc">Mountain & Highway Durability</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-fujairah" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-fujairah" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop Fujairah</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">East Coast & Mountain Pass Service</span>
+            <strong class="about-emirate-name">Tyre Shop Fujairah</strong>
+            <span class="about-emirate-desc">East Coast & Mountain Pass Service</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
 
-        <a href="/tyre-shop-umm-al-quwain" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; text-decoration: none; color: #0F172A; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#7C3AED';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#E2E8F0';this.style.transform='none'">
+        <a href="/tyre-shop-umm-al-quwain" class="about-emirate-card">
           <div>
-            <strong style="display: block; font-size: 1.1rem; color: #1E293B;">Tyre Shop UAQ</strong>
-            <span style="font-size: 0.85rem; color: #64748B;">Coastal & Highway Fitments</span>
+            <strong class="about-emirate-name">Tyre Shop UAQ</strong>
+            <span class="about-emirate-desc">Coastal & Highway Fitments</span>
           </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="about-emirate-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
       </div>
     </div>
   </section>
 
   <!-- ========================================================================
-       5. FREQUENTLY ASKED QUESTIONS (ACCORDION)
+       5. FREQUENTLY ASKED QUESTIONS (2-COLUMN SIGNATURE LAYOUT MATCHING IMAGE)
        ======================================================================== -->
-  <section class="mtf-section" style="background: #F8FAFC;" x-data="{ activeFaq: null }">
+  <section class="mtf-section about-faq-section">
     <div class="mtf-wrap">
-      <div style="text-align: center; margin-bottom: 48px;">
-        <span class="mtf-badge-pill">FAQ</span>
+      <div class="about-section-head">
+        <span class="about-faq-badge-pill">• COMMON QUESTIONS •</span>
         <h2 class="mtf-h2">Frequently Asked Questions</h2>
-        <p class="mtf-sub-text" style="margin: 0 auto; max-width: 680px;">
-          Got questions about our tyres, fitting services, or coverage? Here are direct answers.
+        <p class="mtf-sub-text about-sub-max">
+          Answers to key questions from drivers across Dubai, Abu Dhabi and the Emirates.
         </p>
       </div>
 
-      <div style="max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px;">
-        <!-- FAQ 1 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 1 ? null : 1)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>Who is TyresVision?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 1 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 1" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            TyresVision is an online tyre shop serving drivers across the UAE. We supply genuine tyres from 60+ brands and arrange fitting at a partner centre near you or at your location with our mobile vans. TyresVision is operated by DSP Trade Hub FZ-LLC.
+      <div class="about-faq-grid">
+        <!-- Left: Accordion List -->
+        <div class="about-faq-list" id="about-faq-accordion">
+          <!-- Item 1 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>Who is TyresVision?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                TyresVision is an online tyre shop serving drivers across the UAE. We supply genuine tyres from 60+ brands and arrange fitting at a partner centre near you or at your location with our mobile vans. TyresVision is operated by DSP Trade Hub FZ-LLC.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>Are all tyres supplied by TyresVision genuine and brand new?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                Yes. All tyres are sourced through authorised UAE channels and come with manufacturer-backed warranty on eligible tyres. We supply fresh date codes, never old stock, and you can always verify the DOT date code before fitting.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>What is included in your tyre price?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                Our fitted price at a partner centre includes delivery, mounting, computerised dynamic wheel balancing, new valves and environmentally responsible disposal of your old tyres. There are no hidden fees.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>Can you fit tyres at my home, office or building car park?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                Yes. Our mobile vans fit tyres in villa driveways, office car parks, apartment basements (subject to height clearance) and mall parking across Dubai, Abu Dhabi, Sharjah and Ajman.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>Which areas across the UAE do you cover?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                We deliver and fit tyres across all seven Emirates: Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah and Umm Al Quwain.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>Do you supply and fit tyres for electric vehicles (EVs) and luxury SUVs?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                Yes. We offer specialized high-load, low-rolling-resistance EV tyres for Tesla, BYD, Porsche, and other electric vehicles. Our technicians carry EV jacking pucks to ensure safe battery protection.
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 7 -->
+          <div class="about-faq-item">
+            <button type="button" class="about-faq-btn" aria-expanded="false">
+              <span>How do I get a tyre price or book a fitting?</span>
+              <span class="about-faq-chevron">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="about-faq-content">
+              <div class="about-faq-body">
+                Send your tyre size (for example 245/45 R19) or vehicle make and model on WhatsApp to +971 50 506 9575. Our tyre advisors reply with budget, mid-range and premium options within minutes.
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- FAQ 2 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 2 ? null : 2)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>Are all tyres supplied by TyresVision genuine and brand new?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 2 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 2" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            Yes. All tyres are sourced through authorised UAE channels and come with manufacturer-backed warranty on eligible tyres. We supply fresh date codes, never old stock, and you can always verify the DOT date code before fitting.
-          </div>
-        </div>
+        <!-- Right: Help Box Matching Uploaded Image -->
+        <div>
+          <div class="about-faq-help-box">
+            <div class="about-faq-help-icon">
+              <svg fill="none" height="26" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="26">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </div>
 
-        <!-- FAQ 3 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 3 ? null : 3)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>What is included in your tyre price?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 3 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 3" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            Our fitted price at a partner centre includes delivery, mounting, computerised dynamic wheel balancing, new valves and environmentally responsible disposal of your old tyres. There are no hidden fees.
-          </div>
-        </div>
+            <h3 class="about-faq-help-title">Ready to Find the Perfect Tyres?</h3>
 
-        <!-- FAQ 4 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 4 ? null : 4)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>Can you fit tyres at my home, office or building car park?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 4 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 4" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            Yes. Our mobile vans fit tyres in villa driveways, office car parks, apartment basements (subject to height clearance) and mall parking across Dubai, Abu Dhabi, Sharjah and Ajman.
-          </div>
-        </div>
+            <p class="about-faq-help-desc">WhatsApp your tyre size or vehicle model today and receive genuine options, honest prices, and fast fitting at your preferred location</p>
 
-        <!-- FAQ 5 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 5 ? null : 5)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>Which areas across the UAE do you cover?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 5 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 5" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            We deliver and fit tyres across all seven Emirates: Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah and Umm Al Quwain.
-          </div>
-        </div>
+            <a class="about-faq-wa-btn" href="https://wa.me/971505069575?text=Hi+TyresVision%2C+I%27d+like+a+tyre+quote." rel="noopener" target="_blank">
+              <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" aria-hidden="true">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/>
+              </svg>
+              <span>WhatsApp us</span>
+            </a>
 
-        <!-- FAQ 6 -->
-        <div style="background: #ffffff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <button type="button" @click="activeFaq = (activeFaq === 6 ? null : 6)" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: none; border: none; text-align: left; cursor: pointer; font-size: 1.05rem; font-weight: 700; color: #0F172A;">
-            <span>How do I get a tyre price or book a fitting?</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="activeFaq === 6 ? 'transform: rotate(180deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div x-show="activeFaq === 6" x-collapse x-cloak style="padding: 0 24px 20px; color: #475569; font-size: 0.96rem; line-height: 1.6;">
-            Send your tyre size (for example 245/45 R19) or vehicle make and model on WhatsApp to +971 50 506 9575. Our tyre advisors reply with budget, mid-range and premium options within minutes.
+            <a class="about-faq-call-btn" href="tel:+971505069575">
+              <svg fill="none" height="16" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" width="16">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span>+971 50 506 9575</span>
+            </a>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       6. CTA BANNER (Ready to Upgrade)
-       ======================================================================== -->
-  <section class="mtf-section">
-    <div class="mtf-wrap">
-      <div style="background: linear-gradient(135deg, #1C0A35 0%, #36125E 50%, #4B237B 100%); border-radius: 24px; padding: 48px 36px; text-align: center; color: #ffffff; box-shadow: 0 20px 50px rgba(28, 10, 53, 0.4);">
-        <h2 style="font-size: clamp(1.8rem, 3.2vw, 2.5rem); font-weight: 800; margin-bottom: 14px; color: #ffffff;">
-          Ready to Find the Perfect Tyres?
-        </h2>
-        <p style="font-size: 1.05rem; color: rgba(255, 255, 255, 0.9); max-width: 600px; margin: 0 auto 32px; line-height: 1.6;">
-          WhatsApp your tyre size or vehicle model today and receive genuine options, honest prices, and fast fitting at your preferred location.
-        </p>
-        <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
-          <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote." target="_blank" rel="noopener" class="btn-hero-wa" style="padding: 14px 28px;">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24"/></svg>
-            <span>WhatsApp for a Quote</span>
-          </a>
-          <a href="tel:+971505069575" class="btn-hero-call" style="padding: 14px 24px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #ffffff;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>+971 50 506 9575</span>
-          </a>
         </div>
       </div>
     </div>
@@ -574,4 +512,36 @@
 
 </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  const faqItems = document.querySelectorAll('.page-about-us .about-faq-item');
+  faqItems.forEach(function (item) {
+    const btn = item.querySelector('.about-faq-btn');
+    const content = item.querySelector('.about-faq-content');
+    if (!btn || !content) return;
+
+    btn.addEventListener('click', function () {
+      const isOpen = item.classList.contains('active');
+
+      faqItems.forEach(function (other) {
+        other.classList.remove('active');
+        const otherBtn = other.querySelector('.about-faq-btn');
+        if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+        const otherContent = other.querySelector('.about-faq-content');
+        if (otherContent) otherContent.style.maxHeight = '0';
+      });
+
+      if (!isOpen) {
+        item.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        content.style.maxHeight = (content.scrollHeight + 30) + 'px';
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

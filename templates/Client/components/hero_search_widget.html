@@ -77,7 +77,7 @@
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="/tyres/ev" class="tv-hsoption-card">
-          <div class="tv-hsoption-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <div class="tv-hsoption-icon-wrap"><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyres" class="tv-hsoption-ev-icon"></div>
           <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">EV Tyres</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
@@ -841,15 +841,15 @@ function _tvRenderVehiclePanel(body, tab) {
   // ── Breadcrumb badges ──
   function makeBreadcrumb() {
     if (!s.makeSlug && !s.model) return '';
-    var b = '<div class="tvhm-selected-size" style="flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+    var b = '<div class="tvhm-selected-size">';
     if (s.makeSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'make\')" title="Change Make"><span class="tvhm-size-badge-lbl">Make</span>'
-      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.makeName || s.makeSlug) + ' ✕</span></button>';
+      + '<span class="tvhm-size-badge-val">' + _esc(s.makeName || s.makeSlug) + ' ✕</span></button>';
     if (s.modelSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'model\')" title="Change Model"><span class="tvhm-size-badge-lbl">Model</span>'
-      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.modelName || s.modelSlug) + ' ✕</span></button>';
+      + '<span class="tvhm-size-badge-val">' + _esc(s.modelName || s.modelSlug) + ' ✕</span></button>';
     if (s.year) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'year\')" title="Change Car Year"><span class="tvhm-size-badge-lbl">Car Year</span>'
-      + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.year) + ' ✕</span></button>';
+      + '<span class="tvhm-size-badge-val">' + _esc(s.year) + ' ✕</span></button>';
     if (s.engineTrim) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'engine\')" title="Change Engine"><span class="tvhm-size-badge-lbl">Engine</span>'
-      + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.engineTrim) + ' ✕</span></button>';
+      + '<span class="tvhm-size-badge-val">' + _esc(s.engineTrim) + ' ✕</span></button>';
     return b + '</div>';
   }
 
@@ -1027,7 +1027,7 @@ function _renderEngineCards(body, engines, breadcrumb, tab) {
     body.innerHTML = html;
     return;
   }
-  html += '<p class="tvhm-section-lbl">Select Engine / Trim</p><div style="display:flex;flex-direction:column;gap:10px;">';
+  html += '<p class="tvhm-section-lbl">Select Engine / Trim</p><div style="display:flex;flex-direction:row;gap:10px;">';
   engines.forEach(function(e) {
     var fuelIcon = e.fuel === 'Electric' ? '⚡' : e.fuel === 'Diesel' ? '🛢' : '⛽';
     html += '<button type="button" class="tvhm-engine-card" onclick="tvSelectEngine(\''
@@ -1056,7 +1056,7 @@ function _renderTyreSizeOptions(body, sizes, breadcrumb, tab) {
     return;
   }
 
-  html += '<p class="tvhm-section-lbl">Select Tyre Size (' + sizes.length + ' compatible)</p><div style="display:flex;flex-direction:column;gap:10px;">';
+  html += '<p class="tvhm-section-lbl">Select Tyre Size (' + sizes.length + ' compatible)</p><div style="display:flex;flex-direction:row;gap:10px;">';
   sizes.forEach(function(sz) {
     var isStock = sz.isFactory !== undefined ? sz.isFactory : sz.is_stock;
     var badgeClass = isStock ? 'stock' : 'optional';
@@ -1178,26 +1178,26 @@ function _tvRenderBrandsPanel(body) {
 
   function makeBrandBreadcrumb() {
     if (!s.brandSlug) return '';
-    var b = '<div class="tvhm-selected-size" style="flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+    var b = '<div class="tvhm-selected-size">';
     if (s.brandSlug) {
       b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'brand\')" title="Change Brand">'
         + '<span class="tvhm-size-badge-lbl">Brand</span>'
-        + '<span class="tvhm-size-badge-val" style="font-size:12px;white-space:nowrap">' + _esc(s.brandName || s.brandSlug) + ' ✕</span></button>';
+        + '<span class="tvhm-size-badge-val">' + _esc(s.brandName || s.brandSlug) + ' ✕</span></button>';
     }
     if (s.width) {
       b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'width\')" title="Change Width">'
         + '<span class="tvhm-size-badge-lbl">Width</span>'
-        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.width) + ' ✕</span></button>';
+        + '<span class="tvhm-size-badge-val">' + _esc(s.width) + ' ✕</span></button>';
     }
     if (s.profile) {
       b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'profile\')" title="Change Profile">'
         + '<span class="tvhm-size-badge-lbl">Profile</span>'
-        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.profile) + ' ✕</span></button>';
+        + '<span class="tvhm-size-badge-val">' + _esc(s.profile) + ' ✕</span></button>';
     }
     if (s.rim) {
       b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'rim\')" title="Change Rim">'
         + '<span class="tvhm-size-badge-lbl">Rim</span>'
-        + '<span class="tvhm-size-badge-val" style="font-size:12px">' + _esc(s.rim) + ' ✕</span></button>';
+        + '<span class="tvhm-size-badge-val">' + _esc(s.rim) + ' ✕</span></button>';
     }
     b += '</div>';
     return b;

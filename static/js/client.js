@@ -1282,7 +1282,7 @@ function tvGetCountryFlagCode(countryName) {
   return '';
 }
 
-function tvCardOriginHTML(originName, isRunflat) {
+function tvCardOriginHTML(originName, isRunflat, isEv) {
   var safeName = escapeHtml(originName);
   var code = tvGetCountryFlagCode(originName);
   var inner = '';
@@ -1292,10 +1292,14 @@ function tvCardOriginHTML(originName, isRunflat) {
   } else {
     inner = '<span>' + safeName + '</span>';
   }
+  var evBadge = isEv
+    ? '<span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)"><span><img src="/static/assets/images/ev/ev-icon.png" alt="EV Tyre" class="tv-card-ev-icon"></span></span>'
+    : '';
   var rfBadge = isRunflat
     ? '<span class="tv-meta-item tv-meta-runflat" title="Technology: Run Flat"><span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span></span>'
     : '';
   return '<div class="tv-card-origin-row-wrap">'
+    + evBadge
     + rfBadge
     + '<span class="tv-card-origin-row" title="Origin: ' + safeName + '">' + inner + '</span>'
     + '</div>';
@@ -1467,6 +1471,7 @@ function createStaggeredCombinedCardHTML(p) {
     const itemDisplaySet2 = (itemSet2 % 1 === 0) ? itemSet2.toFixed(0) : itemSet2.toFixed(2);
 
     const isRunflat = Boolean(item.is_runflat || item.run_flat === 1 || (item.runflat_text && item.runflat_text.toLowerCase() === 'runflat'));
+    const isEv = Boolean(item.is_ev || item.ev_rated === 1 || (item.ev_text && item.ev_text.toLowerCase() === 'ev'));
 
     const brandImgHTML = item.brand_logo
       ? `<img src="${escapeHtml(item.brand_logo)}" alt="${bName}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
@@ -1522,7 +1527,7 @@ function createStaggeredCombinedCardHTML(p) {
               <a href="/${itemSlug}" class="tv-card-pattern-link" title="${itemPattern}">
                 <h3 class="tv-card-pattern">${itemPattern}</h3>
               </a>
-              ${tvCardOriginHTML(itemOrigin, isRunflat)}
+              ${tvCardOriginHTML(itemOrigin, isRunflat, isEv)}
             </div>
 
             <div class="tv-card-size-row">
@@ -1678,6 +1683,14 @@ function createProductCardHTML(p) {
     p.run_flat === 1 ||
     p.run_flat === '1' ||
     (p.runflat_text && p.runflat_text.toLowerCase() === 'runflat')
+  );
+  const isEv = Boolean(
+    p.is_ev === true ||
+    p.is_ev === 1 ||
+    p.is_ev === '1' ||
+    p.ev_rated === 1 ||
+    p.ev_rated === '1' ||
+    (p.ev_text && p.ev_text.toLowerCase() === 'ev')
   );
   const runflatDataVal = isRunflat ? 'Runflat' : '';
   const runflatContent = isRunflat ? `<span><img src="/static/assets/images/run-flat.svg" alt="Runflat"></span>` : '';
@@ -1847,7 +1860,7 @@ function createProductCardHTML(p) {
                     ${patternTitle}
                   </h3>
                 </a>
-                ${tvCardOriginHTML(originVal, isRunflat)}
+                ${tvCardOriginHTML(originVal, isRunflat, isEv)}
               </div>
 
               ${sizeBlockHTML}

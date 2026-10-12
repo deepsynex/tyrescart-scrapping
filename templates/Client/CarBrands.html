@@ -6,11 +6,8 @@
 
 {% block canonical_url %}https://www.tyresvision.com/cars{% endblock %}
 
-{% block og_title %}Shop Tyres by Car Make in Dubai & Abu Dhabi | TyresVision{% endblock %}
-{% block og_description %}Choose your car make, such as Toyota, Nissan, BMW or Mercedes-Benz, then your model to find tyres that fit. Buy online with free fitting at a partner centre.{% endblock %}
-{% block og_url %}https://www.tyresvision.com/cars{% endblock %}
-{% block twitter_title %}Shop Tyres by Car Make in Dubai & Abu Dhabi | TyresVision{% endblock %}
-{% block twitter_description %}Choose your car make, such as Toyota, Nissan, BMW or Mercedes-Benz, then your model to find tyres that fit. Buy online with free fitting at a partner centre.{% endblock %}
+{# og:*/twitter:* now come from page_og_tags/page_twitter_tags, built centrally
+   in app/services/seo_builder.py and passed in by _render_car_brands(). #}
 
 {% block content %}
 <main class="min-h-screen bg-slate-50 text-slate-900 pb-20">
