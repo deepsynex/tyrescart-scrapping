@@ -21,27 +21,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-<!-- Structured Data: BreadcrumbList -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.tyresvision.com/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "{{ page_h1 | escape }}",
-      "item": "https://www.tyresvision.com/{{ slug }}"
-    }
-  ]
-}
-</script>
+<!-- Structured data (WebPage/Service + BreadcrumbList, and FAQPage for the
+     slugs that have one) is now built centrally in
+     app/services/seo_builder.py and printed once by
+     templates/Client/layout.html via page_schema_json. -->
 {% endblock %}
 
 {% block content %}

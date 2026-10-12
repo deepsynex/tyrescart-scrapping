@@ -827,7 +827,7 @@ def seed_default_home_sections(cursor):
             None,
             "right",
             json.dumps({"en": "Send Size on WhatsApp", "ar": "أرسل المقاس عبر واتساب"}, ensure_ascii=False),
-            "https://wa.me/971505065575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.",
+            "https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.",
             json.dumps({
                 "value_cards": [
                     {
@@ -928,8 +928,8 @@ def seed_default_home_sections(cursor):
                     "ar": "الأسعار للإطار الواحد مع التركيب في مركز شريك. تتوفر خدمة التركيب المتنقل عند موقعك مقابل رسوم إضافية يتم تأكيدها قبل التحرك. تم التحديث سبتمبر 2026. الأسعار والمخزون يتغيران — راسلنا عبر واتساب لمعرفة سعر اليوم."
                 },
                 "call_button": {
-                    "text": "+971 50 506 5575",
-                    "url": "tel:+971505065575"
+                    "text": "+971 50 506 9575",
+                    "url": "tel:+971505069575"
                 },
                 "trust_text": {
                     "en": "Partner centres near you • Expert fitting",

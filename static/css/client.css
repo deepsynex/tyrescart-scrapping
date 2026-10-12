@@ -1451,6 +1451,12 @@ header {
   background: #EDE9FE;
   color: #7C3AED;
 }
+.tv-hsoption-ev-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
 
 .tv-hsoption-text {
   flex: 1;
@@ -3717,7 +3723,7 @@ footer .tagline {
 .post-card-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   object-position: center;
   transition: transform .35s cubic-bezier(0.16, 1, 0.3, 1);
   display: block;
@@ -3978,7 +3984,7 @@ footer .tagline {
 .detail-cover-hero img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   display: block;
 }
 
@@ -7871,7 +7877,8 @@ details.tv-faq-item[open] {
 }
 
 .tv-btn-white-pill:hover {
-  background: #0000000d;
+  background: var(--primary-light);
+  color: #ffffff !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
@@ -11308,7 +11315,7 @@ body.tv-modal-active {
 .tv-fitted-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  z-index: 100000;
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -11548,7 +11555,7 @@ body.tv-modal-active {
 
 .tv-qv-modal-container {
   width: 100%;
-  max-width: 880px;
+  max-width: 980px;
   height: 100vh;
   height: 100dvh;
   max-height: 100vh;
@@ -11566,6 +11573,7 @@ body.tv-modal-active {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overflow-x: hidden;
 }
 
 .tv-qv-modal-overlay.open .tv-qv-modal-container {
@@ -11577,8 +11585,10 @@ body.tv-modal-active {
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: 24px 32px 36px 32px;
+  padding: 20px 28px;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
   box-sizing: border-box;
   max-height: 100vh;
 }
@@ -11588,9 +11598,9 @@ body.tv-modal-active {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding-bottom: 14px;
+  padding-bottom: 10px;
   border-bottom: 1.5px solid #f1f5f9;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .tv-qv-header-title-wrap {
@@ -11641,26 +11651,29 @@ body.tv-modal-active {
 /* Main Two-Column Grid */
 .tv-qv-modal-body {
   padding: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .tv-qv-main-grid {
-  /* display: grid; */
-  grid-template-columns: 390px 1fr;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 24px;
   align-items: start;
+  max-width: 100%;
 }
 
 @media (max-width: 1180px) {
   .tv-qv-main-grid {
-    grid-template-columns: 340px 1fr;
-    gap: 24px;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 20px;
   }
 }
 
 @media (max-width: 960px) {
   .tv-qv-main-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
   }
 }
 
@@ -11675,10 +11688,10 @@ body.tv-modal-active {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-  padding: 18px 20px 20px 20px;
+  padding: 16px;
   position: relative;
-  min-height: 280px;
-  height: 100%;
+  min-height: unset;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -11757,7 +11770,7 @@ body.tv-modal-active {
 
 .tv-qv-img {
   max-width: 100%;
-  max-height: 330px;
+  max-height: 250px;
   object-fit: contain;
   position: relative;
   z-index: 2;
@@ -11848,6 +11861,8 @@ body.tv-modal-active {
 .tv-qv-right-col {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .tv-qv-meta-top {
@@ -11910,39 +11925,32 @@ body.tv-modal-active {
 }
 
 .tv-qv-product-title {
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--tv-blue-brand, #4A0787);
-  margin: 0 0 6px 0;
+  margin: 0 0 4px 0;
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
 
 .tv-qv-product-subtitle {
-  font-size: 13.5px;
+  font-size: 12.5px;
   color: #64748b;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   line-height: 1.45;
 }
 
-/* 11 Specifications Grid (Exact 4 + 4 + 3 layout with solid blue glyphs) */
+/* 11 Specifications Grid (3 columns on desktop, 2 on tablet/mobile) */
 .tv-qv-spec-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-@media (max-width: 1200px) {
-  .tv-qv-spec-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 720px) {
   .tv-qv-spec-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -11950,10 +11958,10 @@ body.tv-modal-active {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   transition: all 0.18s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
 }
@@ -11964,8 +11972,8 @@ body.tv-modal-active {
 }
 
 .tv-glyph-blue {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #3a1960;
   color: #ffffff;
@@ -11976,8 +11984,8 @@ body.tv-modal-active {
 }
 
 .tv-glyph-blue svg {
-  width: 17px;
-  height: 17px;
+  width: 14px;
+  height: 14px;
   stroke: #ffffff;
 }
 
@@ -11988,7 +11996,7 @@ body.tv-modal-active {
 }
 
 .tv-qv-spec-key {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
@@ -12004,7 +12012,7 @@ body.tv-modal-active {
 }
 
 .tv-qv-spec-val {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 800;
   color: #0f172a;
   white-space: nowrap;
@@ -12017,12 +12025,15 @@ body.tv-modal-active {
   background: #6b00cc1a;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-  padding: 16px 20px;
+  padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 14px;
+  gap: 16px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -12138,7 +12149,8 @@ body.tv-modal-active {
   flex-direction: column;
   gap: 8px;
   align-items: flex-end;
-  min-width: 250px;
+  min-width: 220px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
@@ -12274,11 +12286,13 @@ body.tv-modal-active {
   /* background: #f0f7ff; */
   border: 1px solid #daccf5;
   border-radius: 12px;
-  padding: 12px 18px;
+  padding: 10px 14px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 720px) {
@@ -12378,6 +12392,7 @@ body.tv-modal-active {
 @media (max-width: 1024px) {
   .tv-qv-modal-card {
     padding: 22px 24px 32px 24px;
+    overflow-x: hidden;
   }
 
   .tv-qv-main-grid {
@@ -12400,11 +12415,13 @@ body.tv-modal-active {
     border-left-width: 4px;
     border-right-width: 0;
     border-top-width: 0;
+    overflow-x: hidden;
   }
 
   .tv-qv-modal-card {
     padding: 14px 14px 28px 14px;
     max-height: 100vh;
+    overflow-x: hidden;
   }
 
   .tv-qv-modal-header {
@@ -17531,7 +17548,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   padding: 13px 16px;
   border: 1.5px solid #E5E7EB;
   border-radius: 12px;
@@ -17539,7 +17556,8 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   cursor: pointer;
   text-align: left;
   transition: all 0.18s;
-  width: 100%;
+  width: 33%;
+  max-width: 320px;
 }
 .tvhm-engine-card:hover { border-color: #A78BFA; background: #F5F3FF; }
 .tvhm-engine-card-left { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -18117,21 +18135,36 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 /* Size step display */
 .tvhm-selected-size {
   display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 .tvhm-size-badge {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  padding: 8px 14px;
+  gap: 6px;
+  padding: 6px 12px;
   background: #F5F3FF;
   border: 1.5px solid #C4B5FD;
   border-radius: 10px;
-  min-width: 64px;
+  cursor: pointer;
+  line-height: 1.2;
 }
-.tvhm-size-badge-lbl { font-size: 9px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.06em; }
-.tvhm-size-badge-val { font-size: 17px; font-weight: 800; color: #7C3AED; }
+.tvhm-size-badge-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7C3AED;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tvhm-size-badge-val {
+  font-size: 12px;
+  font-weight: 800;
+  color: #7C3AED;
+  white-space: nowrap;
+}
 
 /* ══════════════════════════════════════════════════════
    REDESIGNED TYRE SIZE WIZARD (Image Sep 30 Ref)

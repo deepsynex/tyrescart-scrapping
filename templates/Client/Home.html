@@ -1,8 +1,9 @@
 {% extends 'Client/layout.html' %}
 
-{% set _raw_seo_title = (page.get_seo_title(locale) if page else '') %}
-{% set page_title = _raw_seo_title or 'Buy Tyres Online in Dubai & Abu Dhabi | TyresVision' %}
-{% set page_desc = (page.get_meta_desc(locale) if page else '') or 'Get tyre prices for Dubai and Abu Dhabi in minutes. 60+ brands, fitting included at a centre near you or mobile van to your home. WhatsApp your tyre size.' %}
+{# page_title/page_desc are now passed in directly by the home() route
+   (app/siteapp/clientroute.py), built once via app/services/seo_builder.py,
+   instead of being recomputed here from page.get_seo_title()/get_meta_desc()
+   -- that recomputation was silently shadowing whatever the route passed in. #}
 
 {% block title %}{{ page_title }}{% endblock %}
 
@@ -341,15 +342,15 @@
 
           <!-- Bottom Action Buttons & Trust Badge -->
           <div class="price-action-cluster">
-            <a class="btn btn-wa price-btn-wa" href="{{ sec.button_url or 'https://wa.me/971505065575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.' }}" target="_blank" rel="noopener">
+            <a class="btn btn-wa price-btn-wa" href="{{ sec.button_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.' }}" target="_blank" rel="noopener">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               <span>{{ sec.button_text or 'Send Size on WhatsApp' }}</span>
             </a>
 
             {% set call_b = sec.section_data.call_button if sec.section_data and sec.section_data.call_button else {} %}
-            <a class="btn btn-call-outline" href="{{ call_b.url or 'tel:+971505065575' }}">
+            <a class="btn btn-call-outline" href="{{ call_b.url or 'tel:+971505069575' }}">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.4 21 3 13.6 3 4.5 3 3.95 3.45 3.5 4 3.5h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              <span>{{ call_b.text or '+971 50 506 5575' }}</span>
+              <span>{{ call_b.text or '+971 50 506 9575' }}</span>
             </a>
 
             {% set t_text = sec.section_data.trust_text if sec.section_data and sec.section_data.trust_text else '' %}
