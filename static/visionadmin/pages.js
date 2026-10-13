@@ -498,8 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (modal) modal.classList.remove('hidden');
 
-    // Resize active editor after modal animation
+    // Resize active editor after modal animation. Also defensively (re)run
+    // init here: if the CKEditor CDN script was still loading when the
+    // page's own DOMContentLoaded/poll init ran, the editor instances may
+    // not exist yet, and this is the next real opportunity to create them.
     setTimeout(() => {
+      if (typeof window.initPageCkeditor === 'function') {
+        window.initPageCkeditor();
+      }
       if (window.CKEDITOR && CKEDITOR.instances) {
         if (CKEDITOR.instances.content_en) CKEDITOR.instances.content_en.resize();
         if (CKEDITOR.instances.content_ar) CKEDITOR.instances.content_ar.resize();
