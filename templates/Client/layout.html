@@ -26,16 +26,19 @@
 <meta property="og:url" content="{% block og_url %}{{ page_og_tags.og_url if page_og_tags and page_og_tags.og_url else self.canonical_url() }}{% endblock %}">
 <meta property="og:title" content="{% block og_title %}{{ page_og_tags.og_title if page_og_tags and page_og_tags.og_title else self.title() }}{% endblock %}">
 <meta property="og:description" content="{% block og_description %}{{ page_og_tags.og_description if page_og_tags and page_og_tags.og_description else self.meta_description() }}{% endblock %}">
-<meta property="og:image" content="{% block og_image %}{{ page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png' }}{% endblock %}">
-<meta property="og:image:secure_url" content="{% block og_image_secure %}{{ page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png' }}{% endblock %}">
-<meta property="og:image:width" content="{{ page_og_tags.og_image_width if page_og_tags and page_og_tags.og_image_width else 1731 }}">
-<meta property="og:image:height" content="{{ page_og_tags.og_image_height if page_og_tags and page_og_tags.og_image_height else 909 }}">
+<meta property="og:image" content="{% block og_image %}{{ page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/og-tyresvision-1200x630.jpg' }}{% endblock %}">
+<meta property="og:image:secure_url" content="{% block og_image_secure %}{{ page_og_tags.og_image_secure_url if page_og_tags and page_og_tags.og_image_secure_url else (page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/og-tyresvision-1200x630.jpg') }}{% endblock %}">
+<meta property="og:image:type" content="{{ page_og_tags.og_image_type if page_og_tags and page_og_tags.og_image_type else 'image/jpeg' }}">
+<meta property="og:image:alt" content="{{ page_og_tags.og_image_alt if page_og_tags and page_og_tags.og_image_alt else 'TyresVision – buy tyres online with fitting in Dubai, Abu Dhabi and across the UAE' }}">
+<meta property="og:image:width" content="{{ page_og_tags.og_image_width if page_og_tags and page_og_tags.og_image_width else 1200 }}">
+<meta property="og:image:height" content="{{ page_og_tags.og_image_height if page_og_tags and page_og_tags.og_image_height else 630 }}">
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="{% block twitter_card %}{{ page_twitter_tags.twitter_card if page_twitter_tags and page_twitter_tags.twitter_card else 'summary_large_image' }}{% endblock %}">
 <meta name="twitter:title" content="{% block twitter_title %}{{ page_twitter_tags.twitter_title if page_twitter_tags and page_twitter_tags.twitter_title else self.og_title() }}{% endblock %}">
 <meta name="twitter:description" content="{% block twitter_description %}{{ page_twitter_tags.twitter_description if page_twitter_tags and page_twitter_tags.twitter_description else self.og_description() }}{% endblock %}">
-<meta name="twitter:image" content="{% block twitter_image %}{{ page_twitter_tags.twitter_image if page_twitter_tags and page_twitter_tags.twitter_image else (page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/online-tyres-shop-dubai.png') }}{% endblock %}">
+<meta name="twitter:image" content="{% block twitter_image %}{{ page_twitter_tags.twitter_image if page_twitter_tags and page_twitter_tags.twitter_image else (page_og_tags.og_image if page_og_tags and page_og_tags.og_image else 'https://www.tyresvision.com/static/assets/images/og-tyresvision-1200x630.jpg') }}{% endblock %}">
+<meta name="twitter:image:alt" content="{{ page_twitter_tags.twitter_image_alt if page_twitter_tags and page_twitter_tags.twitter_image_alt else (page_og_tags.og_image_alt if page_og_tags and page_og_tags.og_image_alt else 'TyresVision – buy tyres online with fitting in Dubai, Abu Dhabi and across the UAE') }}">
 
 {% if not page_schema_json %}
 <!-- Minimal generic fallback -- only used if a route genuinely forgot to
@@ -334,14 +337,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
           Important notice regarding ownership of this domain
         </h2>
-        <p class="stamp">Last updated: [January 2026]</p>
+        <p class="stamp">Last updated: January 2026</p>
         <button type="button" class="notice-close" id="noticeClose" @click="noticeModalOpen = false; if (window.closeNotice) window.closeNotice(event);" onclick="if(window.closeNotice) window.closeNotice(event);" aria-label="Close notice">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </div>
 
       <div class="sheet-body">
-        <p>The domain <strong>tyresvision.com</strong> was acquired by <strong>DSP Trade Hub FZ-LLC</strong> in <strong>[January 2026]</strong> through an arm&rsquo;s-length purchase of the domain name. The website now published at this address is owned and operated solely by DSP Trade Hub FZ-LLC.</p>
+        <p>The domain <strong>tyresvision.com</strong> was acquired by <strong>DSP Trade Hub FZ-LLC</strong> in <strong>January 2026</strong> through an arm&rsquo;s-length purchase of the domain name. The website now published at this address is owned and operated solely by DSP Trade Hub FZ-LLC.</p>
 
         <p>DSP Trade Hub FZ-LLC is a separate and independent legal entity. It has <strong>no association, affiliation, partnership, joint venture, agency, successor relationship or common ownership</strong> with any person, firm or company that previously owned this domain or operated a website or business under this or any similar name.</p>
 
@@ -371,7 +374,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                class="tv-footer-logo-img"
                loading="lazy" />
         </a>
-        <p style="max-width:34ch;margin-top:14px">{{ _("Buy tyres online in Dubai & Abu Dhabi. 60+ brands, 7,000+ tyres,  fitting at centres, mobile vans too.") }}</p>
+        <p style="max-width:34ch;margin-top:14px">{{ _("Buy genuine tyres online in Dubai, Abu Dhabi and across the UAE. Top global brands with free fitting at partner outlets, plus mobile van fitting.") }}</p>
       </div>
 
       <!-- Column 2: Tyres -->

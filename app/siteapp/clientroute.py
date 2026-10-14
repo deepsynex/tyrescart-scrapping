@@ -160,7 +160,22 @@ def home():
         'Buy genuine tyres online in Dubai, Abu Dhabi and across the UAE. Top global brands with free '
         'fitting at a partner outlet, or mobile van fitting at your home.'
     )
-    seo = seo_builder.build_homepage_seo(home_title, home_desc, faqs=None)
+    faq_sec = next((s for s in sections if s.get('section_type') == 'faq'), None)
+    home_faqs = []
+    if faq_sec and faq_sec.get('section_data') and isinstance(faq_sec['section_data'], dict):
+        raw_faqs = faq_sec['section_data'].get('faqs') or []
+        for f in raw_faqs:
+            q = f.get('question') or ''
+            a = f.get('answer') or ''
+            if isinstance(q, dict):
+                q = q.get(locale) or q.get('en') or ''
+            if isinstance(a, dict):
+                a = a.get(locale) or a.get('en') or ''
+            if q.strip():
+                a_clean = a.replace('is  and included', 'is included').replace('is and included', 'is included').strip()
+                home_faqs.append({'question': q.strip(), 'answer_html': a_clean})
+
+    seo = seo_builder.build_homepage_seo(home_title, home_desc, faqs=home_faqs if home_faqs else None)
     resp = make_response(render_template(
         'Client/Home.html', sections=sections, locale=locale, page=page, slug='home',
         page_title=home_title, page_desc=home_desc, **seo
@@ -5484,7 +5499,7 @@ def _send_contact_enquiry_email(flask_app, name, email, phone, subject, message,
 
             # Clean up any static href attributes in template
             if clean_phone:
-                html_body = html_body.replace('href="tel:+971505069575"', f'href="tel:{clean_phone}"').replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"').replace('href="tel:+971505065575"', f'href="tel:{clean_phone}"')
+                html_body = html_body.replace('href="tel:+971505069575"', f'href="tel:{clean_phone}"').replace('href="tel:+971506515269"', f'href="tel:{clean_phone}"')
             if display_product:
                 encoded_prod = urllib.parse.quote(display_product)
                 html_body = html_body.replace('Continental%20Tyres', encoded_prod)

@@ -1313,7 +1313,7 @@ def seed_default_home_sections(cursor):
                     },
                     {
                         "question": {"en": "Is fitting included in the price?"},
-                        "answer": {"en": "Fitting at one of our partner centres is  and included, along with delivery, mounting, balancing, new valves and disposal of your old tyres. Mobile fitting at your own location is charged as a call-out fee on top of the tyre price, always confirmed on WhatsApp before we dispatch a van."}
+                        "answer": {"en": "Fitting at one of our partner centres is included, along with delivery, mounting, balancing, new valves and disposal of your old tyres. Mobile fitting at your own location is charged as a call-out fee on top of the tyre price, always confirmed on WhatsApp before we dispatch a van."}
                     },
                     {
                         "question": {"en": "Do you really match other tyre prices?"},

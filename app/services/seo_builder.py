@@ -31,8 +31,11 @@ WHATSAPP_URL = "https://wa.me/971505069575"
 EMAIL = ""  # not supplied
 REGISTERED_ADDRESS = ""  # not supplied
 LOGO_URL = f"{SITE_URL}/static/assets/images/logo/tyresvision-logo-clean.png"
-DEFAULT_OG_IMAGE = f"{SITE_URL}/static/assets/images/online-tyres-shop-dubai.png"
+DEFAULT_OG_IMAGE = f"{SITE_URL}/static/assets/images/og-tyresvision-1200x630.jpg"
 DEFAULT_OG_IMAGE_ALT = "TyresVision – buy tyres online with fitting in Dubai, Abu Dhabi and across the UAE"
+DEFAULT_OG_IMAGE_WIDTH = 1200
+DEFAULT_OG_IMAGE_HEIGHT = 630
+DEFAULT_OG_IMAGE_TYPE = "image/jpeg"
 
 ORG_ID = f"{SITE_URL}/#organization"
 WEBSITE_ID = f"{SITE_URL}/#website"
@@ -255,12 +258,29 @@ def build_breadcrumb_list(page_id_fragment, items):
     }
 
 
+def get_image_mime_type(image_url_or_path):
+    """Determines image MIME type (image/jpeg, image/png, image/webp) from path or URL."""
+    path = (image_url_or_path or '').lower().split('?')[0]
+    if path.endswith('.png'):
+        return 'image/png'
+    elif path.endswith('.webp'):
+        return 'image/webp'
+    elif path.endswith('.svg'):
+        return 'image/svg+xml'
+    return 'image/jpeg'
+
+
 def build_og_twitter_tags(og_type, canonical_url, title, description, image=None,
                            image_alt=None, extra_og=None):
     """Builds page_og_tags/page_twitter_tags for layout.html's existing
     fallback chain. `image` may be relative; dimensions are read from disk."""
     image_url = _abs_url(image) if image else DEFAULT_OG_IMAGE
     width, height = get_image_dimensions(image_url)
+    if not width and image_url == DEFAULT_OG_IMAGE:
+        width, height = DEFAULT_OG_IMAGE_WIDTH, DEFAULT_OG_IMAGE_HEIGHT
+
+    alt_text = image_alt or DEFAULT_OG_IMAGE_ALT
+    mime_type = get_image_mime_type(image_url)
 
     og_tags = {
         'og_type': og_type,
@@ -268,6 +288,9 @@ def build_og_twitter_tags(og_type, canonical_url, title, description, image=None
         'og_title': title,
         'og_description': description,
         'og_image': image_url,
+        'og_image_secure_url': image_url,
+        'og_image_type': mime_type,
+        'og_image_alt': alt_text,
         'og_locale': 'en_AE',
     }
     if width and height:
@@ -281,8 +304,9 @@ def build_og_twitter_tags(og_type, canonical_url, title, description, image=None
         'twitter_title': title,
         'twitter_description': description,
         'twitter_image': image_url,
+        'twitter_image_alt': alt_text,
     }
-    return og_tags, twitter_tags, image_alt or DEFAULT_OG_IMAGE_ALT
+    return og_tags, twitter_tags, alt_text
 
 
 # ----------------------------------------------------------------------------
@@ -562,13 +586,25 @@ def build_vehicle_seo(canonical_url, title, description, breadcrumb_items,
 def build_product_seo(canonical_url, title, description, image, brand_name,
                        sku, price, in_stock, additional_properties=None,
                        breadcrumb_items=None, gtin=None, mpn=None,
-                       price_valid_until=None):
+                       price_valid_until=None, image_alt=None):
     """additional_properties: [(name, value), ...] -- e.g. Tyre size, Load
     index, Speed rating, Manufacture year, Origin, Warranty -- only include
     pairs whose value is real product data."""
     image_url = _abs_url(image)
+    if not image_alt:
+        props = dict(additional_properties or [])
+        size_str = props.get('Tyre size') or ''
+        clean_title = (title or '').strip()
+        if brand_name and clean_title.lower().startswith(brand_name.lower()):
+            alt_base = f"{clean_title} {size_str}".strip()
+        else:
+            alt_base = f"{brand_name} {clean_title} {size_str}".strip()
+        image_alt = f"{alt_base} tyre" if not alt_base.lower().endswith('tyre') else alt_base
+        image_alt = ' '.join(image_alt.split())
+
     og_tags, twitter_tags, _alt = build_og_twitter_tags(
         'product', canonical_url, title, description, image=image_url,
+        image_alt=image_alt,
         extra_og={
             'product_price_amount': f"{price:.2f}" if price is not None else None,
             'product_price_currency': 'AED',
@@ -718,6 +754,7 @@ def build_blog_post_seo(canonical_url, title, description, image, date_published
                          date_modified, author_name, is_person_author, faqs=None):
     og_tags, twitter_tags, _alt = build_og_twitter_tags(
         'article', canonical_url, title, description, image=image,
+        image_alt=title,
         extra_og={
             'article_published_time': date_published,
             'article_modified_time': date_modified,

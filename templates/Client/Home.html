@@ -57,7 +57,7 @@
           <div>
             {% if sec.section_subtitle %}<span class="eyebrow">{{ sec.section_subtitle }}</span>{% endif %}
             <h1>{{ sec.section_title | replace('\n', '<br>') | safe }}</h1>
-            {% if sec.content %}<p class="lead">{{ sec.content | safe }}</p>{% endif %}
+            {% if sec.content %}<p class="lead">{{ (sec.content | safe | replace('<p>', '') | replace('</p>', '')) | trim }}</p>{% endif %}
 
             <div class="cta-row">
               <a class="btn btn-wa" href="{{ sec.button_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote.' }}" target="_blank" rel="noopener">
@@ -694,7 +694,69 @@
           }
         </style>
         <div id="home-faq-container" class="wrap" style="max-width:1120px">
-          <!-- Dynamically rendered by client.js -->
+          {% if sec.section_subtitle or sec.section_title %}
+          <div class="center">
+            {% if sec.section_subtitle %}<span class="eyebrow">{{ sec.section_subtitle }}</span>{% endif %}
+            {% if sec.section_title %}<h2>{{ sec.section_title }}</h2>{% endif %}
+          </div>
+          {% endif %}
+          {% set raw_faqs = (sec.section_data and sec.section_data.faqs) if (sec.section_data and sec.section_data.faqs is iterable) else [] %}
+          {% if raw_faqs %}
+          <div style="margin-top:36px" class="faq-list">
+            {# Column 1: Even index items (0, 2, 4...) #}
+            <div class="faq-col">
+              {% for f in raw_faqs %}
+                {% if loop.index0 % 2 == 0 %}
+                  {% set q = f.question.get(locale, f.question.get('en', '')) if (f.question is mapping) else (f.question or '') %}
+                  {% set a_raw = f.answer.get(locale, f.answer.get('en', '')) if (f.answer is mapping) else (f.answer or '') %}
+                  {% set a = a_raw | replace('is  and included', 'is included') | replace('is and included', 'is included') %}
+                  {% set is_first = loop.first %}
+                  <div class="faq-item {{ 'active' if is_first else '' }}" data-faq-item style="order:{{ loop.index0 }}">
+                    <button type="button" class="faq-summary" aria-expanded="{{ 'true' if is_first else 'false' }}">
+                      <span class="faq-question-text">{{ q }}</span>
+                      <span class="faq-chevron-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </button>
+                    <div class="faq-answer">
+                      <div class="faq-answer-inner">
+                        <div class="body">{% if a.strip().startswith('<p') %}{{ a | safe }}{% else %}<p>{{ a | safe }}</p>{% endif %}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            {# Column 2: Odd index items (1, 3, 5...) #}
+            <div class="faq-col">
+              {% for f in raw_faqs %}
+                {% if loop.index0 % 2 == 1 %}
+                  {% set q = f.question.get(locale, f.question.get('en', '')) if (f.question is mapping) else (f.question or '') %}
+                  {% set a_raw = f.answer.get(locale, f.answer.get('en', '')) if (f.answer is mapping) else (f.answer or '') %}
+                  {% set a = a_raw | replace('is  and included', 'is included') | replace('is and included', 'is included') %}
+                  <div class="faq-item" data-faq-item style="order:{{ loop.index0 }}">
+                    <button type="button" class="faq-summary" aria-expanded="false">
+                      <span class="faq-question-text">{{ q }}</span>
+                      <span class="faq-chevron-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </button>
+                    <div class="faq-answer">
+                      <div class="faq-answer-inner">
+                        <div class="body">{% if a.strip().startswith('<p') %}{{ a | safe }}{% else %}<p>{{ a | safe }}</p>{% endif %}</div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
         </div>
         <script id="home-faq-json" type="application/json">
           {{ sec | tojson | safe }}

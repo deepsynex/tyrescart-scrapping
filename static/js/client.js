@@ -631,7 +631,7 @@
     var homeFaqContainer = document.getElementById('home-faq-container');
     var homeFaqScript = document.getElementById('home-faq-json');
 
-    if (homeFaqContainer && homeFaqScript) {
+    if (homeFaqContainer && homeFaqScript && !homeFaqContainer.querySelector('.faq-list')) {
       try {
         var secData = JSON.parse(homeFaqScript.textContent || '{}');
         var title = getLocalizedText(secData.section_title, locale);
