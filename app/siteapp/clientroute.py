@@ -5196,14 +5196,18 @@ def vs_tyres():
             
             rw, rh, rrim, rlabel, rspeed = extract_size(r_)
             is_staggered = bool(rw and rh and rrim and (rw != fw or fh != rh or frim != rrim))
-            
-            dedup_key = (flabel, rlabel if is_staggered else None)
+
+            # Rear size is always populated so vehicle search always shows [F] & [R] bundle
+            if not rw or not rh or not rrim:
+                rw, rh, rrim, rlabel, rspeed = fw, fh, frim, flabel, fspeed
+
+            dedup_key = (flabel, rlabel)
             if dedup_key in seen:
                 continue
             seen.add(dedup_key)
-            
+
             is_factory = bool(w.get('is_stock', False))
-            
+
             item = {
                 "width": fw,
                 "height": fh,
@@ -5212,17 +5216,17 @@ def vs_tyres():
                     "width": rw,
                     "height": rh,
                     "rim": rrim
-                } if is_staggered else None,
+                },
                 "isFactory": is_factory,
                 "speedIndex": fspeed or '',
-                "rearSpeedIndex": (rspeed or '') if is_staggered else None,
+                "rearSpeedIndex": rspeed or '',
                 "label": flabel,
-                "rearLabel": rlabel if is_staggered else None,
+                "rearLabel": rlabel,
                 # UI helpers
-                "title": flabel + (f" / Rear: {rlabel}" if is_staggered else ""),
-                "badge": "Standard / OEM" if is_factory else (f"{frim}\" Optional" if frim else "Optional"),
+                "title": (f"{flabel} / Rear: {rlabel}" if (flabel != rlabel) else flabel),
+                "badge": "FACTORY SIZE" if is_factory else "OPTIONAL SIZE",
                 "front_slug": f"{fw}-{fh}-{frim}",
-                "rear_slug": f"{rw}-{rh}-{rrim}" if is_staggered else None,
+                "rear_slug": f"{rw}-{rh}-{rrim}",
                 "rim_spec": f.get('rim', ''),
                 "is_staggered": is_staggered,
                 "is_stock": is_factory

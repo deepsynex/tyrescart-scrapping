@@ -82,6 +82,7 @@
 #tv-page-content-root .tv-4x4-knowledge-card:hover,
 #tv-page-content-root .tv-4x4-price-card:hover,
 #tv-page-content-root .tv-terrain-card:hover {
+  transform: translateY(-4px) !important;
   border-color: #CB93FD !important;
   box-shadow: 0 16px 36px -6px rgba(42, 9, 71, 0.14) !important;
 }
@@ -310,9 +311,11 @@
 }
 
 .btn-faq-call:hover {
-  background: #0000000d;
-  border-color: #94a3b8;
+  background: #7C3AED !important;
+  color: #ffffff !important;
+  border-color: #7C3AED !important;
   transform: translateY(-2px);
+  box-shadow: 0 8px 22px -4px rgba(124, 58, 237, 0.38) !important;
 }
 
 .mtf-bottom-note {
@@ -494,6 +497,7 @@
 #tv-page-content-root .tv-4x4-price-card:hover,
 #tv-page-content-root .tv-terrain-card:hover,
 #tv-page-content-root .tv-fitment-card:hover {
+  transform: translateY(-4px) !important;
   border-color: #CB93FD !important;
   box-shadow: 0 16px 36px -6px rgba(42, 9, 71, 0.14) !important;
 }
@@ -783,7 +787,7 @@
 
 .page-mobile-tyre-fitting .mtf-hero-grid {
   display: grid;
-  grid-template-columns: minmax(480px, 580px) 1fr;
+  grid-template-columns: minmax(480px, 620px) 1fr;
   gap: 40px;
   align-items: center;
   position: relative;
@@ -884,10 +888,10 @@
 }
 
 .page-mobile-tyre-fitting .btn-hero-call:hover {
-  background: var(--primary-light);
-  color:#fff;
+  background: #ffffff !important;
+  color: #4B237B !important;
   transform: translateY(-2px);
-  box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 14px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.25) !important;
 }
 
 .page-mobile-tyre-fitting .mtf-hero-trust {
@@ -1663,9 +1667,11 @@
 }
 
 .page-mobile-tyre-fitting .btn-not-sure-call:hover {
-  background: #0000000d;
-  border-color: #94a3b8;
+  background: #7C3AED !important;
+  color: #ffffff !important;
+  border-color: #7C3AED !important;
   transform: translateY(-2px);
+  box-shadow: 0 8px 22px -4px rgba(124, 58, 237, 0.38) !important;
 }
 
 .page-mobile-tyre-fitting .mtf-faq-header-bar {
@@ -1857,9 +1863,11 @@
 }
 
 .page-mobile-tyre-fitting .btn-faq-call:hover {
-  background: #0000000d;
-  border-color: #94a3b8;
+  background: #7C3AED !important;
+  color: #ffffff !important;
+  border-color: #7C3AED !important;
   transform: translateY(-2px);
+  box-shadow: 0 8px 22px -4px rgba(124, 58, 237, 0.38) !important;
 }
 
 .page-mobile-tyre-fitting .mtf-bottom-note {
@@ -3706,7 +3714,7 @@
 /* Hero Section */
 .wheel-alignment-page .wheel-alignment-hero {
   position: relative;
-  background-color: #1c0530;
+  background-color: #300259;
   background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/services/wheel-alignment-dubai.jpg');
   background-size: cover;
   background-position: center;
@@ -3847,8 +3855,11 @@
 }
 
 .wheel-alignment-page .wheel-alignment-btn-call:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.2) !important;
 }
 
 .wheel-alignment-page .wheel-alignment-hero-badges {
@@ -4424,8 +4435,11 @@
 }
 
 .wheel-alignment-page .wheel-alignment-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bottom CTA Banner */
@@ -4555,8 +4569,8 @@
 /* Hero Section */
 .wheel-balancing-page .wheel-balancing-hero {
   position: relative;
-  background-color: #1c0530;
-  background-image: linear-gradient(90deg, rgba(28, 5, 48, 0.97) 0%, rgba(28, 5, 48, 0.90) 45%, rgba(28, 5, 48, 0.40) 72%, rgba(28, 5, 48, 0.08) 100%), url('/static/assets/images/services/wheel-balancing-dubai.jpg');
+  background-color: #300259;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/services/wheel-balancing-dubai.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -4688,8 +4702,11 @@
 }
 
 .wheel-balancing-page .wheel-balancing-btn-call:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.2) !important;
 }
 
 .wheel-balancing-page .wheel-balancing-hero-badges {
@@ -5265,8 +5282,11 @@
 }
 
 .wheel-balancing-page .wheel-balancing-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bottom CTA Banner */
@@ -5396,8 +5416,8 @@
 /* Hero Section */
 .car-battery-replacement-page .car-battery-replacement-hero {
   position: relative;
-  background-color: #1c0530;
-  background-image: linear-gradient(90deg, rgba(28, 5, 48, 0.97) 0%, rgba(28, 5, 48, 0.90) 45%, rgba(28, 5, 48, 0.40) 72%, rgba(28, 5, 48, 0.08) 100%), url('/static/assets/images/services/car-battery-replacement-dubai.jpg');
+  background-color: #300259;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/services/car-battery-replacement-dubai.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -5529,8 +5549,11 @@
 }
 
 .car-battery-replacement-page .car-battery-replacement-btn-call:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.2) !important;
 }
 
 .car-battery-replacement-page .car-battery-replacement-hero-badges {
@@ -6106,8 +6129,11 @@
 }
 
 .car-battery-replacement-page .car-battery-replacement-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bottom CTA Banner */
@@ -6237,8 +6263,8 @@
 /* Hero Section */
 .oil-change-page .oil-change-hero {
   position: relative;
-  background-color: #1c0530;
-  background-image: linear-gradient(90deg, rgba(28, 5, 48, 0.97) 0%, rgba(28, 5, 48, 0.90) 45%, rgba(28, 5, 48, 0.40) 72%, rgba(28, 5, 48, 0.08) 100%), url('/static/assets/images/services/car-oil-change-dubai.jpg');
+  background-color: #300259;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/services/car-oil-change-dubai.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -6370,8 +6396,11 @@
 }
 
 .oil-change-page .oil-change-btn-call:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.2) !important;
 }
 
 .oil-change-page .oil-change-hero-badges {
@@ -6947,8 +6976,11 @@
 }
 
 .oil-change-page .oil-change-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bottom CTA Banner */
@@ -7078,8 +7110,8 @@
 /* Hero Section */
 .fleet-tyre-services-page .fleet-tyre-services-hero {
   position: relative;
-  background-color: #1c0530;
-  background-image: linear-gradient(90deg, rgba(28, 5, 48, 0.97) 0%, rgba(28, 5, 48, 0.90) 45%, rgba(28, 5, 48, 0.40) 72%, rgba(28, 5, 48, 0.08) 100%), url('/static/assets/images/services/fleet-tyre-services-dubai.jpg');
+  background-color: #300259;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/services/fleet-tyre-services-dubai.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -7211,8 +7243,10 @@
 }
 
 .fleet-tyre-services-page .fleet-tyre-services-btn-call:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff !important;
+  color: #4B237B !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.25) !important;
 }
 
 .fleet-tyre-services-page .fleet-tyre-services-hero-badges {
@@ -7788,8 +7822,11 @@
 }
 
 .fleet-tyre-services-page .fleet-tyre-services-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 /* Bottom CTA Banner */
@@ -7924,7 +7961,8 @@
 
 .about-us-page .about-hero {
   position: relative;
-  background: linear-gradient(135deg, #0B1220 0%, #15102A 50%, #2A1550 100%);
+  background-color: #300259;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%);
   padding: clamp(3.5rem, 6vw, 6rem) 0;
 }
 
@@ -8267,9 +8305,11 @@
   text-decoration: none;
 }
 .about-us-page .about-btn-call:hover {
-  background-color: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
+  background-color: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Section 4 Standout Card 2 */
@@ -8718,9 +8758,11 @@
 }
 
 .page-about-us .about-faq-call-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: #ffffff !important;
+  color: #4B237B !important;
+  border-color: #ffffff !important;
   transform: translateY(-2px);
-  color: #ffffff;
+  box-shadow: 0 10px 24px -4px rgba(255, 255, 255, 0.35) !important;
 }
 
 @media (max-width: 960px) {
@@ -8734,5 +8776,51 @@
   }
 }
 
+/* Card head: Icon / badge / number placed horizontally beside heading */
+.card-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 12px !important;
+  width: 100% !important;
+}
 
+.card-head .icon,
+.card-head .tv-ev-icon-circle,
+.card-head .tvi-91717c59,
+.card-head .mtf-step-icon-wrap,
+.card-head [class*="circle"],
+.card-head [class*="icon"],
+.card-head div[style*="border-radius: 50%"],
+.card-head div[style*="border-radius:50%"] {
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+}
 
+.card-head h3,
+.card-head h4,
+.card-head .mtf-step-title {
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+/* Universal Page Hero Section Background & Gradient */
+#tv-page-content-root .tv-ev-hero,
+#tv-page-content-root .tv-page-hero,
+#tv-page-content-root .tv-4x4-hero,
+#tv-page-content-root section[class*="hero"],
+.page-mobile-tyre-fitting .mtf-hero,
+.page-about-us .mtf-hero,
+.about-us-page .about-hero {
+  background-color: #300259 !important;
+}
+
+#tv-page-content-root .tv-page-hero {
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%),
+    var(--tv-hero-custom-bg, url('/static/uploads/pages/banner_1788954653_64dd43ed.png')) !important;
+}
+
+#tv-page-content-root .tv-4x4-hero {
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%),
+    url('/static/assets/images/4x4/hero_banner_clean.jpg?v=2') !important;
+}

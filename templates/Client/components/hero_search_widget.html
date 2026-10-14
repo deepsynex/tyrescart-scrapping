@@ -10,6 +10,9 @@
 <div id="tvHeroModal" aria-modal="true" role="dialog" onclick="tvHeroModalClose(event)">
   <div class="tvhm-panel" id="tvhmPanel">
     <div class="tvhm-header">
+      <button type="button" class="tvhm-header-back-btn" id="tvhmBackBtn" onclick="tvHeroGoBack()" aria-label="Go Back" title="Previous step" style="display:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
       <div class="tvhm-header-icon" id="tvhmHeaderIcon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </div>
@@ -175,7 +178,11 @@ function tvHeroOpenModal(type, tab) {
                engineSlug: null, engineTrim: null,
                brandSlug: null, brandName: null, brandLogo: null };
   var modal = document.getElementById('tvHeroModal');
+  var panel = document.getElementById('tvhmPanel');
   modal.classList.add('open');
+  if (panel) {
+    panel.classList.toggle('tvhm-panel--vehicle', type === 'vehicle');
+  }
 
   // Lock the background page in place. Just setting overflow:hidden on
   // body isn't enough -- iOS Safari still lets a touch-drag scroll the
@@ -217,7 +224,106 @@ function tvHeroModalClose(e, force) {
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') tvHeroModalClose(null, true);
+  if (e.key === 'Backspace') {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      var modal = document.getElementById('tvHeroModal');
+      if (modal && modal.classList.contains('open') && tvHeroCanGoBack()) {
+        e.preventDefault();
+        tvHeroGoBack();
+      }
+    }
+  }
 });
+
+/* ══════════════════════════════════════════════════════
+   BACK BUTTON NAVIGATION
+══════════════════════════════════════════════════════ */
+function tvHeroCanGoBack() {
+  var s = _tvState;
+  if (!s || !s.type) return false;
+  if (s.type === 'vehicle') {
+    return Boolean(s.makeSlug || s.modelSlug || s.year || s.engineSlug);
+  }
+  if (s.type === 'size') {
+    return Boolean((s.step && s.step > 1) || s.selectingRear);
+  }
+  if (s.type === 'brands') {
+    return Boolean(s.brandSlug || s.width || s.profile || s.rim);
+  }
+  return false;
+}
+
+function tvHeroGetBackLabel() {
+  var s = _tvState;
+  if (!s || !s.type) return 'Back';
+  if (s.type === 'vehicle') {
+    if (s.engineSlug) return 'Back to Engines';
+    if (s.year) return 'Back to Years';
+    if (s.modelSlug) return 'Back to Models';
+    if (s.makeSlug) return 'Back to Makes';
+  }
+  if (s.type === 'size') {
+    if (s.selectingRear) {
+      if (s.step === 3) return 'Back to Rear Height';
+      if (s.step === 2) return 'Back to Rear Width';
+      return 'Back to Front Size';
+    }
+    if (s.step === 3) return 'Back to Height';
+    if (s.step === 2) return 'Back to Width';
+  }
+  if (s.type === 'brands') {
+    if (s.rim) return 'Back to Height';
+    if (s.profile) return 'Back to Width';
+    if (s.width) return 'Back to Sizes';
+    if (s.brandSlug) return 'Back to Brands';
+  }
+  return 'Back';
+}
+
+function tvHeroGoBack() {
+  var s = _tvState;
+  if (!s || !s.type) return;
+
+  if (s.type === 'vehicle') {
+    if (s.engineSlug) {
+      s.engineSlug = null;
+      s.engineTrim = null;
+    } else if (s.year) {
+      s.year = null;
+    } else if (s.modelSlug) {
+      s.modelSlug = null;
+      s.modelName = null;
+    } else if (s.makeSlug) {
+      s.makeSlug = null;
+      s.makeName = null;
+    }
+    _tvRenderModal();
+    return;
+  }
+
+  if (s.type === 'size') {
+    if (typeof tvSizeBack === 'function') {
+      tvSizeBack();
+    }
+    return;
+  }
+
+  if (s.type === 'brands') {
+    if (s.rim) {
+      s.rim = null;
+    } else if (s.profile) {
+      s.profile = null;
+    } else if (s.width) {
+      s.width = null;
+    } else if (s.brandSlug) {
+      s.brandSlug = null;
+      s.brandName = null;
+    }
+    _tvRenderModal();
+    return;
+  }
+}
 
 /* ══════════════════════════════════════════════════════
    RENDER MODAL CONTENT
@@ -230,7 +336,23 @@ function _tvRenderModal() {
   var title = document.getElementById('tvhmTitle');
   var body  = document.getElementById('tvhmBody');
   var icon  = document.getElementById('tvhmHeaderIcon');
+  var backBtn = document.getElementById('tvhmBackBtn');
   var footer = document.getElementById('tvhmFooter');
+  var panel  = document.getElementById('tvhmPanel');
+  if (panel) {
+    panel.classList.toggle('tvhm-panel--vehicle', t === 'vehicle');
+  }
+
+  var canGoBack = tvHeroCanGoBack();
+  if (backBtn) {
+    backBtn.style.display = canGoBack ? 'inline-flex' : 'none';
+    if (canGoBack) {
+      backBtn.title = tvHeroGetBackLabel();
+    }
+  }
+  if (icon) {
+    icon.style.display = canGoBack ? 'none' : 'flex';
+  }
 
   if (footer && t !== 'size') {
     footer.style.display = 'none';
@@ -531,7 +653,7 @@ function _tvRenderSizePanel(body, tab) {
     body.innerHTML = html;
 
     if (footer) {
-      var backBtnHtml = s.step > 1
+      var backBtnHtml = (s.step > 1 || s.selectingRear)
         ? '<button type="button" class="tvhm-back-btn" onclick="tvSizeBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>'
         : '<button type="button" class="tvhm-back-btn" onclick="tvHeroModalClose(null,true)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>';
 
@@ -841,7 +963,13 @@ function _tvRenderVehiclePanel(body, tab) {
   // ── Breadcrumb badges ──
   function makeBreadcrumb() {
     if (!s.makeSlug && !s.model) return '';
-    var b = '<div class="tvhm-selected-size">';
+    var backLbl = tvHeroGetBackLabel();
+    var b = '<div class="tvhm-nav-row">'
+      + '<button type="button" class="tvhm-body-back-btn" onclick="tvHeroGoBack()" title="' + _esc(backLbl) + '">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'
+      + '<span>' + _esc(backLbl) + '</span></button>'
+      + '</div>';
+    b += '<div class="tvhm-selected-size">';
     if (s.makeSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'make\')" title="Change Make"><span class="tvhm-size-badge-lbl">Make</span>'
       + '<span class="tvhm-size-badge-val">' + _esc(s.makeName || s.makeSlug) + ' ✕</span></button>';
     if (s.modelSlug) b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvGoToStep(\'model\')" title="Change Model"><span class="tvhm-size-badge-lbl">Model</span>'
@@ -1027,7 +1155,7 @@ function _renderEngineCards(body, engines, breadcrumb, tab) {
     body.innerHTML = html;
     return;
   }
-  html += '<p class="tvhm-section-lbl">Select Engine / Trim</p><div style="display:flex;flex-direction:row;gap:10px;">';
+  html += '<p class="tvhm-section-lbl">Select Engine / Trim</p><div class="tvhm-cards-list">';
   engines.forEach(function(e) {
     var fuelIcon = e.fuel === 'Electric' ? '⚡' : e.fuel === 'Diesel' ? '🛢' : '⛽';
     html += '<button type="button" class="tvhm-engine-card" onclick="tvSelectEngine(\''
@@ -1043,7 +1171,7 @@ function _renderEngineCards(body, engines, breadcrumb, tab) {
   body.innerHTML = html;
 }
 
-/* Step 5: Tyre Size Options cards */
+/* Step 5: Tyre Size Options cards (Matches reference design) */
 function _renderTyreSizeOptions(body, sizes, breadcrumb, tab) {
   var dest = tab === 'car-wheels' ? '/wheels' : '/tyres';
   var html = breadcrumb;
@@ -1056,34 +1184,33 @@ function _renderTyreSizeOptions(body, sizes, breadcrumb, tab) {
     return;
   }
 
-  html += '<p class="tvhm-section-lbl">Select Tyre Size (' + sizes.length + ' compatible)</p><div style="display:flex;flex-direction:row;gap:10px;">';
+  html += '<div class="tvhm-options-count">' + sizes.length + ' option' + (sizes.length === 1 ? '' : 's') + ' available</div>';
+  html += '<div class="tvhm-fitment-cards-grid">';
   sizes.forEach(function(sz) {
     var isStock = sz.isFactory !== undefined ? sz.isFactory : sz.is_stock;
-    var badgeClass = isStock ? 'stock' : 'optional';
-    var badgeText = isStock ? '✓ Standard / OEM' : (sz.badge || (sz.rim ? sz.rim + '" Optional' : 'Optional Fitment'));
-    var cardClass = 'tvhm-size-option-card' + (isStock ? ' stock' : '');
+    var badgeClass = isStock ? 'factory' : 'optional';
+    var badgeText = isStock ? 'FACTORY SIZE' : 'OPTIONAL SIZE';
     var frontLabel = sz.label || sz.front_tire || (sz.width + '/' + sz.height + 'R' + sz.rim);
-    var isStaggered = Boolean(sz.rear || sz.is_staggered);
-    var rearLabel = (sz.rear ? (sz.rearLabel || (sz.rear.width + '/' + sz.rear.height + 'R' + sz.rear.rim)) : sz.rear_tire) || '';
-    var rimDia = sz.rim || sz.rim_diameter || '';
-    var rimSpec = sz.rim_spec || '';
+    var rearLabel = sz.rearLabel || (sz.rear ? (sz.rear.width + '/' + sz.rear.height + 'R' + sz.rear.rim) : frontLabel);
+    var frontSlug = sz.front_slug || (sz.width + '-' + sz.height + '-' + sz.rim);
+    var rearSlug = sz.rear_slug || (sz.rear ? (sz.rear.width + '-' + sz.rear.height + '-' + sz.rear.rim) : frontSlug);
+    var isStaggered = Boolean(rearLabel && rearLabel !== frontLabel);
 
-    html += '<button type="button" class="' + cardClass + '" onclick="tvSelectTyreSize(\''
-      + (sz.front_slug || '') + '\',\'' + (sz.rear_slug || '') + '\',\'' + dest + '\')">'
-      + '<div class="tvhm-size-option-left">'
-      + '<div class="tvhm-rim-badge">' + (rimDia ? rimDia + '"' : 'R') + '<span class="tvhm-rim-badge-sub">Rim</span></div>'
-      + '<div class="tvhm-size-details">'
-      + '<span class="tvhm-size-main">' + _esc(frontLabel) + (isStaggered ? ' <span style="font-weight:600;font-size:11px;color:#7C3AED">(Front)</span>' : '') + '</span>'
-      + (isStaggered ? '<span class="tvhm-size-staggered">Rear: <strong>' + _esc(rearLabel) + '</strong></span>' : '')
-      + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px;">'
-      + '<span class="tvhm-fitment-badge ' + badgeClass + '">' + badgeText + '</span>'
-      + (rimSpec ? '<span style="font-size:11px;color:#6B7280;font-weight:600;">• Rim: ' + _esc(rimSpec) + '</span>' : '')
+    var contentHtml = '<div class="tvhm-fitment-body">'
+      + '<div class="tvhm-fitment-axle">'
+      + '<span class="tvhm-axle-badge tvhm-axle-f">F</span>'
+      + '<span class="tvhm-axle-size">' + _esc(frontLabel) + '</span>'
       + '</div>'
+      + '<div class="tvhm-fitment-axle">'
+      + '<span class="tvhm-axle-badge tvhm-axle-r">R</span>'
+      + '<span class="tvhm-axle-size">' + _esc(rearLabel) + '</span>'
       + '</div>'
-      + '</div>'
-      + '<div class="tvhm-size-option-arrow">'
-      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
-      + '</div>'
+      + '</div>';
+
+    html += '<button type="button" class="tvhm-fitment-card' + (isStaggered ? ' is-staggered' : ' is-square') + '" onclick="tvSelectTyreSize(\''
+      + _esc(frontSlug) + '\',\'' + _esc(rearSlug || frontSlug) + '\',\'' + dest + '\')">'
+      + '<span class="tvhm-fitment-tag ' + badgeClass + '">' + badgeText + '</span>'
+      + contentHtml
       + '</button>';
   });
   html += '</div>';
@@ -1142,7 +1269,7 @@ function tvCleanSizeSlug(s) {
 }
 function tvSelectTyreSize(frontSlug, rearSlug, dest) {
   var cleanFront = tvCleanSizeSlug(frontSlug);
-  var cleanRear = tvCleanSizeSlug(rearSlug);
+  var cleanRear = rearSlug ? tvCleanSizeSlug(rearSlug) : cleanFront;
   var base = (dest || '/tyres').replace(/\/+$/, '');
   var url = base;
   if (cleanFront) {
@@ -1178,7 +1305,13 @@ function _tvRenderBrandsPanel(body) {
 
   function makeBrandBreadcrumb() {
     if (!s.brandSlug) return '';
-    var b = '<div class="tvhm-selected-size">';
+    var backLbl = tvHeroGetBackLabel();
+    var b = '<div class="tvhm-nav-row">'
+      + '<button type="button" class="tvhm-body-back-btn" onclick="tvHeroGoBack()" title="' + _esc(backLbl) + '">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'
+      + '<span>' + _esc(backLbl) + '</span></button>'
+      + '</div>';
+    b += '<div class="tvhm-selected-size">';
     if (s.brandSlug) {
       b += '<button type="button" class="tvhm-size-badge tvhm-size-badge-btn" onclick="tvBrandGoToStep(\'brand\')" title="Change Brand">'
         + '<span class="tvhm-size-badge-lbl">Brand</span>'
