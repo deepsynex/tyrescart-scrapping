@@ -3167,9 +3167,9 @@ def _render_product_detail(slug_or_id, locale=None):
                 img_path = '/' + img_path.replace('\\', '/')
 
             brand_logo = p_row.get('brand_logo') or get_brand_logo(p_row.get('brand_slug'), p_row.get('brand_id'), p_row.get('brand_name')) or '/static/uploads/brands/brand_884b41a82943de82_1789467748.webp'
-        if str(brand_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
-            base, _ = os.path.splitext(str(brand_logo))
-            brand_logo = base + '.webp'
+            if str(brand_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
+                base, _ = os.path.splitext(str(brand_logo))
+                brand_logo = base + '.webp'
             if not brand_logo.startswith('/'):
                 brand_logo = '/' + brand_logo.replace('\\', '/')
 
