@@ -11,26 +11,26 @@
   "lang": "en-AE",
   "icons": [
     {
-      "src": "/static/assets/images/logo/android-chrome-192x192.png",
+      "src": "/static/assets/images/logo/android-chrome-192x192.webp",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/webp",
       "purpose": "any"
     },
     {
-      "src": "/static/assets/images/logo/android-chrome-512x512.png",
+      "src": "/static/assets/images/logo/android-chrome-512x512.webp",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/webp",
       "purpose": "any"
     },
     {
-      "src": "/static/assets/images/logo/apple-touch-icon-180x180.png",
+      "src": "/static/assets/images/logo/apple-touch-icon-180x180.webp",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/webp"
     },
     {
-      "src": "/static/assets/images/logo/tyresvision-app-icon-squircle.png",
+      "src": "/static/assets/images/logo/tyresvision-app-icon-squircle.webp",
       "sizes": "1024x1024",
-      "type": "image/png",
+      "type": "image/webp",
       "purpose": "maskable"
     }
   ]

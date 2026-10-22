@@ -41,11 +41,11 @@
 
       <h1 class="tv-cat-hero-title" id="tv-hero-title">
         {% if active_ev_tyre %}
-        Electric Vehicle Tyres Online in UAE
+        Electric Vehicle Tyres <span class="tv-hero-gradient-text">Online in UAE</span>
         {% elif active_brand_name %}
-        Buy {{ active_brand_name }} Tyres Online UAE
+        Buy {{ active_brand_name }} Tyres <span class="tv-hero-gradient-text">Online UAE</span>
         {% else %}
-        Buy All Types of Tyres Online in UAE
+        Buy All Types of Tyres <span class="tv-hero-gradient-text">Online in UAE</span>
         {% endif %}
       </h1>
     </div>
@@ -502,6 +502,35 @@
           <h2 class="tv-catalog-count-heading" id="catalog-count-heading">{{ "{:,}".format(total_count or 0) }} {% if active_brand_name %}{{ active_brand_name }} Tyres{% else %}Car Tyres{% endif %}</h2>
         </div>
         <div class="tv-topbar-right">
+          <!-- Product Search Input (Elasticsearch Fast Path via AJAX) -->
+          <div class="tv-catalog-search-wrap">
+            <div class="tv-catalog-search-box">
+              <svg class="tv-catalog-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text"
+                     id="tv-product-search-input"
+                     class="tv-product-search-input"
+                     placeholder="Search tyres (brand, pattern, size)..."
+                     value="{{ request.args.get('search') or request.args.get('q') or '' }}"
+                     oninput="handleProductSearch(this)"
+                     autocomplete="off"
+                     aria-label="Search tyres">
+              <button type="button"
+                      id="tv-product-search-clear"
+                      class="tv-product-search-clear"
+                      onclick="clearProductSearch()"
+                      style="{% if not (request.args.get('search') or request.args.get('q')) %}display:none;{% endif %}"
+                      aria-label="Clear search">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <!-- Mobile Filter Button (Visible on mobile/tablet) -->
           <button type="button" class="tv-mobile-filter-btn" onclick="openMobileFilter()" aria-label="Open Filters">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -621,7 +650,7 @@
               <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
               <div class="tv-card-header-bar">
                 {% set front_b_slug = p.front.brand_slug or (p.front.brand_name|lower|replace(' ', '-')) %}
-                <a href="/brands/{{ front_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.front.brand_name }} brand page" onclick="event.stopPropagation();">
+                <a href="/tyres/brands/{{ front_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.front.brand_name }} brand page" onclick="event.stopPropagation();">
                   {% if p.front.brand_logo %}
                   <img src="{{ p.front.brand_logo }}" alt="{{ p.front.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                   <span class="tv-card-brand-fallback" style="display:none;">{{ p.front.brand_name }}</span>
@@ -651,7 +680,7 @@
                   </svg>
                 </button>
 
-                <a href="/{{ p.front.slug }}" class="tv-card-img-link" title="{{ p.front.pattern_name or p.front.display_name }}">
+                <a href="/tyres/{{ p.front.slug }}" class="tv-card-img-link" title="{{ p.front.pattern_name or p.front.display_name }}">
                   <div class="tv-card-tyre-box tv-img-loading">
                     <img src="{{ p.front.image_path or '/static/assets/images/no-image-available.svg' }}" 
                          alt="{{ p.front.pattern_name or p.front.display_name }}" 
@@ -694,14 +723,14 @@
                   </div>
 
                   <div class="tv-card-pattern-row">
-                    <a href="/{{ p.front.slug }}" class="tv-card-pattern-link" title="{{ p.front.pattern_name or p.front.display_name }}">
+                    <a href="/tyres/{{ p.front.slug }}" class="tv-card-pattern-link" title="{{ p.front.pattern_name or p.front.display_name }}">
                       <h3 class="tv-card-pattern">
                         {{ p.front.pattern_name or p.front.display_name }}
                       </h3>
                     </a>
                     {% if p.front.is_ev or p.front.ev_text == 'EV' %}
                     <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
-                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
                     </span>
                     {% endif %}
                     {% if p.front.is_runflat or p.front.runflat_text == 'Runflat' %}
@@ -726,13 +755,7 @@
                 </div>
 
                 <div class="tv-card-bottom-info">
-                  <div class="tv-stock-status">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="8 12 11 15 16 9"></polyline>
-                    </svg>
-                    <span>In Stock</span>
-                  </div>
+
 
                   <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -767,7 +790,7 @@
               <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
               <div class="tv-card-header-bar">
                 {% set rear_b_slug = p.rear.brand_slug or (p.rear.brand_name|lower|replace(' ', '-')) %}
-                <a href="/brands/{{ rear_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.rear.brand_name }} brand page" onclick="event.stopPropagation();">
+                <a href="/tyres/brands/{{ rear_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.rear.brand_name }} brand page" onclick="event.stopPropagation();">
                   {% if p.rear.brand_logo %}
                   <img src="{{ p.rear.brand_logo }}" alt="{{ p.rear.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
                   <span class="tv-card-brand-fallback" style="display:none;">{{ p.rear.brand_name }}</span>
@@ -797,7 +820,7 @@
                   </svg>
                 </button>
 
-                <a href="/{{ p.rear.slug }}" class="tv-card-img-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
+                <a href="/tyres/{{ p.rear.slug }}" class="tv-card-img-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
                   <div class="tv-card-tyre-box tv-img-loading">
                     <img src="{{ p.rear.image_path or '/static/assets/images/no-image-available.svg' }}" 
                          alt="{{ p.rear.pattern_name or p.rear.display_name }}" 
@@ -840,14 +863,14 @@
                   </div>
 
                   <div class="tv-card-pattern-row">
-                    <a href="/{{ p.rear.slug }}" class="tv-card-pattern-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
+                    <a href="/tyres/{{ p.rear.slug }}" class="tv-card-pattern-link" title="{{ p.rear.pattern_name or p.rear.display_name }}">
                       <h3 class="tv-card-pattern">
                         {{ p.rear.pattern_name or p.rear.display_name }}
                       </h3>
                     </a>
                     {% if p.rear.is_ev or p.rear.ev_text == 'EV' %}
                     <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
-                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                      <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
                     </span>
                     {% endif %}
                     {% if p.rear.is_runflat or p.rear.runflat_text == 'Runflat' %}
@@ -872,13 +895,7 @@
                 </div>
 
                 <div class="tv-card-bottom-info">
-                  <div class="tv-stock-status">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polyline points="8 12 11 15 16 9"></polyline>
-                    </svg>
-                    <span>In Stock</span>
-                  </div>
+
 
                   <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -981,7 +998,7 @@
           <!-- 1. Top Header Bar: Brand Logo (Left) & Top Rated Badge (Right) -->
           <div class="tv-card-header-bar">
             {% set card_b_slug = p.brand_slug or (p.brand_name|lower|replace(' ', '-')) %}
-            <a href="/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.brand_name }} brand page" onclick="event.stopPropagation();">
+            <a href="/tyres/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.brand_name }} brand page" onclick="event.stopPropagation();">
               {% if p.brand_logo %}
               <img src="{{ p.brand_logo }}" alt="{{ p.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
               <span class="tv-card-brand-fallback" style="display:none;">{{ p.brand_name }}</span>
@@ -1012,7 +1029,7 @@
               </svg>
             </button>
 
-            <a href="/{{ p.slug }}" class="tv-card-img-link" title="{{ p.pattern_name or p.display_name }}">
+            <a href="/tyres/{{ p.slug }}" class="tv-card-img-link" title="{{ p.pattern_name or p.display_name }}">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}" 
                      alt="{{ p.pattern_name or p.display_name }}" 
@@ -1041,37 +1058,7 @@
                      </g>
                   </svg>
               </span>
-              <!-- <span>
-              <svg version="1.2" xmlns="http://www.w3.org/2000/svg" width="47.747" height="16.977" viewBox="0 0 321 138" class="w-[1.75rem] sm:w-[2.25rem] h-[0.625rem] sm:h-[1rem]">
-                  <title>suv-svg</title>
-                  <g id="Layer">
-                    <g id="Layer">
-                        <path id="Layer" fill-rule="evenodd" class="s0" d="m16.1 14.5c3.2-7.4 10.4-12.3 18.3-12.7 58.5-2.9 107.2-1.9 148.7 3.2 3.6 0.4 7 1.8 9.9 4l21 16.3c17.7 13.9 44.6 0.3 90.8 21 15.8 7.2 22.2 39.4 9.1 54.9-3.9 4.7-9 7.1-14.9 7.2 0.1-0.8 0.1-1.6 0.1-2.4 0-25.1-20.4-45.5-45.4-45.5-25.1 0-45.5 20.4-45.5 45.5 0 0.8 0 1.6 0.1 2.4h-89.9c0.1-0.8 0.1-1.6 0.1-2.4 0-25.1-20.4-45.5-45.5-45.5-25.1 0-45.5 20.4-45.5 45.5 0 0.8 0 1.6 0.1 2.4h-1.7c-13.8 0-25.1-11.3-25.1-25.6-0.2-9.6 0.9-35.3 15.3-68.3zm135.8 33.1h49.7c1.3 0 2.7-0.5 3.6-1.5l6.3-6.3c-5.1-2.9-5.8-4.1-26.9-20.2-0.9-0.8-2-1.2-3.2-1.3-9.4-1.1-19.3-2.1-29.5-2.8zm-53-12.2c2.8 2.3-0.3-0.4 10.8 10.7 0.9 1 2.3 1.5 3.6 1.5h25.3v-32.9c-12.6-0.7-25.8-1.1-39.7-1.1zm-13.4-4.3v-17.5c-16 0.1-32.8 0.6-50.6 1.5-2.9 0.2-5.5 2-6.7 4.7-1.7 3.9-3.2 7.7-4.5 11.3z" />
-                    </g>
-                    <path id="Layer" class="s0" d="m73 138.1c-17.8 0-32.1-14.3-32.1-32.1 0-17.8 14.3-32.1 32.1-32.1 17.8 0 32.1 14.3 32.1 32.1 0 17.8-14.3 32.1-32.1 32.1z" />
-                    <path id="Layer" class="s0" d="m221.5 106c0 17.7 14.4 32.1 32.1 32.1 17.7 0 32.1-14.4 32.1-32.1 0-17.7-14.4-32.1-32.1-32.1-17.7-0.1-32.1 14.4-32.1 32.1z" />
-                  </g>
-              </svg>
-              </span>
-              <span>
-            <svg class="w-[1.75rem] sm:w-[2rem] h-auto sm:h-auto" fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="100" height="80" viewBox="0 0 612 612" xml:space="preserve">
-                <g>
-                  <path d="M612,327.56v-21.606c0-10.533-4.213-20.628-11.701-28.037L484.107,162.958c-7.384-7.306-17.352-11.403-27.739-11.403
-                      h-58.622v-21.988c0-16.336-13.243-29.58-29.58-29.58H29.58C13.243,99.987,0,113.23,0,129.567V327.56H612z M432.551,190.303
-                      c0-2.563,2.071-4.634,4.635-4.634h21.396c1.184,0,2.366,0.494,3.253,1.282l91.006,86.865c3.057,2.86,0.986,7.987-3.154,7.987
-                      h-112.5c-2.563,0-4.635-2.07-4.635-4.634V190.303z M612,343.903v65.486c0,16.336-13.243,29.578-29.579,29.578h-31.65
-                      c-5.719-39.242-39.539-69.412-80.357-69.412c-40.721,0-74.54,30.17-80.259,69.412h-160.42
-                      c-5.718-39.242-39.538-69.412-80.259-69.412c-40.721,0-74.541,30.17-80.259,69.412H29.58C13.243,438.968,0,425.726,0,409.39
-                      v-65.486H612z M470.456,389.313c-33.883,0-61.351,27.467-61.351,61.35s27.469,61.35,61.351,61.35s61.35-27.467,61.35-61.35
-                      S504.339,389.313,470.456,389.313z M470.456,481.339c-16.941,0-30.675-13.734-30.675-30.676s13.732-30.674,30.675-30.674
-                      c16.941,0,30.676,13.732,30.676,30.674S487.397,481.339,470.456,481.339z M149.464,389.313c-33.883,0-61.35,27.467-61.35,61.35
-                      s27.468,61.35,61.35,61.35s61.35-27.467,61.35-61.35S183.346,389.313,149.464,389.313z M149.464,481.339
-                      c-16.941,0-30.676-13.734-30.676-30.676s13.734-30.674,30.676-30.674c16.941,0,30.675,13.732,30.675,30.674
-                      S166.405,481.339,149.464,481.339z"/>
-                </g>
-            </svg>
-              </span> -->
+
             </div>
 
   
@@ -1085,7 +1072,7 @@
           <div class="tv-card-info-block">
             <!-- Product Pattern / Model Name (Left) & Run Flat + Origin Flag (Right) -->
             <div class="tv-card-pattern-row">
-              <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.pattern_name or p.display_name }}">
+              <a href="/tyres/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.pattern_name or p.display_name }}">
                 <h3 class="tv-card-pattern">
                   {{ p.pattern_name or p.display_name }}
                 </h3>
@@ -1094,7 +1081,7 @@
               <div class="tv-card-origin-row-wrap">
                 {% if p.is_ev or p.ev_text == 'EV' %}
                 <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
-                  <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                  <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
                 </span>
                 {% endif %}
                 {% if p.is_runflat or p.runflat_text == 'Runflat' %}
@@ -1132,13 +1119,7 @@
 
               <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
           <div class="tv-card-bottom-info">
-            <div class="tv-stock-status">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="8 12 11 15 16 9"></polyline>
-              </svg>
-              <span>In Stock</span>
-            </div>
+
 
 
             <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
@@ -1383,9 +1364,7 @@
             <div class="tv-qv-img-showcase-card">
               <!-- Top bar of Tyre Card: In Stock badge -->
               <div class="tv-qv-showcase-top">
-                <span class="tv-qv-stock-badge">
-                  <span class="tv-qv-stock-dot"></span> In Stock
-                </span>
+
                 <!-- Top brand & action buttons (Wishlist & Share) -->
             <div class="tv-qv-meta-top">
               <div class="tv-qv-brand-main">
@@ -1409,8 +1388,8 @@
             
 
             <!-- Product Title & Subtitle -->
-            <h3 id="tv-qv-title" class="tv-qv-product-title">Windforce 155 R12C 8GQ Mile Max 2025</h3>
-            <p class="tv-qv-product-subtitle" id="tv-qv-subtitle">Reliable performance for your daily drive. Built for durability and safety.</p>
+            <h3 id="tv-qv-title" class="tv-qv-product-title"></h3>
+            <p class="tv-qv-product-subtitle" id="tv-qv-subtitle"></p>
 
             <!-- 11 Specifications Grid (3x3 + 2 layout matching requested design) -->
             <div class="tv-qv-spec-grid">

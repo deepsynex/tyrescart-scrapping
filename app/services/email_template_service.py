@@ -422,7 +422,7 @@ class EmailTemplateService:
             'user_email': 'ahmed@example.com',
             'customer_name': 'Ahmed Al Mansoori',
             'customer_email': 'ahmed@example.com',
-            'customer_phone': '+971 50 123 4567',
+            'customer_phone': '+971 50 506 9575',
             'reset_link': 'https://tyresvision.com/visionadmin/reset-password?token=sample_token_12345',
             'login_link': 'https://tyresvision.com/visionadmin/login?email=ahmed@example.com',
             'expires_minutes': 30,
@@ -450,8 +450,8 @@ class EmailTemplateService:
             'vat_number': '100234567890003',
             # Contact & Product Enquiry Variables
             'client name': 'Deep Patel',
-            'client mobile': '+971 50 123 4567',
-            'client number': '+971501234567',
+            'client mobile': '+971 50 506 9575',
+            'client number': '+971505069575',
             'client email': 'alice@klever.ae',
             'client Email': 'alice@klever.ae',
             'service': 'Product Enquiry • Tyres Catalog',
@@ -460,5 +460,5 @@ class EmailTemplateService:
         }
         rendered = cls.render_template_content(content, mock_context, styles=styles)
         # In browser preview, convert cid: inline image references to static web path
-        rendered = rendered.replace('cid:tyresvision_logo', '/static/assets/images/logo/tyresvision-logo-white.png')
+        rendered = rendered.replace('cid:tyresvision_logo', '/static/assets/images/logo/tyresvision-logo-white.webp')
         return rendered

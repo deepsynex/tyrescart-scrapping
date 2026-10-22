@@ -692,7 +692,7 @@ def seed_default_about_us_sections(cursor):
             json.dumps({"en": "Let's Move Forward Together.", "ar": "دعنا ننطلق معاً إلى الأمام."}, ensure_ascii=False),
             json.dumps({"en": "GET STARTED", "ar": "ابدأ الآن"}, ensure_ascii=False),
             json.dumps({"en": "Explore our range of premium tyres and experience the difference with TyresVision.", "ar": "استكشف مجموعتنا من الإطارات الممتازة وجرّب الفارق مع تايرز فيجن."}, ensure_ascii=False),
-            "/static/assets/about/wheel-rim.png",
+            "/static/assets/about/wheel-rim.webp",
             "left",
             json.dumps({"en": "Contact Us Today →", "ar": "تواصل معنا اليوم ←"}, ensure_ascii=False),
             "https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20contact%20you%20today.",

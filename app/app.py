@@ -37,9 +37,14 @@ app = Flask(
 # High-Performance HTTP Response Compression (Brotli + Gzip)
 try:
     from flask_compress import Compress
-    Compress(app)
     app.config['COMPRESS_ALGORITHM'] = ['brotli', 'gzip', 'deflate']
+    app.config['COMPRESS_DEBUG'] = True
     app.config['COMPRESS_MIN_SIZE'] = 500
+    app.config['COMPRESS_MIMETYPES'] = [
+        'text/html', 'text/css', 'text/xml', 'application/json',
+        'application/javascript', 'image/svg+xml'
+    ]
+    Compress(app)
 except ImportError:
     pass
 
@@ -204,6 +209,33 @@ register_version_endpoints(app)
 
 
 # ============================================================================
+# TRAILING SLASH 301 REDIRECT MIDDLEWARE
+# ============================================================================
+class TrailingSlashMiddleware:
+    """Redirects any non-root path with a trailing slash to its clean non-trailing-slash counterpart via 301."""
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get('PATH_INFO', '')
+        method = environ.get('REQUEST_METHOD', 'GET').upper()
+        if method in ('GET', 'HEAD'):
+            if path != '/' and path.endswith('/') and not path.startswith(('/static/', '/api/')):
+                clean_path = path.rstrip('/') or '/'
+                if clean_path != path:
+                    query = environ.get('QUERY_STRING', '')
+                    location = clean_path + (f'?{query}' if query else '')
+                    status = '301 Moved Permanently'
+                    headers = [('Location', location), ('Content-Length', '0')]
+                    start_response(status, headers)
+                    return [b'']
+        return self.wsgi_app(environ, start_response)
+
+app.wsgi_app = TrailingSlashMiddleware(app.wsgi_app)
+
+
+
+# ============================================================================
 # MEDIA & IMAGE ASSETS ROUTING (FALLBACK PLACEHOLDER SUPPORT)
 # ============================================================================
 
@@ -225,15 +257,8 @@ def serve_tyrescart_image(filename):
 
 
 # ============================================================================
-# PWA & OFFLINE INFRASTRUCTURE ROUTES
+# PWA & SERVICE WORKER DECOMMISSIONING ROUTE
 # ============================================================================
-
-@app.route('/offline')
-def offline_page():
-    """Serves the standalone, lightweight offline fallback page."""
-    response = make_response(render_template('offline.html'))
-    response.headers['Cache-Control'] = 'public, max-age=3600'
-    return response
 
 
 @app.route('/service-worker.js')
@@ -274,6 +299,14 @@ def handle_404_error(e):
 
     clean_path = raw_path.lower().split('?')[0]
     if any(clean_path.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg', '.ico')):
+        # Intelligent webp fallback: if a .png/.jpg/.jpeg static image was requested but converted to .webp, serve the .webp
+        if raw_path.startswith('/static/'):
+            rel_static = raw_path[len('/static/'):].lstrip('/')
+            base_rel, ext = os.path.splitext(rel_static)
+            if ext.lower() in ('.png', '.jpg', '.jpeg'):
+                webp_cand = os.path.join(app.static_folder, base_rel + '.webp')
+                if os.path.isfile(webp_cand):
+                    return send_from_directory(os.path.dirname(webp_cand), os.path.basename(webp_cand), mimetype='image/webp')
         placeholder_dir = os.path.join(app.static_folder, 'assets', 'images')
         return send_from_directory(placeholder_dir, 'no-image-available.svg')
 

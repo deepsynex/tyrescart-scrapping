@@ -232,7 +232,7 @@ def build_page_off_road_4x4():
       <div class="tv-terrain-card">
         <div class="tv-terrain-card-top">
           <div class="tv-terrain-card-img-col">
-            <img class="tv-terrain-tyre-img" src="/static/assets/images/4x4/all_terrain_tyre.png" alt="All-Terrain 4x4 Tyre" loading="lazy">
+            <img class="tv-terrain-tyre-img" src="/static/assets/images/4x4/all_terrain_tyre.webp" alt="All-Terrain 4x4 Tyre" loading="lazy">
           </div>
           <div class="tv-terrain-card-info-col">
             <h3>All-Terrain (A/T)</h3>

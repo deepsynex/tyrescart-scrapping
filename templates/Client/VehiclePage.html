@@ -378,7 +378,7 @@
           </div>
 
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-tight" style="color: #FFFFFF;">
-            {{ make.name }} <span style="background: linear-gradient(90deg, #E9D5FF 0%, #C4B5FD 60%, #A78BFA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tyre Shop in Dubai &amp; UAE</span>
+            {{ make.name }} <span class="tv-hero-gradient-text">Tyre Shop in Dubai &amp; UAE</span>
           </h1>
 
           <p class="text-base sm:text-lg font-normal leading-relaxed mb-8 max-w-2xl" style="color: rgba(243, 232, 255, 0.9);">
@@ -397,7 +397,7 @@
                   src="{{ make.logo }}" 
                   alt="{{ make.name }} Logo" 
                   class="max-h-20 max-w-[90px] object-contain"
-                  onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.png';"
+                  onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.webp';"
                 />
               {% else %}
                 <span class="text-xl font-black text-slate-900 tracking-wider uppercase">{{ make.name }}</span>
@@ -471,7 +471,7 @@
     <div class="tv-models-compact-grid" id="tvModelsGrid">
       {% for m in models %}
         <a 
-          href="{{ make.slug }}/{{ m.slug }}" 
+          href="/tyres/cars/{{ make.slug }}/{{ m.slug }}" 
           class="tv-model-card group relative bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-xs hover:border-[#7C3AED] transition-all flex flex-col justify-between"
           data-model-name="{{ m.name|lower }} {{ m.slug }}"
         >
@@ -537,7 +537,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           {% for sz in make_stats.popular_sizes %}
             <a 
-              href="/tyres/size-{{ sz.slug }}" 
+              href="/tyres/size/{{ sz.slug }}" 
               class="tv-size-pill bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 text-center flex flex-col justify-between hover:border-[#7C3AED] transition-all group"
             >
               <span class="block text-sm sm:text-base font-black text-slate-900 group-hover:text-[#7C3AED] transition-colors mb-1">
@@ -673,7 +673,7 @@
           Global OEM Partnerships
         </span>
         <h2 class="text-2xl sm:text-3xl font-black tracking-tight" style="color: #FFFFFF;">
-          Recommended Tyre Brands for <span style="background: linear-gradient(90deg, #E9D5FF 0%, #C4B5FD 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ make.name }}</span>
+          Recommended Tyre Brands for <span class="tv-hero-gradient-text">{{ make.name }}</span>
         </h2>
         <p class="text-sm mt-2" style="color: rgba(233, 213, 255, 0.85);">
           We stock genuine, factory-homologated tyres from the world's most prestigious tyre manufacturers.
@@ -682,7 +682,7 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {% for b in oem_brands %}
-        <a href="/brands/{{ b.slug }}" class="tv-brand-card-item p-5 text-center group overflow-hidden">
+        <a href="/tyres/brands/{{ b.slug }}" class="tv-brand-card-item p-5 text-center group overflow-hidden">
           {% if b.logo %}
           <span class="flex items-center justify-center h-8 sm:h-10 mb-1">
             <img src="{{ b.logo }}" alt="{{ b.name }}" class="max-h-full max-w-[110px] object-contain opacity-95 group-hover:opacity-100 transition-opacity" loading="lazy" onerror="this.parentElement.style.display='none'; this.closest('a').querySelector('.tv-brand-name-fallback').style.display='block';">
@@ -706,7 +706,7 @@
           Concierge Fitment Support
         </span>
         <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          Unsure About the Right Tyres for Your <span style="background: linear-gradient(90deg, #E9D5FF 0%, #C4B5FD 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ make.name }}</span>?
+          Unsure About the Right Tyres for Your <span class="tv-hero-gradient-text">{{ make.name }}</span>?
         </h3>
         <p class="text-sm mt-2" style="color: rgba(233, 213, 255, 0.85);">
           Speak with our certified tyre fitment engineers in Dubai. We verify factory wheel offsets, OE manufacturer star/approval markings, and arrange immediate doorstep installation.
@@ -858,7 +858,7 @@
           </div>
 
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-tight" style="color: #FFFFFF;">
-            {{ make.name }} {{ model.name }} <span style="background: linear-gradient(90deg, #E9D5FF 0%, #C4B5FD 60%, #A78BFA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tyre Shop in Dubai &amp; UAE</span>
+            {{ make.name }} {{ model.name }} <span class="tv-hero-gradient-text">Tyre Shop in Dubai &amp; UAE</span>
           </h1>
 
           <p class="text-base sm:text-lg font-normal leading-relaxed mb-8 max-w-2xl" style="color: rgba(243, 232, 255, 0.9);">
@@ -904,7 +904,7 @@
                   src="{{ make.logo }}" 
                   alt="{{ make.name }} Logo" 
                   class="max-h-20 max-w-[90px] object-contain"
-                  onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.png';"
+                  onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.webp';"
                 />
               {% else %}
                 <span class="text-xl font-black text-slate-900 tracking-wider uppercase">{{ make.name }}</span>
@@ -946,7 +946,7 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
         {% for yr in years %}
         <a 
-          href="{{ model.slug }}/{{ yr }}" 
+          href="/tyres/cars/{{ make.slug }}/{{ model.slug }}/{{ yr }}" 
           class="tv-year-card flex flex-col items-center justify-center p-4 rounded-2xl border border-slate-200 bg-slate-50 text-slate-900 transition-all shadow-2xs group text-center"
         >
           <span class="text-lg font-black text-slate-900 transition-colors">{{ yr }}</span>
@@ -1010,7 +1010,7 @@
 
         <div>
           <a 
-            href="/tyres/size-{{ model_stats.front_size_slug or '285-30-20' }}" 
+            href="/tyres/size/{{ model_stats.front_size_slug or '285-30-20' }}" 
             class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-white inline-flex items-center justify-center gap-2 transition shadow-md hover:opacity-95"
             style="background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);"
           >
@@ -1056,7 +1056,7 @@
 
         <div>
           <a 
-            href="/tyres/size-{{ model_stats.rear_size_slug or '355-25-21' }}" 
+            href="/tyres/size/{{ model_stats.rear_size_slug or '355-25-21' }}" 
             class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-white inline-flex items-center justify-center gap-2 transition shadow-md hover:opacity-95"
             style="background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);"
           >
@@ -1094,13 +1094,13 @@
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
           {% if model_stats.front_size_slug %}
-          <a href="/tyres/size-{{ model_stats.front_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
+          <a href="/tyres/size/{{ model_stats.front_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
             View All Front ({{ model_stats.front_count }}) &rarr;
           </a>
           {% endif %}
           {% if model_stats.rear_size_slug %}
           <span class="text-slate-300">•</span>
-          <a href="/tyres/size-{{ model_stats.rear_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
+          <a href="/tyres/size/{{ model_stats.rear_size_slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline">
             View All Rear ({{ model_stats.rear_count }}) &rarr;
           </a>
           {% endif %}
@@ -1150,7 +1150,7 @@
 
         <div class="tv-card-header-bar">
           {% set card_b_slug = p.brand_slug or (p.brand_name|lower|replace(' ', '-')) %}
-          <a href="/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.brand_name }} brand page" onclick="event.stopPropagation();">
+          <a href="/tyres/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ p.brand_name }} brand page" onclick="event.stopPropagation();">
             {% if p.brand_logo %}
             <img src="{{ p.brand_logo }}" alt="{{ p.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <span class="tv-card-brand-fallback" style="display:none;">{{ p.brand_name }}</span>
@@ -1207,7 +1207,7 @@
               {% endif %}
             </span>
 
-            <a href="/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.display_name or p.name }}">
+            <a href="/tyres/{{ p.slug }}" class="tv-card-pattern-link" title="{{ p.display_name or p.name }}">
               <h3 class="tv-card-pattern">
                 {{ p.display_name or p.name }}
               </h3>
@@ -1229,7 +1229,7 @@
             <div class="tv-card-meta-row">
               {% if p.is_ev or p.ev_text == 'EV' %}
               <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
-                <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
               </span>
               {% endif %}
               {% if p.is_runflat or p.runflat_text == 'Runflat' %}
@@ -1538,9 +1538,9 @@
 
           <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white mb-2 leading-tight">
             {% if level == 3 %}
-              {{ year }} {{ make.name }} {{ model.name }} <span class="text-purple-300">Engine Trims</span>
+              {{ year }} {{ make.name }} {{ model.name }} <span class="tv-hero-gradient-text">Engine Trims</span>
             {% elif level == 4 %}
-              {{ make.name }} {{ model.name }} <span class="text-purple-300">{{ trim.trim }}</span> ({{ year }})
+              {{ make.name }} {{ model.name }} <span class="tv-hero-gradient-text">{{ trim.trim }}</span> ({{ year }})
             {% endif %}
           </h1>
 
@@ -1559,7 +1559,7 @@
             src="{{ make.logo }}" 
             alt="{{ make.name }} Logo" 
             class="max-w-[75px] max-h-[60px] object-contain filter drop-shadow-sm" 
-            onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.png';"
+            onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{{ make.slug }}.webp';"
           />
           <span class="text-xs font-bold text-white mt-1">{{ make.name }}</span>
         </div>
@@ -1579,7 +1579,7 @@
           <h2 class="text-xl sm:text-2xl font-black text-slate-900">{{ year }} {{ make.name }} {{ model.name }} Engine Options</h2>
           <p class="text-xs sm:text-sm text-slate-500 mt-1">Pick your exact motorization to inspect factory front and rear fitments.</p>
         </div>
-        <a href="/cars/{{ make.slug }}/{{ model.slug }}" class="text-xs font-bold text-slate-500 hover:text-[#7C3AED] transition">
+        <a href="/tyres/cars/{{ make.slug }}/{{ model.slug }}" class="text-xs font-bold text-slate-500 hover:text-[#7C3AED] transition">
           &larr; Change Year
         </a>
       </div>
@@ -1587,7 +1587,7 @@
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {% for eng in engines %}
         <a 
-          href="{{ year }}/{{ eng.slug or eng.trim|lower|replace(' ', '-') }}" 
+          href="/tyres/cars/{{ make.slug }}/{{ model.slug }}/{{ year }}/{{ eng.slug or eng.trim|lower|replace(' ', '-') }}" 
           class="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-[#7C3AED] transition-all hover:shadow-lg group flex items-center justify-between max-w-sm w-full"
         >
           <div>
@@ -1658,7 +1658,7 @@
 
             <div class="mt-4 pt-3 border-t border-slate-200/60">
               <a 
-                href="/tyres/size-{{ opt.width }}-{{ opt.height }}-{{ opt.rim }}" 
+                href="/tyres/size/{{ opt.width }}-{{ opt.height }}-{{ opt.rim }}" 
                 class="w-full py-2 px-3 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 transition shadow-sm"
               >
                 <span>Browse This Size</span>

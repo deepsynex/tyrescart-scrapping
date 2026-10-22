@@ -12,9 +12,9 @@
 <link rel="alternate" hreflang="en-ae" href="{{ self.canonical_url() }}">
 <link rel="alternate" hreflang="x-default" href="{{ self.canonical_url() }}">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/logo/favicon.ico') }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/logo/favicon-32x32.png') }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/logo/favicon-16x16.png') }}">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/images/logo/apple-touch-icon-180x180.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/logo/favicon-32x32.webp') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/logo/favicon-16x16.webp') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/images/logo/apple-touch-icon-180x180.webp') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
 
 <link rel="manifest" href="/manifest.json">
@@ -106,18 +106,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <a class="skip" href="#main">Skip to content</a>
 
-<!-- ============================================================
-     LOGO NOTE: the mark below is a CSS/SVG rebuild of the
-     TyresVision logo. To use the real artwork instead, replace the
-     <a class="logo"> blocks with:
-     <a href="#top"><img src="tyresvision-logo.svg" alt="TyresVision" height="40"></a>
-     ============================================================ -->
+
 
 {% block site_header %}
 <header>
   <nav class="nav" aria-label="Main">
     <a class="logo" href="/" aria-label="TyresVision home">
-      <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.png') }}"
+      <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.webp') }}"
            alt="TyresVision"
            class="tv-header-logo-img"
            loading="eager" />
@@ -156,13 +151,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
-          <a href="/brands" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/tyres/brands" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
               <span class="dropdown-item-title">{{ _('Tyre by Brands') }}</span>
             </div>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
-          <a href="/cars" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/tyres/cars" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
               <span class="dropdown-item-title">{{ _('Tyres by Vehicle') }}</span>
             </div>
@@ -176,7 +171,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
 
-          <a href="/off-road-4x4-tyres" class="dropdown-item" role="menuitem" @click="open = false">
+          <a href="/tyres/off-road-4x4" class="dropdown-item" role="menuitem" @click="open = false">
             <div class="dropdown-item-left">
               <span class="dropdown-item-title">{{ _('Off-Road & 4x4 Tyres') }}</span>
             </div>
@@ -369,7 +364,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="f-grid">
       <div>
         <a class="logo lg on-dark" href="#top" aria-label="TyresVision home">
-          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-white.png') }}"
+          <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-white.webp') }}"
                alt="TyresVision"
                class="tv-footer-logo-img"
                loading="lazy" />
@@ -382,10 +377,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h4>{{ _('Tyres') }}</h4>
         <ul>
           <li><a href="/tyres">{{ _('All Tyres') }}</a></li>
-          <li><a href="/brands">{{ _('Tyre by Brands') }}</a></li>
-          <li><a href="/cars">{{ _('Tyres by Vehicle') }}</a></li>
+          <li><a href="/tyres/brands">{{ _('Tyre by Brands') }}</a></li>
+          <li><a href="/tyres/cars">{{ _('Tyres by Vehicle') }}</a></li>
           <li><a href="/tyres/ev">{{ _('EV Tyres') }}</a></li>
-          <li><a href="/off-road-4x4-tyres">{{ _('Off-Road & 4x4 Tyres') }}</a></li>
+          <li><a href="/tyres/off-road-4x4">{{ _('Off-Road & 4x4 Tyres') }}</a></li>
         </ul>
       </div>
 
@@ -459,7 +454,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <aside class="mobile-nav-drawer" id="mobileNavDrawer" :class="{ 'open': mobileNavOpen }" aria-label="Mobile Navigation" aria-hidden="true">
   <div class="mobile-nav-head">
     <a class="logo" href="/" aria-label="TyresVision home">
-      <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.png') }}"
+      <img src="{{ url_for('static', filename='assets/images/logo/tyresvision-logo-clean.webp') }}"
            alt="TyresVision"
            class="tv-drawer-logo-img"
            loading="eager" />
@@ -493,11 +488,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span>{{ _('All Tyres') }}</span>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
-          <a href="/brands" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+          <a href="/tyres/brands" @click="mobileNavOpen = false" class="mobile-nav-sublink">
             <span>{{ _('Tyre by Brands') }}</span>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
-          <a href="/cars" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+          <a href="/tyres/cars" @click="mobileNavOpen = false" class="mobile-nav-sublink">
             <span>{{ _('Tyres by Vehicle') }}</span>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
@@ -505,7 +500,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span>{{ _('EV Tyres') }}</span>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
-          <a href="/off-road-4x4-tyres" @click="mobileNavOpen = false" class="mobile-nav-sublink">
+          <a href="/tyres/off-road-4x4" @click="mobileNavOpen = false" class="mobile-nav-sublink">
             <span>{{ _('Off-Road & 4x4 Tyres') }}</span>
             <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
@@ -644,18 +639,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 {% block extra_scripts %}{% endblock %}
 
-<!-- PWA Service Worker Registration -->
+<!-- Service Worker Decommissioning & Cache Cleanup -->
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-        .then(function(reg) {
-          // ServiceWorker registered
-        })
-        .catch(function(err) {
-          console.warn('[PWA] ServiceWorker registration failed:', err);
-        });
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for (var reg of registrations) {
+        reg.unregister();
+      }
     });
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var name of names) {
+          caches.delete(name);
+        }
+      });
+    }
   }
 </script>
 </body>

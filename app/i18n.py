@@ -134,6 +134,29 @@ def dump_json_dict(val):
     return json.dumps(val, ensure_ascii=False)
 
 
+_MOJIBAKE_MAP = {
+    '\u00d4\u00c7\u00f4': '–',
+    'ÔÇô': '–',
+    '\u00d4\u00c7\u00f6': '—',
+    'ÔÇö': '—',
+    'ÔÇÿ': '‘',
+    'ÔÇÖ': '’',
+    'ÔÇ£': '“',
+    'ÔÇØ': '”',
+    'ÔÇª': '…',
+}
+
+
+def clean_mojibake(text: str) -> str:
+    """Cleans common CP437/OEM mojibake artifacts from corruptly decoded UTF-8 strings."""
+    if not text or not isinstance(text, str):
+        return text
+    for bad, good in _MOJIBAKE_MAP.items():
+        if bad in text:
+            text = text.replace(bad, good)
+    return text
+
+
 def get_translated_value(value, language_code: str = None, fallback: str = DEFAULT_LOCALE) -> str:
     """
     Central Translation Helper for VisionAdmin and storefront.
@@ -163,13 +186,13 @@ def get_translated_value(value, language_code: str = None, fallback: str = DEFAU
     # If it's a dict (e.g. {"en": "Tire", "ar": "إطار"})
     if isinstance(value, dict):
         if target_lang in value and value[target_lang] is not None and str(value[target_lang]).strip() != "":
-            return str(value[target_lang])
+            return clean_mojibake(str(value[target_lang]))
         if fb_lang in value and value[fb_lang] is not None and str(value[fb_lang]).strip() != "":
-            return str(value[fb_lang])
+            return clean_mojibake(str(value[fb_lang]))
         # First non-empty value
         for v in value.values():
             if v is not None and str(v).strip() != "":
-                return str(v)
+                return clean_mojibake(str(v))
         return ""
 
     # If it's a string, attempt JSON parse if it looks like JSON
@@ -179,13 +202,13 @@ def get_translated_value(value, language_code: str = None, fallback: str = DEFAU
             try:
                 parsed = json.loads(s)
                 if isinstance(parsed, dict):
-                    return get_translated_value(parsed, language_code=target_lang, fallback=fb_lang)
+                    return clean_mojibake(get_translated_value(parsed, language_code=target_lang, fallback=fb_lang))
             except Exception:
                 pass
-        return value
+        return clean_mojibake(value)
 
     # Scalars (int, float, bool)
-    return str(value)
+    return clean_mojibake(str(value))
 
 
 def localize_value(val, locale: str = None, default_locale: str = DEFAULT_LOCALE) -> str:

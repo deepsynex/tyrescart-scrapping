@@ -1038,7 +1038,7 @@ header {
 /* ---------------- HERO ---------------- */
 .hero {
   background-color: #300259;
-  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/hero-gradient.png?v=2');
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/hero-gradient.webp?v=3');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -1079,9 +1079,17 @@ header {
   margin-bottom: 18px;
 }
 
-.hero h1 em {
+.hero h1 em,
+.hero h1 span.tv-hero-gradient-text,
+.hero h1 span.accent,
+.hero h1 .text-gradient {
   font-style: normal;
-  color: #FFFFFF;
+  color: #FFFFFF !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  display: inline;
 }
 
 .hero .lead {
@@ -1254,6 +1262,39 @@ header {
   border-color: var(--primary, #4B237B);
   outline: none;
   box-shadow: 0 0 0 3px rgba(75, 35, 123, 0.20);
+}
+
+/* Make selects look exactly like the text inputs in the quote card (Safari-safe; beats .field rules) */
+.quote-card .field input,
+.quote-card .field select {
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 14px;
+  line-height: normal;
+  font-family: inherit;
+  font-weight: 400;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.quote-card .field input::placeholder {
+  color: var(--text-placeholder, #94A3B8);
+  opacity: 1;
+  font-weight: 400;
+}
+
+.quote-card .field select {
+  -moz-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #475569 50%),
+    linear-gradient(135deg, #475569 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
 }
 
 .quote-card .btn-wa {
@@ -2919,9 +2960,9 @@ details .body a:hover {
 /* ---------------- FINAL CTA ---------------- */
 .final {
   background-color: #4B237B;
-  background-image: url('/static/assets/images/hero-gradient.png?v=2');
+  background-image: url('/static/assets/images/hero-gradient.webp?v=2');
   background-image: image-set(url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
-      url('/static/assets/images/hero-gradient.png?v=2') type('image/png'));
+      url('/static/assets/images/hero-gradient.webp?v=2') type('image/png'));
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -3504,7 +3545,7 @@ footer .tagline {
 /* Brand Hero Banner */
 .blog-hero-banner {
   background-color: #300259;
-  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/hero-gradient.png?v=2');
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/hero-gradient.webp?v=2');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -3544,9 +3585,16 @@ footer .tagline {
   margin: 0 auto 14px;
 }
 
-.blog-hero-banner h1 em {
+.blog-hero-banner h1 em,
+.blog-hero-banner h1 span.tv-hero-gradient-text,
+.blog-hero-banner h1 span.accent {
   font-style: normal;
-  color: var(--green-bright);
+  color: #FFFFFF !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  display: inline;
 }
 
 .blog-hero-banner .lead {
@@ -5456,9 +5504,9 @@ footer .tagline {
 /* 4. Statistics Band */
 .about-stats-band {
   background-color: #4B237B;
-  background-image: url('/static/assets/images/hero-gradient.png?v=2');
+  background-image: url('/static/assets/images/hero-gradient.webp?v=2');
   background-image: image-set(url('/static/assets/images/hero-gradient.webp?v=2') type('image/webp'),
-      url('/static/assets/images/hero-gradient.png?v=2') type('image/png'));
+      url('/static/assets/images/hero-gradient.webp?v=2') type('image/png'));
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -7284,9 +7332,15 @@ details.tv-faq-item[open] {
 }
 
 .tv-hero-quote-box .badge {
-  background: rgba(75, 35, 123, 0.2) !important;
-  color: #9f7dde !important;
-  border: 1px solid rgba(159, 125, 222, 0.35);
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
 }
 
 .tv-hero-quote-box label,
@@ -7430,7 +7484,15 @@ details.tv-faq-item[open] {
    same elements by that same ID and would otherwise win the cascade. */
 #tv-page-content-root .tv-dark-pricing-section .tv-section-head .eyebrow,
 .tv-dark-pricing-section .tv-section-head .eyebrow {
-  color: #9f7dde !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
 }
 
 #tv-page-content-root .tv-dark-pricing-section .tv-section-head h2,
@@ -8869,7 +8931,7 @@ details.tv-faq-item[open] {
 .tv-cat-hero {
   position: relative;
   background-color: #300259;
-  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/products/car_tyres_banner.png');
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/products/car_tyres_banner.webp');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;
@@ -8930,6 +8992,18 @@ details.tv-faq-item[open] {
   color: #ffffff;
   margin: 0 0 12px 0;
   text-shadow: 0 2px 10px rgba(37, 2, 68, 0.5);
+}
+
+.tv-cat-hero-title em,
+.tv-cat-hero-title span.tv-hero-gradient-text,
+.tv-cat-hero-title span.accent {
+  font-style: normal;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
 }
 
 .tv-cat-hero-sub {
@@ -9000,7 +9074,7 @@ details.tv-faq-item[open] {
   background: #ffffff;
   border: 1px solid #E2E8F0;
   border-radius: 16px;
-  padding: 0;
+  padding: 10px;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
   position: -webkit-sticky;
   position: sticky;
@@ -11168,19 +11242,6 @@ body.filter-open .float-wa {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.tv-stock-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #16A34A;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.tv-stock-status svg {
-  flex-shrink: 0;
 }
 
 .tv-fitted-status {
@@ -17532,7 +17593,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 /* Make logo grid */
 .tvhm-make-logo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-bottom: 18px;
 }
@@ -17554,14 +17615,14 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 
 .tvhm-cards-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
-  width: 100%;
+  width: 30%;
 }
 
 /* Engine cards */
 .tvhm-engine-card {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -17600,12 +17661,18 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 
 .tvhm-fitment-cards-grid {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 14px;
   width: 100%;
   box-sizing: border-box;
 }
-
+@media (max-width: 532px) {
+  .tvhm-fitment-cards-grid {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+}
 .tvhm-fitment-card {
   position: relative;
   display: flex;
@@ -17712,7 +17779,7 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 
 /* Right-to-Left Slide-In Drawer */
 .tvhm-panel {
-  width: min(360px, 100vw);
+  width: min(660px, 100vw);
   height: 100vh;
   height: 100dvh;
   max-height: 100dvh;
@@ -18411,13 +18478,6 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   display: block;
   user-select: none;
   filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.16));
-}
-.tvhm-tyre-overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
 }
 .tvhm-tyre-badge {
   position: absolute;
@@ -19209,35 +19269,44 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
    Drawer layout matches reference design image exactly
    ============================================================ */
 
-/* 1. Product Card Contact Button */
-.tv-btn-card-contact {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: #4B237B;
+/* 1. Product Card Contact Button (Icon-only 40x40 square matching WhatsApp button) */
+.tv-btn-card-contact,
+.tv-card-price-action-row .tv-btn-card-contact,
+.tv-card-actions-right .tv-btn-card-contact {
+  display: inline-flex !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  background: #4B237B !important;
   color: #FFFFFF !important;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 8px 18px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(75, 35, 123, 0.25);
-  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(75, 35, 123, 0.25) !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  gap: 0 !important;
+  white-space: nowrap !important;
 }
 
-.tv-btn-card-contact:hover {
-  background: #6D28D9;
+.tv-btn-card-contact:hover,
+.tv-card-price-action-row .tv-btn-card-contact:hover,
+.tv-card-actions-right .tv-btn-card-contact:hover {
+  background: #6D28D9 !important;
   color: #FFFFFF !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35);
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35) !important;
 }
 
-.tv-btn-card-contact:active {
-  transform: translateY(0);
+.tv-btn-card-contact:active,
+.tv-card-price-action-row .tv-btn-card-contact:active,
+.tv-card-actions-right .tv-btn-card-contact:active {
+  transform: translateY(0) !important;
 }
 
 /* Product card actions on the right (WhatsApp button + Contact button) */
@@ -19248,103 +19317,31 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   flex-shrink: 0;
 }
 
-.tv-card-price-action-row .tv-btn-card-contact {
-  display: inline-flex !important;
-  height: 40px;
+.tv-btn-card-contact svg,
+.tv-card-price-action-row .tv-btn-card-contact svg,
+.tv-card-actions-right .tv-btn-card-contact svg {
+  margin: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
-/* Tablet / Foldable with 2-column cards (641px to 1120px, including Pixel 9 Pro Fold @ 836px):
-   Contact button shows ONLY icon, matching the 40x40 square WhatsApp button */
-@media (min-width: 641px) and (max-width: 1120px) {
-  .tv-btn-card-contact,
-  .tv-card-price-action-row .tv-btn-card-contact,
-  .tv-card-actions-right .tv-btn-card-contact {
-    display: inline-flex !important;
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
-    padding: 0 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 8px !important;
-    gap: 0 !important;
-    flex-shrink: 0 !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    color: transparent !important;
-  }
-
-  .tv-btn-card-contact .tv-btn-contact-text,
-  .tv-btn-card-contact span:not(.sr-only),
-  .tv-card-price-action-row .tv-btn-card-contact .tv-btn-contact-text,
-  .tv-card-actions-right .tv-btn-card-contact .tv-btn-contact-text,
-  .tv-card-price-action-row .tv-btn-card-contact span:not(.sr-only),
-  .tv-card-actions-right .tv-btn-card-contact span:not(.sr-only) {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-  }
-
-  .tv-btn-card-contact svg,
-  .tv-card-price-action-row .tv-btn-card-contact svg,
-  .tv-card-actions-right .tv-btn-card-contact svg {
-    margin: 0 !important;
-    width: 18px !important;
-    height: 18px !important;
-    display: block !important;
-    flex-shrink: 0 !important;
-    color: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-  }
+.tv-btn-card-contact .tv-btn-contact-text,
+.tv-btn-card-contact span:not(.sr-only),
+.tv-card-price-action-row .tv-btn-card-contact .tv-btn-contact-text,
+.tv-card-actions-right .tv-btn-card-contact .tv-btn-contact-text,
+.tv-btn-contact-text {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
 
-/* Mobile size (<= 640px): Show the Contact text on mobile cards */
-@media (max-width: 640px) {
-  .tv-btn-card-contact,
-  .tv-card-price-action-row .tv-btn-card-contact,
-  .tv-card-actions-right .tv-btn-card-contact {
-    display: inline-flex !important;
-    width: auto !important;
-    min-width: auto !important;
-    max-width: none !important;
-    height: 40px !important;
-    padding: 8px 16px !important;
-    font-size: 13px !important;
-    line-height: 1.2 !important;
-    color: #FFFFFF !important;
-    gap: 6px !important;
-    border-radius: 8px !important;
-    flex-shrink: 0 !important;
-  }
-
-  .tv-btn-card-contact .tv-btn-contact-text,
-  .tv-btn-card-contact span,
-  .tv-card-price-action-row .tv-btn-card-contact span,
-  .tv-card-actions-right .tv-btn-card-contact span {
-    display: inline-block !important;
-    visibility: visible !important;
-    width: auto !important;
-    height: auto !important;
-    font-size: 13px !important;
-    line-height: 1.2 !important;
-    color: #FFFFFF !important;
-  }
-
-  .tv-btn-card-contact svg,
-  .tv-card-price-action-row .tv-btn-card-contact svg,
-  .tv-card-actions-right .tv-btn-card-contact svg {
-    width: 15px !important;
-    height: 15px !important;
-    margin: 0 !important;
-    display: block !important;
-    color: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-  }
-}
 
 /* WhatsApp square button placed before Contact button (matching user mockup) */
 .tv-btn-card-wa,
@@ -20489,15 +20486,6 @@ body.tv-scroll-locked {
   border-bottom: 1px solid #F1F5F9;
 }
 
-.tv-staggered-side .tv-stock-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 600;
-  color: #16A34A;
-  font-size: 12px;
-}
-
 .tv-staggered-side .tv-fitted-status {
   display: inline-flex;
   align-items: center;
@@ -21119,4 +21107,150 @@ body.tv-scroll-locked {
   transform: translateX(2px);
 }
 
+/* ============================================================
+   Hero Section H1 Solid White Color (Single Source of Truth)
+   ============================================================ */
+.hero h1,
+.hero h1 *,
+.hero h1 em,
+.hero h1 span,
+.hero h1 .tv-hero-gradient-text,
+.hero h1 .accent,
+.hero h1 .text-gradient,
+.tv-page-hero h1,
+.tv-page-hero h1 *,
+.tv-page-hero h1 em,
+.tv-page-hero h1 span,
+.blog-hero-banner h1,
+.blog-hero-banner h1 *,
+.about-hero-dark h1,
+.about-hero-dark h1 *,
+.tv-ev-hero-h1,
+.tv-ev-hero-h1 *,
+.tv-4x4-hero-h1,
+.tv-4x4-hero-h1 *,
+.tv-page-h1,
+.tv-page-h1 *,
+.wheel-alignment-hero-h1,
+.wheel-alignment-hero-h1 *,
+.wheel-balancing-hero-h1,
+.wheel-balancing-hero-h1 *,
+.car-battery-replacement-hero-h1,
+.car-battery-replacement-hero-h1 *,
+.oil-change-hero-h1,
+.oil-change-hero-h1 *,
+.fleet-tyre-services-hero-h1,
+.fleet-tyre-services-hero-h1 *,
+.mtf-hero-title-accent,
+.tvb-hero-title-accent,
+.tv-hero-accent-text,
+header[class*="hero"] h1,
+header[class*="hero"] h1 *,
+section[class*="hero"] h1,
+section[class*="hero"] h1 *,
+div[class*="hero"] h1,
+div[class*="hero"] h1 * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+}
 
+
+
+
+
+/* Hide in-stock badge everywhere */
+.tv-ref-in-stock-pill, .tv-stock-status, .tv-qv-stock-badge { display: none !important; }
+
+
+/* Product Search Bar in Catalog Top Bar (Elasticsearch AJAX) */
+.tv-catalog-search-wrap {
+  flex: 1;
+  max-width: 380px;
+  min-width: 220px;
+}
+
+.tv-catalog-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 9999px;
+  padding: 0 14px 0 38px;
+  height: 42px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.tv-catalog-search-box:focus-within {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  background: #ffffff;
+}
+
+.tv-catalog-search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.tv-catalog-search-box:focus-within .tv-catalog-search-icon {
+  color: #2563EB;
+}
+
+.tv-product-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0F172A;
+  padding: 0;
+}
+
+.tv-product-search-input::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.tv-product-search-clear {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin-left: 6px;
+  border: none;
+  border-radius: 50%;
+  background: #E2E8F0;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tv-product-search-clear:hover {
+  background: #CBD5E1;
+  color: #0F172A;
+}
+
+@media (max-width: 900px) {
+  .tv-catalog-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .tv-catalog-search-wrap {
+    max-width: 100%;
+    width: 100%;
+    order: 2;
+  }
+}

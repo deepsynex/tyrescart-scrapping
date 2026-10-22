@@ -4,7 +4,7 @@
 
 {% block meta_description %}Choose your car make, such as Toyota, Nissan, BMW or Mercedes-Benz, then your model to find tyres that fit. Buy online with free fitting at a partner centre.{% endblock %}
 
-{% block canonical_url %}https://www.tyresvision.com/cars{% endblock %}
+{% block canonical_url %}https://www.tyresvision.com/tyres/cars{% endblock %}
 
 {# og:*/twitter:* now come from page_og_tags/page_twitter_tags, built centrally
    in app/services/seo_builder.py and passed in by _render_car_brands(). #}
@@ -17,7 +17,7 @@
     {# Background Image Container #}
     <div class="absolute inset-0 z-0">
       <img 
-        src="{{ url_for('static', filename='assets/images/Brandhero.png') }}" 
+        src="{{ url_for('static', filename='assets/images/Brandhero.webp') }}" 
         alt="TyresVision Car Brands Hero" 
         class="w-full h-full object-cover object-right lg:object-center"
         loading="eager"
@@ -32,7 +32,9 @@
       <nav class="flex items-center gap-2 text-xs font-semibold text-purple-200/80 mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-white transition-colors">Home</a>
         <span class="text-purple-300/50">/</span>
-        <span class="text-white">Car Brands</span>
+        <a href="/tyres" class="hover:text-white transition-colors">Tyres</a>
+        <span class="text-purple-300/50">/</span>
+        <span class="text-white">Cars</span>
       </nav>
 
       <div class="max-w-3xl">
@@ -46,7 +48,7 @@
 
         {# Title #}
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
-          Find Tyres by Car Brand <br class="hidden sm:inline">in the UAE
+          Find Tyres <span class="tv-hero-gradient-text">by Car Brand</span> <br class="hidden sm:inline">in the UAE
         </h1>
 
         {# Description #}
@@ -135,7 +137,7 @@
       >
         {% for m in makes %}
         <a 
-          href="cars/{{ m.slug }}"
+          href="/tyres/cars/{{ m.slug }}"
           class="tv-carbrand-card group bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-lg hover:border-[#7C3AED] hover:-translate-y-1 transition-all duration-200 flex flex-col items-center justify-center text-center relative overflow-hidden h-28 sm:h-32 block no-underline"
           data-name="{{ m.name|lower }}"
           data-tier="{{ m.tier or 'all' }}"

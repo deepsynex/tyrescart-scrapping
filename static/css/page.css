@@ -41,7 +41,11 @@
 #tv-page-content-root .tvb-hero .eyebrow,
 #tv-page-content-root .tv-hero .eyebrow,
 #tv-page-content-root .tv-hero-left .eyebrow,
-#tv-page-content-root [class*="hero"] .eyebrow {
+#tv-page-content-root [class*="hero"] .eyebrow,
+#tv-page-content-root .tv-dark-pricing-section .eyebrow,
+#tv-page-content-root .price-section.tv-dark-pricing-section .eyebrow,
+#tv-page-content-root .tv-dark-pricing-section .tv-section-head .eyebrow,
+#tv-page-content-root .price-section .tv-section-head .eyebrow {
   background: rgba(255, 255, 255, 0.18) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
@@ -503,7 +507,11 @@
 }
 
 .tvb-hero-title-accent {
-  color: #9D38F8;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .tv-sidewall-content-grid {
@@ -735,7 +743,7 @@
 .page-mobile-tyre-fitting .mtf-hero {
   position: relative;
   background-color: #300259;
-  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/images/mobile-fitting-hero-panoramic.jpg?v=2');
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), var(--tv-hero-custom-bg, url('/static/assets/images/mobile-fitting-hero-panoramic.jpg?v=2'));
   background-position: 85% center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -821,7 +829,8 @@
   margin-bottom: 18px;
 }
 
-.page-mobile-tyre-fitting .mtf-hero-title-accent {
+.page-mobile-tyre-fitting .mtf-hero-title-accent,
+.mtf-hero-title-accent {
   color: #C78EFB;
   background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
   -webkit-background-clip: text;
@@ -1894,7 +1903,7 @@
 
 @media (max-width: 1024px) {
   .page-mobile-tyre-fitting .mtf-hero {
-    background-image: linear-gradient(to bottom, #2C0054 0%, rgba(66, 1, 125, 0.92) 50%, rgba(66, 1, 125, 0.85) 100%), url('/static/assets/images/mobile-fitting-hero-panoramic.jpg?v=2');
+    background-image: linear-gradient(to bottom, #2C0054 0%, rgba(66, 1, 125, 0.92) 50%, rgba(66, 1, 125, 0.85) 100%), var(--tv-hero-custom-bg, url('/static/assets/images/mobile-fitting-hero-panoramic.jpg?v=2'));
     background-position: center right;
     min-height: auto;
   }
@@ -3790,17 +3799,14 @@
   letter-spacing: -0.025em;
 }
 
-.wheel-alignment-page .wheel-alignment-hero-h1 span {
+.wheel-alignment-page .wheel-alignment-hero-h1 span,
+.wheel-alignment-page .wheel-alignment-hero-h1 em {
+  font-style: normal;
   color: #C78EFB;
   background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.wheel-alignment-page .wheel-alignment-hero-h1 em {
-  font-style: normal;
-  color: #CB93FD;
 }
 
 .wheel-alignment-page .wheel-alignment-hero-lead {
@@ -4645,9 +4651,14 @@
   letter-spacing: -0.025em;
 }
 
-.wheel-balancing-page .wheel-balancing-hero-h1 em {
+.wheel-balancing-page .wheel-balancing-hero-h1 em,
+.wheel-balancing-page .wheel-balancing-hero-h1 span {
   font-style: normal;
-  color: #CB93FD;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .wheel-balancing-page .wheel-balancing-hero-lead {
@@ -5492,9 +5503,14 @@
   letter-spacing: -0.025em;
 }
 
-.car-battery-replacement-page .car-battery-replacement-hero-h1 em {
+.car-battery-replacement-page .car-battery-replacement-hero-h1 em,
+.car-battery-replacement-page .car-battery-replacement-hero-h1 span {
   font-style: normal;
-  color: #CB93FD;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .car-battery-replacement-page .car-battery-replacement-hero-lead {
@@ -6339,9 +6355,14 @@
   letter-spacing: -0.025em;
 }
 
-.oil-change-page .oil-change-hero-h1 em {
+.oil-change-page .oil-change-hero-h1 em,
+.oil-change-page .oil-change-hero-h1 span {
   font-style: normal;
-  color: #CB93FD;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .oil-change-page .oil-change-hero-lead {
@@ -7186,9 +7207,14 @@
   letter-spacing: -0.025em;
 }
 
-.fleet-tyre-services-page .fleet-tyre-services-hero-h1 em {
+.fleet-tyre-services-page .fleet-tyre-services-hero-h1 em,
+.fleet-tyre-services-page .fleet-tyre-services-hero-h1 span {
   font-style: normal;
-  color: #CB93FD;
+  color: #C78EFB;
+  background: linear-gradient(90deg, #E8CFFF 0%, #C78EFB 55%, #A64FF4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .fleet-tyre-services-page .fleet-tyre-services-hero-lead {
@@ -8401,7 +8427,7 @@
 .page-about-us .mtf-hero {
   position: relative !important;
   background-color: #300259 !important;
-  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('/static/assets/about/about-hero-highway-van.png') !important;
+  background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), var(--tv-hero-custom-bg, url('/static/assets/about/about-hero-highway-van.webp')) !important;
   background-position: 85% center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
@@ -8414,7 +8440,7 @@
 
 @media (max-width: 991px) {
   .page-about-us .mtf-hero {
-    background-image: linear-gradient(to bottom, #2C0054 0%, rgba(66, 1, 125, 0.92) 50%, rgba(66, 1, 125, 0.85) 100%), url('/static/assets/about/about-hero-highway-van.png') !important;
+    background-image: linear-gradient(to bottom, #2C0054 0%, rgba(66, 1, 125, 0.92) 50%, rgba(66, 1, 125, 0.85) 100%), var(--tv-hero-custom-bg, url('/static/assets/about/about-hero-highway-van.webp')) !important;
     background-position: center right !important;
     min-height: auto !important;
   }
@@ -8815,12 +8841,79 @@
   background-color: #300259 !important;
 }
 
-#tv-page-content-root .tv-page-hero {
+#tv-page-content-root .tv-page-hero,
+#tv-page-content-root .tv-ev-hero,
+#tv-page-content-root .tv-4x4-hero,
+#tv-page-content-root .tvb-hero,
+#tv-page-content-root section[class*="hero"] {
   background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%),
-    var(--tv-hero-custom-bg, url('/static/uploads/pages/banner_1788954653_64dd43ed.png')) !important;
+    var(--tv-hero-custom-bg, url('/static/uploads/pages/banner_1788954653_64dd43ed.webp')) !important;
+  background-size: cover !important;
+  background-position: center right !important;
+  background-repeat: no-repeat !important;
 }
 
-#tv-page-content-root .tv-4x4-hero {
+#tv-page-content-root[style*="--tv-hero-custom-bg"] .tv-page-hero,
+#tv-page-content-root[style*="--tv-hero-custom-bg"] .tv-ev-hero,
+#tv-page-content-root[style*="--tv-hero-custom-bg"] .tv-4x4-hero,
+#tv-page-content-root[style*="--tv-hero-custom-bg"] .tvb-hero,
+#tv-page-content-root[style*="--tv-hero-custom-bg"] section[class*="hero"],
+#tv-page-content-root[style*="--tv-hero-custom-bg"] section:first-of-type,
+#tv-page-content-root[style*="--tv-hero-custom-bg"] > div > section:first-of-type {
   background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%),
-    url('/static/assets/images/4x4/hero_banner_clean.jpg?v=2') !important;
+    var(--tv-hero-custom-bg) !important;
+  background-size: cover !important;
+  background-position: center right !important;
+  background-repeat: no-repeat !important;
 }
+
+/* ============================================================
+   Hero Section H1 Solid White Color (Single Source of Truth)
+   ============================================================ */
+.hero h1,
+.hero h1 *,
+.hero h1 em,
+.hero h1 span,
+.hero h1 .tv-hero-gradient-text,
+.hero h1 .accent,
+.hero h1 .text-gradient,
+.tv-page-hero h1,
+.tv-page-hero h1 *,
+.tv-page-hero h1 em,
+.tv-page-hero h1 span,
+.blog-hero-banner h1,
+.blog-hero-banner h1 *,
+.about-hero-dark h1,
+.about-hero-dark h1 *,
+.tv-ev-hero-h1,
+.tv-ev-hero-h1 *,
+.tv-4x4-hero-h1,
+.tv-4x4-hero-h1 *,
+.tv-page-h1,
+.tv-page-h1 *,
+.wheel-alignment-hero-h1,
+.wheel-alignment-hero-h1 *,
+.wheel-balancing-hero-h1,
+.wheel-balancing-hero-h1 *,
+.car-battery-replacement-hero-h1,
+.car-battery-replacement-hero-h1 *,
+.oil-change-hero-h1,
+.oil-change-hero-h1 *,
+.fleet-tyre-services-hero-h1,
+.fleet-tyre-services-hero-h1 *,
+.mtf-hero-title-accent,
+.tvb-hero-title-accent,
+.tv-hero-accent-text,
+header[class*="hero"] h1,
+header[class*="hero"] h1 *,
+section[class*="hero"] h1,
+section[class*="hero"] h1 *,
+div[class*="hero"] h1,
+div[class*="hero"] h1 * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+}
+

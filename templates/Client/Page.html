@@ -55,8 +55,27 @@
 
 {% block extra_scripts %}
 <script>
-// Auto-initialize FAQ accordions, quote triggers, and interactive widgets on Page.html
+// Auto-initialize FAQ accordions, quote triggers, interactive widgets, and dynamic hero banner on Page.html
 document.addEventListener('DOMContentLoaded', function() {
+  {% if page and page.banner_image %}
+  try {
+    var bannerUrl = {{ page.banner_image | tojson }};
+    if (bannerUrl) {
+      var root = document.getElementById('tv-page-content-root');
+      var hero = root ? root.querySelector('.tv-page-hero, .tv-ev-hero, .tv-4x4-hero, .tvb-hero, section[class*="hero"], section:first-of-type') : null;
+      if (hero) {
+        var grad = 'linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%)';
+        hero.style.setProperty('background-image', grad + ', url(' + JSON.stringify(bannerUrl) + ')', 'important');
+        hero.style.setProperty('background-size', 'cover', 'important');
+        hero.style.setProperty('background-position', 'center right', 'important');
+        hero.style.setProperty('background-repeat', 'no-repeat', 'important');
+      }
+    }
+  } catch (err) {
+    console.warn('Hero banner init error:', err);
+  }
+  {% endif %}
+
   if (typeof window.initTvPageComponents === 'function') {
     window.initTvPageComponents();
   }

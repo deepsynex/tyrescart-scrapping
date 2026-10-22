@@ -29,13 +29,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="page-mobile-tyre-fitting page-about-us">
+<div class="page-mobile-tyre-fitting page-about-us" {% if page and page.banner_image %}style="--tv-hero-custom-bg: url('{{ page.banner_image }}');"{% endif %}>
 <div class="mtf-page">
 
   <!-- ========================================================================
        1. HERO SECTION (Mirroring Mobile Tyre Fitting with Highway Van Banner)
        ======================================================================== -->
-  <section class="mtf-hero">
+  <section class="mtf-hero" {% if page and page.banner_image %}style="--tv-hero-custom-bg: url('{{ page.banner_image }}'); background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('{{ page.banner_image }}') !important;"{% endif %}>
     <div class="mtf-wrap">
       <!-- Breadcrumb -->
       <nav class="mtf-breadcrumb" aria-label="Breadcrumb">

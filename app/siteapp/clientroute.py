@@ -11,6 +11,9 @@ import math
 import re
 import threading
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 from flask import Blueprint, current_app, g, render_template, request, session, abort, redirect, make_response, send_from_directory, jsonify
@@ -60,15 +63,19 @@ def _english_url(path):
 def _force_english_storefront():
     path = request.path or '/'
 
-    # JSON endpoints are pinned to English but never redirected -- a 301 on an
-    # XHR is the kind of thing that quietly breaks a caller that doesn't follow.
-    if not path.startswith('/api/'):
+    if not path.startswith('/api/') and not path.startswith('/static/'):
         prefix = _LOCALE_PREFIX_RE.match(path)
         if prefix:
             target = path[prefix.end():] or '/'
             if not target.startswith('/'):
                 target = '/' + target
+            if target != '/' and target.endswith('/'):
+                target = target.rstrip('/')
             return redirect(_english_url(target), code=301)
+
+        if path != '/' and path.endswith('/'):
+            clean_path = path.rstrip('/')
+            return redirect(_english_url(clean_path), code=301)
 
         if any(k.lower() in _LOCALE_QUERY_KEYS for k in request.args.keys()):
             return redirect(_english_url(path), code=301)
@@ -185,7 +192,6 @@ def home():
 
 
 @site_bp.route('/<string(length=2):lang_code>')
-@site_bp.route('/<string(length=2):lang_code>/')
 @site_bp.route('/<string(length=2):lang_code>/home')
 def home_locale(lang_code):
     """Directly render storefront home for any dynamic locale (e.g. /ar, /de)."""
@@ -203,9 +209,7 @@ def home_locale(lang_code):
 
 # --- BLOG LISTING ROUTES ---
 @site_bp.route('/blog')
-@site_bp.route('/blog/')
 @site_bp.route('/blogs')
-@site_bp.route('/blogs/')
 def blog_default():
     """Directly render blog listing using active site locale."""
     code = _get_locale()
@@ -242,9 +246,7 @@ def blog_default():
 
 
 @site_bp.route('/<string(length=2):lang_code>/blog')
-@site_bp.route('/<string(length=2):lang_code>/blog/')
 @site_bp.route('/<string(length=2):lang_code>/blogs')
-@site_bp.route('/<string(length=2):lang_code>/blogs/')
 def blog_locale(lang_code):
     """Directly render blog listing for any dynamic locale (e.g. /ar/blog, /de/blog)."""
     code = lang_code.lower()
@@ -327,14 +329,14 @@ def _render_blog_detail(slug, locale):
                 prev_post = {
                     'title': all_published[idx - 1].get_title(locale),
                     'slug': all_published[idx - 1].slug,
-                    'cover_image_url': all_published[idx - 1].image or '/static/assets/images/online-tyres-shop-dubai.png',
+                    'cover_image_url': all_published[idx - 1].image or '/static/assets/images/online-tyres-shop-dubai.webp',
                     'url': f"/blog/{all_published[idx - 1].slug}"
                 }
             if idx < len(all_published) - 1:
                 next_post = {
                     'title': all_published[idx + 1].get_title(locale),
                     'slug': all_published[idx + 1].slug,
-                    'cover_image_url': all_published[idx + 1].image or '/static/assets/images/online-tyres-shop-dubai.png',
+                    'cover_image_url': all_published[idx + 1].image or '/static/assets/images/online-tyres-shop-dubai.webp',
                     'url': f"/blog/{all_published[idx + 1].slug}"
                 }
             break
@@ -344,7 +346,7 @@ def _render_blog_detail(slug, locale):
         prev_post = {
             'title': other_blogs[0].get_title(locale),
             'slug': other_blogs[0].slug,
-            'cover_image_url': other_blogs[0].image or '/static/assets/images/online-tyres-shop-dubai.png',
+            'cover_image_url': other_blogs[0].image or '/static/assets/images/online-tyres-shop-dubai.webp',
             'url': f"/blog/{other_blogs[0].slug}"
         }
 
@@ -354,7 +356,7 @@ def _render_blog_detail(slug, locale):
         related_posts.append({
             'title': b.get_title(locale),
             'slug': b.slug,
-            'cover_image_url': b.image or '/static/assets/images/online-tyres-shop-dubai.png',
+            'cover_image_url': b.image or '/static/assets/images/online-tyres-shop-dubai.webp',
             'published_at': b.published_at.strftime('%d-%m-%Y') if b.published_at else '24-08-2026',
             'url': f"/blog/{b.slug}"
         })
@@ -397,7 +399,7 @@ def _render_blog_detail(slug, locale):
     full_title = f"{meta_title} | TyresVision"
 
     # Cover image and absolute OG image URL
-    cover_image = blog.image or '/static/assets/images/online-tyres-shop-dubai.png'
+    cover_image = blog.image or '/static/assets/images/online-tyres-shop-dubai.webp'
     full_image_url = cover_image if cover_image.startswith('http') else f"{base_url}{cover_image}"
 
     # Structured data: no FAQPage here -- this page's FAQ accordion is built
@@ -488,7 +490,7 @@ def _build_about_us_context(page, locale=None):
         ),
         'cta_text': localize_value(parsed_json.get('hero_cta_text'), loc) or translate('Our Journey & Story', loc),
         'cta_link': parsed_json.get('hero_cta_link') or '#our-story',
-        'image': page_banner or parsed_json.get('hero_image') or '/static/assets/images/online-tyres-shop-dubai.png'
+        'image': page_banner or parsed_json.get('hero_image') or '/static/assets/images/online-tyres-shop-dubai.webp'
     }
 
     # STORY SECTION
@@ -497,7 +499,7 @@ def _build_about_us_context(page, locale=None):
         'title': localize_value(parsed_json.get('story_title'), loc) or translate('Driven by Transparency & Road Safety', loc),
         'badge_title': localize_value(parsed_json.get('story_badge_title'), loc) or translate('100% Genuine Tyres', loc),
         'badge_sub': localize_value(parsed_json.get('story_badge_sub'), loc) or translate('Official Warranty & GCC Spec', loc),
-        'image': parsed_json.get('story_image') or '/static/assets/images/online-tyres-shop-dubai.png',
+        'image': parsed_json.get('story_image') or '/static/assets/images/online-tyres-shop-dubai.webp',
         'content_html': page_content if (page_content and len(page_content) > 60) else None,
         'p1': localize_value(parsed_json.get('story_p1'), loc) or translate(
             'Our journey began with a simple belief — buying and replacing tyres in the UAE should be transparent, effortless, and dependable, without the hassle of driving to industrial areas or comparing confusing quotes in person.',
@@ -586,7 +588,7 @@ def _build_about_us_context(page, locale=None):
         ),
         'cta_text': localize_value(parsed_json.get('team_cta_text'), loc) or translate('Meet Our Team', loc),
         'cta_link': parsed_json.get('team_cta_link') or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20connect%20with%20your%20team.',
-        'image': parsed_json.get('team_image') or '/static/assets/images/online-tyres-shop-dubai.png'
+        'image': parsed_json.get('team_image') or '/static/assets/images/online-tyres-shop-dubai.webp'
     }
 
     # ACTION CALLOUT BANNER
@@ -689,51 +691,51 @@ _CARS_LOGO_DIR = os.path.join(BASE_DIR, 'static', 'assets', 'images', 'cars-logo
 _CAR_LOGO_CACHE = None
 
 _BRAND_TO_FILE = {
-    'alfa romeo': 'alfa-romeo.png',
-    'alpina': 'alpina.png',
-    'aston martin': 'aston-martin.png',
-    'audi': 'audi.png',
-    'bentley': 'bentley.png',
-    'bmw': 'bmw.png',
-    'bugatti': 'bugatti.png',
-    'cadillac': 'cadillac.png',
-    'chevrolet': 'chevrolet.png',
-    'chrysler': 'chrysler.png',
-    'ferrari': 'ferrari.png',
-    'fiat': 'fiat.png',
-    'ford': 'ford.png',
-    'genesis': 'genesis.png',
-    'gmc': 'gmc.png',
-    'honda': 'honda.png',
-    'hyundai': 'hyundai.png',
-    'jaguar': 'jaguar.png',
-    'jeep': 'jeep.png',
-    'lamborghini': 'lamborghini.png',
-    'land rover': 'land-rover.png',
-    'lexus': 'lexus.png',
-    'lotus': 'lotus.png',
-    'maserati': 'maserati.png',
-    'mazda': 'mazda.png',
-    'mclaren': 'mclaren.png',
-    'mercedes-benz': 'mercedes-benz.png',
-    'mercedes': 'mercedes-benz.png',
-    'mercedes benz': 'mercedes-benz.png',
-    'mini': 'mini.png',
-    'mitsubishi': 'mitsubishi.png',
-    'nissan': 'nissan.png',
-    'peugeot': 'peugeot.png',
-    'porsche': 'porsche.png',
-    'renault': 'renault.png',
-    'rivian': 'rivian.png',
-    'rolls-royce': 'rolls-royce.png',
-    'rolls royce': 'rolls-royce.png',
-    'subaru': 'subaru.png',
-    'suzuki': 'suzuki.png',
-    'tesla': 'tesla.png',
-    'toyota': 'toyota.png',
-    'volkswagen': 'volkswagen.png',
-    'vw': 'volkswagen.png',
-    'volvo': 'volvo.png',
+    'alfa romeo': 'alfa-romeo.webp',
+    'alpina': 'alpina.webp',
+    'aston martin': 'aston-martin.webp',
+    'audi': 'audi.webp',
+    'bentley': 'bentley.webp',
+    'bmw': 'bmw.webp',
+    'bugatti': 'bugatti.webp',
+    'cadillac': 'cadillac.webp',
+    'chevrolet': 'chevrolet.webp',
+    'chrysler': 'chrysler.webp',
+    'ferrari': 'ferrari.webp',
+    'fiat': 'fiat.webp',
+    'ford': 'ford.webp',
+    'genesis': 'genesis.webp',
+    'gmc': 'gmc.webp',
+    'honda': 'honda.webp',
+    'hyundai': 'hyundai.webp',
+    'jaguar': 'jaguar.webp',
+    'jeep': 'jeep.webp',
+    'lamborghini': 'lamborghini.webp',
+    'land rover': 'land-rover.webp',
+    'lexus': 'lexus.webp',
+    'lotus': 'lotus.webp',
+    'maserati': 'maserati.webp',
+    'mazda': 'mazda.webp',
+    'mclaren': 'mclaren.webp',
+    'mercedes-benz': 'mercedes-benz.webp',
+    'mercedes': 'mercedes-benz.webp',
+    'mercedes benz': 'mercedes-benz.webp',
+    'mini': 'mini.webp',
+    'mitsubishi': 'mitsubishi.webp',
+    'nissan': 'nissan.webp',
+    'peugeot': 'peugeot.webp',
+    'porsche': 'porsche.webp',
+    'renault': 'renault.webp',
+    'rivian': 'rivian.webp',
+    'rolls-royce': 'rolls-royce.webp',
+    'rolls royce': 'rolls-royce.webp',
+    'subaru': 'subaru.webp',
+    'suzuki': 'suzuki.webp',
+    'tesla': 'tesla.webp',
+    'toyota': 'toyota.webp',
+    'volkswagen': 'volkswagen.webp',
+    'vw': 'volkswagen.webp',
+    'volvo': 'volvo.webp',
 }
 
 _MARKING_TO_BRANDS = {
@@ -798,7 +800,7 @@ def _get_car_logo_files():
         try:
             if os.path.isdir(_CARS_LOGO_DIR):
                 for f in os.listdir(_CARS_LOGO_DIR):
-                    if f.lower().endswith('.png'):
+                    if f.lower().endswith('.webp'):
                         _CAR_LOGO_CACHE[f.lower()] = f
         except Exception:
             pass
@@ -808,7 +810,7 @@ def _get_car_logo_files():
 def resolve_oem_car_logos(product_or_dict):
     """
     Extracts and resolves OEM car brand logo items:
-    Returns list of dicts: [{'name': 'BMW', 'image_url': '/static/assets/images/cars-logo/bmw.png'}, ...]
+    Returns list of dicts: [{'name': 'BMW', 'image_url': '/static/assets/images/cars-logo/bmw.webp'}, ...]
     """
     p = product_or_dict
     raw_brands = []
@@ -861,8 +863,8 @@ def resolve_oem_car_logos(product_or_dict):
         for b_name in brands_to_check:
             filename = _BRAND_TO_FILE.get(b_name)
             if not filename:
-                cand1 = f"{b_name}.png"
-                cand2 = f"{b_name.replace(' ', '-')}.png"
+                cand1 = f"{b_name}.webp"
+                cand2 = f"{b_name.replace(' ', '-')}.webp"
                 if cand1 in avail:
                     filename = avail[cand1]
                 elif cand2 in avail:
@@ -928,9 +930,66 @@ def _clean_multilingual_text(val, locale='en'):
     return res
 
 
+_BRAND_LOGOS_MAP = {}
+_BRAND_LOGOS_MAP_TIMESTAMP = 0
+
+def get_brand_logo(b_slug=None, b_id=None, b_name=None):
+    """Fast in-memory cache to resolve any tyre brand to its WebP logo path."""
+    global _BRAND_LOGOS_MAP, _BRAND_LOGOS_MAP_TIMESTAMP
+    now = time.time()
+    if not _BRAND_LOGOS_MAP or (now - _BRAND_LOGOS_MAP_TIMESTAMP > 300):
+        try:
+            from db import get_connection
+            conn = get_connection()
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, name, slug, logo FROM brands WHERE status = 'active' AND logo IS NOT NULL")
+                rows = cur.fetchall()
+                new_map = {}
+                for r in rows:
+                    logo = (r.get('logo') or '').strip()
+                    if logo:
+                        if logo.lower().endswith(('.png', '.jpg', '.jpeg')):
+                            base, _ = os.path.splitext(logo)
+                            logo = base + '.webp'
+                        if r.get('slug'):
+                            new_map[r['slug'].lower()] = logo
+                            new_map[r['slug'].lower().replace('-', '')] = logo
+                        if r.get('id'):
+                            new_map[r['id']] = logo
+                            new_map[str(r['id'])] = logo
+                        if r.get('name'):
+                            new_map[r['name'].lower()] = logo
+                            new_map[r['name'].lower().replace(' ', '')] = logo
+                            new_map[r['name'].lower().replace('-', '')] = logo
+                _BRAND_LOGOS_MAP = new_map
+                _BRAND_LOGOS_MAP_TIMESTAMP = now
+            conn.close()
+        except Exception as e:
+            logger.warning("Could not refresh brand logos map: %s", e)
+
+    if b_slug:
+        slug_clean = str(b_slug).lower().strip()
+        if slug_clean in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[slug_clean]
+        if slug_clean.replace('-', '') in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[slug_clean.replace('-', '')]
+    if b_id:
+        if b_id in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[b_id]
+        if str(b_id) in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[str(b_id)]
+    if b_name:
+        name_clean = str(b_name).lower().strip()
+        if name_clean in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[name_clean]
+        if name_clean.replace(' ', '') in _BRAND_LOGOS_MAP:
+            return _BRAND_LOGOS_MAP[name_clean.replace(' ', '')]
+    return ""
+
+
 def _format_product_for_client(p, locale='en'):
     p_dict = dict(p)
-    attr = p_dict.get('attributes_json')
+    attr = p_dict.get('attributes_json') or p_dict.get('attributes')
     if isinstance(attr, str):
         try:
             attr = json.loads(attr)
@@ -1023,7 +1082,13 @@ def _format_product_for_client(p, locale='en'):
     b_slug = p_dict.get('brand_slug') or (p_dict.get('brand_name') or 'michelin').lower().replace(' ', '')
     p_dict['brand_slug'] = b_slug
     p_dict['brand_name'] = p_dict.get('brand_name') or b_slug.capitalize()
-    p_dict['brand_logo'] = p_dict.get('brand_logo') or f"/static/assets/images/brands/{b_slug}.svg"
+    brand_logo = p_dict.get('brand_logo')
+    if not brand_logo or '/static/assets/images/brands/' in str(brand_logo):
+        brand_logo = get_brand_logo(b_slug, p_dict.get('brand_id'), p_dict.get('brand_name'))
+    if brand_logo and str(brand_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
+        base, _ = os.path.splitext(str(brand_logo))
+        brand_logo = base + '.webp'
+    p_dict['brand_logo'] = brand_logo or ''
     
     # Normalize image_path:
     raw_img = p_dict.get('image_path') or p_dict.get('small_image') or attr.get('image')
@@ -1152,7 +1217,641 @@ def _format_product_for_client(p, locale='en'):
     return p_dict
 
 
+_BASE_SIDEBAR_FILTERS_CACHE = {}
+_BASE_SIDEBAR_FILTERS_TIMESTAMP = {}
+_BASE_SIDEBAR_CACHE_TTL = 600  # 10 minutes cache
+_BASE_SIDEBAR_LOCK = threading.Lock()
+
+_BASE_STATIC_METADATA_CACHE = {}
+_BASE_STATIC_METADATA_TIMESTAMP = 0
+_BASE_STATIC_LOCK = threading.Lock()
+
+def _get_base_static_metadata():
+    """Returns cached brand list and cart price rules (TTL 1 hour)."""
+    global _BASE_STATIC_METADATA_TIMESTAMP
+    now = time.time()
+    with _BASE_STATIC_LOCK:
+        if _BASE_STATIC_METADATA_CACHE and (now - _BASE_STATIC_METADATA_TIMESTAMP < 3600):
+            return _BASE_STATIC_METADATA_CACHE
+    from db import get_connection
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, name, slug, logo FROM brands WHERE status = 'active' ORDER BY name ASC")
+            raw_brands = cur.fetchall()
+            brands = []
+            for b in raw_brands:
+                b_slug = b.get('slug') or (b.get('name') or '').lower().replace(' ', '')
+                b_logo = b.get('logo') or get_brand_logo(b_slug, b.get('id'), b.get('name'))
+                if b_logo and str(b_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
+                    base, _ = os.path.splitext(str(b_logo))
+                    b_logo = base + '.webp'
+                brands.append({
+                    'id': b['id'],
+                    'name': b['name'],
+                    'slug': b_slug,
+                    'logo': b_logo
+                })
+
+            cur.execute("""
+                SELECT id, name
+                FROM cart_price_rules
+                WHERE is_active = 1
+                  AND deleted_at IS NULL
+                  AND (from_date IS NULL OR from_date <= CURRENT_DATE())
+                  AND (to_date IS NULL OR to_date >= CURRENT_DATE())
+                ORDER BY priority ASC, id ASC
+            """)
+            rules = cur.fetchall()
+            promos = []
+            for r in rules:
+                r_name = (r.get('name') or '').strip()
+                if not r_name:
+                    continue
+                p_key = re.sub(r'[^a-z0-9]+', '_', r_name.lower()).strip('_')
+                promos.append({'key': p_key, 'label': r_name, 'count': 0})
+
+            res = {'brands': brands, 'promotions': promos}
+            with _BASE_STATIC_LOCK:
+                _BASE_STATIC_METADATA_CACHE.clear()
+                _BASE_STATIC_METADATA_CACHE.update(res)
+                _BASE_STATIC_METADATA_TIMESTAMP = now
+            return res
+    except Exception as e:
+        logger.warning("Failed to fetch static metadata from MySQL: %s", e)
+        return {'brands': [], 'promotions': []}
+    finally:
+        conn.close()
+
+
+
+def invalidate_catalog_cache():
+    """Clears the cached catalog filters metadata."""
+    with _BASE_SIDEBAR_LOCK:
+        _BASE_SIDEBAR_FILTERS_CACHE.clear()
+        _BASE_SIDEBAR_FILTERS_TIMESTAMP.clear()
+
+def _get_base_sidebar_filters(locale='en'):
+    """Returns the base catalog filter metadata with thread-safe in-memory caching."""
+    import copy
+    now = time.time()
+    with _BASE_SIDEBAR_LOCK:
+        if locale in _BASE_SIDEBAR_FILTERS_CACHE:
+            if now - _BASE_SIDEBAR_FILTERS_TIMESTAMP.get(locale, 0) < _BASE_SIDEBAR_CACHE_TTL:
+                return copy.deepcopy(_BASE_SIDEBAR_FILTERS_CACHE[locale])
+
+    # ── ES FAST PATH: Fetch aggregated base filter counts directly from local Elasticsearch in ~15ms ──
+    try:
+        from services.es_service import es_service
+        client = es_service.get_client()
+        if client:
+            meta = _get_base_static_metadata()
+            es_body = {
+                "size": 0,
+                "query": {"term": {"status": "active"}},
+                "aggs": {
+                    "total": {"value_count": {"field": "id"}},
+                    "categories": {"terms": {"field": "tyres_category", "size": 10}},
+                    "brands": {"terms": {"field": "brand_slug", "size": 150}},
+                    "patterns": {"terms": {"field": "tire_pattern.keyword", "size": 40}},
+                    "tyre_markings": {"terms": {"field": "tire_marking", "size": 35}},
+                    "oems": {"terms": {"field": "oem_brand", "size": 25}},
+                    "warranties": {"terms": {"field": "warranty_period", "size": 15}},
+                    "years": {"terms": {"field": "year", "size": 15}},
+                    "origins": {"terms": {"field": "country_of_origin", "size": 30}},
+                    "runflat": {"filter": {"term": {"run_flat": True}}},
+                    "ev_tyre": {"filter": {"bool": {"should": _ES_EV_SHOULD, "minimum_should_match": 1}}},
+                    "min_price": {"min": {"field": "effective_price"}},
+                    "max_price": {"max": {"field": "effective_price"}}
+                }
+            }
+            es_res = client.search(index=es_service.index_name, body=es_body)
+            aggs = es_res.get('aggregations', {})
+            hits = es_res.get('hits', {})
+            total_count = hits.get('total', {}).get('value', 0) if isinstance(hits.get('total'), dict) else hits.get('total', 0)
+
+            cat_order = {'Budget': 1, 'Quality': 2, 'Premium': 3}
+            raw_cats = aggs.get('categories', {}).get('buckets', [])
+            filter_tyres_categories = [{
+                'category': b['key'],
+                'count': b['doc_count']
+            } for b in raw_cats if b.get('key')]
+            filter_tyres_categories.sort(key=lambda x: (cat_order.get(x['category'], 99), -x['count']))
+
+            brand_counts = {b['key']: b['doc_count'] for b in aggs.get('brands', {}).get('buckets', [])}
+            filter_brands = []
+            for b in meta.get('brands', []):
+                b_slug = b['slug']
+                b_name = (b.get('name') or '').lower()
+                cnt = brand_counts.get(b_slug, brand_counts.get(b_name, 0))
+                filter_brands.append({
+                    'id': b['id'],
+                    'name': b['name'],
+                    'slug': b_slug,
+                    'logo': b['logo'],
+                    'count': cnt
+                })
+            filter_brands.sort(key=lambda x: (-x['count'], x['name']))
+
+            filter_patterns = [{'pattern': b['key'], 'count': b['doc_count']} for b in aggs.get('patterns', {}).get('buckets', []) if b.get('key')]
+            filter_tyre_markings = [{'marking': b['key'], 'count': b['doc_count']} for b in aggs.get('tyre_markings', {}).get('buckets', []) if b.get('key')]
+            filter_oem_tyres = [{'oem': b['key'], 'count': b['doc_count']} for b in aggs.get('oems', {}).get('buckets', []) if b.get('key')]
+            filter_warranties = [{'warranty': b['key'], 'count': b['doc_count']} for b in aggs.get('warranties', {}).get('buckets', []) if b.get('key')]
+            filter_years = [{'year': int(b['key']) if b['key'].isdigit() else b['key'], 'count': b['doc_count']} for b in aggs.get('years', {}).get('buckets', []) if b.get('key') and b['key'] != '0000']
+            filter_years.sort(key=lambda x: x['year'], reverse=True)
+            filter_origins = [{'origin': b['key'], 'count': b['doc_count']} for b in aggs.get('origins', {}).get('buckets', []) if b.get('key')]
+            run_flat_cnt = aggs.get('runflat', {}).get('doc_count', 0)
+            ev_tyre_cnt = aggs.get('ev_tyre', {}).get('doc_count', 0)
+            min_price = int(aggs.get('min_price', {}).get('value') or 100)
+            max_price = int(aggs.get('max_price', {}).get('value') or 2000)
+
+            res_data = {
+                'total_count': total_count,
+                'filter_tyres_categories': filter_tyres_categories,
+                'filter_brands': filter_brands,
+                'filter_sizes': [],
+                'filter_patterns': filter_patterns,
+                'filter_tyre_markings': filter_tyre_markings,
+                'filter_oem_tyres': filter_oem_tyres,
+                'filter_warranties': filter_warranties,
+                'filter_years': filter_years,
+                'filter_origins': filter_origins,
+                'filter_vehicles': [],
+                'filter_tyre_types': [],
+                'filter_promotions': meta.get('promotions', []),
+                'filter_runflat_count': run_flat_cnt,
+                'filter_ev_tyre_count': ev_tyre_cnt,
+                'min_price': min_price,
+                'max_price': max_price
+            }
+            with _BASE_SIDEBAR_LOCK:
+                _BASE_SIDEBAR_FILTERS_CACHE[locale] = res_data
+                _BASE_SIDEBAR_FILTERS_TIMESTAMP[locale] = now
+            return copy.deepcopy(res_data)
+    except Exception as _es_filter_err:
+        logger.warning("ES base sidebar filter query failed: %s, falling back to MySQL", _es_filter_err)
+
+    from db import get_connection
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) as total FROM products WHERE deleted_at IS NULL AND status = 'active' AND website_id = 1")
+            total_count = cur.fetchone()['total']
+
+            cur.execute("""
+                SELECT DISTINCT COALESCE(tyres_category, JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyres_category'))) as tc, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND (tyres_category IS NOT NULL OR JSON_EXTRACT(attributes_json, '$.tyres_category') IS NOT NULL)
+                GROUP BY tc
+                ORDER BY FIELD(tc, 'Budget', 'Quality', 'Premium'), cnt DESC
+            """)
+            filter_tyres_categories = [{
+                'category': r['tc'],
+                'count': r['cnt']
+            } for r in cur.fetchall() if r.get('tc')]
+
+            cur.execute("""
+                SELECT b.id, b.name, b.slug, b.logo, COUNT(p.id) as cnt
+                FROM brands b
+                LEFT JOIN products p ON p.brand_id = b.id AND p.deleted_at IS NULL AND p.status = 'active'
+                WHERE b.status = 'active'
+                GROUP BY b.id, b.name, b.slug, b.logo
+                ORDER BY cnt DESC, b.name ASC
+            """)
+            filter_brands = []
+            for b in cur.fetchall():
+                b_slug = b.get('slug') or (b.get('name') or '').lower().replace(' ', '')
+                b_logo = b.get('logo') or get_brand_logo(b_slug, b.get('id'), b.get('name'))
+                if b_logo and str(b_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
+                    base, _ = os.path.splitext(str(b_logo))
+                    b_logo = base + '.webp'
+                filter_brands.append({
+                    'id': b['id'],
+                    'name': b['name'],
+                    'slug': b_slug,
+                    'logo': b_logo,
+                    'count': b.get('cnt', 0)
+                })
+
+            cur.execute("""
+                SELECT tire_pattern as pattern, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND tire_pattern IS NOT NULL AND tire_pattern != '' AND tire_pattern != 'None'
+                GROUP BY tire_pattern
+                ORDER BY cnt DESC, tire_pattern ASC
+                LIMIT 40
+            """)
+            filter_patterns = [{
+                'pattern': r['pattern'],
+                'count': r['cnt']
+            } for r in cur.fetchall()]
+
+            cur.execute("""
+                SELECT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyre_marking')) as tm, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND JSON_EXTRACT(attributes_json, '$.tyre_marking') IS NOT NULL
+                  AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyre_marking')) NOT IN ('', 'None', 'Standard', '0')
+                GROUP BY tm
+                ORDER BY cnt DESC
+                LIMIT 35
+            """)
+            filter_tyre_markings = [{
+                'marking': r['tm'],
+                'count': r['cnt']
+            } for r in cur.fetchall() if r.get('tm')]
+
+            cur.execute("""
+                SELECT oem_brand as oem, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND oem_brand IS NOT NULL AND oem_brand != '' AND oem_brand != 'None' AND oem_brand != '0'
+                GROUP BY oem_brand
+                ORDER BY cnt DESC, oem_brand ASC
+                LIMIT 25
+            """)
+            filter_oem_tyres = [{
+                'oem': r['oem'],
+                'count': r['cnt']
+            } for r in cur.fetchall()]
+
+            cur.execute("""
+                SELECT war as warranty, COUNT(*) as cnt
+                FROM (
+                    SELECT CASE 
+                        WHEN warranty_months IN ('12', 12) OR COALESCE(JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty')), JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty_period'))) IN ('12', '1 Year Warranty') THEN '1 Year Warranty'
+                        ELSE COALESCE(JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty')), JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty_period')), CONCAT(warranty_months, ' Months Warranty'))
+                    END as war
+                    FROM products
+                    WHERE deleted_at IS NULL AND status = 'active'
+                ) t
+                WHERE war IS NOT NULL AND war != '' AND war != 'None'
+                GROUP BY war
+                ORDER BY cnt DESC
+            """)
+            filter_warranties = [{
+                'warranty': r['warranty'],
+                'count': r['cnt']
+            } for r in cur.fetchall()]
+
+            cur.execute("""
+                SELECT year, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND year IS NOT NULL AND year != '0000'
+                GROUP BY year
+                ORDER BY year DESC
+            """)
+            filter_years = [{
+                'year': r['year'],
+                'count': r['cnt']
+            } for r in cur.fetchall()]
+
+            cur.execute("""
+                SELECT country_of_origin as origin, COUNT(*) as cnt
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+                  AND country_of_origin IS NOT NULL AND country_of_origin != '' AND country_of_origin != 'None'
+                GROUP BY country_of_origin
+                ORDER BY cnt DESC, country_of_origin ASC
+                LIMIT 30
+            """)
+            filter_origins = [{
+                'origin': r['origin'],
+                'count': r['cnt']
+            } for r in cur.fetchall()]
+
+            cur.execute("SELECT COUNT(*) as cnt FROM products WHERE deleted_at IS NULL AND status = 'active' AND run_flat = 1")
+            rf_res = cur.fetchone()
+            run_flat_cnt = rf_res['cnt'] if rf_res else 0
+
+            cur.execute("SELECT COUNT(*) as cnt FROM products WHERE deleted_at IS NULL AND status = 'active' AND ev_rated = 1")
+            ev_res = cur.fetchone()
+            ev_tyre_cnt = ev_res['cnt'] if ev_res else 0
+
+            cur.execute("""
+                SELECT id, name
+                FROM cart_price_rules
+                WHERE is_active = 1
+                  AND deleted_at IS NULL
+                  AND (from_date IS NULL OR from_date <= CURRENT_DATE())
+                  AND (to_date IS NULL OR to_date >= CURRENT_DATE())
+                ORDER BY priority ASC, id ASC
+            """)
+            active_rules = cur.fetchall()
+            filter_promotions = []
+            for r in active_rules:
+                r_name = (r.get('name') or '').strip()
+                if not r_name:
+                    continue
+                p_key = re.sub(r'[^a-z0-9]+', '_', r_name.lower()).strip('_')
+                filter_promotions.append({
+                    'key': p_key,
+                    'label': r_name,
+                    'count': 0
+                })
+
+            cur.execute("""
+                SELECT MIN(price) as min_p, MAX(price) as max_p
+                FROM products
+                WHERE deleted_at IS NULL AND status = 'active'
+            """)
+            pr_row = cur.fetchone()
+            min_price = int(pr_row['min_p']) if pr_row and pr_row['min_p'] is not None else 100
+            max_price = int(pr_row['max_p']) if pr_row and pr_row['max_p'] is not None else 2000
+
+        res_data = {
+            'total_count': total_count,
+            'filter_tyres_categories': filter_tyres_categories,
+            'filter_brands': filter_brands,
+            'filter_sizes': [],
+            'filter_patterns': filter_patterns,
+            'filter_tyre_markings': filter_tyre_markings,
+            'filter_oem_tyres': filter_oem_tyres,
+            'filter_warranties': filter_warranties,
+            'filter_years': filter_years,
+            'filter_origins': filter_origins,
+            'filter_vehicles': [],
+            'filter_tyre_types': [],
+            'filter_promotions': filter_promotions,
+            'filter_runflat_count': run_flat_cnt,
+            'filter_ev_tyre_count': ev_tyre_cnt,
+            'min_price': min_price,
+            'max_price': max_price
+        }
+        with _BASE_SIDEBAR_LOCK:
+            _BASE_SIDEBAR_FILTERS_CACHE[locale] = res_data
+            _BASE_SIDEBAR_FILTERS_TIMESTAMP[locale] = now
+        return copy.deepcopy(res_data)
+    finally:
+        conn.close()
+
+
+def _warmup_catalog_cache():
+    """Background thread to pre-warm the catalog sidebar filters cache on startup."""
+    try:
+        time.sleep(0.5)
+        _get_base_sidebar_filters('en')
+        _get_base_sidebar_filters('ar')
+        logger.info("Catalog sidebar filters cache successfully pre-warmed.")
+    except Exception as e:
+        logger.warning("Catalog cache warmup encountered an error: %s", e)
+
+try:
+    threading.Thread(target=_warmup_catalog_cache, daemon=True).start()
+except Exception:
+    pass
+
+
+def _fetch_catalog_products_es(args, locale='en'):
+    """Fast-path product catalog query and faceting using local Elasticsearch."""
+    try:
+        from services.es_service import es_service
+        client = es_service.get_client()
+        if not client:
+            return None
+
+        # Sorting
+        raw_sort = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
+        if raw_sort in ('price-desc', 'price_desc', 'high-to-low', 'price_high_to_low'):
+            sort_by, sort_dir = 'effective_price', 'desc'
+        elif raw_sort in ('price-asc', 'price_asc', 'low-to-high', 'price_low_to_high'):
+            sort_by, sort_dir = 'effective_price', 'asc'
+        elif raw_sort in ('name', 'name-asc'):
+            sort_by, sort_dir = 'name.keyword', 'asc'
+        else:
+            sort_by, sort_dir = 'effective_price', 'asc'
+
+        # Pagination
+        try:
+            page = max(1, int(args.get('page', 1)))
+        except (ValueError, TypeError):
+            page = 1
+        try:
+            per_page = max(1, min(100, int(args.get('per_page', 16))))
+        except (ValueError, TypeError):
+            per_page = 16
+
+        filter_clauses = [{"term": {"status": "active"}}]
+        must_clauses = []
+
+        # 1. Brands
+        raw_brands = args.getlist('brand') or args.getlist('brands')
+        brands = []
+        for b in raw_brands:
+            for bp in b.split(','):
+                b_clean = bp.strip().lower()
+                if b_clean:
+                    brands.append(b_clean)
+        if brands:
+            filter_clauses.append({"terms": {"brand_slug": brands}})
+
+        # 2. Category
+        raw_cats = args.getlist('tyres_category') or args.getlist('category')
+        cats = [c.strip().title() for c in raw_cats if c.strip()]
+        if cats:
+            filter_clauses.append({"terms": {"tyres_category": cats}})
+
+        # 3. Sizes
+        raw_sizes = args.getlist('size') or args.getlist('sizes')
+        if raw_sizes:
+            size_terms = []
+            for s in raw_sizes:
+                s_clean = s.strip()
+                if s_clean:
+                    size_terms.append(s_clean)
+                    size_terms.append(s_clean.replace('-', '/').replace(' ', ''))
+                    size_terms.append(re.sub(r'[-/ ]*r(\d+)', r' R\1', s_clean, flags=re.IGNORECASE))
+            if size_terms:
+                filter_clauses.append({"terms": {"tire_size_label": size_terms}})
+
+        # 4. Patterns
+        raw_patterns = args.getlist('pattern') or args.getlist('patterns')
+        patterns = [p.strip() for p in raw_patterns if p.strip()]
+        if patterns:
+            filter_clauses.append({"terms": {"tire_pattern.keyword": patterns}})
+
+        # 5. Origins
+        raw_origins = args.getlist('origin') or args.getlist('origins')
+        origins = [o.strip() for o in raw_origins if o.strip()]
+        if origins:
+            filter_clauses.append({"terms": {"country_of_origin": origins}})
+
+        # 6. Years
+        raw_years = args.getlist('year') or args.getlist('years')
+        years = [str(y).strip() for y in raw_years if str(y).strip()]
+        if years:
+            filter_clauses.append({"terms": {"year": years}})
+
+        # 7. OEM
+        raw_oems = args.getlist('oem') or args.getlist('oem_tyres')
+        oems = [o.strip() for o in raw_oems if o.strip()]
+        if oems:
+            filter_clauses.append({"terms": {"oem_brand": oems}})
+
+        # 8. RunFlat
+        raw_rf = args.getlist('runflat') or args.getlist('run_flat')
+        if any(r in ('1', 'true', 'yes', 'runflat', 'rft') for r in raw_rf):
+            filter_clauses.append({"term": {"run_flat": True}})
+
+        # 9. EV
+        raw_ev = args.getlist('ev_tyre') or args.getlist('ev') or args.getlist('is_ev') or args.getlist('ev_rated')
+        if any(e.lower() in ('1', 'true', 'yes', 'ev', 'ev_ready', 'ev_tyre') for e in raw_ev):
+            filter_clauses.append({"bool": {"should": _ES_EV_SHOULD, "minimum_should_match": 1}})
+
+        # 10. Price range
+        min_p = args.get('min_price')
+        max_p = args.get('max_price')
+        price_rng = {}
+        if min_p is not None and min_p != '':
+            try:
+                price_rng['gte'] = float(min_p)
+            except ValueError:
+                pass
+        if max_p is not None and max_p != '':
+            try:
+                price_rng['lte'] = float(max_p)
+            except ValueError:
+                pass
+        if price_rng:
+            filter_clauses.append({"range": {"effective_price": price_rng}})
+
+        # 11. Full-text search (Elasticsearch fast path)
+        q = (args.get('search') or args.get('q') or '').strip()
+        if q:
+            q_clean = re.sub(r'(\d+)\s*[/ -]\s*(\d+)\s*[rR]?\s*(\d+)', r'\1/\2 R\3', q)
+            must_clauses.append({
+                "bool": {
+                    "should": [
+                        {
+                            "multi_match": {
+                                "query": q_clean,
+                                "fields": ["name^5", "display_name^4", "sku^6", "brand_name^3", "tire_size_label^5", "tire_pattern^3"],
+                                "type": "cross_fields",
+                                "operator": "and"
+                            }
+                        },
+                        {
+                            "multi_match": {
+                                "query": q_clean,
+                                "fields": ["name", "display_name", "brand_name", "tire_pattern"],
+                                "type": "phrase_prefix"
+                            }
+                        }
+                    ],
+                    "minimum_should_match": 1
+                }
+            })
+
+        bool_query = {"filter": filter_clauses}
+        if must_clauses:
+            bool_query["must"] = must_clauses
+        else:
+            bool_query["must"] = [{"match_all": {}}]
+
+        aggregations = {
+            "brands": {"terms": {"field": "brand_slug", "size": 80}},
+            "patterns": {"terms": {"field": "tire_pattern.keyword", "size": 60}},
+            "tyre_markings": {"terms": {"field": "tire_marking", "size": 40}},
+            "oems": {"terms": {"field": "oem_brand", "size": 30}},
+            "tyres_categories": {"terms": {"field": "tyres_category", "size": 10}},
+            "origins": {"terms": {"field": "country_of_origin", "size": 40}},
+            "years": {"terms": {"field": "year", "size": 15}},
+            "warranties": {"terms": {"field": "warranty_period", "size": 10}},
+            "runflat": {"filter": {"term": {"run_flat": True}}},
+            "ev_tyre": {"filter": {"bool": {"should": _ES_EV_SHOULD, "minimum_should_match": 1}}},
+            "min_price": {"min": {"field": "effective_price"}},
+            "max_price": {"max": {"field": "effective_price"}}
+        }
+
+        body = {
+            "query": {"bool": bool_query},
+            "sort": [{sort_by: {"order": sort_dir}}],
+            "from": (page - 1) * per_page,
+            "size": per_page,
+            "aggs": aggregations,
+            "track_total_hits": True
+        }
+
+        es_res = client.search(index=es_service.index_name, body=body)
+
+        hits_obj = es_res.get("hits", {})
+        total_hits = hits_obj.get("total", {}).get("value", 0) if isinstance(hits_obj.get("total"), dict) else hits_obj.get("total", 0)
+        docs = [h["_source"] for h in hits_obj.get("hits", [])]
+        products = [_format_product_for_client(d, locale) for d in docs]
+
+        raw_aggs = es_res.get("aggregations", {})
+        facets = {
+            'tyres_categories': {},
+            'warranties': {},
+            'years': {},
+            'brands': {},
+            'patterns': {},
+            'tyre_markings': {},
+            'oems': {},
+            'origins': {},
+            'promotions': {},
+            'runflat': 0,
+            'ev_tyre': 0
+        }
+        for agg_key in ['tyres_categories', 'warranties', 'years', 'brands', 'patterns', 'oems', 'origins', 'tyre_markings']:
+            if agg_key in raw_aggs and 'buckets' in raw_aggs[agg_key]:
+                facets[agg_key] = {b['key']: b['doc_count'] for b in raw_aggs[agg_key]['buckets']}
+
+        if 'runflat' in raw_aggs:
+            facets['runflat'] = raw_aggs['runflat'].get('doc_count', 0)
+        if 'ev_tyre' in raw_aggs:
+            facets['ev_tyre'] = raw_aggs['ev_tyre'].get('doc_count', 0)
+
+        total_pages = max(1, math.ceil(total_hits / per_page)) if total_hits > 0 else 1
+
+        return {
+            'products': products,
+            'total': total_hits,
+            'page': page,
+            'per_page': per_page,
+            'total_pages': total_pages,
+            'facets': facets,
+            'is_staggered': False
+        }
+    except Exception as e:
+        logger.warning("Elasticsearch catalog search failed: %s", e)
+        return None
+
+
+_ES_EV_SHOULD = [
+    {"term": {"ev_rated": True}},
+    {"terms": {"attributes.ev.keyword": ["Yes", "yes", "1", "true", "True", "EV", "ev"]}},
+    {"terms": {"attributes.ev_tyre.keyword": ["Yes", "yes", "1", "true", "True", "EV", "ev"]}},
+    {"terms": {"attributes.ev_rated.keyword": ["Yes", "yes", "1", "true", "True", "EV", "ev"]}},
+    {"match_phrase": {"name": "EV"}},
+    {"match_phrase": {"display_name": "EV"}},
+    {"match_phrase": {"name": "ELECT"}},
+    {"match_phrase": {"display_name": "ELECT"}},
+    {"match_phrase": {"name": "iON"}},
+    {"match_phrase": {"display_name": "iON"}},
+    {"match_phrase": {"attributes.tyre_marking": "EV"}},
+    {"match_phrase": {"attributes.tyre_marking": "ELECT"}},
+]
+
 def _fetch_catalog_products(args, locale='en'):
+    """Queries products with dynamic filters, pagination, and sorting for client catalog."""
+    # ── FAST PATH: Local Elasticsearch API for Products ──
+    try:
+        from services.es_service import es_service
+        # Use ES if connected and not a dual staggered-pair query
+        if es_service.check_connection().get('connected'):
+            raw_rear = (args.get('rear') or '').strip()
+            raw_sizes = args.getlist('size') or args.getlist('sizes')
+            if not (raw_rear and len(raw_sizes) >= 2):
+                es_result = _fetch_catalog_products_es(args, locale)
+                if es_result is not None:
+                    return es_result
+    except Exception as _es_err:
+        logger.warning("Local ES path skipped: %s", _es_err)
+
     """Queries products with dynamic filters, pagination, and sorting for client catalog."""
     from db import get_connection
     conn = get_connection()
@@ -1715,15 +2414,19 @@ def _fetch_catalog_products(args, locale='en'):
                 all_params.extend(p_list)
             where_sql = " AND ".join(all_where)
 
-            # Total matching count
-            cur.execute(f"""
-                SELECT COUNT(*) as total
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {where_sql}
-            """, all_params)
-            c_row = cur.fetchone()
-            total_count = c_row['total'] if c_row else 0
+            has_filters = any(len(c_list) > 0 for c_list, _ in clauses.values())
+            if not has_filters:
+                base_data = _get_base_sidebar_filters(locale)
+                total_count = base_data['total_count']
+            else:
+                cur.execute(f"""
+                    SELECT COUNT(*) as total
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {where_sql}
+                """, all_params)
+                c_row = cur.fetchone()
+                total_count = c_row['total'] if c_row else 0
 
             # Sorting (Default: price-asc Low to High per user requirement)
             sort_by = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
@@ -1761,190 +2464,207 @@ def _fetch_catalog_products(args, locale='en'):
 
             products = [_format_product_for_client(p, locale) for p in raw_products]
 
-            # Dynamic Facets Calculation (disjunctive multi-select counts)
-            def get_where_except(exclude_key):
-                w = ["p.deleted_at IS NULL", "p.status = 'active'", "p.website_id = 1"]
-                pm = []
-                for k, (c_list, p_list) in clauses.items():
-                    if k == exclude_key:
-                        continue
-                    w.extend(c_list)
-                    pm.extend(p_list)
-                return " AND ".join(w), pm
+            # Fast-path for non-filtered catalog: reuse base cached facets
+            if not has_filters:
+                base_data = _get_base_sidebar_filters(locale)
+                facets = {
+                    'tyres_categories': {c['category']: c['count'] for c in base_data['filter_tyres_categories']},
+                    'warranties': {w['warranty']: w['count'] for w in base_data['filter_warranties']},
+                    'years': {str(y['year']): y['count'] for y in base_data['filter_years']},
+                    'brands': {b['slug'].lower(): b['count'] for b in base_data['filter_brands']},
+                    'patterns': {p['pattern']: p['count'] for p in base_data['filter_patterns']},
+                    'tyre_markings': {m['marking']: m['count'] for m in base_data['filter_tyre_markings']},
+                    'oems': {o['oem']: o['count'] for o in base_data['filter_oem_tyres']},
+                    'origins': {(org.get('origin') or '').lower(): org['count'] for org in base_data['filter_origins']},
+                    'promotions': {pr['key']: pr['count'] for pr in base_data['filter_promotions']},
+                    'runflat': base_data['filter_runflat_count'],
+                    'ev_tyre': base_data['filter_ev_tyre_count']
+                }
+            else:
+                # Dynamic Facets Calculation (disjunctive multi-select counts)
+                def get_where_except(exclude_key):
+                    w = ["p.deleted_at IS NULL", "p.status = 'active'", "p.website_id = 1"]
+                    pm = []
+                    for k, (c_list, p_list) in clauses.items():
+                        if k == exclude_key:
+                            continue
+                        w.extend(c_list)
+                        pm.extend(p_list)
+                    return " AND ".join(w), pm
 
-            facets = {
-                'tyres_categories': {},
-                'warranties': {},
-                'years': {},
-                'brands': {},
-                'patterns': {},
-                'tyre_markings': {},
-                'oems': {},
-                'origins': {},
-                'promotions': {},
-                'runflat': 0,
-                'ev_tyre': 0
-            }
+                facets = {
+                    'tyres_categories': {},
+                    'warranties': {},
+                    'years': {},
+                    'brands': {},
+                    'patterns': {},
+                    'tyre_markings': {},
+                    'oems': {},
+                    'origins': {},
+                    'promotions': {},
+                    'runflat': 0,
+                    'ev_tyre': 0
+                }
 
-            # 0. Tyres Category facet
-            tc_where, tc_params = get_where_except('tyres_category')
-            cur.execute(f"""
-                SELECT 
-                    COALESCE(p.tyres_category, JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyres_category'))) as tc,
-                    COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {tc_where} AND (p.tyres_category IS NOT NULL OR JSON_EXTRACT(p.attributes_json, '$.tyres_category') IS NOT NULL)
-                GROUP BY tc
-            """, tc_params)
-            for r in cur.fetchall():
-                if r.get('tc'):
-                    facets['tyres_categories'][r['tc']] = int(r['cnt'])
+                # 0. Tyres Category facet
+                tc_where, tc_params = get_where_except('tyres_category')
+                cur.execute(f"""
+                    SELECT 
+                        COALESCE(p.tyres_category, JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyres_category'))) as tc,
+                        COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {tc_where} AND (p.tyres_category IS NOT NULL OR JSON_EXTRACT(p.attributes_json, '$.tyres_category') IS NOT NULL)
+                    GROUP BY tc
+                """, tc_params)
+                for r in cur.fetchall():
+                    if r.get('tc'):
+                        facets['tyres_categories'][r['tc']] = int(r['cnt'])
 
-            # 1. Warranty facet
-            w_where, w_params = get_where_except('warranty')
-            cur.execute(f"""
-                SELECT 
-                    CASE 
-                        WHEN p.warranty_months IN (12, '12') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%1 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%1 Year%%' THEN '1 Year Warranty'
-                        WHEN p.warranty_months IN (36, '36') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%3 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%3 Year%%' THEN '3 Years Warranty'
-                        WHEN p.warranty_months IN (60, '60') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%5 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%5 Year%%' THEN '5 Years Warranty'
-                        ELSE '1 Year Warranty'
-                    END as war,
-                    COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {w_where}
-                GROUP BY war
-            """, w_params)
-            for r in cur.fetchall():
-                if r.get('war'):
-                    facets['warranties'][r['war']] = int(r['cnt'])
+                # 1. Warranty facet
+                w_where, w_params = get_where_except('warranty')
+                cur.execute(f"""
+                    SELECT 
+                        CASE 
+                            WHEN p.warranty_months IN (12, '12') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%1 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%1 Year%%' THEN '1 Year Warranty'
+                            WHEN p.warranty_months IN (36, '36') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%3 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%3 Year%%' THEN '3 Years Warranty'
+                            WHEN p.warranty_months IN (60, '60') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty_period')) LIKE '%%5 Year%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.warranty')) LIKE '%%5 Year%%' THEN '5 Years Warranty'
+                            ELSE '1 Year Warranty'
+                        END as war,
+                        COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {w_where}
+                    GROUP BY war
+                """, w_params)
+                for r in cur.fetchall():
+                    if r.get('war'):
+                        facets['warranties'][r['war']] = int(r['cnt'])
 
-            # 2. Year facet
-            y_where, y_params = get_where_except('year')
-            cur.execute(f"""
-                SELECT p.year, COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {y_where} AND p.year IS NOT NULL AND p.year != '0000'
-                GROUP BY p.year
-            """, y_params)
-            for r in cur.fetchall():
-                if r.get('year'):
-                    facets['years'][str(r['year'])] = int(r['cnt'])
+                # 2. Year facet
+                y_where, y_params = get_where_except('year')
+                cur.execute(f"""
+                    SELECT p.year, COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {y_where} AND p.year IS NOT NULL AND p.year != '0000'
+                    GROUP BY p.year
+                """, y_params)
+                for r in cur.fetchall():
+                    if r.get('year'):
+                        facets['years'][str(r['year'])] = int(r['cnt'])
 
-            # 3. Brand facet
-            b_where, b_params = get_where_except('brand')
-            cur.execute(f"""
-                SELECT b.slug, b.name, COUNT(p.id) as cnt
-                FROM brands b
-                JOIN products p ON p.brand_id = b.id
-                WHERE {b_where}
-                GROUP BY b.id, b.slug, b.name
-            """, b_params)
-            for r in cur.fetchall():
-                c = int(r['cnt'])
-                if r.get('slug'):
-                    facets['brands'][r['slug'].lower()] = c
-                if r.get('name'):
-                    facets['brands'][r['name'].lower()] = c
+                # 3. Brand facet
+                b_where, b_params = get_where_except('brand')
+                cur.execute(f"""
+                    SELECT b.slug, b.name, COUNT(p.id) as cnt
+                    FROM brands b
+                    JOIN products p ON p.brand_id = b.id
+                    WHERE {b_where}
+                    GROUP BY b.id, b.slug, b.name
+                """, b_params)
+                for r in cur.fetchall():
+                    c = int(r['cnt'])
+                    if r.get('slug'):
+                        facets['brands'][r['slug'].lower()] = c
+                    if r.get('name'):
+                        facets['brands'][r['name'].lower()] = c
 
-            # 4. Pattern facet
-            pat_where, pat_params = get_where_except('pattern')
-            cur.execute(f"""
-                SELECT p.tire_pattern as pattern, COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {pat_where} AND p.tire_pattern IS NOT NULL AND p.tire_pattern != '' AND p.tire_pattern != 'None'
-                GROUP BY p.tire_pattern
-            """, pat_params)
-            for r in cur.fetchall():
-                if r.get('pattern'):
-                    facets['patterns'][r['pattern']] = int(r['cnt'])
+                # 4. Pattern facet
+                pat_where, pat_params = get_where_except('pattern')
+                cur.execute(f"""
+                    SELECT p.tire_pattern as pattern, COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {pat_where} AND p.tire_pattern IS NOT NULL AND p.tire_pattern != '' AND p.tire_pattern != 'None'
+                    GROUP BY p.tire_pattern
+                """, pat_params)
+                for r in cur.fetchall():
+                    if r.get('pattern'):
+                        facets['patterns'][r['pattern']] = int(r['cnt'])
 
-            # 4b. Tyre Marking facet
-            tm_where, tm_params = get_where_except('tyre_marking')
-            cur.execute(f"""
-                SELECT 
-                    JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) as tm,
-                    COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {tm_where} 
-                  AND JSON_EXTRACT(p.attributes_json, '$.tyre_marking') IS NOT NULL
-                  AND JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) NOT IN ('', 'None', 'Standard', '0')
-                GROUP BY tm
-                ORDER BY cnt DESC
-                LIMIT 30
-            """, tm_params)
-            for r in cur.fetchall():
-                if r.get('tm'):
-                    facets['tyre_markings'][r['tm']] = int(r['cnt'])
+                # 4b. Tyre Marking facet
+                tm_where, tm_params = get_where_except('tyre_marking')
+                cur.execute(f"""
+                    SELECT 
+                        JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) as tm,
+                        COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {tm_where} 
+                      AND JSON_EXTRACT(p.attributes_json, '$.tyre_marking') IS NOT NULL
+                      AND JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) NOT IN ('', 'None', 'Standard', '0')
+                    GROUP BY tm
+                    ORDER BY cnt DESC
+                    LIMIT 30
+                """, tm_params)
+                for r in cur.fetchall():
+                    if r.get('tm'):
+                        facets['tyre_markings'][r['tm']] = int(r['cnt'])
 
-            # 5. OEM Tyres facet
-            oem_where, oem_params = get_where_except('oem')
-            cur.execute(f"""
-                SELECT p.oem_brand as oem, COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {oem_where} AND p.oem_brand IS NOT NULL AND p.oem_brand != '' AND p.oem_brand != 'None' AND p.oem_brand != '0'
-                GROUP BY p.oem_brand
-            """, oem_params)
-            for r in cur.fetchall():
-                if r.get('oem'):
-                    facets['oems'][r['oem']] = int(r['cnt'])
+                # 5. OEM Tyres facet
+                oem_where, oem_params = get_where_except('oem')
+                cur.execute(f"""
+                    SELECT p.oem_brand as oem, COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {oem_where} AND p.oem_brand IS NOT NULL AND p.oem_brand != '' AND p.oem_brand != 'None' AND p.oem_brand != '0'
+                    GROUP BY p.oem_brand
+                """, oem_params)
+                for r in cur.fetchall():
+                    if r.get('oem'):
+                        facets['oems'][r['oem']] = int(r['cnt'])
 
-            # 6. Origin facet
-            org_where, org_params = get_where_except('origin')
-            cur.execute(f"""
-                SELECT LOWER(p.country_of_origin) as origin, COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {org_where} AND p.country_of_origin IS NOT NULL AND p.country_of_origin != '' AND p.country_of_origin != 'None'
-                GROUP BY LOWER(p.country_of_origin)
-            """, org_params)
-            for r in cur.fetchall():
-                if r.get('origin'):
-                    facets['origins'][r['origin']] = int(r['cnt'])
+                # 6. Origin facet
+                org_where, org_params = get_where_except('origin')
+                cur.execute(f"""
+                    SELECT LOWER(p.country_of_origin) as origin, COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {org_where} AND p.country_of_origin IS NOT NULL AND p.country_of_origin != '' AND p.country_of_origin != 'None'
+                    GROUP BY LOWER(p.country_of_origin)
+                """, org_params)
+                for r in cur.fetchall():
+                    if r.get('origin'):
+                        facets['origins'][r['origin']] = int(r['cnt'])
 
-            # 7. Promotions facet
-            pr_where, pr_params = get_where_except('promo')
-            cur.execute(f"""
-                SELECT 
-                    SUM(CASE WHEN p.attributes_json LIKE '%%Buy 3 Get 1 %%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%' THEN 1 ELSE 0 END) as buy_3_get_1_,
-                    SUM(CASE WHEN p.attributes_json LIKE '%% Wheel Alignment%%' OR p.attributes_json LIKE '%% WHEEL ALIGNMENT%%' THEN 1 ELSE 0 END) as _wheel_alignment
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {pr_where}
-            """, pr_params)
-            pr_row = cur.fetchone() or {}
-            facets['promotions'] = {
-                'buy_3_get_1_': int(pr_row.get('buy_3_get_1_') or 0),
-                '_wheel_alignment': int(pr_row.get('_wheel_alignment') or 0)
-            }
+                # 7. Promotions facet
+                pr_where, pr_params = get_where_except('promo')
+                cur.execute(f"""
+                    SELECT 
+                        SUM(CASE WHEN p.attributes_json LIKE '%%Buy 3 Get 1 %%' OR p.attributes_json LIKE '%%BUY 3 GET 1%%' THEN 1 ELSE 0 END) as buy_3_get_1_,
+                        SUM(CASE WHEN p.attributes_json LIKE '%% Wheel Alignment%%' OR p.attributes_json LIKE '%% WHEEL ALIGNMENT%%' THEN 1 ELSE 0 END) as _wheel_alignment
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {pr_where}
+                """, pr_params)
+                pr_row = cur.fetchone() or {}
+                facets['promotions'] = {
+                    'buy_3_get_1_': int(pr_row.get('buy_3_get_1_') or 0),
+                    '_wheel_alignment': int(pr_row.get('_wheel_alignment') or 0)
+                }
 
-            # 8. Runflat facet
-            rf_where, rf_params = get_where_except('runflat')
-            cur.execute(f"""
-                SELECT COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {rf_where} AND (p.run_flat = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IN ('yes', '1', 'true', 'rft', 'RunFlat', 'runflat') OR LOWER(p.display_name) LIKE '%%runflat%%' OR LOWER(p.display_name) LIKE '%%run flat%%')
-            """, rf_params)
-            rf_res = cur.fetchone()
-            facets['runflat'] = int(rf_res['cnt']) if rf_res else 0
+                # 8. Runflat facet
+                rf_where, rf_params = get_where_except('runflat')
+                cur.execute(f"""
+                    SELECT COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {rf_where} AND (p.run_flat = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.runflat')) IN ('yes', '1', 'true', 'rft', 'RunFlat', 'runflat') OR LOWER(p.display_name) LIKE '%%runflat%%' OR LOWER(p.display_name) LIKE '%%run flat%%')
+                """, rf_params)
+                rf_res = cur.fetchone()
+                facets['runflat'] = int(rf_res['cnt']) if rf_res else 0
 
-            # 9. EV Tyre facet
-            ev_where, ev_params = get_where_except('ev_tyre')
-            cur.execute(f"""
-                SELECT COUNT(*) as cnt
-                FROM products p
-                LEFT JOIN brands b ON p.brand_id = b.id
-                WHERE {ev_where} AND (p.ev_rated = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev')) IN ('1', 'yes', 'true') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_tyre')) IN ('1', 'yes', 'true') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_rated')) IN ('1', 'yes', 'true') OR LOWER(p.display_name) LIKE '%% ev %%' OR LOWER(p.display_name) LIKE '%%elect%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE '%%Elect%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE '%%EV%%')
-            """, ev_params)
-            ev_res = cur.fetchone()
-            facets['ev_tyre'] = int(ev_res['cnt']) if ev_res else 0
+                # 9. EV Tyre facet
+                ev_where, ev_params = get_where_except('ev_tyre')
+                cur.execute(f"""
+                    SELECT COUNT(*) as cnt
+                    FROM products p
+                    LEFT JOIN brands b ON p.brand_id = b.id
+                    WHERE {ev_where} AND (p.ev_rated = 1 OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev')) IN ('1', 'yes', 'true') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_tyre')) IN ('1', 'yes', 'true') OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.ev_rated')) IN ('1', 'yes', 'true') OR LOWER(p.display_name) LIKE '%% ev %%' OR LOWER(p.display_name) LIKE '%%elect%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE '%%Elect%%' OR JSON_UNQUOTE(JSON_EXTRACT(p.attributes_json, '$.tyre_marking')) LIKE '%%EV%%')
+                """, ev_params)
+                ev_res = cur.fetchone()
+                facets['ev_tyre'] = int(ev_res['cnt']) if ev_res else 0
 
             return {
                 'products': products,
@@ -2208,466 +2928,160 @@ def _render_product_listing(locale, filter_path=None):
         if p_clean:
             active_promotions.extend([p_clean, p_clean.replace('-', '_'), p_clean.replace('_', '-')])
 
-    from db import get_connection
-    conn = get_connection()
-    try:
-        with conn.cursor() as cur:
+    base_filters = _get_base_sidebar_filters(locale)
+    filter_tyres_categories = base_filters['filter_tyres_categories']
+    filter_brands = base_filters['filter_brands']
+    filter_sizes = base_filters['filter_sizes']
+    filter_patterns = base_filters['filter_patterns']
+    filter_tyre_markings = base_filters['filter_tyre_markings']
+    filter_oem_tyres = base_filters['filter_oem_tyres']
+    filter_warranties = base_filters['filter_warranties']
+    filter_years = base_filters['filter_years']
+    filter_origins = base_filters['filter_origins']
+    filter_vehicles = base_filters['filter_vehicles']
+    filter_tyre_types = base_filters['filter_tyre_types']
+    filter_promotions = base_filters['filter_promotions']
+    filter_runflat_count = base_filters['filter_runflat_count']
+    filter_ev_tyre_count = base_filters['filter_ev_tyre_count']
+    min_price = base_filters['min_price']
+    max_price = base_filters['max_price']
+    # Synchronize sidebar filter counts with computed dynamic facets
+    if facets:
+        if 'tyres_categories' in facets:
+            for tc in filter_tyres_categories:
+                cat_k = tc['category']
+                tc['count'] = facets['tyres_categories'].get(cat_k, facets['tyres_categories'].get(cat_k.capitalize(), facets['tyres_categories'].get(cat_k.lower(), 0)))
+        if 'brands' in facets:
+            for b in filter_brands:
+                b_slug = (b.get('slug') or '').lower()
+                b_name = (b.get('name') or '').lower()
+                b['count'] = facets['brands'].get(b_slug, facets['brands'].get(b_name, 0))
+        if 'patterns' in facets:
+            for p in filter_patterns:
+                p['count'] = facets['patterns'].get(p['pattern'], 0)
+        if 'tyre_markings' in facets:
+            for tm in filter_tyre_markings:
+                tm['count'] = facets['tyre_markings'].get(tm['marking'], 0)
+        if 'oems' in facets:
+            for o in filter_oem_tyres:
+                o['count'] = facets['oems'].get(o['oem'], 0)
+        if 'warranties' in facets:
+            for w in filter_warranties:
+                w['count'] = facets['warranties'].get(w['warranty'], 0)
+        if 'years' in facets:
+            for y in filter_years:
+                y['count'] = facets['years'].get(str(y['year']), 0)
+        if 'origins' in facets:
+            for org in filter_origins:
+                org_k = (org.get('origin') or '').lower()
+                org['count'] = facets['origins'].get(org_k, facets['origins'].get(org.get('origin'), 0))
+        if 'promotions' in facets:
+            for pr in filter_promotions:
+                pr['count'] = facets['promotions'].get(pr['key'], 0)
+        if 'runflat' in facets:
+            filter_runflat_count = facets.get('runflat', 0)
+        if 'ev_tyre' in facets:
+            filter_ev_tyre_count = facets.get('ev_tyre', 0)
 
-            # 1. Sidebar: Tyres Category from DB
-            cur.execute("""
-                SELECT DISTINCT COALESCE(tyres_category, JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyres_category'))) as tc, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND (tyres_category IS NOT NULL OR JSON_EXTRACT(attributes_json, '$.tyres_category') IS NOT NULL)
-                GROUP BY tc
-                ORDER BY FIELD(tc, 'Budget', 'Quality', 'Premium'), cnt DESC
-            """)
-            filter_tyres_categories = [{
-                'category': r['tc'],
-                'count': r['cnt']
-            } for r in cur.fetchall() if r.get('tc')]
+    active_brand_name = ''
+    active_brand_slug = ''
+    if active_brands and len(active_brands) == 1:
+        target_b = active_brands[0].lower()
+        for fb in filter_brands:
+            if fb['slug'].lower() == target_b or fb['name'].lower() == target_b:
+                active_brand_name = fb['name']
+                active_brand_slug = fb['slug']
+                break
+        if not active_brand_name:
+            active_brand_name = active_brands[0].capitalize()
+            active_brand_slug = active_brands[0]
 
-            # 2. Sidebar: Brands from DB (active brands + product counts)
-            cur.execute("""
-                SELECT b.id, b.name, b.slug, b.logo, COUNT(p.id) as cnt
-                FROM brands b
-                LEFT JOIN products p ON p.brand_id = b.id AND p.deleted_at IS NULL AND p.status = 'active'
-                WHERE b.status = 'active'
-                GROUP BY b.id, b.name, b.slug, b.logo
-                ORDER BY cnt DESC, b.name ASC
-            """)
-            filter_brands = []
-            for b in cur.fetchall():
-                b_slug = b.get('slug') or (b.get('name') or '').lower().replace(' ', '')
-                b_logo = b.get('logo') or f"/static/assets/images/brands/{b_slug}.svg"
-                b_cnt = b.get('cnt', 0)
-                filter_brands.append({
-                    'id': b['id'],
-                    'name': b['name'],
-                    'slug': b_slug,
-                    'logo': b_logo,
-                    'count': b_cnt
-                })
+    if active_ev_tyre:
+        listing_title = 'Buy EV Tyres Online in UAE with Top Brands | TyresVision'
+        listing_desc = 'Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.'
+        canonical_url = f"{seo_builder.SITE_URL}/tyres/ev"
+    elif active_brand_name:
+        listing_title = f"Buy {active_brand_name} tyres online. Fitted locally in UAE. | TyresVision"
+        listing_desc = f"Looking for {active_brand_name} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE."
+        canonical_url = f"{seo_builder.SITE_URL}/tyres/brand/{active_brand_slug}"
+    else:
+        listing_title = 'Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision'
+        listing_desc = 'Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.'
+        canonical_url = f"{seo_builder.SITE_URL}/tyres"
 
-            # 3. Sidebar: Tyre Sizes from DB (from active products + attribute_options)
-            cur.execute("""
-                SELECT tire_size_label as size, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active' 
-                  AND tire_size_label IS NOT NULL AND tire_size_label != ''
-                GROUP BY tire_size_label
-                ORDER BY cnt DESC, tire_size_label ASC
-            """)
-            filter_sizes = []
-            seen_sizes = set()
-            for r in cur.fetchall():
-                sz = r['size'].strip() if r.get('size') else ''
-                if sz and sz not in seen_sizes:
-                    seen_sizes.add(sz)
-                    filter_sizes.append({'size': sz, 'count': r['cnt']})
+    breadcrumb_items = [{"label": "Home", "url": "/"}]
+    if active_ev_tyre:
+        breadcrumb_items.append({"label": "EV Tyres"})
+    elif active_brand_name:
+        breadcrumb_items.append({"label": "Tyres", "url": "/tyres"})
+        breadcrumb_items.append({"label": active_brand_name})
+    else:
+        breadcrumb_items.append({"label": "Tyres"})
 
-            # Supplement from attribute_options (attributes.code = 'tire_size')
-            cur.execute("""
-                SELECT ao.value as size, COUNT(p.id) as cnt
-                FROM attribute_options ao
-                JOIN attributes a ON ao.attribute_id = a.id AND a.code = 'tire_size'
-                LEFT JOIN products p ON p.tire_size_label = ao.value AND p.deleted_at IS NULL AND p.status = 'active'
-                GROUP BY ao.id, ao.value, ao.sort_order
-                ORDER BY cnt DESC, ao.sort_order ASC, ao.value ASC
-                LIMIT 25
-            """)
-            for r in cur.fetchall():
-                sz = r['size'].strip() if r.get('size') else ''
-                if sz and sz not in seen_sizes:
-                    seen_sizes.add(sz)
-                    filter_sizes.append({'size': sz, 'count': r['cnt']})
+    listing_items = [
+        {
+            'name': p.get('display_name') or p.get('name') or p.get('title') or 'Tyre',
+            'url': f"/{p.get('slug')}" if p.get('slug') else '/tyres',
+        }
+        for p in products
+    ]
 
-            # 4. Sidebar: Patterns from DB (using direct index idx_products_active_pattern)
-            cur.execute("""
-                SELECT tire_pattern as pattern, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND tire_pattern IS NOT NULL AND tire_pattern != '' AND tire_pattern != 'None'
-                GROUP BY tire_pattern
-                ORDER BY cnt DESC, tire_pattern ASC
-            """)
-            filter_patterns = [{
-                'pattern': r['pattern'],
-                'count': r['cnt']
-            } for r in cur.fetchall()]
+    seo = seo_builder.build_collection_page_seo(
+        canonical_url, listing_title, listing_desc, breadcrumb_items, listing_items,
+    )
 
-            # 4b. Sidebar: Tyre Markings from DB
-            cur.execute("""
-                SELECT JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyre_marking')) as tm, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND JSON_EXTRACT(attributes_json, '$.tyre_marking') IS NOT NULL
-                  AND JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.tyre_marking')) NOT IN ('', 'None', 'Standard', '0')
-                GROUP BY tm
-                ORDER BY cnt DESC
-                LIMIT 35
-            """)
-            filter_tyre_markings = [{
-                'marking': r['tm'],
-                'count': r['cnt']
-            } for r in cur.fetchall() if r.get('tm')]
-
-            # 5. Sidebar: OEM Tyres from DB (using direct index idx_products_active_oem)
-            cur.execute("""
-                SELECT oem_brand as oem, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND oem_brand IS NOT NULL AND oem_brand != '' AND oem_brand != 'None' AND oem_brand != '0'
-                GROUP BY oem_brand
-                ORDER BY cnt DESC, oem_brand ASC
-            """)
-            filter_oem_tyres = [{
-                'oem': r['oem'],
-                'count': r['cnt']
-            } for r in cur.fetchall()]
-
-            # 6. Sidebar: Warranty Period from DB
-            cur.execute("""
-                SELECT war as warranty, COUNT(*) as cnt
-                FROM (
-                    SELECT CASE 
-                        WHEN warranty_months IN ('12', 12) OR COALESCE(JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty')), JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty_period'))) IN ('12', '1 Year Warranty') THEN '1 Year Warranty'
-                        ELSE COALESCE(JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty')), JSON_UNQUOTE(JSON_EXTRACT(attributes_json, '$.warranty_period')), CONCAT(warranty_months, ' Months Warranty'))
-                    END as war
-                    FROM products
-                    WHERE deleted_at IS NULL AND status = 'active'
-                ) t
-                WHERE war IS NOT NULL AND war != '' AND war != 'None'
-                GROUP BY war
-                ORDER BY cnt DESC
-            """)
-            filter_warranties = [{
-                'warranty': r['warranty'],
-                'count': r['cnt']
-            } for r in cur.fetchall()]
-
-            # 7. Sidebar: Year from DB (using direct index idx_products_year)
-            cur.execute("""
-                SELECT year, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND year IS NOT NULL AND year != '0000'
-                GROUP BY year
-                ORDER BY year DESC
-            """)
-            filter_years = [{
-                'year': r['year'],
-                'count': r['cnt']
-            } for r in cur.fetchall()]
-
-            # 8. Sidebar: Origin from DB (using direct index idx_products_active_origin)
-            cur.execute("""
-                SELECT country_of_origin as origin, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-                  AND country_of_origin IS NOT NULL AND country_of_origin != '' AND country_of_origin != 'None'
-                GROUP BY country_of_origin
-                ORDER BY cnt DESC, country_of_origin ASC
-            """)
-            filter_origins = [{
-                'origin': r['origin'],
-                'count': r['cnt']
-            } for r in cur.fetchall()]
-
-            # 4. Sidebar: Vehicle Types from DB
-            cur.execute("""
-                SELECT ao.value, ao.label, ao.sort_order
-                FROM attribute_options ao
-                JOIN attributes a ON ao.attribute_id = a.id AND a.code = 'vehicle_type'
-                ORDER BY ao.sort_order ASC
-            """)
-            v_rows = cur.fetchall()
-
-            cur.execute("""
-                SELECT LOWER(vehicle_type) as vtype, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active' AND vehicle_type IS NOT NULL
-                GROUP BY vehicle_type
-            """)
-            vehicle_prod_counts = {r['vtype']: r['cnt'] for r in cur.fetchall() if r.get('vtype')}
-            vehicle_key_map = {
-                'Passenger Car': 'car',
-                'SUV / 4x4': 'suv',
-                'Light Truck / Van': 'van',
-                'Performance / Sport': 'sport',
-                'Commercial Van': 'van',
-                'Car': 'car',
-                'SUV': 'suv',
-                '4x4': '4x4',
-                'EV': 'ev'
-            }
-            filter_vehicles = []
-            seen_v_keys = set()
-            for vr in v_rows:
-                raw_val = vr.get('value') or ''
-                lbl_raw = vr.get('label')
-                label_dict = {}
-                if isinstance(lbl_raw, str):
-                    try:
-                        label_dict = json.loads(lbl_raw)
-                    except Exception:
-                        label_dict = {'en': raw_val}
-                elif isinstance(lbl_raw, dict):
-                    label_dict = lbl_raw
-                label = label_dict.get(locale) or label_dict.get('en') or raw_val
-                key = vehicle_key_map.get(raw_val, raw_val.lower().replace(' ', '_'))
-                cnt = vehicle_prod_counts.get(key, 0)
-                if key == 'suv' and '4x4' in vehicle_prod_counts:
-                    cnt += vehicle_prod_counts.get('4x4', 0)
-                if key not in seen_v_keys:
-                    seen_v_keys.add(key)
-                    filter_vehicles.append({'key': key, 'label': label, 'count': cnt})
-
-            for vk, vc in vehicle_prod_counts.items():
-                if vk not in seen_v_keys:
-                    seen_v_keys.add(vk)
-                    filter_vehicles.append({
-                        'key': vk,
-                        'label': vk.upper() if len(vk) <= 3 else vk.replace('_', ' ').title(),
-                        'count': vc
-                    })
-
-            # 5. Sidebar: Tyre Types / Seasons from DB
-            cur.execute("""
-                SELECT ao.value, ao.label, ao.sort_order
-                FROM attribute_options ao
-                JOIN attributes a ON ao.attribute_id = a.id AND a.code = 'season'
-                ORDER BY ao.sort_order ASC
-            """)
-            season_rows = cur.fetchall()
-
-            cur.execute("""
-                SELECT LOWER(tire_type) as ttype, COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active' AND tire_type IS NOT NULL
-                GROUP BY tire_type
-            """)
-            tire_type_counts = {r['ttype']: r['cnt'] for r in cur.fetchall() if r.get('ttype')}
-
-            cur.execute("""
-                SELECT COUNT(*) as cnt
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active' AND run_flat = 1
-            """)
-            rf_res = cur.fetchone()
-            run_flat_cnt = rf_res['cnt'] if rf_res else 0
-
-            filter_tyre_types = []
-            for sr in season_rows:
-                raw_val = sr.get('value') or ''
-                lbl_raw = sr.get('label')
-                label_dict = {}
-                if isinstance(lbl_raw, str):
-                    try:
-                        label_dict = json.loads(lbl_raw)
-                    except Exception:
-                        label_dict = {'en': raw_val}
-                elif isinstance(lbl_raw, dict):
-                    label_dict = lbl_raw
-                label = label_dict.get(locale) or label_dict.get('en') or raw_val
-                key = raw_val.lower().replace('-', '_').replace(' ', '_')
-                filter_tyre_types.append({
-                    'key': key,
-                    'label': label,
-                    'count': tire_type_counts.get(key, 0)
-                })
-
-            filter_tyre_types.append({
-                'key': 'run_flat',
-                'label': 'Run Flat',
-                'count': run_flat_cnt
-            })
-
-            # 6. Sidebar: Promotions / Special Offers directly synced with active cart_price_rules in DB
-            cur.execute("""
-                SELECT id, name
-                FROM cart_price_rules
-                WHERE is_active = 1
-                  AND deleted_at IS NULL
-                  AND (from_date IS NULL OR from_date <= CURRENT_DATE())
-                  AND (to_date IS NULL OR to_date >= CURRENT_DATE())
-                ORDER BY priority ASC, id ASC
-            """)
-            active_rules = cur.fetchall()
-            filter_promotions = []
-            for r in active_rules:
-                r_name = (r.get('name') or '').strip()
-                if not r_name:
-                    continue
-                cur.execute("""
-                    SELECT COUNT(*) as cnt
-                    FROM products
-                    WHERE deleted_at IS NULL AND status = 'active'
-                      AND (
-                        attributes_json LIKE %s
-                        OR JSON_EXTRACT(attributes_json, '$.offers') LIKE %s
-                        OR JSON_EXTRACT(attributes_json, '$.promotion') LIKE %s
-                        OR JSON_EXTRACT(attributes_json, '$.badge') LIKE %s
-                      )
-                """, [f"%{r_name}%", f"%{r_name}%", f"%{r_name}%", f"%{r_name}%"])
-                cnt_row = cur.fetchone()
-                cnt = int(cnt_row['cnt']) if cnt_row else 0
-                p_key = re.sub(r'[^a-z0-9]+', '_', r_name.lower()).strip('_')
-                p_cnt = facets.get('promotions', {}).get(p_key, 0) if facets else cnt
-                filter_promotions.append({
-                    'key': p_key,
-                    'label': r_name,
-                    'count': p_cnt
-                })
-
-            # 7. Sidebar: Price Range from DB
-            cur.execute("""
-                SELECT MIN(price) as min_p, MAX(price) as max_p
-                FROM products
-                WHERE deleted_at IS NULL AND status = 'active'
-            """)
-            pr_row = cur.fetchone()
-            min_price = int(pr_row['min_p']) if pr_row and pr_row['min_p'] is not None else 100
-            max_price = int(pr_row['max_p']) if pr_row and pr_row['max_p'] is not None else 2000
-            # Synchronize sidebar filter counts with computed dynamic facets
-            if facets:
-                if 'tyres_categories' in facets:
-                    for tc in filter_tyres_categories:
-                        cat_k = tc['category']
-                        tc['count'] = facets['tyres_categories'].get(cat_k, facets['tyres_categories'].get(cat_k.capitalize(), facets['tyres_categories'].get(cat_k.lower(), 0)))
-                if 'brands' in facets:
-                    for b in filter_brands:
-                        b_slug = (b.get('slug') or '').lower()
-                        b_name = (b.get('name') or '').lower()
-                        b['count'] = facets['brands'].get(b_slug, facets['brands'].get(b_name, 0))
-                if 'patterns' in facets:
-                    for p in filter_patterns:
-                        p['count'] = facets['patterns'].get(p['pattern'], 0)
-                if 'tyre_markings' in facets:
-                    for tm in filter_tyre_markings:
-                        tm['count'] = facets['tyre_markings'].get(tm['marking'], 0)
-                if 'oems' in facets:
-                    for o in filter_oem_tyres:
-                        o['count'] = facets['oems'].get(o['oem'], 0)
-                if 'warranties' in facets:
-                    for w in filter_warranties:
-                        w['count'] = facets['warranties'].get(w['warranty'], 0)
-                if 'years' in facets:
-                    for y in filter_years:
-                        y['count'] = facets['years'].get(str(y['year']), 0)
-                if 'origins' in facets:
-                    for org in filter_origins:
-                        org_k = (org.get('origin') or '').lower()
-                        org['count'] = facets['origins'].get(org_k, facets['origins'].get(org.get('origin'), 0))
-                if 'promotions' in facets:
-                    for pr in filter_promotions:
-                        pr['count'] = facets['promotions'].get(pr['key'], 0)
-                if 'runflat' in facets:
-                    filter_runflat_count = facets.get('runflat', 0)
-                if 'ev_tyre' in facets:
-                    filter_ev_tyre_count = facets.get('ev_tyre', 0)
-
-            active_brand_name = ''
-            active_brand_slug = ''
-            if active_brands and len(active_brands) == 1:
-                target_b = active_brands[0].lower()
-                for fb in filter_brands:
-                    if fb['slug'].lower() == target_b or fb['name'].lower() == target_b:
-                        active_brand_name = fb['name']
-                        active_brand_slug = fb['slug']
-                        break
-                if not active_brand_name:
-                    active_brand_name = active_brands[0].capitalize()
-                    active_brand_slug = active_brands[0]
-
-            if active_ev_tyre:
-                listing_title = 'Buy EV Tyres Online in UAE with Top Brands | TyresVision'
-                listing_desc = 'Buy EV tyres online for Tesla, BYD and more in Dubai, Abu Dhabi & UAE. Correct load rating and low rolling resistance, fitted free at a centre.'
-                canonical_url = f"{seo_builder.SITE_URL}/tyres/ev"
-            elif active_brand_name:
-                listing_title = f"Buy {active_brand_name} tyres online. Fitted locally in UAE. | TyresVision"
-                listing_desc = f"Looking for {active_brand_name} tyres in Dubai and Abu Dhabi? Shop online from a wide selection of tyre sizes with fast delivery throughout the UAE."
-                canonical_url = f"{seo_builder.SITE_URL}/tyres/brand/{active_brand_slug}"
-            else:
-                listing_title = 'Buy Tyres Online in UAE with Top Brands & Best Prices| TyresVision'
-                listing_desc = 'Shop premium SUV and 4x4 tyres online in Dubai, Abu Dhabi, and across the UAE. Filter by size, brand, or price, buy genuine tyres, and enjoy free doorstep mobile fitting.'
-                canonical_url = f"{seo_builder.SITE_URL}/tyres"
-
-            breadcrumb_items = [{"label": "Home", "url": "/"}]
-            if active_ev_tyre:
-                breadcrumb_items.append({"label": "EV Tyres"})
-            elif active_brand_name:
-                breadcrumb_items.append({"label": "Tyres", "url": "/tyres"})
-                breadcrumb_items.append({"label": active_brand_name})
-            else:
-                breadcrumb_items.append({"label": "Tyres"})
-
-            listing_items = [
-                {
-                    'name': p.get('display_name') or p.get('name') or p.get('title') or 'Tyre',
-                    'url': f"/{p.get('slug')}" if p.get('slug') else '/tyres',
-                }
-                for p in products
-            ]
-
-            seo = seo_builder.build_collection_page_seo(
-                canonical_url, listing_title, listing_desc, breadcrumb_items, listing_items,
-            )
-
-            resp = make_response(render_template(
-                'Client/ProductListing.html',
-                products=products,
-                listing_title=listing_title,
-                listing_desc=listing_desc,
-                **seo,
-                total_count=total_count,
-                current_page=current_page,
-                per_page=per_page,
-                total_pages=total_pages,
-                filter_tyres_categories=filter_tyres_categories,
-                active_tyres_categories=active_tyres_categories,
-                filter_brands=filter_brands,
-                active_brand_name=active_brand_name,
-                active_brand_slug=active_brand_slug,
-                filter_patterns=filter_patterns,
-                filter_tyre_markings=filter_tyre_markings,
-                active_tyre_markings=active_tyre_markings,
-                filter_oem_tyres=filter_oem_tyres,
-                filter_warranties=filter_warranties,
-                filter_years=filter_years,
-                filter_origins=filter_origins,
-                filter_sizes=filter_sizes,
-                filter_vehicles=filter_vehicles,
-                filter_tyre_types=filter_tyre_types,
-                filter_runflat_count=filter_runflat_count,
-                active_runflat=active_runflat,
-                filter_ev_tyre_count=filter_ev_tyre_count,
-                active_ev_tyre=active_ev_tyre,
-                filter_promotions=filter_promotions,
-                min_price=min_price,
-                max_price=max_price,
-                active_brands=active_brands,
-                active_patterns=active_patterns,
-                active_oem_tyres=active_oem_tyres,
-                active_warranties=active_warranties,
-                active_years=active_years,
-                active_origins=active_origins,
-                active_vehicles=active_vehicles,
-                active_sizes=active_sizes,
-                active_types=active_types,
-                active_promotions=active_promotions,
-                active_max_price=active_max_price,
-                active_min_price=active_min_price,
-                active_sort=active_sort,
-                is_staggered=is_staggered,
-                front_size_label=front_size_label,
-                rear_size_label=rear_size_label,
-                locale=locale
-            ))
-            resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
-            return resp
-    finally:
-        conn.close()
+    resp = make_response(render_template(
+        'Client/ProductListing.html',
+        products=products,
+        listing_title=listing_title,
+        listing_desc=listing_desc,
+        **seo,
+        total_count=total_count,
+        current_page=current_page,
+        per_page=per_page,
+        total_pages=total_pages,
+        filter_tyres_categories=filter_tyres_categories,
+        active_tyres_categories=active_tyres_categories,
+        filter_brands=filter_brands,
+        active_brand_name=active_brand_name,
+        active_brand_slug=active_brand_slug,
+        filter_patterns=filter_patterns,
+        filter_tyre_markings=filter_tyre_markings,
+        active_tyre_markings=active_tyre_markings,
+        filter_oem_tyres=filter_oem_tyres,
+        filter_warranties=filter_warranties,
+        filter_years=filter_years,
+        filter_origins=filter_origins,
+        filter_sizes=filter_sizes,
+        filter_vehicles=filter_vehicles,
+        filter_tyre_types=filter_tyre_types,
+        filter_runflat_count=filter_runflat_count,
+        active_runflat=active_runflat,
+        filter_ev_tyre_count=filter_ev_tyre_count,
+        active_ev_tyre=active_ev_tyre,
+        filter_promotions=filter_promotions,
+        min_price=min_price,
+        max_price=max_price,
+        active_brands=active_brands,
+        active_patterns=active_patterns,
+        active_oem_tyres=active_oem_tyres,
+        active_warranties=active_warranties,
+        active_years=active_years,
+        active_origins=active_origins,
+        active_vehicles=active_vehicles,
+        active_sizes=active_sizes,
+        active_types=active_types,
+        active_promotions=active_promotions,
+        active_max_price=active_max_price,
+        active_min_price=active_min_price,
+        active_sort=active_sort,
+        is_staggered=is_staggered,
+        front_size_label=front_size_label,
+        rear_size_label=rear_size_label,
+        locale=locale
+    ))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
 
 
 @site_bp.route('/api/products')
@@ -2752,7 +3166,10 @@ def _render_product_detail(slug_or_id, locale=None):
             if not img_path.startswith('/'):
                 img_path = '/' + img_path.replace('\\', '/')
 
-            brand_logo = p_row.get('brand_logo') or '/static/uploads/brands/brand_884b41a82943de82_1789467748.png'
+            brand_logo = p_row.get('brand_logo') or get_brand_logo(p_row.get('brand_slug'), p_row.get('brand_id'), p_row.get('brand_name')) or '/static/uploads/brands/brand_884b41a82943de82_1789467748.webp'
+        if str(brand_logo).lower().endswith(('.png', '.jpg', '.jpeg')):
+            base, _ = os.path.splitext(str(brand_logo))
+            brand_logo = base + '.webp'
             if not brand_logo.startswith('/'):
                 brand_logo = '/' + brand_logo.replace('\\', '/')
 
@@ -2911,8 +3328,8 @@ def _render_product_detail(slug_or_id, locale=None):
 
             related_products = [_format_product_for_client(r, locale) for r in rel_rows]
 
-            canonical_url = f"https://www.tyresvision.com/{product['slug']}"
-            raw_img = product.get('image_path') or '/static/assets/images/online-tyres-shop-dubai.png'
+            canonical_url = f"https://www.tyresvision.com/tyres/{product['slug']}"
+            raw_img = product.get('image_path') or '/static/assets/images/online-tyres-shop-dubai.webp'
             if raw_img.startswith('http://') or raw_img.startswith('https://'):
                 full_image_url = raw_img
             else:
@@ -2967,33 +3384,57 @@ def _render_product_detail(slug_or_id, locale=None):
 # Legacy Product Detail URLs -- 301 redirect to the canonical bare-slug route
 # (page_detail / page_detail_locale below) to eliminate duplicate-content URLs.
 @site_bp.route('/product/<slug>', strict_slashes=False)
-@site_bp.route('/product/<slug>/', strict_slashes=False)
 @site_bp.route('/tyres/product/<slug>', strict_slashes=False)
-@site_bp.route('/tyres/product/<slug>/', strict_slashes=False)
 def product_detail(slug):
     """Redirects legacy /product/<slug> and /tyres/product/<slug> URLs to the canonical /<slug>."""
-    return redirect(f'/{slug}', code=301)
+    return redirect(f'/tyres/{slug}', code=301)
 
 
 @site_bp.route('/<string(length=2):lang_code>/product/<slug>', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/product/<slug>/', strict_slashes=False)
 @site_bp.route('/<string(length=2):lang_code>/tyres/product/<slug>', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/tyres/product/<slug>/', strict_slashes=False)
 def product_detail_locale(lang_code, slug):
     """Redirects legacy locale-prefixed product URLs to the canonical /<lang_code>/<slug>."""
-    return redirect(f'/{lang_code.lower()}/{slug}', code=301)
+    return redirect(f'/{lang_code.lower()}/tyres/{slug}', code=301)
 
 
 
 
 
+
+
+@site_bp.route('/tyres/brands', strict_slashes=False)
+def brand_page():
+    """Client storefront Brands directory rendering Client/brand.html with all active tyre brands."""
+    locale = _get_locale()
+    return _render_brand_page(locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/brands', strict_slashes=False)
+def brand_page_locale(lang_code):
+    """Client storefront Brands directory with dynamic locale."""
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_brand_page(code)
 
 
 @site_bp.route('/brand', strict_slashes=False)
 @site_bp.route('/brands', strict_slashes=False)
-def brand_page():
-    """Client storefront Brands page rendering Client/brand.html with all active tyre brands."""
-    locale = _get_locale()
+@site_bp.route('/tyre-brands', strict_slashes=False)
+def legacy_brand_redirect():
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/tyres/brands{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/brand', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/brands', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/tyre-brands', strict_slashes=False)
+def legacy_brand_redirect_locale(lang_code):
+    code = lang_code.lower()
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/tyres/brands{qs}", code=301)
+
+
+def _render_brand_page(locale):
     import db
     conn = db.get_connection()
     try:
@@ -3046,12 +3487,14 @@ def brand_page():
                     'country': b.get('country') or ''
                 })
 
+            brand_url_prefix = f"/{locale}/tyres/brands" if locale and locale != 'en' else "/tyres/brands"
+            canonical_url = f"{seo_builder.SITE_URL}/{locale}/tyres/brands" if locale and locale != 'en' else f"{seo_builder.SITE_URL}/tyres/brands"
             title = 'Shop Tyres by Brand in Dubai & Abu Dhabi | TyresVision'
             description = 'Shop tyres by brand, from Michelin, Bridgestone and Pirelli to Hankook and Giti. Pick a brand to see its tyres and buy online with free fitting at a centre.'
             seo = seo_builder.build_collection_page_seo(
-                f"{seo_builder.SITE_URL}/brands", title, description,
-                breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Brands"}],
-                list_items=[{'name': b['name'], 'url': f"/brands/{b['slug']}"} for b in brands],
+                canonical_url, title, description,
+                breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Tyres", "url": "/tyres"}, {"label": "Brands"}],
+                list_items=[{'name': b['name'], 'url': f"{brand_url_prefix}/{b['slug']}"} for b in brands],
             )
             resp = make_response(render_template(
                 'Client/brand.html',
@@ -3086,10 +3529,37 @@ _BRAND_FEATURE_DEFAULTS = [
 ]
 
 
-@site_bp.route('/brands/<slug>', strict_slashes=False)
+@site_bp.route('/tyres/brands/<slug>', strict_slashes=False)
 def brand_detail_page(slug):
     """Client storefront Brand Detail page: one brand's story + its in-stock tyres."""
     locale = _get_locale()
+    return _render_brand_detail(slug, locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/brands/<slug>', strict_slashes=False)
+def brand_detail_page_locale(lang_code, slug):
+    """Client storefront Brand Detail page with dynamic locale."""
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_brand_detail(slug, code)
+
+
+@site_bp.route('/brands/<slug>', strict_slashes=False)
+@site_bp.route('/brand/<slug>', strict_slashes=False)
+def legacy_brand_detail_redirect(slug):
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/tyres/brands/{slug}{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/brands/<slug>', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/brand/<slug>', strict_slashes=False)
+def legacy_brand_detail_redirect_locale(lang_code, slug):
+    code = lang_code.lower()
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/tyres/brands/{slug}{qs}", code=301)
+
+
+def _render_brand_detail(slug, locale):
     import db
     conn = db.get_connection()
     try:
@@ -3192,12 +3662,14 @@ def brand_detail_page(slug):
     )
 
     base_url = "https://www.tyresvision.com"
-    canonical_url = f"{base_url}/brands/{slug}"
+    canonical_url = f"{base_url}/{locale}/tyres/brands/{slug}" if locale and locale != 'en' else f"{base_url}/tyres/brands/{slug}"
 
+    brand_url = f"/{locale}/tyres/brands" if locale and locale != 'en' else "/tyres/brands"
     breadcrumbs = [
         {"label": "Home", "url": "/"},
-        {"label": "Brands", "url": "/brands"},
-        {"label": brand_name, "url": f"/brands/{slug}"},
+        {"label": "Tyres", "url": "/tyres"},
+        {"label": "Brands", "url": brand_url},
+        {"label": brand_name, "url": f"{brand_url}/{slug}"},
     ]
 
     seo = seo_builder.build_brand_detail_seo(
@@ -3364,9 +3836,6 @@ def get_models_with_available_tyres(make_slug):
 
 
 @site_bp.route('/tyres/cars', strict_slashes=False)
-@site_bp.route('/tyres/cars/', strict_slashes=False)
-@site_bp.route('/cars', strict_slashes=False)
-@site_bp.route('/cars/', strict_slashes=False)
 def car_brands_page():
     """Client storefront Car Brands directory rendering Client/CarBrands.html."""
     locale = _get_locale()
@@ -3374,14 +3843,28 @@ def car_brands_page():
 
 
 @site_bp.route('/<string(length=2):lang_code>/tyres/cars', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/tyres/cars/', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/cars', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/cars/', strict_slashes=False)
 def car_brands_page_locale(lang_code):
     """Client storefront Car Brands directory with dynamic locale."""
     code = lang_code.lower()
     session['site_locale'] = code
     return _render_car_brands(code)
+
+
+@site_bp.route('/cars', strict_slashes=False)
+@site_bp.route('/tyres-by-car', strict_slashes=False)
+@site_bp.route('/car-brands', strict_slashes=False)
+def legacy_car_brands_redirect():
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/tyres/cars{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/cars', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/tyres-by-car', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/car-brands', strict_slashes=False)
+def legacy_car_brands_redirect_locale(lang_code):
+    code = lang_code.lower()
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/tyres/cars{qs}", code=301)
 
 
 def _render_car_brands(locale):
@@ -3418,7 +3901,7 @@ def _render_car_brands(locale):
         if slug == 'citroen':
             name = 'Citroën'
 
-        logo_file = f"{slug}.png"
+        logo_file = f"{slug}.webp"
         if logo_file in avail_local:
             logo_url = f"/static/assets/images/cars-logo/{logo_file}"
         else:
@@ -3455,17 +3938,14 @@ def _render_car_brands(locale):
     # Sort alphabetically from A to Z to match OEM car makes directory
     makes.sort(key=lambda x: x['name'].lower())
 
-    # NOTE: this matches the canonical the template has always actually used
-    # (https://www.tyresvision.com/cars, the live registered route) rather
-    # than /tyres/cars -- see Part 5 of the SEO report for the known
-    # /cars vs /tyres/cars canonical mismatch, which this pass reports but
-    # does not change.
     title = 'Shop Tyres by Car Make in Dubai & Abu Dhabi | TyresVision'
     description = 'Choose your car make, such as Toyota, Nissan, BMW or Mercedes-Benz, then your model to find tyres that fit. Buy online with free fitting at a partner centre.'
+    canonical_url = f"{seo_builder.SITE_URL}/{locale}/tyres/cars" if locale and locale != 'en' else f"{seo_builder.SITE_URL}/tyres/cars"
+    cars_url_prefix = f"/{locale}/tyres/cars" if locale and locale != 'en' else "/tyres/cars"
     seo = seo_builder.build_collection_page_seo(
-        f"{seo_builder.SITE_URL}/cars", title, description,
-        breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Cars"}],
-        list_items=[{'name': m['name'], 'url': f"/cars/{m['slug']}"} for m in makes],
+        canonical_url, title, description,
+        breadcrumb_items=[{"label": "Home", "url": "/"}, {"label": "Tyres", "url": "/tyres"}, {"label": "Cars"}],
+        list_items=[{'name': m['name'], 'url': f"{cars_url_prefix}/{m['slug']}"} for m in makes],
     )
 
     resp = make_response(render_template(
@@ -3480,7 +3960,6 @@ def _render_car_brands(locale):
 
 
 @site_bp.route('/tyres/cars/<path:slug_path>', strict_slashes=False)
-@site_bp.route('/cars/<path:slug_path>', strict_slashes=False)
 def vehicle_dynamic_page(slug_path):
     """Dynamic multi-slug Vehicle page supporting Make > Model > Year > Trim fitments."""
     locale = _get_locale()
@@ -3488,12 +3967,28 @@ def vehicle_dynamic_page(slug_path):
 
 
 @site_bp.route('/<string(length=2):lang_code>/tyres/cars/<path:slug_path>', strict_slashes=False)
-@site_bp.route('/<string(length=2):lang_code>/cars/<path:slug_path>', strict_slashes=False)
 def vehicle_dynamic_page_locale(lang_code, slug_path):
     """Dynamic multi-slug Vehicle page with dynamic locale."""
     code = lang_code.lower()
     session['site_locale'] = code
     return _render_vehicle_page(slug_path, code)
+
+
+@site_bp.route('/cars/<path:slug_path>', strict_slashes=False)
+@site_bp.route('/tyres-by-car/<path:slug_path>', strict_slashes=False)
+def legacy_vehicle_page_redirect(slug_path):
+    clean = (slug_path or '').strip('/')
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/tyres/cars/{clean}{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/cars/<path:slug_path>', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/tyres-by-car/<path:slug_path>', strict_slashes=False)
+def legacy_vehicle_page_redirect_locale(lang_code, slug_path):
+    code = lang_code.lower()
+    clean = (slug_path or '').strip('/')
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/tyres/cars/{clean}{qs}", code=301)
 
 
 def _render_vehicle_page(slug_path, locale):
@@ -3524,8 +4019,8 @@ def _render_vehicle_page(slug_path, locale):
         current_app.logger.warning(f"Error resolving make {make_slug}: {e}")
 
     avail_local = _get_car_logo_files()
-    if f"{make_slug}.png" in avail_local:
-        make_info['logo'] = f"/static/assets/images/cars-logo/{make_slug}.png"
+    if f"{make_slug}.webp" in avail_local:
+        make_info['logo'] = f"/static/assets/images/cars-logo/{make_slug}.webp"
     elif not make_info['logo']:
         make_info['logo'] = f"https://wheel-api.klever.ae/logos/{make_slug}.png"
 
@@ -4029,7 +4524,7 @@ def _render_vehicle_page(slug_path, locale):
             for p in (products or []) if p.get('slug')
         ]
     else:
-        vp_list_items = [{'name': m['name'], 'url': f"/cars/{make_slug}/{m['slug']}"} for m in (models or [])]
+        vp_list_items = [{'name': m['name'], 'url': f"{base_prefix}/{make_slug}/{m['slug']}"} for m in (models or [])]
 
     car_about = None
     if level >= 2 and make_info:
@@ -4065,6 +4560,137 @@ def _render_vehicle_page(slug_path, locale):
     return resp
 
 
+# ============================================================================
+# EV & OFF-ROAD 4X4 SPECIALTY TYRES PAGES
+# ============================================================================
+@site_bp.route('/tyres/ev', strict_slashes=False)
+def ev_tyres_page():
+    locale = _get_locale()
+    return _render_product_listing(locale, filter_path='ev')
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/ev', strict_slashes=False)
+def ev_tyres_page_locale(lang_code):
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_product_listing(code, filter_path='ev')
+
+
+def _render_ev_tyres_page(locale):
+    page = Page.find_by_slug('ev-tyres')
+    if not page:
+        abort(404)
+    raw_sections = PageSection.all_for_page('ev-tyres', include_inactive=False)
+    sections = [PageSection.to_localized_dict(s, locale=locale) for s in raw_sections]
+    canonical_url = f"{seo_builder.SITE_URL}/{locale}/ev-tyres" if locale and locale != 'en' else f"{seo_builder.SITE_URL}/ev-tyres"
+    title = page.get_seo_title(locale) or (page.get_title(locale) + ' | TyresVision UAE')
+    description = page.get_meta_desc(locale) or (
+        'Buy specialized electric vehicle (EV) tyres in Dubai & Abu Dhabi. High-load, low road noise tyres for Tesla, BYD, Porsche with mobile fitting across UAE.'
+    )
+    breadcrumb_items = [
+        {"label": "Home", "url": "/"},
+        {"label": "EV & Hybrid Tyres", "url": "/ev-tyres"},
+    ]
+    seo = seo_builder.build_generic_page_seo(canonical_url, title, description, breadcrumb_items)
+    resp = make_response(render_template('Client/Page.html', page=page, slug='ev-tyres', locale=locale, sections=sections, **seo))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
+
+
+@site_bp.route('/ev-tyres', strict_slashes=False)
+def ev_tyres_editorial_page():
+    locale = _get_locale()
+    return _render_ev_tyres_page(locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/ev-tyres', strict_slashes=False)
+def ev_tyres_editorial_page_locale(lang_code):
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_ev_tyres_page(code)
+
+
+@site_bp.route('/ev-tyres-dubai', strict_slashes=False)
+def legacy_ev_tyres_dubai_redirect():
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/ev-tyres{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/ev-tyres-dubai', strict_slashes=False)
+def legacy_ev_tyres_dubai_redirect_locale(lang_code):
+    code = lang_code.lower()
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/ev-tyres{qs}", code=301)
+
+
+@site_bp.route('/tyres/off-road-4x4', strict_slashes=False)
+def off_road_4x4_page():
+    locale = _get_locale()
+    return _render_off_road_4x4_page(locale)
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/off-road-4x4', strict_slashes=False)
+def off_road_4x4_page_locale(lang_code):
+    code = lang_code.lower()
+    session['site_locale'] = code
+    return _render_off_road_4x4_page(code)
+
+
+def _render_off_road_4x4_page(locale):
+    page = Page.find_by_slug('off-road-4x4-tyres')
+    if not page:
+        abort(404)
+    raw_sections = PageSection.all_for_page('off-road-4x4-tyres', include_inactive=False)
+    sections = [PageSection.to_localized_dict(s, locale=locale) for s in raw_sections]
+    canonical_url = f"{seo_builder.SITE_URL}/{locale}/tyres/off-road-4x4" if locale and locale != 'en' else f"{seo_builder.SITE_URL}/tyres/off-road-4x4"
+    title = page.get_seo_title(locale) or (page.get_title(locale) + ' | TyresVision UAE')
+    description = page.get_meta_desc(locale) or (
+        'Buy all-terrain, mud-terrain and 4x4 off-road tyres in Dubai & Abu Dhabi. BFGoodrich, Cooper, Yokohama with free fitting across the UAE.'
+    )
+    breadcrumb_items = [
+        {"label": "Home", "url": "/"},
+        {"label": "Tyres", "url": "/tyres"},
+        {"label": "Off-Road & 4x4", "url": "/tyres/off-road-4x4"},
+    ]
+    seo = seo_builder.build_generic_page_seo(canonical_url, title, description, breadcrumb_items)
+    resp = make_response(render_template('Client/Page.html', page=page, slug='off-road-4x4-tyres', locale=locale, sections=sections, **seo))
+    resp.set_cookie('site_locale', locale, max_age=31536000, path='/')
+    return resp
+
+
+@site_bp.route('/off-road-4x4-tyres', strict_slashes=False)
+@site_bp.route('/off-road-4x4', strict_slashes=False)
+def legacy_off_road_tyres_redirect():
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/tyres/off-road-4x4{qs}", code=301)
+
+
+@site_bp.route('/<string(length=2):lang_code>/off-road-4x4-tyres', strict_slashes=False)
+@site_bp.route('/<string(length=2):lang_code>/off-road-4x4', strict_slashes=False)
+def legacy_off_road_tyres_redirect_locale(lang_code):
+    code = lang_code.lower()
+    qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+    return redirect(f"/{code}/tyres/off-road-4x4{qs}", code=301)
+
+
+# ============================================================================
+# TYRE SIZES DEDICATED CATALOG ROUTE
+# ============================================================================
+@site_bp.route('/tyres/size/<path:size_slug>', strict_slashes=False)
+def tyre_size_listing(size_slug):
+    locale = _get_locale()
+    clean_size = (size_slug or '').strip('/').lower()
+    return _render_product_listing(locale, filter_path=f"size-{clean_size}")
+
+
+@site_bp.route('/<string(length=2):lang_code>/tyres/size/<path:size_slug>', strict_slashes=False)
+def tyre_size_listing_locale(lang_code, size_slug):
+    code = lang_code.lower()
+    session['site_locale'] = code
+    clean_size = (size_slug or '').strip('/').lower()
+    return _render_product_listing(code, filter_path=f"size-{clean_size}")
+
+
 @site_bp.route('/tyres', strict_slashes=False)
 def car_tyres_listing():
     """Client storefront Car Tyres / Product Listing catalog."""
@@ -4078,6 +4704,30 @@ def car_tyres_listing_slug(filter_path):
     clean_path = (filter_path or '').strip('/')
     if not clean_path:
         return redirect('/tyres', code=301)
+
+    # Redirect guards for new canonical URL structure
+    clean_lower = clean_path.lower()
+    if clean_lower in ('brands', 'brand'):
+        return redirect('/tyres/brands', code=301)
+    if clean_lower.startswith('brands/'):
+        return redirect(f"/tyres/{clean_path}", code=301)
+    if clean_lower.startswith('brand/'):
+        sub = clean_path[6:]
+        return redirect(f"/tyres/brands/{sub}", code=301)
+    if clean_lower in ('cars', 'car'):
+        return redirect('/tyres/cars', code=301)
+    if clean_lower.startswith('cars/'):
+        return redirect(f"/tyres/{clean_path}", code=301)
+    if clean_lower.startswith('car/'):
+        sub = clean_path[4:]
+        return redirect(f"/tyres/cars/{sub}", code=301)
+    if clean_lower == 'ev':
+        return redirect('/tyres/ev', code=301)
+    if clean_lower in ('off-road-4x4', 'off-road', '4x4'):
+        return redirect('/tyres/off-road-4x4', code=301)
+    m_single_size = re.match(r'^size-(\d{2,3}-\d{2}-.*)$', clean_lower)
+    if m_single_size:
+        return redirect(f"/tyres/size/{m_single_size.group(1)}", code=301)
 
     # Check if slug matches a product directly
     import db
@@ -4133,6 +4783,29 @@ def car_tyres_listing_locale_slug(lang_code, filter_path):
     clean_path = (filter_path or '').strip('/')
     if not clean_path:
         return redirect(f'/{code}/tyres', code=301)
+
+    clean_lower = clean_path.lower()
+    if clean_lower in ('brands', 'brand'):
+        return redirect(f"/{code}/tyres/brands", code=301)
+    if clean_lower.startswith('brands/'):
+        return redirect(f"/{code}/tyres/{clean_path}", code=301)
+    if clean_lower.startswith('brand/'):
+        sub = clean_path[6:]
+        return redirect(f"/{code}/tyres/brands/{sub}", code=301)
+    if clean_lower in ('cars', 'car'):
+        return redirect(f"/{code}/tyres/cars", code=301)
+    if clean_lower.startswith('cars/'):
+        return redirect(f"/{code}/tyres/{clean_path}", code=301)
+    if clean_lower.startswith('car/'):
+        sub = clean_path[4:]
+        return redirect(f"/{code}/tyres/cars/{sub}", code=301)
+    if clean_lower == 'ev':
+        return redirect(f"/{code}/tyres/ev", code=301)
+    if clean_lower in ('off-road-4x4', 'off-road', '4x4'):
+        return redirect(f"/{code}/tyres/off-road-4x4", code=301)
+    m_single_size = re.match(r'^size-(\d{2,3}-\d{2}-.*)$', clean_lower)
+    if m_single_size:
+        return redirect(f"/{code}/tyres/size/{m_single_size.group(1)}", code=301)
 
     # Check if slug matches a product directly
     import db
@@ -4704,7 +5377,19 @@ def page_detail_locale(lang_code, slug):
     """Directly render CMS page or blog for dynamic locale (e.g. /ar/terms, /de/privacy)."""
     code = lang_code.lower()
     session['site_locale'] = code
-    if slug in ('blog', 'blogs'):
+    if slug in ('brand', 'brands', 'tyre-brands'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/{code}/tyres/brands{qs}", code=301)
+    elif slug in ('cars', 'tyres-by-car', 'car-brands'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/{code}/tyres/cars{qs}", code=301)
+    elif slug in ('ev-tyres-dubai',):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/{code}/ev-tyres{qs}", code=301)
+    elif slug in ('off-road-4x4-tyres', 'off-road-4x4'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/{code}/tyres/off-road-4x4{qs}", code=301)
+    elif slug in ('blog', 'blogs'):
         return blog_locale(code)
     elif slug == 'about-us':
         return about_us_locale(code)
@@ -4738,7 +5423,7 @@ def page_detail_locale(lang_code, slug):
             """, [clean_s, f"{clean_s}%", clean_s, clean_s])
             p_match = cur.fetchone()
             if p_match:
-                return _render_product_detail(p_match['slug'], code)
+                return redirect(f"/{code}/tyres/{p_match['slug']}", code=301)
     finally:
         conn.close()
 
@@ -4850,7 +5535,7 @@ def _format_wheel_api_vehicles_html(items, make_logos=None):
             <div class="modal-name-cotent" style="flex:0 0 auto;">
                 <div class="left-content">
                     <div class="brand-image flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 rounded-[6px] px-3 py-1 border border-blue-200 group-hover:border-blue-300 transition-colors">
-                        <img class="w-8 h-auto object-contain" src="{html_lib.escape(logo_url)}" alt="{html_lib.escape(m_name)}" onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{html_lib.escape(m_slug)}.png';" />
+                        <img class="w-8 h-auto object-contain" src="{html_lib.escape(logo_url)}" alt="{html_lib.escape(m_name)}" onerror="this.onerror=null; this.src='/static/assets/images/cars-logo/{html_lib.escape(m_slug)}.webp';" />
                         <p class="ml-2 text-xs font-semibold uppercase text-gray-800 tracking-wide">{html_lib.escape(m_name)}</p>
                     </div>
                 </div>
@@ -5526,20 +6211,24 @@ IP Address: {client_ip}
             inline_images = {'tyresvision_logo': logo_path} if os.path.isfile(logo_path) else None
 
             # Resolve owner notification email from environment (.env), falling back to mailer.OWNER_EMAIL
+            from mailer import MAIL_CC, _addr_list
             owner_email_raw = os.environ.get('OWNER_EMAIL') or os.environ.get('TO_OWNER_EMAIL') or OWNER_EMAIL
-            owner_recipients = [e.strip() for e in re.split(r'[,;]', owner_email_raw) if e.strip()]
-            for target_email in owner_recipients:
-                try:
-                    send_email(target_email, email_subject, html_body, text_body, inline_images=inline_images)
-                except Exception as send_err:
-                    flask_app.logger.warning(f"Failed to send contact enquiry to {target_email}: {send_err}")
+            owner_recipients = _addr_list(owner_email_raw)
+            primary_to = owner_recipients[0] if owner_recipients else (OWNER_EMAIL or GMAIL_USER)
 
-            # Also copy GMAIL_USER if configured and distinct from owner recipients
-            if GMAIL_USER and not any(GMAIL_USER.lower() == r.lower() for r in owner_recipients):
-                try:
-                    send_email(GMAIL_USER, email_subject, html_body, text_body, inline_images=inline_images)
-                except Exception as send_err:
-                    flask_app.logger.warning(f"Failed to send contact enquiry copy to {GMAIL_USER}: {send_err}")
+            # Customer Enquiry mail: send to primary owner with CC copied
+            enquiry_cc = []
+            for extra in owner_recipients[1:]:
+                if extra.lower() != primary_to.lower() and extra not in enquiry_cc:
+                    enquiry_cc.append(extra)
+            for c in _addr_list(MAIL_CC):
+                if c.lower() != primary_to.lower() and c not in enquiry_cc:
+                    enquiry_cc.append(c)
+
+            try:
+                send_email(primary_to, email_subject, html_body, text_body, inline_images=inline_images, cc=enquiry_cc)
+            except Exception as send_err:
+                flask_app.logger.warning(f"Failed to send contact enquiry to {primary_to}: {send_err}")
         except Exception as mail_err:
             flask_app.logger.warning(f"Failed to send email notification for contact enquiry #{enquiry_id}: {mail_err}", exc_info=True)
 
@@ -5550,6 +6239,18 @@ def page_detail(slug):
     """Generic static CMS content page reader with dynamic sections support."""
     if slug in ('tcsadmin', 'visionadmin', 'visonadmin', 'admin', 'static', 'api', 'login', 'logout', 'forgot-password', 'reset-password', 'favicon.ico'):
         abort(404)
+    if slug in ('brand', 'brands', 'tyre-brands'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/tyres/brands{qs}", code=301)
+    if slug in ('cars', 'tyres-by-car', 'car-brands'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/tyres/cars{qs}", code=301)
+    if slug in ('ev-tyres-dubai',):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/ev-tyres{qs}", code=301)
+    if slug in ('off-road-4x4-tyres', 'off-road-4x4'):
+        qs = f"?{request.query_string.decode('utf-8')}" if request.query_string else ""
+        return redirect(f"/tyres/off-road-4x4{qs}", code=301)
     if slug == 'mobile-tyre-fitting':
         return mobile_tyre_fitting()
     if slug in ('car-tyres', 'tyres', 'products'):
@@ -5617,7 +6318,7 @@ def page_detail(slug):
             """, [clean_s, f"{clean_s}%", clean_s, clean_s])
             p_match = cur.fetchone()
             if p_match:
-                return _render_product_detail(p_match['slug'], locale)
+                return redirect(f"/tyres/{p_match['slug']}", code=301)
     finally:
         conn.close()
 

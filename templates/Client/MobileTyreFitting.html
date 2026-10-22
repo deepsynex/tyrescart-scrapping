@@ -27,13 +27,13 @@
 
 {% block content %}
 <!-- .page-mobile-tyre-fitting scopes this page's rules in static/css/page.css -->
-<div class="page-mobile-tyre-fitting">
+<div class="page-mobile-tyre-fitting" {% if page and page.banner_image %}style="--tv-hero-custom-bg: url('{{ page.banner_image }}');"{% endif %}>
 <div class="mtf-page">
 
   <!-- ========================================================================
        1. HERO SECTION
        ======================================================================== -->
-  <section class="mtf-hero">
+  <section class="mtf-hero" {% if page and page.banner_image %}style="--tv-hero-custom-bg: url('{{ page.banner_image }}'); background-image: linear-gradient(to right, #2C0054 0%, #42017D 28%, rgba(66, 1, 125, 0.92) 42%, rgba(66, 1, 125, 0.25) 58%, transparent 72%), url('{{ page.banner_image }}') !important;"{% endif %}>
     <div class="mtf-wrap">
       <!-- Breadcrumb -->
       <nav class="mtf-breadcrumb" aria-label="Breadcrumb">
@@ -261,7 +261,7 @@
             <span class="mtf-script-font tvi-5792f345">Professional Service</span><br>
             <span class="mtf-script-font tvi-83526924">At Your Location</span>
           </div>
-          <img src="/static/assets/images/mobile-fitting-technician.jpg?v=2" alt="Certified technician torqueing vehicle tyre beside mobile fitting van" class="mtf-tech-img">
+          <img src="/static/assets/images/mobile-fitting-technician.webp" alt="Certified technician torqueing vehicle tyre beside mobile fitting van" class="mtf-tech-img">
         </div>
       </div>
     </div>
@@ -324,7 +324,7 @@
             <span class="mtf-script-font tvi-52addb98">Quality tyres</span><br>
             <span class="mtf-script-font tvi-919cb110">Fitted wherever you are</span>
           </div>
-          <img src="/static/assets/images/mobile-fitting-tyres-stack.jpg?v=2" alt="Quality tyres fitted wherever you are in Dubai and Abu Dhabi" class="mtf-pricing-tyres-img">
+          <img src="/static/assets/images/mobile-fitting-tyres-stack.webp" alt="Quality tyres fitted wherever you are in Dubai and Abu Dhabi" class="mtf-pricing-tyres-img">
         </div>
       </div>
     </div>
@@ -408,7 +408,7 @@
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
             <span>Serving Dubai & Abu Dhabi</span>
           </div>
-          <img src="/static/assets/images/mobile-fitting-skyline.jpg?v=2" alt="Serving Dubai and Abu Dhabi mobile tyre replacement coverage map" class="mtf-skyline-img">
+          <img src="/static/assets/images/mobile-fitting-skyline.webp" alt="Serving Dubai and Abu Dhabi mobile tyre replacement coverage map" class="mtf-skyline-img">
         </div>
       </div>
 
@@ -417,15 +417,15 @@
            ==================================================================== -->
       <div class="mtf-ev-banner">
         <div class="mtf-ev-car-wrap">
-          <img src="/static/assets/images/mobile-fitting-ev-car.jpg" alt="Electric vehicle EV tyre fitting and run-flat tyres Dubai" class="mtf-ev-car-img">
+          <img src="/static/assets/images/mobile-fitting-ev-car.webp" alt="Electric vehicle EV tyre fitting and run-flat tyres Dubai" class="mtf-ev-car-img">
         </div>
         <div class="mtf-ev-body">
           <h3 class="mtf-ev-title">EVs, run-flats and 4x4s at your location</h3>
           <p class="mtf-ev-text">
-            Our mobile vans are equipped to handle all vehicle types including EVs, run-flat tyres, SUVs and 4x4s. We follow manufacturer-approved procedures and use the latest tools to ensure your safety. View our guide on <a href="/ev-tyres">EV and run-flat tyres</a> or find factory specifications to <a href="/tyre-sizes">find your tyre size</a> before booking.
+            Our mobile vans are equipped to handle all vehicle types including EVs, run-flat tyres, SUVs and 4x4s. We follow manufacturer-approved procedures and use the latest tools to ensure your safety. View our guide on <a href="/tyres/ev">EV and run-flat tyres</a> or find factory specifications to <a href="/tyre-sizes">find your tyre size</a> before booking.
           </p>
         </div>
-        <a href="/ev-tyres" class="btn-ev-learn">
+        <a href="/tyres/ev" class="btn-ev-learn">
           <span>Learn more</span>
           <span>&rarr;</span>
         </a>

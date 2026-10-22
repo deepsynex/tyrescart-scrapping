@@ -80,7 +80,7 @@
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="/tyres/ev" class="tv-hsoption-card">
-          <div class="tv-hsoption-icon-wrap"><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyres" class="tv-hsoption-ev-icon"></div>
+          <div class="tv-hsoption-icon-wrap"><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyres" class="tv-hsoption-ev-icon"></div>
           <div class="tv-hsoption-text"><span class="tv-hsoption-label">BROWSE BY</span><span class="tv-hsoption-name">EV Tyres</span></div>
           <div class="tv-hsoption-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
@@ -623,18 +623,7 @@ function _tvRenderSizePanel(body, tab) {
       + '      <span class="tvhm-badge-label-line" id="tvBadgeLabel">' + badgeLabel + '</span>'
       + '      <strong class="tvhm-badge-val-line" id="tvBadgeVal">' + displayBadgeVal + '</strong>'
       + '    </div>'
-      + '    <img src="/static/assets/images/tyre-visual-3d.png" alt="Tyre Visual" class="tvhm-tyre-img" />'
-      + '    <svg class="tvhm-tyre-overlay" viewBox="0 0 320 220" preserveAspectRatio="xMidYMid meet">'
-      + '      <defs>'
-      + '        <marker id="tvArrEnd" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
-      + '          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6C2BD9" />'
-      + '        </marker>'
-      + '        <marker id="tvArrStart" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto">'
-      + '          <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#6C2BD9" />'
-      + '        </marker>'
-      + '      </defs>'
-      +        svgGuides
-      + '    </svg>'
+      + '    <img src="/static/assets/images/tyre-visual-3d.webp" alt="Tyre Visual" class="tvhm-tyre-img" />'
       + '  </div>'
       + '</div>'
       + '<div class="tvhm-selector-bar">'
@@ -1472,7 +1461,7 @@ function _renderBrandChipsStep(body, breadcrumb, label, options, onclickFn) {
   html += '<p class="tvhm-section-lbl">Select ' + label + '</p>';
   if (!options || !options.length) {
     html += '<p class="tvhm-empty-note">No ' + label.toLowerCase() + ' options found for this brand.</p>'
-      + '<a href="/tyres/brand/' + encodeURIComponent(_tvState.brandSlug) + '" class="tvhm-all-link">'
+      + '<a href="/tyres/brands/' + encodeURIComponent(_tvState.brandSlug) + '" class="tvhm-all-link">'
       + 'Browse all tyres for ' + _esc(_tvState.brandName) + '</a>';
     body.innerHTML = html;
     return;
@@ -1487,7 +1476,7 @@ function _renderBrandChipsStep(body, breadcrumb, label, options, onclickFn) {
 
 function _renderBrandProductsStep(body, breadcrumb, res) {
   var prods = (res && res.data) ? res.data : [];
-  var catalogUrl = (res && res.catalog_url) ? res.catalog_url : ('/tyres/brand/' + encodeURIComponent(_tvState.brandSlug));
+  var catalogUrl = (res && res.catalog_url) ? res.catalog_url : ('/tyres/brands/' + encodeURIComponent(_tvState.brandSlug));
   var html = breadcrumb;
 
   if (!prods.length) {
@@ -1506,8 +1495,8 @@ function _renderBrandProductsStep(body, breadcrumb, res) {
     var priceDisplay = p.sale_price ? p.sale_price.toFixed(2) : p.price.toFixed(2);
     var oldPriceHtml = p.sale_price ? '<span style="text-decoration:line-through;color:#9CA3AF;font-size:11px;margin-right:4px;">' + p.price.toFixed(2) + '</span>' : '';
     var imgTag = p.image
-      ? '<img src="' + _esc(p.image) + '" alt="' + _esc(p.name) + '" class="tvhm-brand-prod-img" onerror="this.onerror=null;this.src=\'/static/assets/images/online-tyres-shop-dubai.png\';">'
-      : '<img src="/static/assets/images/online-tyres-shop-dubai.png" alt="Tyre" class="tvhm-brand-prod-img">';
+      ? '<img src="' + _esc(p.image) + '" alt="' + _esc(p.name) + '" class="tvhm-brand-prod-img" onerror="this.onerror=null;this.src=\'/static/assets/images/online-tyres-shop-dubai.webp\';">'
+      : '<img src="/static/assets/images/online-tyres-shop-dubai.webp" alt="Tyre" class="tvhm-brand-prod-img">';
 
     html += '<a href="' + _esc(p.url) + '" class="tvhm-brand-prod-card">'
       + imgTag

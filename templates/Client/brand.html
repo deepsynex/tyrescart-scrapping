@@ -4,7 +4,7 @@
 
 {% block meta_description %}Shop tyres by brand, from Michelin, Bridgestone and Pirelli to Hankook and Giti. Pick a brand to see its tyres and buy online with free fitting at a centre.{% endblock %}
 
-{% block canonical_url %}https://www.tyresvision.com/brands{% endblock %}
+{% block canonical_url %}https://www.tyresvision.com/tyres/brands{% endblock %}
 
 {# og:*/twitter:* now come from page_og_tags/page_twitter_tags, built centrally
    in app/services/seo_builder.py and passed in by the brand_page() route. #}
@@ -17,7 +17,7 @@
     {# Background Image Container #}
     <div class="absolute inset-0 z-0">
       <img 
-        src="{{ url_for('static', filename='assets/images/Brandhero.png') }}" 
+        src="{{ url_for('static', filename='assets/images/Brandhero.webp') }}" 
         alt="TyresVision Brand Hero" 
         class="w-full h-full object-cover object-right lg:object-center"
         loading="eager"
@@ -31,6 +31,8 @@
       {# Breadcrumbs #}
       <nav class="flex items-center gap-2 text-xs font-semibold text-purple-200/80 mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-white transition-colors">Home</a>
+        <span class="text-purple-300/50">/</span>
+        <a href="/tyres" class="hover:text-white transition-colors">Tyres</a>
         <span class="text-purple-300/50">/</span>
         <span class="text-white">Brands</span>
       </nav>
@@ -46,7 +48,7 @@
 
         {# Title #}
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
-          Explore <span class="text-purple-300">80+</span> Official <br class="hidden sm:inline">Tyre Brands in the UAE
+          Explore <span class="tv-hero-gradient-text">80+</span> Official <br class="hidden sm:inline">Tyre Brands in the UAE
         </h1>
 
         {# Description #}
@@ -163,7 +165,7 @@
         </div>
 
         {# Logo Area -- links to the brand's own page #}
-        <a href="/brands/{{ b.slug }}" class="h-10 sm:h-12 flex items-center justify-center my-0.5 px-1.5" title="View {{ b.name }} brand page">
+        <a href="/tyres/brands/{{ b.slug }}" class="h-10 sm:h-12 flex items-center justify-center my-0.5 px-1.5" title="View {{ b.name }} brand page">
           {% if b.logo %}
           <img
             src="{{ b.logo }}"
@@ -185,7 +187,7 @@
         {# Direct Link to Brand Catalog #}
         <div class="mt-1.5 pt-1.5 border-t border-slate-100 text-center">
           <a 
-            href="/tyres/brand/{{ b.slug }}" 
+            href="/tyres/brands/{{ b.slug }}" 
             class="w-full py-1.5 px-2.5 rounded-lg bg-slate-50 hover:bg-[#7C3AED] text-slate-700 hover:text-white font-bold text-[11px] sm:text-xs inline-flex items-center justify-center gap-1 transition-all shadow-2xs group-hover:bg-[#7C3AED] group-hover:text-white"
             title="Browse all {{ b.name }} tyres"
           >

@@ -4,7 +4,7 @@
 
 {% block meta_description %}{% if product.meta_description %}{{ product.meta_description }}{% else %}{{ product.title }} {{ product.pattern_name }} in stock with warranty, expert fitting at partner centres and mobile van service across UAE. Buy single tyre, set of 2 or set of 4 at best prices.{% endif %}{% endblock %}
 
-{% block canonical_url %}https://www.tyresvision.com/{{ product.slug }}{% endblock %}
+{% block canonical_url %}https://www.tyresvision.com/tyres/{{ product.slug }}{% endblock %}
 
 {% block extra_head %}
 <!-- Product Open Graph Metadata -->
@@ -2152,15 +2152,7 @@
               {% endif %}
             </div>
 
-            <div class="tv-ref-top-badges-wrap" style="display:flex;align-items:center;gap:8px;">
-              <!-- In Stock Badge (Green pill with checkmark) -->
-              <div class="tv-ref-in-stock-pill" title="100% In Stock &amp; Verified at Central Hub">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>In Stock</span>
-              </div>
-            </div>
+
           </div>
 
           <!-- Middle Row: Tyre Image (Left) + 4 Features List (Right) -->
@@ -2172,7 +2164,7 @@
                      alt="{{ product.title }}" 
                      class="tv-ref-main-tyre-img"
                      id="pdp-main-image"
-                     onerror="this.src='/static/uploads/products/michelin_energy_xm2_wheel.jpg'">
+                     onerror="this.src='/static/uploads/products/michelin_energy_xm2_wheel.webp'">
                 <button type="button" class="tv-ref-zoom-btn" onclick="openZoomModal()" title="Zoom tyre image" aria-label="Zoom tyre image">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -2354,7 +2346,7 @@
             {% endif %}
             {% if product.is_ev or product.ev_text == 'EV' %}
             <span class="tv-ref-badge-ev" title="Technology: Electric Vehicle Compatible (EV)" style="background:#F1F5F9;color:#0F172A;border:1px solid #CBD5E1;font-size:11px;font-weight:800;padding:4px 10px;border-radius:4px;display:inline-flex;align-items:center;gap:6px;">
-              <img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" style="height:16px;width:auto;">
+              <img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" style="height:16px;width:auto;">
               <span>EV READY</span>
             </span>
             {% endif %}
@@ -2623,7 +2615,7 @@
                     <tr><th>Width</th><td>{{ product.width }}{% if 'mm' not in (product.width|string)|lower %} mm{% endif %}</td><th>Aspect Ratio / Profile</th><td>{{ product.profile }}</td></tr>
                     <tr><th>Rim Diameter</th><td>{{ product.rim_size }}</td><th>Vehicle Type</th><td>{{ product.type or 'Passenger Car / SUV' }}</td></tr>
                     <tr><th>Season</th><td>{{ product.season or 'All Season' }}</td><th>Run Flat Technology</th><td>{% if product.is_runflat or product.run_flat == 'Yes' or product.runflat_text == 'Runflat' %}<span style="display:inline-flex;align-items:center;gap:6px;"><img src="{{ url_for('static', filename='assets/images/run-flat.svg') }}" alt="Runflat" style="height:16px;width:auto;"> <strong>Yes</strong> (Run Flat)</span>{% else %}No{% endif %}</td></tr>
-                    <tr><th>Warranty Period</th><td>{{ product.warranty }}{% if 'warranty' not in (product.warranty|string)|lower %} Warranty{% endif %}</td><th>EV Compatible</th><td>{% if product.is_ev or product.ev_text == 'EV' %}<span style="display:inline-flex;align-items:center;gap:6px;"><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV" style="height:16px;width:auto;"> <strong>Yes</strong></span>{% else %}No{% endif %}</td></tr>
+                    <tr><th>Warranty Period</th><td>{{ product.warranty }}{% if 'warranty' not in (product.warranty|string)|lower %} Warranty{% endif %}</td><th>EV Compatible</th><td>{% if product.is_ev or product.ev_text == 'EV' %}<span style="display:inline-flex;align-items:center;gap:6px;"><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV" style="height:16px;width:auto;"> <strong>Yes</strong></span>{% else %}No{% endif %}</td></tr>
                     <tr><th>Stock Availability</th><td>{{ 'In Stock (Immediate Dispatch)' if product.in_stock else 'On Demand' }}</td><th>Fitting</th><td>Mobile or Centre Fitting</td></tr>
                     <tr><th>SKU</th><td>{{ product.sku or ('TV-' ~ product.id) }}</td><th>Origin</th><td>{{ product.country }}</td></tr>
                   </tbody>
@@ -2884,7 +2876,7 @@
           <!-- 1. Top Header Bar: Brand Logo (Left) & Category Badge (Right) -->
           <div class="tv-card-header-bar">
             {% set card_b_slug = rp.brand_slug or (rp.brand_name|lower|replace(' ', '-')) %}
-            <a href="/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ rp.brand_name }} brand page" onclick="event.stopPropagation();">
+            <a href="/tyres/brands/{{ card_b_slug }}" class="tv-card-brand-wrap" title="View {{ rp.brand_name }} brand page" onclick="event.stopPropagation();">
               {% if rp.brand_logo %}
               <img src="{{ rp.brand_logo }}" alt="{{ rp.brand_name }}" class="tv-card-brand-img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
               <span class="tv-card-brand-fallback" style="display:none;">{{ rp.brand_name }}</span>
@@ -2914,7 +2906,7 @@
               </svg>
             </button>
 
-            <a href="/{{ rp.slug }}" class="tv-card-img-link" title="{{ rp.pattern_name or rp.display_name }}">
+            <a href="/tyres/{{ rp.slug }}" class="tv-card-img-link" title="{{ rp.pattern_name or rp.display_name }}">
               <div class="tv-card-tyre-box tv-img-loading">
                 <img src="{{ rp.image_path or '/static/assets/images/no-image-available.svg' }}" 
                      alt="{{ rp.pattern_name or rp.display_name }}" 
@@ -2955,7 +2947,7 @@
             <div class="tv-card-info-block">
               <!-- Product Pattern / Model Name (Left) & Run Flat + Origin Flag (Right) -->
               <div class="tv-card-pattern-row">
-                <a href="/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
+                <a href="/tyres/{{ rp.slug }}" class="tv-card-pattern-link" title="{{ rp.pattern_name or rp.display_name }}">
                   <h3 class="tv-card-pattern">
                     {{ rp.pattern_name or rp.display_name }}
                   </h3>
@@ -2964,7 +2956,7 @@
                 <div class="tv-card-origin-row-wrap">
                   {% if rp.is_ev or rp.ev_text == 'EV' %}
                   <span class="tv-meta-item tv-meta-ev" title="Technology: Electric Vehicle Compatible (EV)">
-                    <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.png') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
+                    <span><img src="{{ url_for('static', filename='assets/images/ev/ev-icon.webp') }}" alt="EV Tyre" class="tv-card-ev-icon"></span>
                   </span>
                   {% endif %}
                   {% if rp.is_runflat or rp.runflat_text == 'Runflat' %}
@@ -3002,13 +2994,7 @@
 
             <!-- 5. Bottom Info Strip: In Stock | Fitted Included -->
             <div class="tv-card-bottom-info">
-              <div class="tv-stock-status">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="8 12 11 15 16 9"></polyline>
-                </svg>
-                <span>In Stock</span>
-              </div>
+
 
               <div class="tv-fitted-status" onclick="event.stopPropagation(); openFittedPriceModal(event);" role="button" tabindex="0" title="View fitted details">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E02424" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3647,9 +3633,7 @@ function openPaymentModal() {
             <div class="tv-qv-img-showcase-card">
               <!-- Top bar of Tyre Card: In Stock badge -->
               <div class="tv-qv-showcase-top">
-                <span class="tv-qv-stock-badge">
-                  <span class="tv-qv-stock-dot"></span> In Stock
-                </span>
+
                 <!-- Top brand & action buttons (Wishlist & Share) -->
             <div class="tv-qv-meta-top">
               <div class="tv-qv-brand-main">

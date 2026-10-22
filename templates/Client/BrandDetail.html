@@ -39,7 +39,7 @@
             Authorised UAE Retailer
           </span>
           <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-            {{ brand.name }} Tyres in the UAE
+            {{ brand.name }} <span class="tv-hero-gradient-text">Tyres in the UAE</span>
           </h1>
         </div>
       </div>
@@ -62,7 +62,7 @@
         </p>
       </div>
       {% if tyre_count > products|length %}
-      <a href="/tyres/brand/{{ brand.slug }}" class="text-xs font-bold text-[#7C3AED] hover:underline whitespace-nowrap">
+      <a href="/tyres?brand={{ brand.name|urlencode }}" class="text-xs font-bold text-[#7C3AED] hover:underline whitespace-nowrap">
         View All {{ tyre_count }} {{ brand.name }} Tyres &rarr;
       </a>
       {% endif %}
@@ -72,7 +72,7 @@
     <div class="tv-pattern-grid">
       {% for p in products %}
       {% set pattern_label = p.pattern_name or p.display_name %}
-      <a href="/tyres/brand/{{ brand.slug }}?pattern={{ pattern_label|urlencode }}" class="tv-pattern-card" title="{{ pattern_label }}">
+      <a href="/tyres?brand={{ brand.name|urlencode }}&pattern={{ pattern_label|urlencode }}" class="tv-pattern-card" title="{{ pattern_label }}">
         <div class="tv-pattern-card-logo">
           {% if p.brand_logo %}
           <img src="{{ p.brand_logo }}" alt="{{ p.brand_name }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
