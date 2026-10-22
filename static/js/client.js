@@ -3105,6 +3105,22 @@ function toggleFilterGroup(el) {
         child.style.display = willCollapse ? 'none' : '';
       }
     });
+
+    // Accordion behaviour: opening a filter group closes every other open group
+    if (!willCollapse && group.parentElement) {
+      Array.from(group.parentElement.children).forEach(sibling => {
+        if (sibling !== group && sibling.classList && sibling.classList.contains('tv-filter-group') && !sibling.classList.contains('is-collapsed')) {
+          sibling.classList.add('is-collapsed');
+          const siblingHeader = sibling.querySelector('.tv-filter-header');
+          if (siblingHeader) siblingHeader.classList.add('collapsed');
+          Array.from(sibling.children).forEach(child => {
+            if (child !== siblingHeader) {
+              child.style.display = 'none';
+            }
+          });
+        }
+      });
+    }
   }
 }
 
