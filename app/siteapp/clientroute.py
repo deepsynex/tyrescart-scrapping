@@ -1660,10 +1660,21 @@ def _fetch_catalog_products_es(args, locale='en'):
             size_terms = []
             for s in raw_sizes:
                 s_clean = s.strip()
-                if s_clean:
-                    size_terms.append(s_clean)
-                    size_terms.append(s_clean.replace('-', '/').replace(' ', ''))
-                    size_terms.append(re.sub(r'[-/ ]*r(\d+)', r' R\1', s_clean, flags=re.IGNORECASE))
+                if not s_clean:
+                    continue
+                size_terms.append(s_clean)
+                size_terms.append(s_clean.replace('-', '/').replace(' ', ''))
+                size_terms.append(re.sub(r'[-/ ]*r(\d+)', r' R\1', s_clean, flags=re.IGNORECASE))
+                # Canonical "WIDTH/PROFILE RRIM" form (matches tire_size_label as stored,
+                # e.g. "165/55 R14") -- needed because the hero search widget sends a bare
+                # "165-55-14" with no literal "r" before the rim, which the replacements
+                # above don't reconstruct.
+                m_size_parts = re.match(r'^(\d{2,3})[-/ ]+(\d{2})[-/ ]+r?(\d{2}(?:\.\d+)?)$', s_clean, re.IGNORECASE)
+                if m_size_parts:
+                    w, p, r = m_size_parts.groups()
+                    size_terms.append(f"{w}/{p} R{r}")
+                    size_terms.append(f"{w}-{p}-R{r}")
+                    size_terms.append(f"{w}-{p}-r{r}")
             if size_terms:
                 filter_clauses.append({"terms": {"tire_size_label": size_terms}})
 
