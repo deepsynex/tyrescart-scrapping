@@ -485,6 +485,17 @@ def register_visionadmin_routes(app):
         resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
         return resp
 
+    @app.route('/visionadmin/company-info', methods=['GET'])
+    @app.route('/visionadmin/content/company-info', methods=['GET'])
+    @app.route('/visonadmin/company-info', methods=['GET'])
+    @login_required_visionadmin
+    def visionadmin_company_info():
+        return render_template(
+            'visionadmin/company_info.html', 
+            page='company_info', 
+            section='content'
+        )
+
     @app.route('/visionadmin/marketing/reviewer-settings', methods=['GET'])
     @app.route('/visonadmin/marketing/reviewer-settings', methods=['GET'])
     @app.route('/visionadmin/reviewer-settings', methods=['GET'])

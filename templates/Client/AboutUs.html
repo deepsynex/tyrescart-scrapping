@@ -61,14 +61,14 @@
           </p>
 
           <div class="mtf-hero-actions">
-            <a href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20to%20learn%20more%20about%20your%20tyres%20and%20services." target="_blank" rel="noopener" class="btn-hero-wa">
+            <a href="https://wa.me/{{ compyinfo.whatsapp_number }}?text=Hi%20TyresVision%2C%20I%27d%20like%20to%20learn%20more%20about%20your%20tyres%20and%20services." target="_blank" rel="noopener" class="btn-hero-wa">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               <span>WhatsApp for a Tyre Quote</span>
               <svg class="btn-hero-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
             </a>
-            <a href="tel:+971505069575" class="btn-hero-call">
+            <a href="{{ compyinfo.phone_url }}" class="btn-hero-call">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span>+971 50 506 9575</span>
+              <span>{{ compyinfo.phone_number }}</span>
               <svg class="btn-hero-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
             </a>
           </div>
@@ -472,7 +472,7 @@
             </button>
             <div class="about-faq-content">
               <div class="about-faq-body">
-                Send your tyre size (for example 245/45 R19) or vehicle make and model on WhatsApp to +971 50 506 9575. Our tyre advisors reply with budget, mid-range and premium options within minutes.
+                Send your tyre size (for example 245/45 R19) or vehicle make and model on WhatsApp to {{ compyinfo.phone_number }}. Our tyre advisors reply with budget, mid-range and premium options within minutes.
               </div>
             </div>
           </div>
@@ -491,18 +491,18 @@
 
             <p class="about-faq-help-desc">WhatsApp your tyre size or vehicle model today and receive genuine options, honest prices, and fast fitting at your preferred location</p>
 
-            <a class="about-faq-wa-btn" href="https://wa.me/971505069575?text=Hi+TyresVision%2C+I%27d+like+a+tyre+quote." rel="noopener" target="_blank">
+            <a class="about-faq-wa-btn" href="https://wa.me/{{ compyinfo.whatsapp_number }}?text=Hi+TyresVision%2C+I%27d+like+a+tyre+quote." rel="noopener" target="_blank">
               <svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" aria-hidden="true">
                 <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/>
               </svg>
               <span>WhatsApp us</span>
             </a>
 
-            <a class="about-faq-call-btn" href="tel:+971505069575">
+            <a class="about-faq-call-btn" href="{{ compyinfo.phone_url }}">
               <svg fill="none" height="16" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" width="16">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
               </svg>
-              <span>+971 50 506 9575</span>
+              <span>{{ compyinfo.phone_number }}</span>
             </a>
           </div>
         </div>

@@ -313,14 +313,21 @@ def build_og_twitter_tags(og_type, canonical_url, title, description, image=None
 # Global nodes (Organization + WebSite) -- included on every page's @graph
 # ----------------------------------------------------------------------------
 def build_organization_node():
+    try:
+        from models.setting import Setting
+        _ci = Setting.get_company_info()
+    except Exception:
+        _ci = {}
+    current_phone = _ci.get("phone_call_number") or _ci.get("phone_number") or PHONE
+
     node = {
         "@type": ["Organization", "OnlineStore"],
         "@id": ORG_ID,
-        "name": BRAND_NAME,
+        "name": _ci.get("company_name") or BRAND_NAME,
         "legalName": LEGAL_NAME,
         "alternateName": ["Tyres Vision", "TyresVision UAE"],
         "url": SITE_URL,
-        "telephone": PHONE,
+        "telephone": current_phone,
         "image": DEFAULT_OG_IMAGE,
         "description": (
             "TyresVision is an online tyre shop in the UAE, operated by DSP Trade Hub FZ-LLC, "
@@ -330,14 +337,14 @@ def build_organization_node():
         "contactPoint": [
             {
                 "@type": "ContactPoint",
-                "telephone": PHONE,
+                "telephone": current_phone,
                 "contactType": "sales",
                 "availableLanguage": ["English", "Arabic"],
                 "areaServed": "AE",
             },
             {
                 "@type": "ContactPoint",
-                "telephone": PHONE,
+                "telephone": current_phone,
                 "contactType": "customer support",
                 "availableLanguage": ["English", "Arabic"],
                 "areaServed": "AE",

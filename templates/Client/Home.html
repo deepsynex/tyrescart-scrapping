@@ -60,13 +60,13 @@
             {% if sec.content %}<p class="lead">{{ (sec.content | safe | replace('<p>', '') | replace('</p>', '')) | trim }}</p>{% endif %}
 
             <div class="cta-row">
-              <a class="btn btn-wa" href="{{ sec.button_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote.' }}" target="_blank" rel="noopener">
+              <a class="btn btn-wa" href="{{ sec.button_url or ('https://wa.me/' ~ compyinfo.whatsapp_number ~ '?text=Hi%20' ~ 'TyresVision' ~ '%2C%20I%27d%20like%20a%20tyre%20quote.') }}" target="_blank" rel="noopener">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
                 {{ sec.button_text or 'WhatsApp for a quote' }}
               </a>
-              <a class="btn btn-ghost-light" href="tel:{{ (sec.section_data and sec.section_data.phone) or '+971505069575' }}">
+              <a class="btn btn-ghost-light" href="{{ (sec.section_data and sec.section_data.phone) or compyinfo.phone_url }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.4 21 3 13.6 3 4.5 3 3.95 3.45 3.5 4 3.5h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                {{ (sec.section_data and sec.section_data.phone_display) or '+971 50 506 9575' }}
+                {{ (sec.section_data and sec.section_data.phone_display) or compyinfo.phone_number }}
               </a>
             </div>
 
@@ -183,8 +183,8 @@
 
           {% set cta_row = sec.section_data.cta_row if sec.section_data and sec.section_data.cta_row else {} %}
           <div class="cta-row center" style="justify-content:center">
-            <a class="btn btn-wa" href="{{ cta_row.wa_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote.' }}" target="_blank" rel="noopener">{{ cta_row.wa_text or 'Chat on WhatsApp' }}</a>
-            <a class="btn btn-ghost" href="{{ cta_row.call_url or 'tel:+971505069575' }}">{{ cta_row.call_text or 'Call +971 50 506 9575' }}</a>
+            <a class="btn btn-wa" href="{{ cta_row.wa_url or ('https://wa.me/' ~ compyinfo.whatsapp_number ~ '?text=Hi%20' ~ 'TyresVision' ~ '%2C%20I%27d%20like%20a%20tyre%20quote.') }}" target="_blank" rel="noopener">{{ cta_row.wa_text or 'Chat on WhatsApp' }}</a>
+            <a class="btn btn-ghost" href="{{ cta_row.call_url or compyinfo.phone_url }}">{{ cta_row.call_text or ('Call ' ~ compyinfo.phone_number) }}</a>
           </div>
         </div>
       </section>
@@ -342,15 +342,15 @@
 
           <!-- Bottom Action Buttons & Trust Badge -->
           <div class="price-action-cluster">
-            <a class="btn btn-wa price-btn-wa" href="{{ sec.button_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.' }}" target="_blank" rel="noopener">
+            <a class="btn btn-wa price-btn-wa" href="{{ sec.button_url or ('https://wa.me/' ~ compyinfo.whatsapp_number ~ '?text=Hi%20' ~ 'TyresVision' ~ '%2C%20I%27d%20like%20a%20price%20for%20my%20tyre%20size.') }}" target="_blank" rel="noopener">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               <span>{{ sec.button_text or 'Send Size on WhatsApp' }}</span>
             </a>
 
             {% set call_b = sec.section_data.call_button if sec.section_data and sec.section_data.call_button else {} %}
-            <a class="btn btn-call-outline" href="{{ call_b.url or 'tel:+971505069575' }}">
+            <a class="btn btn-call-outline" href="{{ call_b.url or compyinfo.phone_url }}">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.4 21 3 13.6 3 4.5 3 3.95 3.45 3.5 4 3.5h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              <span>{{ call_b.text or '+971 50 506 9575' }}</span>
+              <span>{{ call_b.text or compyinfo.phone_number }}</span>
             </a>
 
             {% set t_text = sec.section_data.trust_text if sec.section_data and sec.section_data.trust_text else '' %}
@@ -435,8 +435,8 @@
           {% endif %}
           {% set cta_row = sec.section_data.cta_row if sec.section_data and sec.section_data.cta_row else {} %}
           <div class="cta-row center" style="justify-content:center">
-            <a class="btn btn-wa" href="{{ cta_row.wa_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote.' }}" target="_blank" rel="noopener">{{ cta_row.wa_text or 'Start on WhatsApp' }}</a>
-            <a class="btn btn-ghost" href="{{ cta_row.call_url or 'tel:+971505069575' }}">{{ cta_row.call_text or 'Prefer to talk? Call us' }}</a>
+            <a class="btn btn-wa" href="{{ cta_row.wa_url or ('https://wa.me/' ~ compyinfo.whatsapp_number ~ '?text=Hi%20' ~ 'TyresVision' ~ '%2C%20I%27d%20like%20a%20tyre%20quote.') }}" target="_blank" rel="noopener">{{ cta_row.wa_text or 'Start on WhatsApp' }}</a>
+            <a class="btn btn-ghost" href="{{ cta_row.call_url or compyinfo.phone_url }}">{{ cta_row.call_text or 'Prefer to talk? Call us' }}</a>
           </div>
         </div>
       </section>
@@ -477,7 +477,7 @@
                   {% endif %}
                 {% endif %}
                 <a class="svc chip-interactive {% if 'more' in (chip|lower) %}chip-more{% endif %}"
-                   href="https://wa.me/971505069575?text={{ wa_msg | urlencode }}"
+                   href="https://wa.me/{{ compyinfo.whatsapp_number }}?text={{ wa_msg | urlencode }}"
                    target="_blank"
                    rel="noopener"
                    title="Check options on WhatsApp"
@@ -528,7 +528,7 @@
               <p class="coverage-card-desc">{{ opt.description }}</p>
               <div class="coverage-card-action">
                 <a class="btn {% if '' in (opt.tag|lower) %}btn-wa{% else %}btn-ghost{% endif %} btn-sm"
-                   href="https://wa.me/971505069575?text={{ (opt.wa_msg or 'Hi TyresVision, I\'d like to ask about tyre delivery and fitting.') | urlencode }}"
+                   href="https://wa.me/{{ compyinfo.whatsapp_number }}?text={{ (opt.wa_msg or 'Hi TyresVision, I\'d like to ask about tyre delivery and fitting.') | urlencode }}"
                    target="_blank"
                    rel="noopener"
                    data-enquiry-for="{{ opt.heading }}"
@@ -554,7 +554,7 @@
               {% for chip in chips %}
                 {% set wa_area_msg = "Hi TyresVision, do you deliver and fit tyres in " ~ chip ~ " (" ~ a.emirate ~ ")?" %}
                 <a class="svc chip-interactive"
-                   href="https://wa.me/971505069575?text={{ wa_area_msg | urlencode }}"
+                   href="https://wa.me/{{ compyinfo.whatsapp_number }}?text={{ wa_area_msg | urlencode }}"
                    target="_blank"
                    rel="noopener"
                    title="Confirm delivery & fitting in {{ chip }}"
@@ -615,11 +615,11 @@
           {% endif %}
 
           <div class="cta-row center" style="justify-content:center; margin-top: 40px;">
-            <a class="btn btn-wa" href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20expert%20advice%20on%20choosing%20tyres." target="_blank" rel="noopener" data-enquiry-for="Tyre Buying Advice CTA" data-form-type="advice_cta">
+            <a class="btn btn-wa" href="https://wa.me/{{ compyinfo.whatsapp_number }}?text=Hi%20TyresVision%2C%20I%27d%20like%20expert%20advice%20on%20choosing%20tyres." target="_blank" rel="noopener" data-enquiry-for="Tyre Buying Advice CTA" data-form-type="advice_cta">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               <span>Ask Our Tyre Experts on WhatsApp</span>
             </a>
-            <a class="btn btn-ghost" href="tel:+971505069575">Call +971 50 506 9575</a>
+            <a class="btn btn-ghost" href="{{ compyinfo.phone_url }}">Call {{ compyinfo.phone_number }}</a>
           </div>
         </div>
       </section>
@@ -770,13 +770,13 @@
           <h2>{{ sec.section_title }}</h2>
           {% if sec.content %}<p>{{ sec.content | safe }}</p>{% endif %}
           <div class="cta-row" style="justify-content:center">
-            <a class="btn btn-wa" href="{{ sec.button_url or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote.' }}" target="_blank" rel="noopener">
+            <a class="btn btn-wa" href="{{ sec.button_url or ('https://wa.me/' ~ compyinfo.whatsapp_number ~ '?text=Hi%20' ~ 'TyresVision' ~ '%2C%20I%27d%20like%20a%20tyre%20quote.') }}" target="_blank" rel="noopener">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
               {{ sec.button_text or 'WhatsApp us' }}
             </a>
-            <a class="btn btn-white" href="{{ (sec.section_data and sec.section_data.call_button_url) or 'tel:+971505069575' }}">
+            <a class="btn btn-white" href="{{ (sec.section_data and sec.section_data.call_button_url) or compyinfo.phone_url }}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.4 21 3 13.6 3 4.5 3 3.95 3.45 3.5 4 3.5h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-              {{ (sec.section_data and sec.section_data.call_button_text) or 'Call +971 50 506 9575' }}
+              {{ (sec.section_data and sec.section_data.call_button_text) or ('Call ' ~ compyinfo.phone_number) }}
             </a>
           </div>
           <p class="hours">{{ (sec.section_data and sec.section_data.footer_note) or 'Open daily — call or message any time and we’ll come back to you fast.' }}</p>
@@ -819,8 +819,8 @@
         <h1>Buy tyres online.<br><em>Fitted locally</em> across the UAE.</h1>
         <p class="lead">TyresVision is an online tyre shop for the UAE. Genuine, date-fresh tyres from 60+ brands at the lowest prices &mdash; delivered  to a fitting centre near you, or fitted at your home or office by our mobile vans.</p>
         <div class="cta-row">
-          <a class="btn btn-wa" href="https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote." target="_blank" rel="noopener">WhatsApp for a quote</a>
-          <a class="btn btn-ghost-light" href="tel:+971505069575">+971 50 506 9575</a>
+          <a class="btn btn-wa" href="https://wa.me/{{ compyinfo.whatsapp_number }}?text=Hi%20TyresVision%2C%20I%27d%20like%20a%20tyre%20quote." target="_blank" rel="noopener">WhatsApp for a quote</a>
+          <a class="btn btn-ghost-light" href="{{ compyinfo.phone_url }}">{{ compyinfo.phone_number }}</a>
         </div>
       </div>
     </div>

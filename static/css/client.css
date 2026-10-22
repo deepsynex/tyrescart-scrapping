@@ -589,6 +589,18 @@ header {
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Guarantee header remains in document flow and visible with zero jumping */
+html.tv-scroll-locked header,
+html.modal-open header,
+html.tv-modal-active header,
+body.tv-scroll-locked header,
+body.modal-open header,
+body.tv-modal-active header {
+  top: 0 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -2147,9 +2159,18 @@ header {
 
 @font-face {
   font-family: UAEDirham;
-  src: url(static/fonts/UAE-dirham.woff) format("woff"), url(static/fonts/UAE-dirham.ttf) format("truetype");
+  src: url('/static/fonts/UAE-dirham.woff') format("woff"), url('/static/fonts/UAE-dirham.ttf') format("truetype");
   font-weight: 400;
-  font-style: normal
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UAE-dirham';
+  src: url('/static/fonts/UAE-dirham.woff') format("woff"), url('/static/fonts/UAE-dirham.ttf') format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* 4 Guarantee / Value Cards */
@@ -3164,9 +3185,12 @@ details .body a:hover {
   display: flex;
 }
 
-html.modal-open,
+html.modal-open {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
 body.modal-open {
-  overflow: hidden;
+  overflow: visible !important;
 }
 
 /* ---------------- MOBILE & TABLET MODAL ENHANCEMENTS ---------------- */
@@ -11378,8 +11402,12 @@ body.filter-open .float-wa {
 /* ============================================================
    FITTED PRICE FULL SCREEN / BOTTOM DRAWER MODAL
    ============================================================ */
-body.tv-modal-active {
+html.tv-modal-active {
   overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+body.tv-modal-active {
+  overflow: visible !important;
 }
 
 .tv-fitted-modal-overlay {
@@ -19389,10 +19417,19 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
    UNIVERSAL DRAWER & MODAL SCROLL LOCK
    Removes main page scroll whenever any drawer or modal is open
    ============================================================ */
-html.tv-scroll-locked,
-body.tv-scroll-locked {
+html.tv-scroll-locked {
   overflow: hidden !important;
   overscroll-behavior: none !important;
+}
+
+/* CRITICAL: body must NEVER have overflow: hidden because that breaks
+   position: sticky on <header>, throwing header off-screen to negative scrollY
+   and causing the entire page layout behind the modal to jump. */
+body.tv-scroll-locked,
+body.tv-modal-active,
+body.modal-open,
+body.overflow-hidden {
+  overflow: visible !important;
 }
 
 /* Prevent backdrop touch scrolling / rubber-banding */

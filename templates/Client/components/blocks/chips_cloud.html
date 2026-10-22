@@ -22,7 +22,7 @@
     {% set c_clean = c | trim %}
     {% if c_clean %}
       {% set wa_text = "Hi TyresVision, I'd like a price quote for: " ~ c_clean %}
-      <a href="https://wa.me/971505069575?text={{ wa_text | urlencode }}" 
+      <a href="https://wa.me/{{ compyinfo.whatsapp_number }}?text={{ wa_text | urlencode }}" 
          target="_blank" 
          rel="noopener" 
          class="chip chip-interactive" 

@@ -1286,13 +1286,19 @@ class Product:
                     params.append(cls._safe_int(data['attribute_set_id'], 1))
 
                 if 'dynamic_attributes' in data or 'attributes_json' in data:
+                    existing_attrs = parse_json_dict(existing.get('attributes_json')) if existing.get('attributes_json') else {}
+                    if not isinstance(existing_attrs, dict):
+                        existing_attrs = {}
+                    merged_attrs = dict(existing_attrs)
+                    if dyn_attrs and isinstance(dyn_attrs, dict):
+                        merged_attrs.update(dyn_attrs)
                     fields.append("attributes_json = %s")
-                    params.append(json.dumps(dyn_attrs or {}))
+                    params.append(json.dumps(merged_attrs, ensure_ascii=False))
 
                     # Sync tyre_size_label from dynamic attributes if present
-                    if dyn_attrs and dyn_attrs.get('tire_size_label') and 'tire_size_label' not in data:
+                    if merged_attrs and merged_attrs.get('tire_size_label') and 'tire_size_label' not in data:
                         fields.append("tire_size_label = %s")
-                        params.append(str(dyn_attrs['tire_size_label']).strip())
+                        params.append(str(merged_attrs['tire_size_label']).strip())
 
                 now = datetime.now(timezone.utc)
                 fields.extend(["updated_by = %s", "updated_at = %s"])
@@ -1324,7 +1330,7 @@ class Product:
                                     pass
 
                     # If oem_brand is cleared or oem_tyres is empty, ensure stale oem_tyres EAV record is deleted
-                    if ('oem_brand' in data and not data['oem_brand']) or (dyn_attrs and not dyn_attrs.get('oem_tyres')):
+                    if ('oem_brand' in data and not data['oem_brand']) or (dyn_attrs and 'oem_tyres' in dyn_attrs and not dyn_attrs.get('oem_tyres')):
                         cursor.execute("SELECT id FROM attributes WHERE code = 'oem_tyres' AND deleted_at IS NULL")
                         oem_attr = cursor.fetchone()
                         if oem_attr:

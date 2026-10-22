@@ -1,6 +1,17 @@
 import json
 from db import get_connection
 
+DEFAULT_COMPANY_INFO = {
+    "company_name": "TyresVision",
+    "phone_number": "+971 50 506 9575",
+    "phone_call_number": "+971505069575",
+    "whatsapp_number": "971505069575",
+    "whatsapp_display_number": "+971 50 506 9575",
+    "email": "support@tyresvision.com",
+    "address": "Dubai, United Arab Emirates",
+    "working_hours": "Mon - Sat: 8:00 AM - 8:00 PM"
+}
+
 DEFAULT_REVIEWER_SETTINGS = {
     "enabled": True,
     "name": {
@@ -115,3 +126,63 @@ class Setting:
             "role": role_val if isinstance(role_val, dict) else {"en": str(role_val), "ar": str(role_val)},
             "bio": bio_val if isinstance(bio_val, dict) else {"en": str(bio_val), "ar": str(bio_val)}
         }
+
+    @classmethod
+    def get_company_info(cls) -> dict:
+        import re
+        data = cls.get("company_info", DEFAULT_COMPANY_INFO)
+        if not isinstance(data, dict):
+            data = DEFAULT_COMPANY_INFO.copy()
+
+        company_name = str(data.get("company_name") or DEFAULT_COMPANY_INFO["company_name"]).strip()
+        phone_number = str(data.get("phone_number") or DEFAULT_COMPANY_INFO["phone_number"]).strip()
+        raw_call = str(data.get("phone_call_number") or phone_number or DEFAULT_COMPANY_INFO["phone_call_number"]).strip()
+        phone_call_number = ("+" if raw_call.startswith("+") else "") + re.sub(r"[^\d]", "", raw_call)
+        if not phone_call_number:
+            phone_call_number = "+971505069575"
+
+        raw_wa = str(data.get("whatsapp_number") or DEFAULT_COMPANY_INFO["whatsapp_number"]).strip()
+        whatsapp_number = re.sub(r"[^\d]", "", raw_wa)
+        if not whatsapp_number:
+            whatsapp_number = "971505069575"
+
+        whatsapp_display = str(data.get("whatsapp_display_number") or f"+{whatsapp_number}").strip()
+        email = str(data.get("email") or DEFAULT_COMPANY_INFO["email"]).strip()
+        address = str(data.get("address") or DEFAULT_COMPANY_INFO["address"]).strip()
+        working_hours = str(data.get("working_hours") or DEFAULT_COMPANY_INFO["working_hours"]).strip()
+
+        return {
+            "company_name": company_name,
+            "phone_number": phone_number,
+            "phone": phone_number,
+            "phone_call_number": phone_call_number,
+            "phone_call": phone_call_number,
+            "whatsapp_number": whatsapp_number,
+            "whatsapp": whatsapp_number,
+            "whatsapp_display_number": whatsapp_display,
+            "whatsapp_display": whatsapp_display,
+            "whatsapp_url": f"https://wa.me/{whatsapp_number}",
+            "phone_url": f"tel:{phone_call_number}",
+            "email": email,
+            "address": address,
+            "working_hours": working_hours,
+        }
+
+    @classmethod
+    def set_company_info(cls, payload: dict) -> bool:
+        if not isinstance(payload, dict):
+            return False
+        existing = cls.get("company_info", DEFAULT_COMPANY_INFO)
+        if not isinstance(existing, dict):
+            existing = DEFAULT_COMPANY_INFO.copy()
+        clean_data = {
+            "company_name": str(payload.get("company_name") or existing.get("company_name") or "TyresVision").strip(),
+            "phone_number": str(payload.get("phone_number") or existing.get("phone_number") or "+971 50 506 9575").strip(),
+            "phone_call_number": str(payload.get("phone_call_number") or existing.get("phone_call_number") or "+971505069575").strip(),
+            "whatsapp_number": str(payload.get("whatsapp_number") or existing.get("whatsapp_number") or "971505069575").strip(),
+            "whatsapp_display_number": str(payload.get("whatsapp_display_number") or existing.get("whatsapp_display_number") or "+971 50 506 9575").strip(),
+            "email": str(payload.get("email") or existing.get("email") or "support@tyresvision.com").strip(),
+            "address": str(payload.get("address") or existing.get("address") or "Dubai, United Arab Emirates").strip(),
+            "working_hours": str(payload.get("working_hours") or existing.get("working_hours") or "Mon - Sat: 8:00 AM - 8:00 PM").strip()
+        }
+        return cls.set("company_info", clean_data, group="company")

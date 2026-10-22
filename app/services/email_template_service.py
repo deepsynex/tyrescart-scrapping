@@ -295,16 +295,22 @@ class EmailTemplateService:
         login_link = ctx.get('login_link') or '#'
         expires_minutes = str(ctx.get('expires_minutes') or '30')
         user_role = ctx.get('user_role') or 'Administrator'
-        store_name = ctx.get('store_name') or 'TyresVision'
+        try:
+            from models.setting import Setting
+            _cinfo = Setting.get_company_info()
+        except Exception:
+            _cinfo = {}
+
+        store_name = ctx.get('store_name') or _cinfo.get('company_name') or 'TyresVision'
         base_url = ctx.get('base_url') or ctx.get('assets_url') or 'https://tyresvision.com'
         secure_base_url = ctx.get('secure_base_url') or base_url
-        support_email = ctx.get('support_email') or 'support@tyresvision.com'
+        support_email = ctx.get('support_email') or _cinfo.get('email') or 'support@tyresvision.com'
         support_name = ctx.get('support_name') or f"{store_name} Customer Care"
         sales_email = ctx.get('sales_email') or 'sales@tyresvision.com'
         sales_name = ctx.get('sales_name') or f"{store_name} Sales"
-        general_email = ctx.get('general_email') or 'info@tyresvision.com'
+        general_email = ctx.get('general_email') or _cinfo.get('email') or 'info@tyresvision.com'
         general_name = ctx.get('general_name') or store_name
-        phone_number = ctx.get('phone_number') or ctx.get('store_phone') or '+971 50 506 9575'
+        phone_number = ctx.get('phone_number') or ctx.get('store_phone') or _cinfo.get('phone_number') or '+971 50 506 9575'
         order_id = ctx.get('order_id') or ctx.get('order_number') or 'ORD-1001'
         order_total = ctx.get('order_total') or ctx.get('grand_total') or 'AED 0.00'
         order_items = ctx.get('order_items_html') or ctx.get('order_items') or ''

@@ -182,9 +182,15 @@ class CategoryImporter:
                     name_col_idx = headers.index(candidate)
                     break
 
-            if name_col_idx is not None:
+            # Only treat name/title as legacy category list if this is NOT a product CSV
+            product_indicator_cols = {'sku', 'product_sku', 'item_code', 'price', 'product_online', 'qty', 'stock_qty', 'tire_size'}
+            is_product_csv = any(c in headers for c in product_indicator_cols)
+            if not is_product_csv and name_col_idx is not None:
                 # Treat as legacy flat category list: Default Category/{name}
                 cat_col_idx = name_col_idx
+                is_legacy_name = True
+            elif 'category_name' in headers:
+                cat_col_idx = headers.index('category_name')
                 is_legacy_name = True
             elif len(headers) == 1 and '/' in headers[0]:
                 cat_col_idx = 0

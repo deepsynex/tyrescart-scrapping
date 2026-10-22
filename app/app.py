@@ -98,6 +98,9 @@ def inject_i18n():
     def _(text):
         return i18n_translate(text, current_lang)
 
+    from models.setting import Setting
+    company_info = Setting.get_company_info()
+
     return dict(
         _=_,
         locale=current_lang,
@@ -108,7 +111,9 @@ def inject_i18n():
         current_website=getattr(g, 'current_website', None),
         is_rtl=is_rtl,
         get_translated_value=get_translated_value,
-        localize_value=localize_value
+        localize_value=localize_value,
+        company_info=company_info,
+        compyinfo=company_info
     )
 
 

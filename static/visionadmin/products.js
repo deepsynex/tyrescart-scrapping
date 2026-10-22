@@ -448,9 +448,8 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       this.formOpen = false;
       if (window.location.pathname !== '/visionadmin/products' && window.location.pathname !== '/visionadmin/catalog/products') {
         window.location.href = '/visionadmin/products';
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+      // Do not scroll page on modal close - maintain user scroll position
     },
 
     async loadAndEditProduct(id, push = true) {
@@ -986,7 +985,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
       if (push && window.location.pathname !== '/visionadmin/products/new') {
         history.pushState(null, '', '/visionadmin/products/new');
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
     openEditModal(p, push = true) {
@@ -1107,7 +1106,7 @@ window.visionProductsApp = function visionProductsApp(initialView = '', initialP
           history.pushState(null, '', targetUrl);
         }
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 
     async openViewModal(p) {

@@ -2089,6 +2089,33 @@ def register_visionadmin_api_routes(app):
             'message': 'Reviewer settings saved successfully.'
         })
 
+    # 5.1 COMPANY & CONTACT INFO CONFIGURATION API (Dynamic WhatsApp & Call Number)
+    @app.route('/visionadmin/api/company-info', methods=['GET'])
+    @app.route('/visionadmin/api/v1/company-info', methods=['GET'])
+    @app.route('/api/company-info', methods=['GET'])
+    def visionadmin_get_company_info():
+        from models.setting import Setting
+        info = Setting.get_company_info()
+        return jsonify({
+            'success': True,
+            'company_info': info,
+            'compyinfo': info
+        })
+
+    @app.route('/visionadmin/api/company-info', methods=['POST', 'PUT'])
+    @app.route('/visionadmin/api/v1/company-info', methods=['POST', 'PUT'])
+    def visionadmin_save_company_info():
+        from models.setting import Setting
+        data = request.get_json(silent=True) or request.form.to_dict() or {}
+        Setting.set_company_info(data)
+        updated = Setting.get_company_info()
+        return jsonify({
+            'success': True,
+            'company_info': updated,
+            'compyinfo': updated,
+            'message': 'Company & contact info saved successfully.'
+        })
+
     # =========================================================================
     # 6. UNIFIED GLOBAL SEARCH API (Deep search across all CMS content & sections)
     # =========================================================================

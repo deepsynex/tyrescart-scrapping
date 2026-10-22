@@ -1,5 +1,15 @@
+// Global TyresVision Contact & WhatsApp configuration (accessible in both local and global scopes)
+window.WA = (window.TYRESVISION_CONFIG && window.TYRESVISION_CONFIG.whatsapp) || "971505069575";
+window.PHONE_CALL = (window.TYRESVISION_CONFIG && window.TYRESVISION_CONFIG.phone) || "+971505069575";
+window.PHONE_DISPLAY = (window.TYRESVISION_CONFIG && window.TYRESVISION_CONFIG.phoneDisplay) || "+971 50 506 9575";
+var WA = window.WA;
+var PHONE_CALL = window.PHONE_CALL;
+var PHONE_DISPLAY = window.PHONE_DISPLAY;
+
 (function(){
-  var WA = "971505069575";
+  var WA = window.WA;
+  var PHONE_CALL = window.PHONE_CALL;
+  var PHONE_DISPLAY = window.PHONE_DISPLAY;
   var yrEl = document.getElementById('yr');
   if(yrEl) yrEl.textContent = new Date().getFullYear();
 
@@ -46,23 +56,20 @@
   // Locking via position:fixed (not just overflow:hidden) is what stops
   // the page content from reflowing left/right as the scrollbar
   // disappears and reappears.
-  var _savedScrollY = 0;
+  var _lockedScrollY = -1;
 
   function lockMainPageScroll(sourceId) {
     var wasUnlocked = _scrollLockHolders.size === 0;
     _scrollLockHolders.add(sourceId || 'default');
-    if (!wasUnlocked || document.body.classList.contains('tv-scroll-locked')) return;
+    if (!wasUnlocked || document.documentElement.classList.contains('tv-scroll-locked')) return;
 
-    _savedScrollY = window.scrollY || window.pageYOffset || 0;
+    // Record exact scroll position before locking
+    _lockedScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+
     var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
+    // Lock scroll exclusively on documentElement so body never breaks position: sticky on header
     document.documentElement.classList.add('tv-scroll-locked');
-    document.body.classList.add('tv-scroll-locked');
-    document.body.style.position = 'fixed';
-    document.body.style.top = (-_savedScrollY) + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = scrollbarWidth + 'px';
     }
@@ -76,28 +83,28 @@
     }
 
     if (_scrollLockHolders.size === 0) {
-      // Ensure no other drawer/modal is still active before unlocking
       if (!isAnyDrawerOrModalOpen()) {
         document.documentElement.classList.remove('tv-scroll-locked');
         document.body.classList.remove('tv-scroll-locked');
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.width = '';
+        document.body.classList.remove('tv-modal-active');
+        document.body.classList.remove('modal-open');
         document.body.style.paddingRight = '';
-        window.scrollTo(0, _savedScrollY);
+        if (_lockedScrollY >= 0) {
+          var restoreY = _lockedScrollY;
+          _lockedScrollY = -1;
+          window.scrollTo({ top: restoreY, behavior: 'instant' });
+        }
       }
     }
   }
 
   function syncDrawerScrollLock() {
     if (isAnyDrawerOrModalOpen()) {
-      if (!document.body.classList.contains('tv-scroll-locked')) {
+      if (!document.documentElement.classList.contains('tv-scroll-locked')) {
         lockMainPageScroll('observer');
       }
     } else {
-      if (document.body.classList.contains('tv-scroll-locked')) {
+      if (document.documentElement.classList.contains('tv-scroll-locked')) {
         unlockMainPageScroll('observer');
       }
     }
@@ -1143,7 +1150,7 @@ window.initTvPageComponents = function() {
                 }).catch(function() {});
             } catch (err) {}
 
-            var waUrl = "https://wa.me/971505069575?text=" + encodeURIComponent(msgLines.join("\n"));
+            var waUrl = "https://wa.me/" + WA + "?text=" + encodeURIComponent(msgLines.join("\n"));
             window.open(waUrl, "_blank", "noopener");
         });
     });
@@ -1881,7 +1888,7 @@ function createProductCardHTML(p) {
 
               <div class="tv-card-actions-right">
                 <!-- WhatsApp Enquiry Button (Before Contact Button) -->
-                <a href="https://wa.me/971505069575?text=${encodeURIComponent(waMessage)}" 
+                <a href="https://wa.me/${WA}?text=${encodeURIComponent(waMessage)}" 
                    target="_blank" 
                    rel="noopener" 
                    class="tv-btn-card-wa" 
@@ -2086,7 +2093,8 @@ function openQuickView(btn) {
   const waBtn = document.getElementById('tv-qv-wa-btn');
   if (waBtn) {
     const waMsg = encodeURIComponent(`Hi TyresVision, I would like to inquire about ${fullTitle} (SKU: ${sku}, Size: ${size}, Price: AED ${price.toFixed(2)}).`);
-    waBtn.href = `https://wa.me/971505069575?text=${waMsg}`;
+    const waTarget = (typeof WA !== 'undefined' && WA) || window.WA || (window.TYRESVISION_CONFIG && window.TYRESVISION_CONFIG.whatsapp) || '971505069575';
+    waBtn.href = `https://wa.me/${waTarget}?text=${waMsg}`;
     waBtn.setAttribute('data-product-name', fullTitle);
     waBtn.setAttribute('data-enquiry-for', `Quick View Enquiry: ${fullTitle}`);
     waBtn.setAttribute('data-tyre-size', size);
@@ -4585,7 +4593,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
       card.className = 'tv-branch-card' + (isSelected ? ' is-selected' : '');
       card.id = 'branch-card-' + branch.id;
 
-      var whatsappNum = (branch.whatsapp || '+971505069575').replace(/[^0-9]/g, '');
+      var whatsappNum = (branch.whatsapp || WA).replace(/[^0-9]/g, '');
       var lat = branch.lat || 25.2048;
       var lng = branch.lng || 55.2708;
 
@@ -4744,7 +4752,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
     vans.forEach(function(van) {
       var card = document.createElement('div');
       card.className = 'tv-branch-card';
-      var whatsappNum = (van.whatsapp || '+971505069575').replace(/[^0-9]/g, '');
+      var whatsappNum = (van.whatsapp || WA).replace(/[^0-9]/g, '');
 
       card.innerHTML = `
         <div class="tv-branch-head">
@@ -5615,7 +5623,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     setTimeout(function() {
       var nameInput = document.getElementById('tvContactName');
-      if (nameInput) nameInput.focus();
+      if (nameInput) nameInput.focus({ preventScroll: true });
     }, 250);
   }
 
@@ -5664,20 +5672,20 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     if (!name) {
       showAlert('Please enter your full name.', true);
-      document.getElementById('tvContactName')?.focus();
+      document.getElementById('tvContactName')?.focus({ preventScroll: true });
       return;
     }
 
     var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!email || !emailPattern.test(email)) {
       showAlert('Please provide a valid email address (e.g. name@example.com).', true);
-      document.getElementById('tvContactEmail')?.focus();
+      document.getElementById('tvContactEmail')?.focus({ preventScroll: true });
       return;
     }
 
     if (!message) {
       showAlert('Please describe your tyre size, vehicle, or requirements in the message field.', true);
-      document.getElementById('tvContactMessage')?.focus();
+      document.getElementById('tvContactMessage')?.focus({ preventScroll: true });
       return;
     }
 
@@ -5883,7 +5891,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     if (waBtn) {
       var waMsg = encodeURIComponent('Hi TyresVision, I would like to enquire about ' + productName + (price > 0 ? ' (AED ' + price.toFixed(2) + '/tyre)' : '') + '.');
-      waBtn.href = 'https://wa.me/971505069575?text=' + waMsg;
+      waBtn.href = 'https://wa.me/' + WA + '?text=' + waMsg;
     }
 
     if (alertBox) {
@@ -5900,7 +5908,7 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     setTimeout(function() {
       var nameInput = document.getElementById('tvPeName');
-      if (nameInput) nameInput.focus();
+      if (nameInput) nameInput.focus({ preventScroll: true });
     }, 250);
   }
 
@@ -5940,20 +5948,20 @@ document.addEventListener('DOMContentLoaded', initClientCustomDropdowns);
 
     if (!name) {
       showPeAlert('Please enter your name.', true);
-      document.getElementById('tvPeName')?.focus();
+      document.getElementById('tvPeName')?.focus({ preventScroll: true });
       return;
     }
 
     if (!phone) {
       showPeAlert('Please enter your phone number.', true);
-      document.getElementById('tvPePhone')?.focus();
+      document.getElementById('tvPePhone')?.focus({ preventScroll: true });
       return;
     }
 
     var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
     if (!email || !emailPattern.test(email)) {
       showPeAlert('Please provide a valid email address.', true);
-      document.getElementById('tvPeEmail')?.focus();
+      document.getElementById('tvPeEmail')?.focus({ preventScroll: true });
       return;
     }
 

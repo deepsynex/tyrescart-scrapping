@@ -350,7 +350,7 @@
 
         <!-- 7. CONTENT (ACCORDION - IMAGE 1 & 3) -->
         {% set is_content = page in ['pages', 'sections', 'blogs', 'blog_categories', 'menus', 'faqs',
-        'email_templates', 'content', 'seo'] %}
+        'email_templates', 'content', 'seo', 'company_info'] %}
         <div class="space-y-1">
           <button type="button" onclick="toggleSidebarAccordion('content')"
             class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold transition-all duration-200 {% if is_content %}bg-[#f7f4fd] text-[#4B237B]{% else %}text-slate-700 hover:bg-slate-50 hover:text-slate-900{% endif %}">
@@ -390,6 +390,11 @@
               class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page == 'blog_categories' %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
               <span>Blog Categories</span>
               {% if page == 'blog_categories' %}<span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>{% endif %}
+            </a>
+            <a href="/visionadmin/company-info"
+              class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page == 'company_info' %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
+              <span>Contact Info</span>
+              {% if page == 'company_info' %}<span class="w-1.5 h-1.5 rounded-full bg-[#4B237B]"></span>{% endif %}
             </a>
             <a href="/visionadmin/seo"
               class="flex items-center justify-between py-1.5 px-2.5 rounded-lg text-xs font-semibold transition {% if page == 'seo' %}text-[#4B237B] font-extrabold bg-[#f7f4fd]/60{% else %}text-slate-600 hover:text-slate-950 hover:bg-slate-50{% endif %}">
