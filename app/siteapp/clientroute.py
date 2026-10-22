@@ -1856,7 +1856,12 @@ def _fetch_catalog_products(args, locale='en'):
         if es_service.check_connection().get('connected'):
             raw_rear = (args.get('rear') or '').strip()
             raw_sizes = args.getlist('size') or args.getlist('sizes')
-            if not (raw_rear and len(raw_sizes) >= 2):
+            # A staggered front/rear pair is represented either as a separate
+            # 'rear' arg (the /tyres/<front>/<rear> URL route) or as two 'size'
+            # entries -- either way it needs the SQL path's dedicated staggered
+            # fitment query, which the ES fast path doesn't implement.
+            is_staggered_query = bool(raw_rear) or len(raw_sizes) >= 2
+            if not is_staggered_query:
                 es_result = _fetch_catalog_products_es(args, locale)
                 if es_result is not None:
                     return es_result
