@@ -21286,3 +21286,16 @@ div[class*="hero"] h1 * {
     order: 2;
   }
 }
+
+@media (min-width: 900px) {
+  .tv-catalog-top-bar {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .tv-catalog-search-wrap {
+    max-width: 100%;
+    width: 100%;
+    order: 2;
+  }
+}
