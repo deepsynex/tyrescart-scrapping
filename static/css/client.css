@@ -881,6 +881,11 @@ body.tv-modal-active header {
   .nav-link-btn {
     font-size: 0.88rem;
   }
+
+  .nav-cta .btn-wa-label,
+  .nav-cta .btn-call-label {
+    display: none;
+  }
 }
 
 .nav-cta {
