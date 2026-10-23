@@ -587,7 +587,7 @@ def _build_about_us_context(page, locale=None):
             loc
         ),
         'cta_text': localize_value(parsed_json.get('team_cta_text'), loc) or translate('Meet Our Team', loc),
-        'cta_link': parsed_json.get('team_cta_link') or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20connect%20with%20your%20team.',
+        'cta_link': parsed_json.get('team_cta_link') or 'https://wa.me/971553859285?text=Hi%20TyresVision%2C%20I%20would%20like%20to%20connect%20with%20your%20team.',
         'image': parsed_json.get('team_image') or '/static/assets/images/online-tyres-shop-dubai.webp'
     }
 
@@ -599,7 +599,7 @@ def _build_about_us_context(page, locale=None):
             loc
         ),
         'cta_text': localize_value(parsed_json.get('banner_cta_text'), loc) or translate('Get In Touch →', loc),
-        'cta_link': parsed_json.get('banner_cta_link') or 'https://wa.me/971505069575?text=Hi%20TyresVision%2C%20I%20would%20like%20a%20tyre%20quote.'
+        'cta_link': parsed_json.get('banner_cta_link') or 'https://wa.me/971553859285?text=Hi%20TyresVision%2C%20I%20would%20like%20a%20tyre%20quote.'
     }
 
     return {
@@ -4911,7 +4911,7 @@ def api_store_locator():
             "lng": 55.2341,
             "distance": 3.2,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "alquoz@tyresvision.com",
             "installer_type": "Certified Hub",
             "openingHoursByDay": [["Mon - Sat", "08:00 AM - 09:00 PM"], ["Sun", "09:00 AM - 07:00 PM"]]
@@ -4925,7 +4925,7 @@ def api_store_locator():
             "lng": 55.3374,
             "distance": 8.5,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "deira@tyresvision.com",
             "installer_type": "Independent Installer",
             "openingHoursByDay": [["Mon - Sat", "08:30 AM - 08:30 PM"], ["Sun", "09:00 AM - 06:00 PM"]]
@@ -4939,7 +4939,7 @@ def api_store_locator():
             "lng": 55.3524,
             "distance": 11.0,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "rasalkhor@tyresvision.com",
             "installer_type": "Certified Partner",
             "openingHoursByDay": [["Mon - Sat", "08:00 AM - 08:00 PM"]]
@@ -4953,7 +4953,7 @@ def api_store_locator():
             "lng": 54.5123,
             "distance": 14.2,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "mussafah@tyresvision.com",
             "installer_type": "Certified Hub",
             "openingHoursByDay": [["Sat - Thu", "08:00 AM - 09:00 PM"], ["Fri", "02:00 PM - 08:00 PM"]]
@@ -4967,7 +4967,7 @@ def api_store_locator():
             "lng": 54.3482,
             "distance": 18.0,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "khalidiya@tyresvision.com",
             "installer_type": "Independent Installer",
             "openingHoursByDay": [["Mon - Sat", "08:30 AM - 08:30 PM"]]
@@ -4981,7 +4981,7 @@ def api_store_locator():
             "lng": 55.4011,
             "distance": 16.5,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "sharjah@tyresvision.com",
             "installer_type": "Certified Partner",
             "openingHoursByDay": [["Sat - Thu", "08:00 AM - 09:30 PM"]]
@@ -4995,7 +4995,7 @@ def api_store_locator():
             "lng": 55.4871,
             "distance": 22.0,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "ajman@tyresvision.com",
             "installer_type": "Certified Partner",
             "openingHoursByDay": [["Sat - Thu", "08:30 AM - 09:00 PM"]]
@@ -5009,7 +5009,7 @@ def api_store_locator():
             "lng": 55.9723,
             "distance": 68.0,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "email": "rak@tyresvision.com",
             "installer_type": "Independent Installer",
             "openingHoursByDay": [["Sat - Thu", "08:00 AM - 08:30 PM"]]
@@ -5025,7 +5025,7 @@ def api_store_locator():
             "lat": 25.2048,
             "lng": 55.2708,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "shipping_fee": "",
             "installer_type": "Mobile Van",
             "delivery_mode": "mobile_van"
@@ -5038,7 +5038,7 @@ def api_store_locator():
             "lat": 24.4539,
             "lng": 54.3773,
             "phone": "+971 50 506 9575",
-            "whatsapp": "+971505069575",
+            "whatsapp": "+971553859285",
             "shipping_fee": "",
             "installer_type": "Mobile Van",
             "delivery_mode": "mobile_van"
