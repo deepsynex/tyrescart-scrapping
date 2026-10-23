@@ -20785,11 +20785,6 @@ body.overflow-hidden {
   .tv-mobile-show-more-wrap.tv-hidden {
     display: none !important;
   }
-
-  /* Make mobile filter button visible on tablet as well */
-  .tv-mobile-filter-btn {
-    display: inline-flex !important;
-  }
 }
 
 @media (min-width: 1025px) {
