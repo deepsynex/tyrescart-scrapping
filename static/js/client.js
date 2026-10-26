@@ -2636,6 +2636,9 @@ function updateSidebarFacetCounts(facets) {
     if (!facetMap) return;
     const inputs = document.querySelectorAll(`input[name="${inputName}"]`);
     let visibleCount = 0;
+    const isLastSelectedGroup = (window.lastSelectedFilterGroup === inputName);
+    const hasAnyCheckedInGroup = Array.from(inputs).some(cb => cb.checked);
+    const keepAllOptionsVisible = isLastSelectedGroup || hasAnyCheckedInGroup;
 
     inputs.forEach(cb => {
       let val = cb.value.trim();
@@ -2655,7 +2658,7 @@ function updateSidebarFacetCounts(facets) {
         if (countSpan) {
           countSpan.textContent = count.toLocaleString();
         }
-        if (count === 0 && !cb.checked) {
+        if (count === 0 && !cb.checked && !keepAllOptionsVisible) {
           item.classList.add('tv-filter-empty');
           item.style.display = 'none';
         } else {
@@ -2716,8 +2719,9 @@ function updateSidebarFacetCounts(facets) {
     const rfItem = rfCb ? rfCb.closest('.tv-filter-item') : null;
     const rfGroup = rfCb ? rfCb.closest('.tv-filter-group') : null;
     const isChecked = rfCb ? rfCb.checked : false;
+    const keepRfVisible = isChecked || (window.lastSelectedFilterGroup === 'runflat');
     if (rfItem) {
-      if (rfCount === 0 && !isChecked) {
+      if (rfCount === 0 && !keepRfVisible) {
         rfItem.classList.add('tv-filter-empty');
         rfItem.style.display = 'none';
         if (rfGroup) {
@@ -2744,8 +2748,9 @@ function updateSidebarFacetCounts(facets) {
     const evItem = evCb ? evCb.closest('.tv-filter-item') : null;
     const evGroup = evCb ? evCb.closest('.tv-filter-group') : null;
     const isChecked = evCb ? evCb.checked : false;
+    const keepEvVisible = isChecked || (window.lastSelectedFilterGroup === 'ev_tyre');
     if (evItem) {
-      if (evCount === 0 && !isChecked) {
+      if (evCount === 0 && !keepEvVisible) {
         evItem.classList.add('tv-filter-empty');
         evItem.style.display = 'none';
         if (evGroup) {
@@ -2767,11 +2772,14 @@ function updateSidebarFacetCounts(facets) {
 function refreshFilterVisibility() {
   document.querySelectorAll('.tv-filter-group').forEach(group => {
     const items = group.querySelectorAll('.tv-filter-item');
+    const hasCheckedInGroup = group.querySelector('input:checked') !== null;
     let visibleItems = 0;
     items.forEach(item => {
       const cb = item.querySelector('input[type="checkbox"]');
       const isChecked = cb ? cb.checked : false;
-      if (item.classList.contains('tv-filter-empty') && !isChecked) {
+      const isTargetGroup = cb && (cb.name === window.lastSelectedFilterGroup);
+      const keepVisible = isChecked || hasCheckedInGroup || isTargetGroup;
+      if (item.classList.contains('tv-filter-empty') && !keepVisible) {
         item.style.display = 'none';
       } else {
         item.style.display = '';
@@ -2785,9 +2793,9 @@ function refreshFilterVisibility() {
       group.classList.remove('tv-group-empty');
       group.style.display = '';
     }
-    // Auto-expand any group that has checked inputs so active filters are always visible
-    const hasChecked = group.querySelector('input:checked');
-    if (hasChecked) {
+    // Auto-expand any group that has checked inputs or is the target group
+    const shouldExpand = hasCheckedInGroup || (window.lastSelectedFilterGroup && group.querySelector(`input[name="${window.lastSelectedFilterGroup}"]`));
+    if (shouldExpand) {
       group.classList.remove('is-collapsed');
       const header = group.querySelector('.tv-filter-header');
       if (header) {
@@ -2801,6 +2809,13 @@ function refreshFilterVisibility() {
     }
   });
 }
+
+// Track last selected filter group for disjunctive multi-select display
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.name) {
+    window.lastSelectedFilterGroup = e.target.name;
+  }
+}, true);
 
 window.updateSidebarFacetCounts = updateSidebarFacetCounts;
 window.refreshFilterVisibility = refreshFilterVisibility;
@@ -3063,10 +3078,13 @@ function searchFilterList(inputEl, listSelector) {
   const container = document.querySelector(listSelector);
   if (!container) return;
   const items = container.querySelectorAll('.tv-filter-item');
+  const hasCheckedInContainer = container.querySelector('input:checked') !== null;
   items.forEach(it => {
     const cb = it.querySelector('input[type="checkbox"]');
     const isChecked = cb ? cb.checked : false;
-    if (it.classList.contains('tv-filter-empty') && !isChecked) {
+    const isTargetGroup = cb && (cb.name === window.lastSelectedFilterGroup);
+    const keepVisible = isChecked || isTargetGroup || hasCheckedInContainer;
+    if (it.classList.contains('tv-filter-empty') && !keepVisible) {
       it.style.display = 'none';
       return;
     }
@@ -3233,7 +3251,163 @@ function updateActiveFilterBadges() {
   if (applyCount && typeof window.totalCount !== 'undefined') {
     applyCount.textContent = `(${window.totalCount.toLocaleString()})`;
   }
+
+  // Synchronize applied filter chips in top bar
+  renderAppliedFilters();
 }
+
+function removeFilter(type, value) {
+  window.lastSelectedFilterGroup = type;
+  if (type === 'price') {
+    const minSlider = document.getElementById('min-price-slider');
+    const maxSlider = document.getElementById('max-price-slider');
+    if (minSlider) {
+      minSlider.value = minSlider.min;
+      const minLabel = document.getElementById('min-price-display');
+      if (minLabel) minLabel.innerHTML = '<span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> ' + parseInt(minSlider.min).toLocaleString();
+    }
+    if (maxSlider) {
+      maxSlider.value = maxSlider.max;
+      const maxLabel = document.getElementById('price-slider-val');
+      if (maxLabel) maxLabel.innerHTML = '<span class="currency-dirham tv-curr-glyph-sub">&#xe900;</span> ' + parseInt(maxSlider.max).toLocaleString();
+    }
+    updateSliderTrack();
+    filterProducts();
+    return;
+  }
+  if (type === 'search') {
+    if (typeof window.clearProductSearch === 'function') {
+      window.clearProductSearch();
+    } else {
+      const topSearchInput = document.getElementById('tv-product-search-input');
+      if (topSearchInput) topSearchInput.value = '';
+      const clearBtn = document.getElementById('tv-product-search-clear');
+      if (clearBtn) clearBtn.style.display = 'none';
+      filterProducts();
+    }
+    return;
+  }
+  
+  // Find matching checkbox
+  let cb = null;
+  if (value && value !== 'yes' && value !== 'true') {
+    cb = document.querySelector(`.tv-filter-sidebar input[name="${type}"][value="${CSS.escape(value)}"]`) ||
+         document.querySelector(`input[name="${type}"][value="${CSS.escape(value)}"]`);
+  }
+  if (!cb) {
+    cb = document.querySelector(`.tv-filter-sidebar input[name="${type}"]`) ||
+         document.querySelector(`input[name="${type}"]`);
+  }
+  if (cb) {
+    cb.checked = false;
+  }
+  filterProducts();
+}
+window.removeFilter = removeFilter;
+
+function renderAppliedFilters() {
+  const wrap = document.getElementById('tv-applied-filters-wrap');
+  const list = document.getElementById('tv-applied-chips-list');
+  if (!wrap || !list) return;
+
+  const facetLabels = {
+    'tyres_category': 'Category',
+    'brand': 'Brand',
+    'pattern': 'Pattern',
+    'tyre_marking': 'Marking',
+    'oem': 'OEM',
+    'runflat': 'RunFlat',
+    'ev_tyre': 'EV Tyre',
+    'warranty': 'Warranty',
+    'year': 'Year',
+    'origin': 'Origin',
+    'size': 'Size',
+    'vehicle_type': 'Vehicle',
+    'promotion': 'Offer'
+  };
+
+  const activeFilters = [];
+
+  // 1. Checked checkboxes
+  document.querySelectorAll('.tv-filter-sidebar input[type="checkbox"]:checked, #hidden-size-filters input[type="checkbox"]:checked').forEach(cb => {
+    const name = cb.name;
+    const val = cb.value;
+    const facetName = facetLabels[name] || (name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, ' '));
+
+    let displayVal = val;
+    if (name === 'runflat') {
+      displayVal = 'Yes';
+    } else if (name === 'ev_tyre') {
+      displayVal = 'Yes';
+    } else {
+      const itemLabel = cb.closest('.tv-filter-item')?.querySelector('.tv-filter-item-left span:last-child');
+      if (itemLabel && itemLabel.textContent.trim()) {
+        displayVal = itemLabel.textContent.trim();
+      }
+    }
+
+    activeFilters.push({
+      type: name,
+      val: val,
+      facetLabel: facetName,
+      displayVal: displayVal
+    });
+  });
+
+  // 2. Price slider
+  const minSlider = document.getElementById('min-price-slider');
+  const maxSlider = document.getElementById('max-price-slider');
+  const isMinActive = minSlider && parseFloat(minSlider.value) > parseFloat(minSlider.min || 0);
+  const isMaxActive = maxSlider && parseFloat(maxSlider.value) < parseFloat(maxSlider.max || 2000);
+  if (isMinActive || isMaxActive) {
+    const minVal = minSlider ? minSlider.value : 0;
+    const maxVal = maxSlider ? maxSlider.value : 2000;
+    activeFilters.push({
+      type: 'price',
+      val: `${minVal}-${maxVal}`,
+      facetLabel: 'Price',
+      displayVal: `AED ${minVal} - AED ${maxVal}`
+    });
+  }
+
+  // 3. Top search
+  const searchInputEl = document.getElementById('tv-product-search-input');
+  if (searchInputEl && searchInputEl.value.trim()) {
+    activeFilters.push({
+      type: 'search',
+      val: searchInputEl.value.trim(),
+      facetLabel: 'Search',
+      displayVal: `"${searchInputEl.value.trim()}"`
+    });
+  }
+
+  if (activeFilters.length === 0) {
+    wrap.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  const escapeFn = typeof escapeHtml === 'function' ? escapeHtml : function(s) {
+    return String(s).replace(/[&<>"']/g, function(m) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  };
+
+  list.innerHTML = activeFilters.map(f => `
+    <span class="tv-applied-chip" data-facet="${escapeFn(f.type)}" data-val="${escapeFn(f.val)}">
+      <span class="tv-chip-prefix">${escapeFn(f.facetLabel)}:</span>
+      <span class="tv-chip-value">${escapeFn(f.displayVal)}</span>
+      <button type="button" class="tv-chip-remove" onclick="removeFilter('${escapeFn(f.type)}', '${escapeFn(f.val)}')" aria-label="Remove ${escapeFn(f.facetLabel)}: ${escapeFn(f.displayVal)} filter">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </span>
+  `).join('');
+}
+window.renderAppliedFilters = renderAppliedFilters;
 
 window.addEventListener('resize', function() {
   if (window.innerWidth > 1024 && document.body.classList.contains('filter-open')) {

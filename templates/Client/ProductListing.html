@@ -43,11 +43,11 @@
 
       <h1 class="tv-cat-hero-title" id="tv-hero-title">
         {% if active_ev_tyre %}
-        Electric Vehicle Tyres <span class="tv-hero-gradient-text">Online in UAE</span>
+        EV tyres.<br><span class="tv-hero-gradient-text">Engineered for electric range in UAE</span>
         {% elif active_brand_name %}
-        Buy {{ active_brand_name }} Tyres <span class="tv-hero-gradient-text">Online UAE</span>
+        {{ active_brand_name }} tyres.<br><span class="tv-hero-gradient-text">Genuine stock & fitted across UAE</span>
         {% else %}
-        Buy All Types of Tyres <span class="tv-hero-gradient-text">Online in UAE</span>
+        Buy tyres.<br><span class="tv-hero-gradient-text">Delivered & fitted across the UAE</span>
         {% endif %}
       </h1>
     </div>
@@ -503,35 +503,8 @@
         <div class="tv-topbar-left">
           <h2 class="tv-catalog-count-heading" id="catalog-count-heading">{{ "{:,}".format(total_count or 0) }} {% if active_brand_name %}{{ active_brand_name }} Tyres{% else %}Car Tyres{% endif %}</h2>
         </div>
+
         <div class="tv-topbar-right">
-          <!-- Product Search Input (Elasticsearch Fast Path via AJAX) -->
-          <div class="tv-catalog-search-wrap">
-            <div class="tv-catalog-search-box">
-              <svg class="tv-catalog-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input type="text"
-                     id="tv-product-search-input"
-                     class="tv-product-search-input"
-                     placeholder="Search tyres (brand, pattern, size)..."
-                     value="{{ request.args.get('search') or request.args.get('q') or '' }}"
-                     oninput="handleProductSearch(this)"
-                     autocomplete="off"
-                     aria-label="Search tyres">
-              <button type="button"
-                      id="tv-product-search-clear"
-                      class="tv-product-search-clear"
-                      onclick="clearProductSearch()"
-                      style="{% if not (request.args.get('search') or request.args.get('q')) %}display:none;{% endif %}"
-                      aria-label="Clear search">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          </div>
 
           <!-- Mobile Filter Button (Visible on mobile/tablet) -->
           <button type="button" class="tv-mobile-filter-btn" onclick="openMobileFilter()" aria-label="Open Filters">
@@ -608,6 +581,12 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Applied Filters Row (Below Heading/Sort Bar, Above Products Grid) -->
+      <div class="tv-applied-filters-wrap" id="tv-applied-filters-wrap" style="display: none;">
+        <div class="tv-applied-chips-list" id="tv-applied-chips-list"></div>
+        <button type="button" class="tv-clear-all-chips-btn" onclick="clearAllFilters()" aria-label="Clear all applied filters">Clear all</button>
       </div>
 
       {% set COUNTRY_FLAG_CODES = {

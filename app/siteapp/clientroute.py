@@ -1634,8 +1634,9 @@ def _fetch_catalog_products_es(args, locale='en'):
         except (ValueError, TypeError):
             per_page = 16
 
-        filter_clauses = [{"term": {"status": "active"}}]
+        base_filters = [{"term": {"status": "active"}}]
         must_clauses = []
+        facet_filters = {}
 
         # 1. Brands
         raw_brands = args.getlist('brand') or args.getlist('brands')
@@ -1646,13 +1647,13 @@ def _fetch_catalog_products_es(args, locale='en'):
                 if b_clean:
                     brands.append(b_clean)
         if brands:
-            filter_clauses.append({"terms": {"brand_slug": brands}})
+            facet_filters["brands"] = {"terms": {"brand_slug": brands}}
 
         # 2. Category
         raw_cats = args.getlist('tyres_category') or args.getlist('category')
         cats = [c.strip().title() for c in raw_cats if c.strip()]
         if cats:
-            filter_clauses.append({"terms": {"tyres_category": cats}})
+            facet_filters["tyres_categories"] = {"terms": {"tyres_category": cats}}
 
         # 3. Sizes
         raw_sizes = args.getlist('size') or args.getlist('sizes')
@@ -1676,43 +1677,55 @@ def _fetch_catalog_products_es(args, locale='en'):
                     size_terms.append(f"{w}-{p}-R{r}")
                     size_terms.append(f"{w}-{p}-r{r}")
             if size_terms:
-                filter_clauses.append({"terms": {"tire_size_label": size_terms}})
+                facet_filters["sizes"] = {"terms": {"tire_size_label": size_terms}}
 
         # 4. Patterns
         raw_patterns = args.getlist('pattern') or args.getlist('patterns')
         patterns = [p.strip() for p in raw_patterns if p.strip()]
         if patterns:
-            filter_clauses.append({"terms": {"tire_pattern.keyword": patterns}})
+            facet_filters["patterns"] = {"terms": {"tire_pattern.keyword": patterns}}
 
         # 5. Origins
         raw_origins = args.getlist('origin') or args.getlist('origins')
         origins = [o.strip() for o in raw_origins if o.strip()]
         if origins:
-            filter_clauses.append({"terms": {"country_of_origin": origins}})
+            facet_filters["origins"] = {"terms": {"country_of_origin": origins}}
 
         # 6. Years
         raw_years = args.getlist('year') or args.getlist('years')
         years = [str(y).strip() for y in raw_years if str(y).strip()]
         if years:
-            filter_clauses.append({"terms": {"year": years}})
+            facet_filters["years"] = {"terms": {"year": years}}
 
         # 7. OEM
         raw_oems = args.getlist('oem') or args.getlist('oem_tyres')
         oems = [o.strip() for o in raw_oems if o.strip()]
         if oems:
-            filter_clauses.append({"terms": {"oem_brand": oems}})
+            facet_filters["oems"] = {"terms": {"oem_brand": oems}}
 
-        # 8. RunFlat
+        # 8. Warranty
+        raw_warranties = args.getlist('warranty') or args.getlist('warranties')
+        warranties = [w.strip() for w in raw_warranties if w.strip()]
+        if warranties:
+            facet_filters["warranties"] = {"terms": {"warranty_period": warranties}}
+
+        # 9. Marking
+        raw_markings = args.getlist('tyre_marking') or args.getlist('marking')
+        markings = [m.strip() for m in raw_markings if m.strip()]
+        if markings:
+            facet_filters["tyre_markings"] = {"terms": {"tire_marking": markings}}
+
+        # 10. RunFlat
         raw_rf = args.getlist('runflat') or args.getlist('run_flat')
         if any(r in ('1', 'true', 'yes', 'runflat', 'rft') for r in raw_rf):
-            filter_clauses.append({"term": {"run_flat": True}})
+            facet_filters["runflat"] = {"term": {"run_flat": True}}
 
-        # 9. EV
+        # 11. EV
         raw_ev = args.getlist('ev_tyre') or args.getlist('ev') or args.getlist('is_ev') or args.getlist('ev_rated')
         if any(e.lower() in ('1', 'true', 'yes', 'ev', 'ev_ready', 'ev_tyre') for e in raw_ev):
-            filter_clauses.append({"bool": {"should": _ES_EV_SHOULD, "minimum_should_match": 1}})
+            facet_filters["ev_tyre"] = {"bool": {"should": _ES_EV_SHOULD, "minimum_should_match": 1}}
 
-        # 10. Price range
+        # 12. Price range
         min_p = args.get('min_price')
         max_p = args.get('max_price')
         price_rng = {}
@@ -1727,9 +1740,9 @@ def _fetch_catalog_products_es(args, locale='en'):
             except ValueError:
                 pass
         if price_rng:
-            filter_clauses.append({"range": {"effective_price": price_rng}})
+            base_filters.append({"range": {"effective_price": price_rng}})
 
-        # 11. Full-text search (Elasticsearch fast path)
+        # 13. Full-text search (Elasticsearch fast path)
         q = (args.get('search') or args.get('q') or '').strip()
         if q:
             q_clean = re.sub(r'(\d+)\s*[/ -]\s*(\d+)\s*[rR]?\s*(\d+)', r'\1/\2 R\3', q)
@@ -1756,13 +1769,12 @@ def _fetch_catalog_products_es(args, locale='en'):
                 }
             })
 
-        bool_query = {"filter": filter_clauses}
-        if must_clauses:
-            bool_query["must"] = must_clauses
-        else:
-            bool_query["must"] = [{"match_all": {}}]
+        base_query = {"bool": {
+            "filter": base_filters,
+            "must": must_clauses if must_clauses else [{"match_all": {}}]
+        }}
 
-        aggregations = {
+        base_aggs = {
             "brands": {"terms": {"field": "brand_slug", "size": 80}},
             "patterns": {"terms": {"field": "tire_pattern.keyword", "size": 60}},
             "tyre_markings": {"terms": {"field": "tire_marking", "size": 40}},
@@ -1777,14 +1789,37 @@ def _fetch_catalog_products_es(args, locale='en'):
             "max_price": {"max": {"field": "effective_price"}}
         }
 
+        aggregations = {}
+        for agg_k, agg_def in base_aggs.items():
+            if agg_k in ("min_price", "max_price"):
+                if facet_filters:
+                    aggregations[agg_k] = {
+                        "filter": {"bool": {"filter": list(facet_filters.values())}},
+                        "aggs": {"inner": agg_def}
+                    }
+                else:
+                    aggregations[agg_k] = agg_def
+                continue
+
+            other_filters = [f for fk, f in facet_filters.items() if fk != agg_k]
+            if other_filters:
+                aggregations[agg_k] = {
+                    "filter": {"bool": {"filter": other_filters}},
+                    "aggs": {"inner": agg_def}
+                }
+            else:
+                aggregations[agg_k] = agg_def
+
         body = {
-            "query": {"bool": bool_query},
+            "query": base_query,
             "sort": [{sort_by: {"order": sort_dir}}],
             "from": (page - 1) * per_page,
             "size": per_page,
             "aggs": aggregations,
             "track_total_hits": True
         }
+        if facet_filters:
+            body["post_filter"] = {"bool": {"filter": list(facet_filters.values())}}
 
         es_res = client.search(index=es_service.index_name, body=body)
 
@@ -1808,13 +1843,18 @@ def _fetch_catalog_products_es(args, locale='en'):
             'ev_tyre': 0
         }
         for agg_key in ['tyres_categories', 'warranties', 'years', 'brands', 'patterns', 'oems', 'origins', 'tyre_markings']:
-            if agg_key in raw_aggs and 'buckets' in raw_aggs[agg_key]:
-                facets[agg_key] = {b['key']: b['doc_count'] for b in raw_aggs[agg_key]['buckets']}
+            if agg_key in raw_aggs:
+                agg_val = raw_aggs[agg_key]
+                buckets = agg_val.get('inner', {}).get('buckets') if 'inner' in agg_val else agg_val.get('buckets')
+                if buckets is not None:
+                    facets[agg_key] = {b['key']: b['doc_count'] for b in buckets}
 
         if 'runflat' in raw_aggs:
-            facets['runflat'] = raw_aggs['runflat'].get('doc_count', 0)
+            agg_val = raw_aggs['runflat']
+            facets['runflat'] = agg_val.get('inner', {}).get('doc_count', 0) if 'inner' in agg_val else agg_val.get('doc_count', 0)
         if 'ev_tyre' in raw_aggs:
-            facets['ev_tyre'] = raw_aggs['ev_tyre'].get('doc_count', 0)
+            agg_val = raw_aggs['ev_tyre']
+            facets['ev_tyre'] = agg_val.get('inner', {}).get('doc_count', 0) if 'inner' in agg_val else agg_val.get('doc_count', 0)
 
         total_pages = max(1, math.ceil(total_hits / per_page)) if total_hits > 0 else 1
 
