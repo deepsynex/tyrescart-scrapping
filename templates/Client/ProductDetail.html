@@ -1455,7 +1455,8 @@
   }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 640px) {
+
   .tv-ref-prod-specs-grid {
     grid-template-columns: 1fr;
   }
@@ -1779,6 +1780,7 @@
   -ms-overflow-style: none;
   padding: 6px 2px 20px 2px;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
 }
 
 .tv-pdp-related-carousel::-webkit-scrollbar {
@@ -1824,11 +1826,16 @@
   }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 640px) {
+
   .tv-rel-carousel-card {
-    flex: 0 0 280px;
-    width: 280px;
-    max-width: 85vw;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    box-sizing: border-box;
   }
 }
 

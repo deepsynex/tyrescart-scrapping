@@ -39,7 +39,7 @@
             Authorised UAE Retailer
           </span>
           <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-            {{ brand.name }} <span class="tv-hero-gradient-text">Tyres in the UAE</span>
+            {{ brand.name }} tyres.<br><span class="tv-hero-gradient-text">Genuine stock & fitted across the UAE.</span>
           </h1>
         </div>
       </div>
@@ -73,14 +73,6 @@
       {% for p in products %}
       {% set pattern_label = p.pattern_name or p.display_name %}
       <a href="/tyres?brand={{ brand.name|urlencode }}&pattern={{ pattern_label|urlencode }}" class="tv-pattern-card" title="{{ pattern_label }}">
-        <div class="tv-pattern-card-logo">
-          {% if p.brand_logo %}
-          <img src="{{ p.brand_logo }}" alt="{{ p.brand_name }}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-          <span class="tv-pattern-card-logo-fallback" style="display:none;">{{ (p.brand_name or '')[:3]|upper }}</span>
-          {% else %}
-          <span class="tv-pattern-card-logo-fallback">{{ (p.brand_name or '')[:3]|upper }}</span>
-          {% endif %}
-        </div>
 
         <div class="tv-pattern-img-wrap">
           <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}"
@@ -145,7 +137,7 @@
   {# ── 4. CTA BANNER ── #}
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #2b1247 0%, #4B237B 50%, #9f7dde 100%);">
-      <div class="relative z-10 max-w-2xl mx-auto">
+      <div class="relative z-10 max-w-3xl mx-auto">
         <h2 class="text-2xl sm:text-3xl font-black text-white mb-3">
           Not Sure Which {{ brand.name }} Tyre Fits Your Car?
         </h2>

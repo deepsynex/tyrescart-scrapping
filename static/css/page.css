@@ -42,28 +42,40 @@
 #tv-page-content-root .tv-hero .eyebrow,
 #tv-page-content-root .tv-hero-left .eyebrow,
 #tv-page-content-root [class*="hero"] .eyebrow,
-#tv-page-content-root .tv-dark-pricing-section .eyebrow,
-#tv-page-content-root .price-section.tv-dark-pricing-section .eyebrow,
-#tv-page-content-root .tv-dark-pricing-section .tv-section-head .eyebrow,
-#tv-page-content-root .price-section .tv-section-head .eyebrow {
-  background: rgba(255, 255, 255, 0.18) !important;
+#tv-page-content-root .about-breadcrumb .breadcrumb-eyebrow,
+#tv-page-content-root .breadcrumb-eyebrow,
+.tv-page-hero .breadcrumb-eyebrow,
+.page-mobile-tyre-fitting .mtf-hero-badge,
+.page-about-us .mtf-hero-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  background: #42017D !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
   color: #FFFFFF !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 
 
 #tv-page-content-root .tv-section-head h2 {
-  color: #240B3A !important;
+  color: #240B3A;
   font-size: clamp(1.85rem, 3.2vw, 2.35rem);
   letter-spacing: -0.025em;
 }
-
+.price-section.tv-section-block.tvi-9b896910 .lead {
+  color: #D8C7F0  !important;
+} 
 #tv-page-content-root .tv-section-head .lead {
-  color: #64748b !important;
+  color: #64748b;
   font-size: 1.02rem;
 }
 
@@ -373,7 +385,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18) !important;
+  background: #8600ff !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
@@ -3051,6 +3063,13 @@
   background: #0000000d;
 }
 
+.price-section.tv-section-block.tvi-9b896910{
+  color: #9725FF;
+  background: #260B3F !important;
+}
+.price-section.tv-section-block.tvi-9b896910 h2 {
+  color: #D8C7F0 !important;
+}
 #tv-page-content-root .tvi-9cad8efc.tvi-9cad8efc,
 .page-mobile-tyre-fitting .tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc.tvi-9cad8efc {
   width: 48px;
@@ -8407,18 +8426,22 @@
 #tv-page-content-root .breadcrumb-eyebrow {
   display: inline-flex !important;
   align-items: center !important;
-  background: rgba(147, 51, 234, 0.28) !important;
-  border: 1px solid rgba(216, 180, 254, 0.45) !important;
-  color: #F3E8FF !important;
-  padding: 3px 12px !important;
+  gap: 8px !important;
+  background: #8600ff !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+  padding: 6px 14px !important;
   border-radius: 9999px !important;
-  font-size: 0.72rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.06em !important;
-  margin-left: 10px !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  margin-left: 12px !important;
   vertical-align: middle !important;
   text-transform: uppercase !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 /* ==========================================================================
