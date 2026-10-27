@@ -1502,7 +1502,9 @@ function createStaggeredCombinedCardHTML(p) {
         <!-- 2. Centered Tyre Image Area -->
         <div class="tv-card-img-area">
           <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view"
-                  data-slug="${itemSlug}" data-image="${itemImg}" data-title="${itemFullTitle}">
+                  data-slug="${itemSlug}" data-image="${itemImg}" data-title="${itemFullTitle}"
+                  data-price="${itemPrice}" data-set2-price="${itemSet2}"
+                  data-size="${escapeHtml(itemSize)}" data-year="${escapeHtml(itemYear)}" data-warranty="${escapeHtml(itemWarranty)}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
               <circle cx="12" cy="12" r="3"></circle>
@@ -1589,6 +1591,7 @@ function createStaggeredCombinedCardHTML(p) {
          data-pattern="${patternTitle}"
          data-full-title="${fullTitle}"
          data-staggered="true"
+         data-price="${(totPrice / 4).toFixed(2)}"
          data-total-set-price="${totPrice}"
          data-front-price="${frontPrice}"
          data-rear-price="${rearPrice}">
@@ -1757,6 +1760,7 @@ function createProductCardHTML(p) {
   const waTyreSize = p.tire_size_label || sizeSpec || '';
   const waPrice = displayPrice;
   const waMessage = `Hi TyresVision, I would like to inquire about ${p.display_name || p.name_en || p.pattern_name || patternTitle || ''}${sizeSpec ? ' (Size: ' + sizeSpec + ', Price: AED ' + displayPrice + ')' : ' (Price: AED ' + displayPrice + ')'}`;
+  const waTarget = (typeof WA !== 'undefined' && WA) || window.WA || (window.TYRESVISION_CONFIG && window.TYRESVISION_CONFIG.whatsapp) || '971505069575';
 
   return `
         <div class="tv-product-card ${hasOffer ? 'has-offer' : ''} ${isStaggered ? 'tv-staggered-card' : ''}"
@@ -1888,7 +1892,7 @@ function createProductCardHTML(p) {
 
               <div class="tv-card-actions-right">
                 <!-- WhatsApp Enquiry Button (Before Contact Button) -->
-                <a href="https://wa.me/${WA}?text=${encodeURIComponent(waMessage)}" 
+                <a href="https://wa.me/${waTarget}?text=${encodeURIComponent(waMessage)}" 
                    target="_blank" 
                    rel="noopener" 
                    class="tv-btn-card-wa" 
@@ -1900,7 +1904,7 @@ function createProductCardHTML(p) {
                    onclick="event.stopPropagation()" 
                    title="Chat on WhatsApp"
                    aria-label="Inquire on WhatsApp">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.06c-.24.68-1.42 1.31-1.96 1.36-.54.05-1.04.24-3.52-.73-2.99-1.18-4.86-4.29-5.01-4.49-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.29.59-.37.78-.37s.39 0 .56.01c.18.01.42-.07.66.5.24.59.83 2.03.9 2.18.07.15.12.32.02.51-.1.2-.15.32-.29.5s-.3.4-.43.53c-.15.15-.3.31-.13.6.17.29.76 1.25 1.62 2.02 1.11.99 2.05 1.3 2.34 1.45.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .96.29.15.49.22.56.34.07.13.07.75-.17 1.43z"/></svg>
                   <span class="tv-wa-btn-label">WhatsApp</span>
                 </a>
 
@@ -1986,28 +1990,78 @@ function openQuickView(btn) {
   if (!modal) return;
 
   const ds = card.dataset;
-  const brandName = ds.brandName || card.querySelector('.tv-card-brand-fallback')?.textContent?.trim() || '';
-  const brandLogo = ds.brandLogo || card.querySelector('.tv-card-brand-img')?.getAttribute('src') || '';
-  const pattern = ds.pattern || card.querySelector('.tv-card-pattern-title')?.textContent?.trim() || '';
-  const fullTitle = ds.fullTitle || (brandName + ' ' + (ds.fullSpec || '') + ' ' + pattern + ' ' + (ds.year || '2025')).trim();
-  const width = ds.width || '155 mm';
-  const profile = ds.profile || 'None';
-  const rim = ds.rim || 'R16';
-  const loadSpeed = ds.loadSpeed || '86Q';
-  const year = ds.year || '2025';
-  const country = ds.country || 'China';
-  const warranty = ds.warranty || '1 Year Warranty';
-  const sku = ds.sku || 'TCKL-12726';
-  const size = ds.fullSpec || ds.size || `${width} ${rim} ${loadSpeed}`;
-  const image = ds.image || card.querySelector('.tv-product-img')?.getAttribute('src') || '/static/assets/images/no-image-available.svg';
-  const price = parseFloat(ds.price || 0);
-  const vehicle = (ds.vehicle || 'car').toLowerCase();
+  const bds = btn.dataset || {};
+  const side = btn.closest('.tv-staggered-side');
+  const isStaggeredCombined = card.classList.contains('tv-staggered-combined-card') || ds.staggered === 'true';
+
+  const brandName = bds.brandName || (side && side.querySelector('.tv-card-brand-fallback')?.textContent?.trim()) || ds.brandName || card.querySelector('.tv-card-brand-fallback')?.textContent?.trim() || '';
+  const brandLogo = bds.brandLogo || (side && side.querySelector('.tv-card-brand-img')?.getAttribute('src')) || ds.brandLogo || card.querySelector('.tv-card-brand-img')?.getAttribute('src') || '';
+  const pattern = bds.pattern || (side && side.querySelector('.tv-card-pattern')?.textContent?.trim()) || ds.pattern || card.querySelector('.tv-card-pattern-title')?.textContent?.trim() || '';
+
+  const rawSize = bds.size || (side && side.querySelector('.tv-card-spec-text')?.textContent?.trim()) || ds.size || ds.fullSpec || '';
+  let width = bds.width || (side ? '' : ds.width);
+  let profile = bds.profile || (side ? '' : ds.profile);
+  let rim = bds.rim || (side ? '' : ds.rim);
+  let loadSpeed = bds.loadSpeed || (side ? '' : ds.loadSpeed);
+
+  if ((!width || width === '155 mm') && rawSize) {
+    const m = rawSize.match(/(\d+)[/\s]+(\d+)?\s*(?:R|r|Z?R)?\s*(\d+(?:\.\d+)?)\s*([0-9]+[A-Za-z]+)?/);
+    if (m) {
+      if (m[1]) width = m[1] + ' mm';
+      if (m[2]) profile = m[2];
+      if (m[3]) rim = 'R' + m[3];
+      if (m[4]) loadSpeed = m[4];
+    }
+  }
+  width = width || ds.width || '155 mm';
+  profile = profile || ds.profile || 'None';
+  rim = rim || ds.rim || 'R16';
+  loadSpeed = loadSpeed || ds.loadSpeed || '86Q';
+
+  const year = bds.year || (side && side.querySelector('.tv-card-year-meta span')?.textContent?.trim()) || ds.year || '2025';
+  const country = bds.country || ds.country || 'China';
+  const warranty = bds.warranty || (side && side.querySelector('.tv-card-warranty-badge span')?.textContent?.trim()) || ds.warranty || '1 Year Warranty';
+  const sku = bds.sku || ds.sku || 'TCKL-12726';
+  const size = rawSize || `${width} ${rim} ${loadSpeed}`;
+  const image = bds.image || (side && side.querySelector('.tv-product-img')?.getAttribute('src')) || ds.image || card.querySelector('.tv-product-img')?.getAttribute('src') || '/static/assets/images/no-image-available.svg';
+
+  // Price resolution with support for staggered bundles
+  let price = 0;
+  if (bds.price && !isNaN(parseFloat(bds.price)) && parseFloat(bds.price) > 0) {
+    price = parseFloat(bds.price);
+  } else if (side) {
+    const isFront = side.classList.contains('tv-staggered-front');
+    const sidePrice = isFront ? ds.frontPrice : ds.rearPrice;
+    const sideTextPrice = side.querySelector('.tv-card-price-num')?.textContent?.replace(/[^0-9.]/g, '');
+    price = parseFloat(sidePrice || sideTextPrice || 0);
+  } else if (ds.price && !isNaN(parseFloat(ds.price)) && parseFloat(ds.price) > 0) {
+    price = parseFloat(ds.price);
+  } else if (ds.totalSetPrice) {
+    price = parseFloat(ds.totalSetPrice) / 4;
+  } else {
+    const cardTextPrice = card.querySelector('.tv-card-price-num')?.textContent?.replace(/[^0-9.]/g, '');
+    price = parseFloat(cardTextPrice || 0);
+  }
+
+  let totalSetPrice = parseFloat(ds.totalSetPrice || 0);
+  let set2Price = 0;
+  if (bds.set2Price && !isNaN(parseFloat(bds.set2Price))) {
+    set2Price = parseFloat(bds.set2Price);
+  } else if (side) {
+    set2Price = price * 2;
+  }
+
+  const fullTitle = bds.title || (side ? `${brandName} ${size} ${pattern} ${year}`.trim() : (ds.fullTitle || (brandName + ' ' + size + ' ' + pattern + ' ' + year).trim()));
+  const vehicle = (bds.vehicle || ds.vehicle || 'car').toLowerCase();
   const vehicleLabel = vehicle === 'suv' ? 'SUV / 4x4' : (vehicle === 'van' ? 'Light Truck / Van' : 'Passenger Car');
-  const season = (ds.type || 'all season').toLowerCase().includes('summer') ? 'Summer Tyre' : 'All Season';
-  const offer = ds.offer || card.querySelector('.tv-card-top-banner')?.textContent?.trim() || '';
+  const season = (bds.type || ds.type || 'all season').toLowerCase().includes('summer') ? 'Summer Tyre' : 'All Season';
+  const offer = bds.offer || ds.offer || card.querySelector('.tv-card-top-banner')?.textContent?.trim() || '';
 
   currentQuickViewProduct = {
-    brandName, brandLogo, pattern, fullTitle, width, profile, rim, loadSpeed, year, country, warranty, sku, size, image, price, vehicle, vehicleLabel, season, offer
+    brandName, brandLogo, pattern, fullTitle, width, profile, rim, loadSpeed, year, country, warranty, sku, size, image, price, vehicle, vehicleLabel, season, offer,
+    isStaggeredCombined,
+    totalSetPrice,
+    set2Price
   };
   currentQuickViewQty = 4;
   currentQuickViewAngle = 0;
@@ -2130,9 +2184,17 @@ function updateQuickViewPrices() {
   const q = currentQuickViewQty;
   const offer = currentQuickViewProduct.offer;
 
-  const total = calculateSetPrice(p, q, offer);
-  const set2Total = calculateSetPrice(p, 2, offer);
-  const set4Total = calculateSetPrice(p, 4, offer);
+  const total = (currentQuickViewProduct.isStaggeredCombined && currentQuickViewProduct.totalSetPrice && q === 4)
+    ? currentQuickViewProduct.totalSetPrice.toFixed(2)
+    : calculateSetPrice(p, q, offer);
+
+  const set2Total = (currentQuickViewProduct.isStaggeredCombined && currentQuickViewProduct.set2Price)
+    ? currentQuickViewProduct.set2Price.toFixed(2)
+    : calculateSetPrice(p, 2, offer);
+
+  const set4Total = (currentQuickViewProduct.isStaggeredCombined && currentQuickViewProduct.totalSetPrice)
+    ? currentQuickViewProduct.totalSetPrice.toFixed(2)
+    : calculateSetPrice(p, 4, offer);
 
   const priceEl = document.getElementById('tv-qv-price');
   if (priceEl) priceEl.textContent = p.toFixed(2);
@@ -2304,8 +2366,14 @@ function buildFilterPath(page = 1) {
   const pathParts = currentPath.split('/').filter(Boolean);
   
   // If user is on a dedicated sub-catalog route (e.g. /tyres/brands/michelin, /tyres/size/225-45-17, /tyres/cars/toyota, /tyres/ev, /tyres/off-road-4x4), preserve that canonical route
-  if (pathParts.length >= 2 && pathParts[0].toLowerCase() === 'tyres' && ['brands', 'cars', 'size', 'ev', 'off-road-4x4'].includes(pathParts[1].toLowerCase())) {
-    basePath = '/' + pathParts.join('/');
+  if (pathParts.length >= 2 && pathParts[0].toLowerCase() === 'tyres') {
+    const p1 = pathParts[1].toLowerCase();
+    const isSize = /^(?:size-)?\d{2,3}[-/ ]+\d{2}[-/ ]+r?\d{2}(?:\.\d+)?$/i.test(p1);
+    if (['brands', 'cars', 'size', 'ev', 'off-road-4x4'].includes(p1) || isSize) {
+      basePath = '/' + pathParts.join('/');
+    } else {
+      basePath = '/tyres';
+    }
   } else {
     basePath = '/tyres';
   }
@@ -2389,16 +2457,21 @@ async function fetchProducts(page = 1, scrollUp = true, isLoadMore = false) {
   });
 
   const currentUrlParams = new URLSearchParams(window.location.search);
-  const rearParam = currentUrlParams.get('rear');
+  const activeRearCb = document.querySelector('input[name="rear"]:checked');
   let rearSize = '';
-  if (rearParam) {
-    const mR = rearParam.match(sizeRegex);
-    rearSize = mR ? `${mR[1]}-${mR[2]}-${mR[3]}`.toLowerCase() : rearParam;
-  } else if (pathSizes.length >= 2) {
-    rearSize = pathSizes[1];
+  if (activeRearCb) {
+    rearSize = activeRearCb.value.trim();
+  } else if (!document.querySelector('input[name="rear"]')) {
+    const rearParam = currentUrlParams.get('rear');
+    if (rearParam) {
+      const mR = rearParam.match(sizeRegex);
+      rearSize = mR ? `${mR[1]}-${mR[2]}-${mR[3]}`.toLowerCase() : rearParam;
+    } else if (pathSizes.length >= 2) {
+      rearSize = pathSizes[1];
+    }
   }
 
-  if (selectedSizes.length === 0 && pathSizes.length > 0) {
+  if (selectedSizes.length === 0 && !document.querySelector('input[name="size"]') && pathSizes.length > 0) {
     selectedSizes.push(pathSizes[0]);
   }
   const selectedVehicles = Array.from(document.querySelectorAll('input[name="vehicle_type"]:checked')).map(cb => cb.value.trim());
@@ -3310,6 +3383,7 @@ function renderAppliedFilters() {
   const list = document.getElementById('tv-applied-chips-list');
   if (!wrap || !list) return;
 
+  const hasRear = !!document.querySelector('#hidden-size-filters input[name="rear"]:checked, .tv-filter-sidebar input[name="rear"]:checked');
   const facetLabels = {
     'tyres_category': 'Category',
     'brand': 'Brand',
@@ -3321,7 +3395,8 @@ function renderAppliedFilters() {
     'warranty': 'Warranty',
     'year': 'Year',
     'origin': 'Origin',
-    'size': 'Size',
+    'size': hasRear ? 'Front Size' : 'Size',
+    'rear': 'Rear Size',
     'vehicle_type': 'Vehicle',
     'promotion': 'Offer'
   };

@@ -538,7 +538,7 @@ section {
 }
 
 .btn-ghost-light {
-  background: #8600ff ;
+  background: #8600ff;
   color: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(8px);
@@ -548,7 +548,7 @@ section {
 .btn-ghost-light:hover {
   border-color: #8600ff;
   color: #FFFFFF;
-  background:#8600ff  ;
+  background: #8600ff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
@@ -6208,7 +6208,7 @@ html[dir="rtl"] .category-badge-pill {
 
 .chip-interactive .chip-text {
   flex: 1 1 auto;
-  white-space: nowrap;
+  white-space: wrap;
   text-overflow: ellipsis;
   font-size: 0.80rem;
 }
@@ -9703,6 +9703,7 @@ details.tv-faq-item[open] {
     opacity: 0;
     transform: scale(0.92);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -17802,6 +17803,11 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
   margin-bottom: 18px;
 }
 
+@media (max-width:445px) {
+  .tvhm-make-logo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 .tvhm-make-logo-card {
   display: flex;
   flex-direction: column;
@@ -17908,17 +17914,18 @@ body:has(.tv-pdp-page-wrapper) .mobile-cta {
 }
 
 .tvhm-fitment-cards-grid {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
-  width: 100%;
-  box-sizing: border-box;
+  align-content: space-between;
 }
 
 @media (max-width: 532px) {
   .tvhm-fitment-cards-grid {
-    flex-direction: column;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 14px;
+    align-content: space-between;
   }
 
 }
@@ -21585,6 +21592,24 @@ body.overflow-hidden {
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
+.tv-pattern-brand-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  margin: 0 auto 6px;
+  max-width: 100%;
+}
+
+.tv-pattern-brand-logo {
+  max-height: 22px;
+  max-width: 90px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .tv-pattern-card:hover {
   border-color: #D9CCF5;
   box-shadow: 0 10px 28px rgba(76, 29, 149, 0.1);
@@ -21817,6 +21842,7 @@ div[class*="hero"] h1 * {
     scroll-padding: 0px !important;
     gap: 16px !important;
   }
+
   .tv-rel-carousel-card {
     flex: 0 0 100% !important;
     width: 100% !important;

@@ -1929,87 +1929,220 @@ def _fetch_catalog_products(args, locale='en'):
                 front_size_label = f"{f_w}/{f_h} R{f_r}"
                 rear_size_label = f"{r_w}/{r_h} R{r_r}"
 
-                where_conds = [
+                fitment_conds = [
                     "p1.deleted_at IS NULL", "p1.status = 'active'", "p1.website_id = 1",
                     "p2.deleted_at IS NULL", "p2.status = 'active'", "p2.website_id = 1",
                     "p1.brand_id = p2.brand_id",
                     "(p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')"
                 ]
                 if front_size_label != rear_size_label:
-                    where_conds.append("p1.id != p2.id")
+                    fitment_conds.append("p1.id != p2.id")
                 else:
-                    where_conds.append("p1.id = p2.id")
-                params = []
+                    fitment_conds.append("p1.id = p2.id")
+                fitment_params = []
 
                 # Front size match
-                where_conds.append("""(
+                fitment_conds.append("""(
                     (JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.width')) = %s 
                      AND JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.height')) = %s 
                      AND JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.rim')) IN (%s, %s))
                     OR p1.tire_size_label = %s
                 )""")
-                params.extend([f_w, f_h, f_r, f"R{f_r}", front_size_label])
+                fitment_params.extend([f_w, f_h, f_r, f"R{f_r}", front_size_label])
 
                 # Rear size match
-                where_conds.append("""(
+                fitment_conds.append("""(
                     (JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.width')) = %s 
                      AND JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.height')) = %s 
                      AND JSON_UNQUOTE(JSON_EXTRACT(p2.attributes_json, '$.rim')) IN (%s, %s))
                     OR p2.tire_size_label = %s
                 )""")
-                params.extend([r_w, r_h, r_r, f"R{r_r}", rear_size_label])
+                fitment_params.extend([r_w, r_h, r_r, f"R{r_r}", rear_size_label])
 
-                # Optional Brand filter
-                raw_brands = args.getlist('brand') or args.getlist('brands')
-                brand_terms = []
-                for b_entry in raw_brands:
-                    for b_part in b_entry.split(','):
-                        bp = b_part.strip().lower()
-                        if bp and bp not in brand_terms:
-                            brand_terms.append(bp)
-                if brand_terms:
-                    b_ph = ', '.join(['%s'] * len(brand_terms))
-                    where_conds.append(f"(LOWER(b.slug) IN ({b_ph}) OR LOWER(b.name) IN ({b_ph}))")
-                    params.extend(brand_terms)
-                    params.extend(brand_terms)
-
-                # Optional Category filter
-                raw_cats = args.getlist('tyres_category') or args.getlist('category')
-                cat_terms = [c.strip().title() for c in raw_cats if c.strip()]
-                if cat_terms:
-                    c_clauses = ["(p1.tyres_category = %s OR JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.tyres_category')) = %s)" for _ in cat_terms]
-                    where_conds.append("(" + " OR ".join(c_clauses) + ")")
-                    for ct in cat_terms:
-                        params.extend([ct, ct])
-
-                # Optional Price filter
-                max_price = args.get('max_price')
-                if max_price:
-                    try:
-                        where_conds.append("(p1.price * 2 + p2.price * 2) <= %s")
-                        params.append(float(max_price))
-                    except (ValueError, TypeError):
-                        pass
-
-                where_sql = " AND ".join(where_conds)
-
-                # Sorting
-                sort_by = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
-                if sort_by in ('price-desc', 'price_desc', 'high-to-low', 'price_high_to_low'):
-                    order_sql = "ORDER BY total_set_price DESC, p1.id ASC"
-                else:
-                    order_sql = "ORDER BY total_set_price ASC, p1.id ASC"
+                fitment_where = " AND ".join(fitment_conds)
 
                 cur.execute(f"""
-                    SELECT COUNT(*) as total
+                    SELECT 
+                        p1.id as front_id, p2.id as rear_id,
+                        b.slug as brand_slug, b.name as brand_name,
+                        COALESCE(p1.tyres_category, JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.tyres_category'))) as tyres_category,
+                        p1.tire_pattern,
+                        p1.year,
+                        COALESCE(p1.country_of_origin, JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.country_of_origin'))) as country_of_origin,
+                        p1.warranty_months,
+                        JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.warranty_period')) as warranty_period,
+                        JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.warranty')) as warranty,
+                        JSON_UNQUOTE(JSON_EXTRACT(p1.attributes_json, '$.tyre_marking')) as tyre_marking,
+                        p1.oem_brand,
+                        p1.run_flat,
+                        p1.ev_rated,
+                        (p1.price * 2 + p2.price * 2) as total_set_price
                     FROM products p1
                     JOIN products p2 ON p1.brand_id = p2.brand_id
                          AND (p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')
                     LEFT JOIN brands b ON p1.brand_id = b.id
-                    WHERE {where_sql}
-                """, params)
-                c_row = cur.fetchone()
-                total_count = c_row['total'] if c_row else 0
+                    WHERE {fitment_where}
+                """, fitment_params)
+                all_candidate_rows = cur.fetchall()
+
+                # Normalize candidate pairs for filtering & disjunctive faceting
+                normalized_candidates = []
+                for r in all_candidate_rows:
+                    wm = r.get('warranty_months')
+                    wp = (str(r.get('warranty_period') or '') + ' ' + str(r.get('warranty') or '')).lower()
+                    if wm in (60, '60') or '5 year' in wp:
+                        war = '5 Years Warranty'
+                    elif wm in (36, '36') or '3 year' in wp:
+                        war = '3 Years Warranty'
+                    elif wm in (12, '12') or '1 year' in wp:
+                        war = '1 Year Warranty'
+                    else:
+                        war = '1 Year Warranty'
+
+                    tc = (r.get('tyres_category') or '').strip().capitalize()
+                    bs = (r.get('brand_slug') or '').strip().lower()
+                    bn = (r.get('brand_name') or '').strip().lower()
+                    pat = (r.get('tire_pattern') or '').strip()
+                    yr = str(r.get('year') or '').strip()
+                    orig = (r.get('country_of_origin') or '').strip().lower()
+                    tm = (r.get('tyre_marking') or '').strip()
+                    oem = (r.get('oem_brand') or '').strip()
+                    rf = bool(r.get('run_flat') in (1, '1', True))
+                    ev = bool(r.get('ev_rated') in (1, '1', True))
+                    price = float(r.get('total_set_price') or 0)
+
+                    normalized_candidates.append({
+                        'front_id': r['front_id'],
+                        'rear_id': r['rear_id'],
+                        'brand_slug': bs,
+                        'brand_name': bn,
+                        'tyres_category': tc,
+                        'pattern': pat,
+                        'warranty': war,
+                        'year': yr,
+                        'origin': orig,
+                        'tyre_marking': tm,
+                        'oem': oem,
+                        'runflat': rf,
+                        'ev_tyre': ev,
+                        'total_set_price': price
+                    })
+
+                # Extract active filter criteria
+                brand_terms = [b.strip().lower() for b in (args.getlist('brand') or args.getlist('brands')) if b.strip()]
+                raw_cats = args.getlist('tyres_category') or args.getlist('category')
+                cat_terms = [c.strip().capitalize() for c in raw_cats if c.strip()]
+                pat_terms = [p.strip().lower() for p in (args.getlist('pattern') or args.getlist('patterns')) if p.strip()]
+                war_terms = [w.strip() for w in (args.getlist('warranty') or args.getlist('warranties')) if w.strip()]
+                yr_terms = [str(y).strip() for y in (args.getlist('year') or args.getlist('years')) if str(y).strip().isdigit()]
+                orig_terms = [o.strip().lower() for o in (args.getlist('origin') or args.getlist('origins')) if o.strip()]
+                tm_terms = [m.strip().lower() for m in (args.getlist('tyre_marking') or args.getlist('marking')) if m.strip()]
+                oem_terms = [o.strip().lower() for o in (args.getlist('oem') or args.getlist('oem_tyres')) if o.strip()]
+                is_rf = bool(args.getlist('runflat'))
+                is_ev = bool(args.getlist('ev_tyre'))
+                max_price = float(args.get('max_price')) if args.get('max_price') else None
+
+                def passes_filters(c, exclude_dim=None):
+                    if exclude_dim != 'brand' and brand_terms:
+                        if c['brand_slug'] not in brand_terms and c['brand_name'] not in brand_terms:
+                            return False
+                    if exclude_dim != 'tyres_category' and cat_terms:
+                        if c['tyres_category'] not in cat_terms:
+                            return False
+                    if exclude_dim != 'pattern' and pat_terms:
+                        if c['pattern'].lower() not in pat_terms:
+                            return False
+                    if exclude_dim != 'warranty' and war_terms:
+                        if not any(wt.lower() in c['warranty'].lower() for wt in war_terms):
+                            return False
+                    if exclude_dim != 'year' and yr_terms:
+                        if c['year'] not in yr_terms:
+                            return False
+                    if exclude_dim != 'origin' and orig_terms:
+                        if c['origin'] not in orig_terms:
+                            return False
+                    if exclude_dim != 'tyre_marking' and tm_terms:
+                        if c['tyre_marking'].lower() not in tm_terms:
+                            return False
+                    if exclude_dim != 'oem' and oem_terms:
+                        if c['oem'].lower() not in oem_terms:
+                            return False
+                    if exclude_dim != 'runflat' and is_rf:
+                        if not c['runflat']:
+                            return False
+                    if exclude_dim != 'ev_tyre' and is_ev:
+                        if not c['ev_tyre']:
+                            return False
+                    if max_price is not None and c['total_set_price'] > max_price:
+                        return False
+                    return True
+
+                # Compute dynamic disjunctive facets
+                facets = {
+                    'tyres_categories': {},
+                    'warranties': {},
+                    'years': {},
+                    'brands': {},
+                    'patterns': {},
+                    'tyre_markings': {},
+                    'oems': {},
+                    'origins': {},
+                    'promotions': {},
+                    'runflat': 0,
+                    'ev_tyre': 0
+                }
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'brand'):
+                        if c['brand_slug']:
+                            facets['brands'][c['brand_slug']] = facets['brands'].get(c['brand_slug'], 0) + 1
+                        if c['brand_name'] and c['brand_name'] != c['brand_slug']:
+                            facets['brands'][c['brand_name']] = facets['brands'].get(c['brand_name'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'tyres_category') and c['tyres_category']:
+                        facets['tyres_categories'][c['tyres_category']] = facets['tyres_categories'].get(c['tyres_category'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'pattern') and c['pattern']:
+                        facets['patterns'][c['pattern']] = facets['patterns'].get(c['pattern'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'warranty') and c['warranty']:
+                        facets['warranties'][c['warranty']] = facets['warranties'].get(c['warranty'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'year') and c['year'] and c['year'] != '0000':
+                        facets['years'][c['year']] = facets['years'].get(c['year'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'origin') and c['origin'] and c['origin'] not in ('', 'none'):
+                        facets['origins'][c['origin']] = facets['origins'].get(c['origin'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'tyre_marking') and c['tyre_marking'] and c['tyre_marking'] not in ('', 'None', 'Standard', '0'):
+                        facets['tyre_markings'][c['tyre_marking']] = facets['tyre_markings'].get(c['tyre_marking'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'oem') and c['oem'] and c['oem'] not in ('', 'None', '0'):
+                        facets['oems'][c['oem']] = facets['oems'].get(c['oem'], 0) + 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'runflat') and c['runflat']:
+                        facets['runflat'] += 1
+
+                for c in normalized_candidates:
+                    if passes_filters(c, 'ev_tyre') and c['ev_tyre']:
+                        facets['ev_tyre'] += 1
+
+                # Matching filtered pairs
+                filtered_pairs = [c for c in normalized_candidates if passes_filters(c)]
+                total_count = len(filtered_pairs)
+
+                # Sorting
+                sort_by = (args.get('sort') or args.get('sort_by') or 'price-asc').lower().strip()
+                reverse = sort_by in ('price-desc', 'price_desc', 'high-to-low', 'price_high_to_low')
+                filtered_pairs.sort(key=lambda x: (x['total_set_price'], x['front_id']), reverse=reverse)
 
                 try:
                     page = max(1, int(args.get('page', 1)))
@@ -2018,20 +2151,7 @@ def _fetch_catalog_products(args, locale='en'):
                 per_page = max(1, min(100, int(args.get('per_page', 16))))
                 total_pages = max(1, math.ceil(total_count / per_page)) if total_count > 0 else 1
                 offset = (page - 1) * per_page
-
-                cur.execute(f"""
-                    SELECT 
-                        p1.id as front_id, p2.id as rear_id,
-                        (p1.price * 2 + p2.price * 2) as total_set_price
-                    FROM products p1
-                    JOIN products p2 ON p1.brand_id = p2.brand_id
-                         AND (p1.tire_pattern = p2.tire_pattern OR p1.tire_pattern IS NULL OR p2.tire_pattern IS NULL OR p1.tire_pattern = '' OR p2.tire_pattern = '')
-                    LEFT JOIN brands b ON p1.brand_id = b.id
-                    WHERE {where_sql}
-                    {order_sql}
-                    LIMIT %s OFFSET %s
-                """, params + [per_page, offset])
-                pair_rows = cur.fetchall()
+                pair_rows = filtered_pairs[offset:offset + per_page]
 
                 # Collect all product IDs to fetch full product rows
                 all_ids = []
@@ -2113,7 +2233,7 @@ def _fetch_catalog_products(args, locale='en'):
                     'page': page,
                     'per_page': per_page,
                     'total_pages': total_pages,
-                    'facets': {},
+                    'facets': facets,
                     'is_staggered': True,
                     'front_size_label': front_size_label,
                     'rear_size_label': rear_size_label
@@ -2951,6 +3071,12 @@ def _render_product_listing(locale, filter_path=None):
     active_years = [str(y).strip() for y in raw_active_years if str(y).strip().isdigit() and int(str(y).strip()) >= 2024]
     active_origins = [org.strip() for org in (combined_args.getlist('origin') or combined_args.getlist('country') or combined_args.getlist('origins'))]
     active_vehicles = [v.lower() for v in (combined_args.getlist('vehicle') or combined_args.getlist('vehicle_type'))]
+    raw_rear = (combined_args.get('rear') or '').strip()
+    active_rear_size = None
+    if raw_rear:
+        s_slug = raw_rear.lower().replace('/', '-').replace(' ', '-')
+        active_rear_size = re.sub(r'[-/ ]*r(\d+)', r'-\1', s_slug, flags=re.IGNORECASE)
+
     active_sizes = []
     active_sizes_match = set()
     for s in (combined_args.getlist('size') or combined_args.getlist('sizes')):
@@ -3126,6 +3252,7 @@ def _render_product_listing(locale, filter_path=None):
         active_origins=active_origins,
         active_vehicles=active_vehicles,
         active_sizes=active_sizes,
+        active_rear_size=active_rear_size,
         active_types=active_types,
         active_promotions=active_promotions,
         active_max_price=active_max_price,

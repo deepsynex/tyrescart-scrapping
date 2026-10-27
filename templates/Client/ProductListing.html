@@ -101,6 +101,9 @@
           {% for asz in active_sizes %}
           <input type="checkbox" name="size" value="{{ asz }}" checked onchange="filterProducts()">
           {% endfor %}
+          {% if active_rear_size %}
+          <input type="checkbox" name="rear" value="{{ active_rear_size }}" checked onchange="filterProducts()">
+          {% endif %}
         </div>
 
         <!-- 1. Tyres Category -->
@@ -619,6 +622,7 @@
              data-pattern="{{ p.pattern_name }}"
              data-full-title="{{ p.full_title }}"
              data-staggered="true"
+             data-price="{{ p.price or ((p.total_set_price / 4)|round(2)) }}"
              data-total-set-price="{{ p.total_set_price }}"
              data-front-price="{{ p.front.price }}"
              data-rear-price="{{ p.rear.price }}">
@@ -654,7 +658,9 @@
               <!-- 2. Centered Tyre Image Area -->
               <div class="tv-card-img-area">
                 <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view"
-                        data-slug="{{ p.front.slug }}" data-image="{{ p.front.image_path }}" data-title="{{ p.front.full_title }}">
+                        data-slug="{{ p.front.slug }}" data-image="{{ p.front.image_path }}" data-title="{{ p.front.full_title }}"
+                        data-price="{{ p.front.price }}" data-set2-price="{{ p.front.set_of_2_price or (p.front.price * 2) }}"
+                        data-size="{{ p.front.full_size_spec }}" data-width="{{ p.front.width_clean }}" data-profile="{{ p.front.profile_clean }}" data-rim="{{ p.front.rim_clean }}" data-year="{{ p.front.year }}" data-warranty="{{ p.front.warranty }}">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
@@ -794,7 +800,9 @@
               <!-- 2. Centered Tyre Image Area -->
               <div class="tv-card-img-area">
                 <button class="tv-btn-quickview" onclick="event.stopPropagation(); openQuickView(this);" title="Quick view" type="button" aria-label="Quick view"
-                        data-slug="{{ p.rear.slug }}" data-image="{{ p.rear.image_path }}" data-title="{{ p.rear.full_title }}">
+                        data-slug="{{ p.rear.slug }}" data-image="{{ p.rear.image_path }}" data-title="{{ p.rear.full_title }}"
+                        data-price="{{ p.rear.price }}" data-set2-price="{{ p.rear.set_of_2_price or (p.rear.price * 2) }}"
+                        data-size="{{ p.rear.full_size_spec }}" data-width="{{ p.rear.width_clean }}" data-profile="{{ p.rear.profile_clean }}" data-rim="{{ p.rear.rim_clean }}" data-year="{{ p.rear.year }}" data-warranty="{{ p.rear.warranty }}">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"></path>
                     <circle cx="12" cy="12" r="3"></circle>

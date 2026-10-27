@@ -74,6 +74,13 @@
       {% set pattern_label = p.pattern_name or p.display_name %}
       <a href="/tyres?brand={{ brand.name|urlencode }}&pattern={{ pattern_label|urlencode }}" class="tv-pattern-card" title="{{ pattern_label }}">
 
+        {% set b_logo = p.brand_logo or brand.logo %}
+        {% if b_logo %}
+        <div class="tv-pattern-brand-wrap">
+          <img src="{{ b_logo }}" alt="{{ brand.name }}" class="tv-pattern-brand-logo" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.display='none';">
+        </div>
+        {% endif %}
+
         <div class="tv-pattern-img-wrap">
           <img src="{{ p.image_path or '/static/assets/images/no-image-available.svg' }}"
                alt="{{ pattern_label }}"
