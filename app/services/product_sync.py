@@ -25,6 +25,9 @@ import re
 import threading
 import time
 
+import posixpath
+from urllib.parse import urlparse
+
 import requests
 
 from db import get_connection
@@ -44,9 +47,34 @@ GRAPHQL_URL = os.getenv('PRODUCT_SYNC_GRAPHQL_URL', 'https://www.tyrescart.ae/gr
 GRAPHQL_TOKEN = os.getenv('PRODUCT_SYNC_GRAPHQL_TOKEN', '')
 PAGE_SIZE = 1000
 REQUEST_TIMEOUT = 120
+# Parts Category -> Tyrescart top-level category url_path. parts_category itself isn't a
+# filterable GraphQL field, but each value maps 1:1 to one top-level category.
+SYNC_CATEGORIES = [
+    ('tyres', 'Tyres', 'tyres'),
+    ('motorcycle-tyres', 'Motorcycle Tyres', 'motorcycle-tyre'),
+    ('wheels', 'Wheels', 'car-wheels'),
+    ('battery', 'Battery', 'car-battery'),
+    ('rim-protectors', 'Rim Protectors', 'rim-protectors'),
+]
+DEFAULT_CATEGORY = 'tyres'
+
+
+def category_filter(key):
+    for k, _, url_path in SYNC_CATEGORIES:
+        if k == key:
+            return {'category_url_path': {'eq': url_path}}
+    raise SyncError(f'Unknown parts category "{key}".')
+
+
+def sync_categories():
+    return [{'key': k, 'label': label} for k, label, _ in SYNC_CATEGORIES]
 OPTION_CACHE_TTL = 30 * 60
 # Tyrescart's GraphQL price excludes UAE VAT; the local catalog stores ceil(price * 1.05).
 PRICE_MULTIPLIER = float(os.getenv('PRODUCT_SYNC_PRICE_MULTIPLIER', '1.05'))
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PRODUCT_UPLOAD_DIR = os.path.join(PROJECT_ROOT, 'static', 'uploads', 'products')
+PRODUCT_UPLOAD_URL = '/static/uploads/products/'
 
 OPTION_ATTRS = [
     'status', 'visibility', 'brand', 'pattern', 'tyre_marking', 'parts_category', 'oem_tyres',
@@ -83,6 +111,7 @@ LABELS_QUERY = """{ customAttributeMetadataV2(attributes: [%s]) { items { code o
 # (key, label shown in the review modal). Order = display order.
 COMPARE_FIELDS = [
     ('name', 'Product Name'),
+    ('image', 'Image'),
     ('status', 'Enable Product'),
     ('price', 'Price'),
     ('stock_status', 'Stock Status'),
@@ -181,9 +210,10 @@ def fetch_option_maps(force=False):
         return maps
 
 
-def fetch_page(page, size=PAGE_SIZE):
+def fetch_page(page, category=DEFAULT_CATEGORY, size=PAGE_SIZE):
+    product_filter = category_filter(category)
     maps = fetch_option_maps(force=(page == 1))
-    data = _post(PRODUCTS_QUERY, {'filter': {}, 'page': int(page), 'size': int(size)})
+    data = _post(PRODUCTS_QUERY, {'filter': product_filter, 'page': int(page), 'size': int(size)})
     products = data.get('products') or {}
     return {
         'total_count': products.get('total_count') or 0,
@@ -235,6 +265,118 @@ def _num(v):
         return round(float(v), 2)
     except (TypeError, ValueError):
         return None
+
+
+def _local_image_for(image_url):
+    """
+    Local upload files are Tyrescart's image filename re-encoded as .webp, e.g.
+    .../tyrescart/x_privilo_tx3_..._stn7coxrvlsl7u8x.jpg -> /static/uploads/products/x_privilo_tx3_..._stn7coxrvlsl7u8x.webp
+    Returns that path when the file exists here, else ''.
+    """
+    if not image_url or '/placeholder/' in image_url:
+        return ''
+    name = posixpath.basename(urlparse(image_url).path)
+    if not name:
+        return ''
+    candidates = [os.path.splitext(name)[0] + '.webp', name.split('.', 1)[0] + '.webp']
+    for filename in dict.fromkeys(candidates):
+        if filename != '.webp' and os.path.isfile(os.path.join(PRODUCT_UPLOAD_DIR, filename)):
+            return PRODUCT_UPLOAD_URL + filename
+    return ''
+
+
+_SAFE_FILENAME = re.compile(r'^[A-Za-z0-9._-]+$')
+_IMAGE_HOSTS = {'www.tyrescart.ae', 'tyrescart.ae'}
+_MAX_IMAGE_BYTES = 10 * 1024 * 1024
+_MAX_IMAGE_SIDE = 1000
+
+
+def _target_filename(image_url):
+    """The .webp filename a Tyrescart image is stored under locally, or '' if unusable."""
+    if not image_url or '/placeholder/' in image_url:
+        return ''
+    name = posixpath.basename(urlparse(image_url).path)
+    stem = os.path.splitext(name)[0]
+    if not stem or not _SAFE_FILENAME.match(stem):
+        return ''
+    return stem + '.webp'
+
+
+def _download_image(image_url):
+    """
+    Download a Tyrescart image, re-encode it as WebP into static/uploads/products,
+    and return its /static path. Returns '' on any failure.
+    """
+    filename = _target_filename(image_url)
+    parsed = urlparse(image_url or '')
+    if not filename or parsed.scheme != 'https' or parsed.hostname not in _IMAGE_HOSTS:
+        return ''
+    dest = os.path.join(PRODUCT_UPLOAD_DIR, filename)
+    if os.path.isfile(dest):
+        return PRODUCT_UPLOAD_URL + filename
+
+    from PIL import Image
+
+    original = re.sub(r'/cache/[0-9a-f]{32}/', '/', image_url)
+    for url in dict.fromkeys([original, image_url]):
+        tmp = None
+        try:
+            with requests.get(url, timeout=20, stream=True) as resp:
+                if resp.status_code != 200 or not resp.headers.get('content-type', '').startswith('image/'):
+                    continue
+                data = bytearray()
+                for chunk in resp.iter_content(64 * 1024):
+                    data.extend(chunk)
+                    if len(data) > _MAX_IMAGE_BYTES:
+                        raise ValueError('image larger than 10 MB')
+            Image.open(io.BytesIO(data)).verify()
+            img = Image.open(io.BytesIO(data))
+            img = img.convert('RGBA' if img.mode in ('RGBA', 'LA', 'P') else 'RGB')
+            img.thumbnail((_MAX_IMAGE_SIDE, _MAX_IMAGE_SIDE))
+            os.makedirs(PRODUCT_UPLOAD_DIR, exist_ok=True)
+            tmp = f"{dest}.{os.getpid()}.{threading.get_ident()}.tmp"
+            img.save(tmp, 'WEBP', quality=85)
+            os.replace(tmp, dest)
+            return PRODUCT_UPLOAD_URL + filename
+        except Exception as e:
+            logger.warning('Image download failed for %s: %s', url, e)
+            if tmp and os.path.exists(tmp):
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
+    return ''
+
+
+def _ensure_images(recs):
+    """Download missing images for these remote records (once per file) and set rec['image']."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    wanted = {}
+    for rec in recs:
+        if not rec.get('image') and rec.get('image_downloadable'):
+            wanted.setdefault(_target_filename(rec.get('image_url')), rec.get('image_url'))
+    wanted.pop('', None)
+    if not wanted:
+        return 0
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        saved = dict(zip(wanted, pool.map(_download_image, wanted.values())))
+    for rec in recs:
+        path = saved.get(_target_filename(rec.get('image_url')))
+        if not rec.get('image') and path:
+            rec['image'] = path
+    return sum(1 for p in saved.values() if p)
+
+
+def _existing_image(path):
+    """The stored image path if its file exists on disk, else ''."""
+    path = (path or '').strip()
+    if not path.startswith('/static/'):
+        return ''
+    full = os.path.normpath(os.path.join(PROJECT_ROOT, *path.lstrip('/').split('/')))
+    if not full.startswith(os.path.join(PROJECT_ROOT, 'static')):
+        return ''
+    return path if os.path.isfile(full) else ''
 
 
 def _local_price(remote_value):
@@ -293,6 +435,8 @@ def normalize_item(item, maps):
         'tabby_payment': lbl('tabby_payment').lower() == 'yes',
         'stock_status': 'in_stock' if stock == 'IN_STOCK' else 'out_of_stock',
         'image_url': ((item.get('image') or {}).get('url') or '').strip(),
+        'image': _local_image_for(((item.get('image') or {}).get('url') or '').strip()),
+        'image_downloadable': bool(_target_filename(((item.get('image') or {}).get('url') or '').strip())),
         'categories': [
             {'name': c.get('name') or '', 'url_path': c.get('url_path') or '', 'level': c.get('level')}
             for c in (item.get('categories') or []) if c
@@ -330,6 +474,7 @@ def _local_record(row):
         item_code = ''  # the CSV importer falls back to the SKU when Magento has no item code
 
     return {
+        'image': _existing_image(row.get('image_path')),
         'name': (row.get('display_name') or '').strip(),
         'status': row.get('status') or '',
         'price': _num(row.get('price')),
@@ -384,6 +529,11 @@ def diff(local, remote):
     changes = {}
     for key in COMPARE_KEYS:
         lv, rv = local.get(key), remote.get(key)
+        if key == 'image':
+            # Only fill a missing image; a working local image is never replaced.
+            if not lv and (rv or remote.get('image_downloadable')):
+                changes[key] = [lv, rv or 'Download from Tyrescart']
+            continue
         if _norm_for_compare(key, lv) != _norm_for_compare(key, rv):
             changes[key] = [lv, rv]
     return changes
@@ -503,6 +653,9 @@ def _field_payload(key, rec, brands):
     if key == 'name':
         data.update(name=v, name_en=v)
         dyn['name'] = v
+    elif key == 'image':
+        data.update(image_path=v, small_image=v)
+        dyn.update(base_image=v, small_image=v, thumbnail_image=v, swatch_image=v)
     elif key == 'status':
         data['status'] = v
         dyn['status'] = 'Yes' if v == 'active' else 'No'
@@ -625,7 +778,8 @@ def _create_payload(rec, brands, attribute_set_id):
         'parts_category': rec['parts_category'] or 'Tyres',
         'attribute_set_id': attribute_set_id,
         'stock_qty': 10 if rec['stock_status'] == 'in_stock' else 0,
-        'image_path': '',
+        'image_path': rec['image'],
+        'small_image': rec['image'],
         'short_desc_en': rec['short_description'],
         'description_en': rec['description'],
         'meta_title_en': rec['meta_title'] or name,
@@ -707,6 +861,17 @@ def import_rows(rows, user_id=None):
 
     remote = fetch_by_skus(list(requested))
     local = _load_local(list(requested))
+
+    # Download missing images up front (in parallel) so create/update see the saved path.
+    needs_image = []
+    for sku, fields in requested.items():
+        rec, row = remote.get(sku), local.get(sku)
+        if not rec:
+            continue
+        if row is None or (fields and 'image' in fields and not _existing_image(row.get('image_path'))):
+            needs_image.append(rec)
+    result['images_downloaded'] = _ensure_images(needs_image)
+
     brands = _BrandResolver(user_id)
     created = []
     created_ids = []

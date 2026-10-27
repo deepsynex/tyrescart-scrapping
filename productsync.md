@@ -13,9 +13,27 @@ Add a third way for products to get into the `products` table, alongside admin C
 Built and tested locally (2026-10-27). **Not deployed** to dev or live.
 
 ## Decisions
+- **One Parts Category per sync**: the modal opens on a **Parts Category** dropdown, and only that category is fetched. `parts_category` can't be filtered in GraphQL, but each value maps 1:1 to a Tyrescart top-level category, which is filtered with `{"category_url_path": {"eq": "<path>"}}`. Tyrescart has no `categories` filter field.
+
+  | Dropdown | `category_url_path` | Products (2026-10-27) |
+  |---|---|---|
+  | Tyres (default) | `tyres` | 7,361 |
+  | Wheels | `car-wheels` | 940 |
+  | Motorcycle Tyres | `motorcycle-tyre` | 688 |
+  | Battery | `car-battery` | 163 |
+  | Rim Protectors | `rim-protectors` | 14 |
+
+  The list lives in `SYNC_CATEGORIES` in `app/services/product_sync.py` and is served by `GET /visionadmin/api/products/sync/categories`. The review shows which category it was fetched for, and the footer dropdown plus **Fetch …** switches category. New products get their attribute set from the parts category (Battery → Battery set, and so on).
+  - The GraphQL query only asks for tyre attributes. Wheels and batteries import with their general fields (name, price, stock, brand, descriptions, image) but **without** wheel or battery specs such as PCD, offset, volts or CCA.
 - **Source**: `https://www.tyrescart.ae/graphql`, the default. Override it with `PRODUCT_SYNC_GRAPHQL_URL` in `.env`. An optional `PRODUCT_SYNC_GRAPHQL_TOKEN` is sent as a Bearer header. The browser never calls Tyrescart directly.
 - **Price includes VAT**: Tyrescart's `final_price` excludes the 5% UAE VAT, and our catalog stores `ceil(final_price × 1.05)`. That rule matches 7,269 of 7,276 existing products. The sync converts prices the same way, and `PRODUCT_SYNC_PRICE_MULTIPLIER` (default `1.05`) changes the rate.
-- **Images**: left blank. `image.url` is shown as a preview in the modal but is **not** written to `image_path`.
+- **Images**: matched to an existing local file, or downloaded from Tyrescart when it's missing. Local product images are Tyrescart's image filename re-saved as `.webp`, for example `…/tyrescart/x_privilo_tx3_…_stn7coxrvlsl7u8x.jpg` → `/static/uploads/products/x_privilo_tx3_…_stn7coxrvlsl7u8x.webp`.
+  - If that file is in `static/uploads/products/`, its path is used as is.
+  - If not, the import downloads it. It tries Tyrescart's original (the URL with `cache/<hash>/` removed), then the cached copy. Downloads only come from `https://www.tyrescart.ae`, are capped at 10 MB and checked with Pillow. Each image is resized to at most 1000 px, saved as WebP (quality 85), and written atomically under that same filename. Six images download in parallel, and an image shared by several products is downloaded once. The file is written on **the server running the import**: local writes locally, dev writes on dev.
+  - A failed download never blocks the import; that product is saved with an empty image. Magento placeholder images and unsafe filenames count as no image.
+  - **New products**: the New tab marks rows "Image will be downloaded" or "No image". The import result reports how many images were downloaded.
+  - **Existing products**: the image is only *filled* when the product has none or its file is missing on disk. A working local image is never replaced, because local images were curated (e.g. TCKL-26164 has the correct BluEarth XT picture while Tyrescart shows an ES32).
+  - Measured 2026-10-27: 5,034 existing products already use exactly the matched path, 2,233 keep a different working image, and 5 get filled.
 - **Status**: products are created with the remote status; every product in the feed is Enabled, so they become `active`.
 - **Match key**: `sku`, normalized with `strip().upper()`, the same as `Product.create`.
 - **Display name**: our `display_name` holds the full product name, so it is compared with and updated from Tyrescart's `name`. Tyrescart's own `display_name` is only the pattern ("Pilot Sport 4S") and is stored in `attributes_json.display_name`, as the original CSV import did.
@@ -114,7 +132,8 @@ Fill rates are from the first 1,000 products.
 ## How it works
 ```
 [Sync from Tyrescart]  (products page header)
-  -> GET  /visionadmin/api/products/sync/fetch?page=1..10   server calls GraphQL; option IDs -> labels; price × VAT
+  -> pick a Parts Category (dropdown)
+  -> GET  /visionadmin/api/products/sync/fetch?page=N&category=<key>   server calls GraphQL for that category; option IDs -> labels; price × VAT
   -> IndexedDB ProductSyncDB.remote_products (keyPath sku)
   -> POST /visionadmin/api/products/sync/compare            1,000 items per call; read-only
   -> IndexedDB ProductSyncDB.sync_meta {diff, fields, fetchedAt}
@@ -134,6 +153,7 @@ Fill rates are from the first 1,000 products.
 | Tyrescart field | Stored in | Notes |
 |---|---|---|
 | `name` | `display_name`, `name` (`{"en"}`) | compared against `display_name` |
+| `image.url` → local `.webp` | `image_path`, `small_image` + attrs `base_image`, `small_image`, `thumbnail_image`, `swatch_image` | existing file, or downloaded on import; fills missing images only |
 | `status` | `status` | Enabled → `active` |
 | `final_price` | `price` | `ceil(value × 1.05)`, see Decisions |
 | `stock_status` | `stock_status` (+ `stock_qty`) | out of stock sets qty to 0; back in stock with qty ≤ 0 sets 10 |

@@ -4926,6 +4926,13 @@ def register_visionadmin_api_routes(app):
             }
         )
 
+    @app.route('/visionadmin/api/products/sync/categories', methods=['GET'])
+    def visionadmin_api_product_sync_categories():
+        """Parts categories the Tyrescart sync can pull, for the modal's dropdown."""
+        from services import product_sync
+        return jsonify({'success': True, 'categories': product_sync.sync_categories(),
+                        'default': product_sync.DEFAULT_CATEGORY})
+
     @app.route('/visionadmin/api/products/sync/fetch', methods=['GET'])
     def visionadmin_api_product_sync_fetch():
         """One page of Tyrescart GraphQL products, option IDs resolved to labels."""
@@ -4933,8 +4940,11 @@ def register_visionadmin_api_routes(app):
         page = request.args.get('page', 1, type=int) or 1
         if page < 1:
             return jsonify({'success': False, 'error': 'page must be 1 or greater.'}), 400
+        category = request.args.get('category') or product_sync.DEFAULT_CATEGORY
+        if category not in {c['key'] for c in product_sync.sync_categories()}:
+            return jsonify({'success': False, 'error': f'Unknown parts category "{category}".'}), 400
         try:
-            data = product_sync.fetch_page(page)
+            data = product_sync.fetch_page(page, category=category)
         except product_sync.SyncError as e:
             return jsonify({'success': False, 'error': str(e)}), 502
         payload = {'success': True, **data}

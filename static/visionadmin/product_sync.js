@@ -148,6 +148,10 @@
       progress: { page: 0, totalPages: 0, fetched: 0, total: 0, compared: 0 },
       fetchedAt: null,
 
+      categories: [],
+      category: 'tyres',
+      syncedCategory: '',
+
       fields: [],
       activeFields: [],
       fieldCounts: {},
@@ -170,12 +174,30 @@
 
       initSync() {
         this.$watch('search', () => { this.pageNo = 1; this.refresh(); });
-        restorePromise = this.restoreSaved();
+        restorePromise = Promise.all([this.loadCategories(), this.restoreSaved()]);
+      },
+
+      async loadCategories() {
+        try {
+          const res = await fetch('/visionadmin/api/products/sync/categories');
+          const data = await res.json();
+          if (data.success) {
+            this.categories = data.categories;
+            if (!this.syncedCategory) this.category = data.default;
+          }
+        } catch (e) { /* dropdown falls back to the default category */ }
+      },
+
+      categoryLabel(key) {
+        const c = this.categories.find((x) => x.key === key);
+        return c ? c.label : key;
       },
 
       async restoreSaved() {
         const saved = await idb.getMeta('diff');
         if (!saved) return;
+        this.syncedCategory = (await idb.getMeta('category')) || 'tyres';
+        this.category = this.syncedCategory;
         const items = await idb.getAll();
         remote = Object.fromEntries(items.map((it) => [it.sku, it]));
         diff = saved;
@@ -196,7 +218,6 @@
         this.open = true;
         document.documentElement.style.overflow = 'hidden';
         if (restorePromise) await restorePromise;
-        if (this.phase === 'idle' && !this.error) this.startSync();
       },
 
       closeModal() {
@@ -227,7 +248,7 @@
           let page = 1;
           let totalPages = 1;
           do {
-            const res = await fetch(`/visionadmin/api/products/sync/fetch?page=${page}`);
+            const res = await fetch(`/visionadmin/api/products/sync/fetch?page=${page}&category=${encodeURIComponent(this.category)}`);
             const data = await res.json().catch(() => ({}));
             if (!res.ok || !data.success) throw new Error(data.error || `Fetching page ${page} failed (HTTP ${res.status}).`);
             if (page === 1) {
@@ -259,6 +280,8 @@
           await idb.setMeta('diff', merged);
           await idb.setMeta('fields', this.fields);
           await idb.setMeta('fetchedAt', this.fetchedAt);
+          await idb.setMeta('category', this.category);
+          this.syncedCategory = this.category;
           this.computeFieldCounts();
           this.phase = 'review';
           this.tab = merged.new.length ? 'new' : 'update';
@@ -320,6 +343,7 @@
           price: fmt('price', rec.price),
           inStock: rec.stock_status === 'in_stock',
           image: rec.image_url || '',
+          imageState: rec.image ? 'local' : (rec.image_downloadable ? 'download' : 'none'),
           inTrash: !!r.in_trash,
           changes,
           expanded: false,
@@ -411,7 +435,7 @@
         this.error = '';
         this.fieldsOpen = false;
         this.importProgress = { done: 0, total: rows.length };
-        const result = { created: 0, updated: 0, restored: 0, skipped: 0, failed: [] };
+        const result = { created: 0, updated: 0, restored: 0, skipped: 0, images_downloaded: 0, failed: [] };
         const doneSkus = new Set();
         try {
           for (let i = 0; i < rows.length; i += IMPORT_CHUNK) {
@@ -421,6 +445,7 @@
             result.updated += res.updated;
             result.restored += res.restored;
             result.skipped += res.skipped;
+            result.images_downloaded += res.images_downloaded || 0;
             result.failed.push(...res.failed);
             const failedSkus = new Set(res.failed.map((f) => f.sku));
             chunk.forEach((r) => { if (!failedSkus.has(r.sku)) doneSkus.add(r.sku); });
@@ -449,6 +474,7 @@
       async discard() {
         await idb.clear();
         this.resetState();
+        this.syncedCategory = '';
         this.phase = 'idle';
         this.closeModal();
       },

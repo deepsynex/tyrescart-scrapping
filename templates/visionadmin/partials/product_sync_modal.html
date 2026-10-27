@@ -6,7 +6,7 @@
     <div class="psync-head-text">
       <h2 id="psync-title">Sync from Tyrescart</h2>
       <p x-show="phase === 'review' || phase === 'importing'">
-        Fetched <span x-text="fmtDate(fetchedAt)"></span>. Nothing is saved until you import.
+        <strong x-text="categoryLabel(syncedCategory)"></strong> fetched <span x-text="fmtDate(fetchedAt)"></span>. Nothing is saved until you import.
       </p>
       <p x-show="phase !== 'review' && phase !== 'importing'">Products are fetched from tyrescart.ae and compared with your catalog by SKU.</p>
     </div>
@@ -35,7 +35,7 @@
   <!-- Fetch / compare progress -->
   <section class="psync-progress" x-show="phase === 'fetching' || phase === 'comparing'">
     <div class="psync-spinner" aria-hidden="true"></div>
-    <h3 x-text="phase === 'fetching' ? 'Downloading products from Tyrescart' : 'Comparing with your catalog'"></h3>
+    <h3 x-text="phase === 'fetching' ? 'Downloading ' + categoryLabel(category) + ' from Tyrescart' : 'Comparing with your catalog'"></h3>
     <p x-show="phase === 'fetching'">
       Page <span x-text="progress.page"></span> of <span x-text="progress.totalPages || '…'"></span>
       · <span x-text="progress.fetched.toLocaleString()"></span> of <span x-text="progress.total ? progress.total.toLocaleString() : '…'"></span> products
@@ -50,9 +50,18 @@
     <p class="psync-hint">Keep this tab open. The full catalog takes about a minute.</p>
   </section>
 
-  <section class="psync-progress" x-show="phase === 'idle' && !error">
-    <h3>Ready to sync</h3>
-    <button type="button" class="psync-btn is-primary" @click="startSync()">Start sync</button>
+  <section class="psync-progress" x-show="phase === 'idle'">
+    <h3>Choose what to sync</h3>
+    <p class="psync-hint">Products in this parts category are downloaded from Tyrescart and compared with your catalog.</p>
+    <label class="psync-cat">
+      <span>Parts Category</span>
+      <select class="psync-select" x-model="category">
+        <template x-for="c in categories" :key="c.key">
+          <option :value="c.key" x-text="c.label" :selected="c.key === category"></option>
+        </template>
+      </select>
+    </label>
+    <button type="button" class="psync-btn is-primary" @click="startSync()" x-text="'Sync ' + categoryLabel(category)"></button>
   </section>
 
   <!-- Review -->
@@ -63,7 +72,8 @@
           importResult.created + ' created',
           importResult.updated + ' updated',
           importResult.restored ? importResult.restored + ' restored from trash' : '',
-          importResult.skipped ? importResult.skipped + ' already up to date' : ''
+          importResult.skipped ? importResult.skipped + ' already up to date' : '',
+          importResult.images_downloaded ? importResult.images_downloaded + ' image' + (importResult.images_downloaded === 1 ? '' : 's') + ' downloaded' : ''
         ].filter(Boolean).join(', ') + '.' : ''"></span>
       <button type="button" class="psync-btn is-ghost" @click="importResult = null">Dismiss</button>
     </div>
@@ -138,6 +148,8 @@
                 <span class="psync-name" x-text="row.name"></span>
                 <span class="psync-sku" x-text="row.sku"></span>
                 <span class="psync-pill is-warn" x-show="row.inTrash">In trash, will be restored</span>
+                <span class="psync-pill is-info" x-show="tab === 'new' && row.imageState === 'download'" title="Not in static/uploads/products yet; it is downloaded from Tyrescart and saved as .webp on import">Image will be downloaded</span>
+                <span class="psync-pill is-muted" x-show="tab === 'new' && row.imageState === 'none'" title="Tyrescart has no image for this product">No image</span>
               </td>
               <td x-show="tab === 'new'" x-text="row.brand"></td>
               <td x-show="tab === 'new'" x-text="row.size"></td>
@@ -189,7 +201,13 @@
     </div>
     <div class="psync-foot-actions">
       <button type="button" class="psync-btn is-ghost" @click="discard()" :disabled="phase === 'importing'">Discard sync</button>
-      <button type="button" class="psync-btn is-ghost" @click="startSync()" :disabled="phase === 'importing'">Fetch again</button>
+      <select class="psync-select" x-model="category" :disabled="phase === 'importing'" aria-label="Parts category to fetch">
+        <template x-for="c in categories" :key="c.key">
+          <option :value="c.key" x-text="c.label" :selected="c.key === category"></option>
+        </template>
+      </select>
+      <button type="button" class="psync-btn is-ghost" @click="startSync()" :disabled="phase === 'importing'"
+        x-text="category === syncedCategory ? 'Fetch again' : 'Fetch ' + categoryLabel(category)"></button>
       <button type="button" class="psync-btn is-primary" @click="importSelected()" :disabled="!selectedCount || phase === 'importing'"
         x-text="phase === 'importing' ? 'Importing…' : 'Import selected (' + selectedCount.toLocaleString() + ')'"></button>
     </div>
