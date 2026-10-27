@@ -4,10 +4,12 @@
 
 {% block extra_head %}
 <script src="/static/visionadmin/products.js?v={{ range(10000, 99999) | random }}"></script>
+<script src="/static/visionadmin/product_sync.js?v={{ range(10000, 99999) | random }}"></script>
+<link rel="stylesheet" href="/static/visionadmin/product_sync.css?v={{ range(10000, 99999) | random }}">
 {% endblock %}
 
 {% block content %}
-<div class="space-y-6" x-data="visionProductsApp('{{ initial_view | default('', true) }}', {{ initial_product_id | default('null', true) }})" x-init='attributeSets = {{ (attribute_sets or []) | tojson }}; initData()'>
+<div class="space-y-6" x-data="visionProductsApp('{{ initial_view | default('', true) }}', {{ initial_product_id | default('null', true) }})" x-init='attributeSets = {{ (attribute_sets or []) | tojson }}; initData()' @products-synced.window="fetchProducts()">
 
   <!-- ========================================================================= -->
   <!-- CATALOG PRODUCTS LISTING PAGE                                             -->
@@ -26,9 +28,18 @@
     </div>
     
     <div class="flex items-center gap-3">
-      <button 
-        type="button" 
-        @click="openCsvModal()" 
+      <div x-data="productSyncApp()" x-init="initSync()" style="display: contents;">
+        <button type="button" @click="openModal()" class="psync-trigger" title="Pull products from Tyrescart and review changes before importing">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><polyline points="21 3 21 9 15 9"/><polyline points="3 21 3 15 9 15"/></svg>
+          <span>Sync from Tyrescart</span>
+          <span class="psync-trigger-badge" x-show="hasPending" x-cloak x-text="(counts.new + counts.update).toLocaleString()"></span>
+        </button>
+        {% include "visionadmin/partials/product_sync_modal.html" %}
+      </div>
+
+      <button
+        type="button"
+        @click="openCsvModal()"
         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer active:scale-95"
       >
         <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>

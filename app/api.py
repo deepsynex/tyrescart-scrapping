@@ -4926,6 +4926,68 @@ def register_visionadmin_api_routes(app):
             }
         )
 
+    @app.route('/visionadmin/api/products/sync/fetch', methods=['GET'])
+    def visionadmin_api_product_sync_fetch():
+        """One page of Tyrescart GraphQL products, option IDs resolved to labels."""
+        from services import product_sync
+        page = request.args.get('page', 1, type=int) or 1
+        if page < 1:
+            return jsonify({'success': False, 'error': 'page must be 1 or greater.'}), 400
+        try:
+            data = product_sync.fetch_page(page)
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 502
+        payload = {'success': True, **data}
+        if page == 1:
+            payload['fields'] = product_sync.field_labels()
+        return jsonify(payload)
+
+    @app.route('/visionadmin/api/products/sync/compare', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_compare():
+        """Classifies remote products as new / needs update / unchanged against local SKUs."""
+        from services import product_sync
+        items = (request.get_json(silent=True) or {}).get('items')
+        if not isinstance(items, list):
+            return jsonify({'success': False, 'error': 'Body must be {"items": [...]}.'}), 400
+        if len(items) > 2000:
+            return jsonify({'success': False, 'error': 'Send at most 2000 items per request.'}), 400
+        try:
+            return jsonify({'success': True, **product_sync.compare(items)})
+        except Exception as e:
+            app.logger.exception(f"Product sync compare failed: {e}")
+            return jsonify({'success': False, 'error': f'Compare failed: {e}'}), 500
+
+    @app.route('/visionadmin/api/products/sync/import', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_import():
+        """
+        Body: {"rows": [{"sku": "...", "fields": [...]}]} -- omit "fields" to create a new product.
+        Remote values are re-fetched from Tyrescart here; the browser only chooses SKUs and fields.
+        """
+        from services import product_sync
+        rows = (request.get_json(silent=True) or {}).get('rows')
+        if not isinstance(rows, list) or not rows:
+            return jsonify({'success': False, 'error': 'Body must be {"rows": [...]} with at least one row.'}), 400
+        if len(rows) > 100:
+            return jsonify({'success': False, 'error': 'Send at most 100 rows per request.'}), 400
+        user_id = session.get('admin_user_id') or session.get('user_id')
+        try:
+            result = product_sync.import_rows(rows, user_id=user_id)
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 502
+        except Exception as e:
+            app.logger.exception(f"Product sync import failed: {e}")
+            return jsonify({'success': False, 'error': f'Import failed: {e}'}), 500
+        log_activity(
+            entity_type='product',
+            entity_id=0,
+            action='sync_import',
+            new_values=dict(result, failed=len(result['failed'])),
+            user_id=user_id
+        )
+        return jsonify({'success': True, **result})
+
     @app.route('/visionadmin/api/products/export-csv', methods=['GET', 'POST'])
     def visionadmin_api_export_products_csv():
         """
