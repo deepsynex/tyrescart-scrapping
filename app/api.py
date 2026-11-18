@@ -2646,7 +2646,7 @@ def register_visionadmin_api_routes(app):
                     'base_url': assets_url,
                     'store_name': 'TyresVision',
                     'support_email': 'support@tyresvision.com',
-                    'phone_number': '+971 50 506 9575'
+                    'phone_number': '+971 55 385 9285'
                 }
                 subject, html_body = EmailTemplateService.render_template_by_code(
                     'welcome_user',
@@ -3053,7 +3053,7 @@ def register_visionadmin_api_routes(app):
         default_store_view_id = data.get('default_store_view_id') or None
         sort_order = int(data.get('sort_order') or 10)
         emirate = data.get('emirate') or 'Dubai'
-        phone = data.get('phone') or '+971 50 506 9575'
+        phone = data.get('phone') or '+971 55 385 9285'
         email = data.get('email') or ''
         is_active = 1 if data.get('is_active', 1) in (1, '1', True) else 0
         user_id = session.get('admin_user_id') or session.get('user_id')
