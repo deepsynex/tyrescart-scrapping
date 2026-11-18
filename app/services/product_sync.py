@@ -119,6 +119,7 @@ LABELS_QUERY = """{ customAttributeMetadataV2(attributes: [%s]) { items { code o
 COMPARE_FIELDS = [
     ('name', 'Product Name'),
     ('image', 'Image'),
+    ('image_replace', "Replace image with Tyrescart's"),
     ('status', 'Enable Product'),
     ('price', 'Price'),
     ('stock_status', 'Stock Status'),
@@ -293,7 +294,7 @@ def _local_image_for(image_url):
 
 
 _SAFE_FILENAME = re.compile(r'^[A-Za-z0-9._-]+$')
-_IMAGE_HOSTS = {'www.tyrescart.ae', 'tyrescart.ae'}
+_IMAGE_DOMAIN = 'tyrescart.ae'  # images moved from www.tyrescart.ae to media.tyrescart.ae
 _MAX_IMAGE_BYTES = 10 * 1024 * 1024
 _MAX_IMAGE_SIDE = 1000
 
@@ -316,7 +317,8 @@ def _download_image(image_url):
     """
     filename = _target_filename(image_url)
     parsed = urlparse(image_url or '')
-    if not filename or parsed.scheme != 'https' or parsed.hostname not in _IMAGE_HOSTS:
+    host = (parsed.hostname or '').lower()
+    if not filename or parsed.scheme != 'https' or not (host == _IMAGE_DOMAIN or host.endswith('.' + _IMAGE_DOMAIN)):
         return ''
     dest = os.path.join(PRODUCT_UPLOAD_DIR, filename)
     if os.path.isfile(dest):
@@ -540,6 +542,12 @@ def diff(local, remote):
             # Only fill a missing image; a working local image is never replaced.
             if not lv and (rv or remote.get('image_downloadable')):
                 changes[key] = [lv, rv or 'Download from Tyrescart']
+            continue
+        if key == 'image_replace':
+            # A working local image that differs from Tyrescart's (opt-in field, off by default).
+            current, rv = local.get('image'), remote.get('image')
+            if current and ((rv and rv != current) or (not rv and remote.get('image_downloadable'))):
+                changes[key] = [current, rv or 'Download from Tyrescart']
             continue
         if _norm_for_compare(key, lv) != _norm_for_compare(key, rv):
             changes[key] = [lv, rv]
@@ -865,12 +873,12 @@ def _attribute_set_id(parts_category):
 
 def _field_payload(key, rec, brands):
     """Product.create/update kwargs + attributes_json entries for one synced field."""
-    v = rec.get(key)
+    v = rec.get('image') if key == 'image_replace' else rec.get(key)
     data, dyn = {}, {}
     if key == 'name':
         data.update(name=v, name_en=v)
         dyn['name'] = v
-    elif key == 'image':
+    elif key in ('image', 'image_replace'):
         data.update(image_path=v, small_image=v)
         dyn.update(base_image=v, small_image=v, thumbnail_image=v, swatch_image=v)
     elif key == 'status':
@@ -1085,7 +1093,8 @@ def import_rows(rows, user_id=None):
         rec, row = remote.get(sku), local.get(sku)
         if not rec:
             continue
-        if row is None or (fields and 'image' in fields and not _existing_image(row.get('image_path'))):
+        missing_image = fields and 'image' in fields and not _existing_image(row.get('image_path')) if row else False
+        if row is None or missing_image or (fields and 'image_replace' in fields):
             needs_image.append(rec)
     result['images_downloaded'] = _ensure_images(needs_image)
 
@@ -1123,6 +1132,9 @@ def import_rows(rows, user_id=None):
 
             live_changes = diff(_local_record(row), rec)
             apply = [f for f in fields if f in live_changes]
+            if not rec.get('image'):
+                # The download failed: never write an empty image over the current one.
+                apply = [f for f in apply if f not in ('image', 'image_replace')]
             if not apply:
                 result['skipped'] += 1
                 continue
@@ -1152,7 +1164,7 @@ def import_rows(rows, user_id=None):
 
 # Local SEO copy was rewritten on most products ("Buy ... Online"), so these differ almost
 # everywhere; the review modal leaves them unticked unless the admin opts in.
-DEFAULT_OFF_FIELDS = {'meta_title', 'meta_description'}
+DEFAULT_OFF_FIELDS = {'meta_title', 'meta_description', 'image_replace'}
 
 
 def field_labels():

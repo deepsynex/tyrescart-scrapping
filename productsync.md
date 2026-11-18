@@ -29,10 +29,12 @@ Built and tested locally (2026-10-27). **Not deployed** to dev or live.
 - **Price includes VAT**: Tyrescart's `final_price` excludes the 5% UAE VAT, and our catalog stores `ceil(final_price × 1.05)`. That rule matches 7,269 of 7,276 existing products. The sync converts prices the same way, and `PRODUCT_SYNC_PRICE_MULTIPLIER` (default `1.05`) changes the rate.
 - **Images**: matched to an existing local file, or downloaded from Tyrescart when it's missing. Local product images are Tyrescart's image filename re-saved as `.webp`, for example `…/tyrescart/x_privilo_tx3_…_stn7coxrvlsl7u8x.jpg` → `/static/uploads/products/x_privilo_tx3_…_stn7coxrvlsl7u8x.webp`.
   - If that file is in `static/uploads/products/`, its path is used as is.
-  - If not, the import downloads it. It tries Tyrescart's original (the URL with `cache/<hash>/` removed), then the cached copy. Downloads only come from `https://www.tyrescart.ae`, are capped at 10 MB and checked with Pillow. Each image is resized to at most 1000 px, saved as WebP (quality 85), and written atomically under that same filename. Six images download in parallel, and an image shared by several products is downloaded once. The file is written on **the server running the import**: local writes locally, dev writes on dev.
+  - If not, the import downloads it. It tries Tyrescart's original (the URL with `cache/<hash>/` removed), then the cached copy. Downloads only come from `https://` hosts under `tyrescart.ae`, are capped at 10 MB and checked with Pillow. Each image is resized to at most 1000 px, saved as WebP (quality 85), and written atomically under that same filename. Six images download in parallel, and an image shared by several products is downloaded once. The file is written on **the server running the import**: local writes locally, dev writes on dev.
   - A failed download never blocks the import; that product is saved with an empty image. Magento placeholder images and unsafe filenames count as no image.
   - **New products**: the New tab marks rows "Image will be downloaded" or "No image". The import result reports how many images were downloaded.
-  - **Existing products**: the image is only *filled* when the product has none or its file is missing on disk. A working local image is never replaced, because local images were curated (e.g. TCKL-26164 has the correct BluEarth XT picture while Tyrescart shows an ES32).
+  - **Existing products**: the **Image** field only *fills* a product that has no image, or whose file is missing on disk. A working local image is never replaced by default, because local images were curated (e.g. TCKL-26164 has the correct BluEarth XT picture while Tyrescart shows an ES32).
+  - **Replace image with Tyrescart's** is a separate field, unticked by default. When ticked, products whose working image differs from Tyrescart's picture appear under Needs update (2,097 on 2026-11-18). Each one shows the current picture and Tyrescart's side by side, and importing it swaps in Tyrescart's picture, downloading it first if needed. If that download fails, the product keeps its current image.
+  - Tyrescart now serves images from `media.tyrescart.ae` (seen 2026-11-18; previously `www.tyrescart.ae`). Any `https` subdomain of `tyrescart.ae` is accepted.
   - Measured 2026-10-27: 5,034 existing products already use exactly the matched path, 2,233 keep a different working image, and 5 get filled.
 - **Status**: products are created with the remote status; every product in the feed is Enabled, so they become `active`.
 - **Match key**: `sku`, normalized with `strip().upper()`, the same as `Product.create`.
@@ -153,7 +155,7 @@ Fill rates are from the first 1,000 products.
 | Tyrescart field | Stored in | Notes |
 |---|---|---|
 | `name` | `display_name`, `name` (`{"en"}`) | compared against `display_name` |
-| `image.url` → local `.webp` | `image_path`, `small_image` + attrs `base_image`, `small_image`, `thumbnail_image`, `swatch_image` | existing file, or downloaded on import; fills missing images only |
+| `image.url` → local `.webp` | `image_path`, `small_image` + attrs `base_image`, `small_image`, `thumbnail_image`, `swatch_image` | existing file, or downloaded on import. **Image** fills missing images only; **Replace image with Tyrescart's** (off by default) swaps a working image |
 | `status` | `status` | Enabled → `active` |
 | `final_price` | `price` | `ceil(value × 1.05)`, see Decisions |
 | `stock_status` | `stock_status` (+ `stock_qty`) | out of stock sets qty to 0; back in stock with qty ≤ 0 sets 10 |

@@ -128,7 +128,7 @@
           Fields to update <span class="psync-count" x-text="activeFields.length + '/' + fields.length"></span>
         </button>
         <div class="psync-fields-menu" x-show="fieldsOpen" x-cloak>
-          <p class="psync-fields-note">Only ticked fields count as changes and get written. Meta title and description start unticked because they were rewritten locally for SEO.</p>
+          <p class="psync-fields-note">Only ticked fields count as changes and get written. Meta title and description start unticked because they were rewritten locally for SEO. "Replace image with Tyrescart's" also starts unticked: tick it to swap working images for Tyrescart's picture.</p>
           <template x-for="f in fields" :key="f.key">
             <label class="psync-field-opt">
               <input type="checkbox" :checked="isFieldActive(f.key)" @change="toggleField(f.key)">
@@ -198,9 +198,17 @@
                 <template x-for="c in (row.expanded ? row.changes : row.changes.slice(0, 3))" :key="c.key">
                   <div class="psync-change">
                     <span class="psync-change-field" x-text="c.label"></span>
-                    <span class="psync-old" x-text="c.old"></span>
+                    <span class="psync-old" x-show="!c.isImage" x-text="c.old"></span>
+                    <span class="psync-thumb" x-show="c.isImage">
+                      <img x-show="c.oldSrc" :src="c.oldSrc" alt="Current image" loading="lazy" width="56" height="56">
+                      <span x-show="!c.oldSrc" class="psync-muted">No image</span>
+                    </span>
                     <span class="psync-arrow" aria-hidden="true">→</span>
-                    <span class="psync-new" x-text="c.new"></span>
+                    <span class="psync-new" x-show="!c.isImage" x-text="c.new"></span>
+                    <span class="psync-thumb is-new" x-show="c.isImage" :title="c.new">
+                      <img x-show="c.newSrc" :src="c.newSrc" alt="Tyrescart image" loading="lazy" width="56" height="56">
+                      <span class="psync-muted" x-text="c.new.startsWith('Download') ? 'Downloaded on import' : 'Already on the server'"></span>
+                    </span>
                   </div>
                 </template>
                 <button type="button" class="psync-more" x-show="row.changes.length > 3"

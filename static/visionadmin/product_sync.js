@@ -361,9 +361,15 @@
         }
         const rec = remote[r.sku] || {};
         const changes = r.changes
-          ? this.activeChanges(r).map((k) => ({
-              key: k, label: this.fieldLabel(k), old: fmt(k, r.changes[k][0]), new: fmt(k, r.changes[k][1]),
-            }))
+          ? this.activeChanges(r).map((k) => {
+              const [before, after] = r.changes[k];
+              const isImage = k === 'image' || k === 'image_replace';
+              return {
+                key: k, label: this.fieldLabel(k), old: fmt(k, before), new: fmt(k, after), isImage,
+                oldSrc: isImage && typeof before === 'string' && before.startsWith('/static/') ? before : '',
+                newSrc: isImage ? (typeof after === 'string' && after.startsWith('/static/') ? after : (rec.image_url || '')) : '',
+              };
+            })
           : [];
         return {
           id: prefix + r.sku,
