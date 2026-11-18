@@ -5,26 +5,31 @@
   <header class="psync-head">
     <div class="psync-head-text">
       <h2 id="psync-title">Sync from Tyrescart</h2>
-      <p x-show="phase === 'review' || phase === 'importing'">
+      <p x-show="phase === 'review' || busy">
         <strong x-text="categoryLabel(syncedCategory)"></strong> fetched <span x-text="fmtDate(fetchedAt)"></span>. Nothing is saved until you import.
       </p>
-      <p x-show="phase !== 'review' && phase !== 'importing'">Products are fetched from tyrescart.ae and compared with your catalog by SKU.</p>
+      <p x-show="phase !== 'review' && !busy">Products are fetched from tyrescart.ae and compared with your catalog by SKU.</p>
     </div>
-    <div class="psync-stats" x-show="phase === 'review' || phase === 'importing'">
-      <button type="button" class="psync-stat" :class="tab === 'new' && 'is-active'" @click="setTab('new')" :disabled="phase === 'importing'">
+    <div class="psync-stats" x-show="phase === 'review' || busy">
+      <button type="button" class="psync-stat" :class="tab === 'new' && 'is-active'" @click="setTab('new')" :disabled="busy">
         <span class="psync-stat-num" x-text="counts.new.toLocaleString()"></span>
         <span class="psync-stat-label">New</span>
       </button>
-      <button type="button" class="psync-stat" :class="tab === 'update' && 'is-active'" @click="setTab('update')" :disabled="phase === 'importing'">
+      <button type="button" class="psync-stat" :class="tab === 'update' && 'is-active'" @click="setTab('update')" :disabled="busy">
         <span class="psync-stat-num" x-text="counts.update.toLocaleString()"></span>
         <span class="psync-stat-label">Needs update</span>
+      </button>
+      <button type="button" class="psync-stat" :class="tab === 'missing' && 'is-active'" @click="setTab('missing')" :disabled="busy"
+        title="Products on your site that Tyrescart no longer lists">
+        <span class="psync-stat-num" x-text="counts.missing.toLocaleString()"></span>
+        <span class="psync-stat-label">Not on Tyrescart</span>
       </button>
       <div class="psync-stat is-static">
         <span class="psync-stat-num" x-text="counts.unchanged.toLocaleString()"></span>
         <span class="psync-stat-label">Unchanged</span>
       </div>
     </div>
-    <button type="button" class="psync-close" @click="closeModal()" :disabled="phase === 'fetching' || phase === 'comparing' || phase === 'importing'" aria-label="Close sync">&times;</button>
+    <button type="button" class="psync-close" @click="closeModal()" :disabled="phase === 'fetching' || phase === 'comparing' || busy" aria-label="Close sync">&times;</button>
   </header>
 
   <div class="psync-alert is-error" x-show="error" x-cloak>
@@ -65,7 +70,7 @@
   </section>
 
   <!-- Review -->
-  <div class="psync-review" x-show="phase === 'review' || phase === 'importing'">
+  <div class="psync-review" x-show="phase === 'review' || busy">
 
     <div class="psync-alert is-success" x-show="importResult" x-cloak>
       <span x-text="importResult ? [
@@ -88,17 +93,35 @@
       </div>
     </div>
 
+    <div class="psync-alert is-success" x-show="deleteResult" x-cloak>
+      <span x-text="deleteResult ? [
+          deleteResult.deleted.length + ' deleted permanently',
+          deleteResult.kept_on_tyrescart.length ? deleteResult.kept_on_tyrescart.length + ' kept because Tyrescart lists them again' : '',
+          deleteResult.kept_in_orders.length ? deleteResult.kept_in_orders.length + ' kept because they appear in orders' : ''
+        ].filter(Boolean).join(', ') + '.' : ''"></span>
+      <button type="button" class="psync-btn is-ghost" @click="deleteResult = null">Dismiss</button>
+    </div>
+
     <div class="psync-toolbar">
       <div class="psync-tabs" role="tablist">
-        <button type="button" role="tab" :aria-selected="tab === 'new'" :class="tab === 'new' && 'is-active'" @click="setTab('new')" :disabled="phase === 'importing'">
+        <button type="button" role="tab" :aria-selected="tab === 'new'" :class="tab === 'new' && 'is-active'" @click="setTab('new')" :disabled="busy">
           New products <span class="psync-count" x-text="counts.new.toLocaleString()"></span>
         </button>
-        <button type="button" role="tab" :aria-selected="tab === 'update'" :class="tab === 'update' && 'is-active'" @click="setTab('update')" :disabled="phase === 'importing'">
+        <button type="button" role="tab" :aria-selected="tab === 'update'" :class="tab === 'update' && 'is-active'" @click="setTab('update')" :disabled="busy">
           Needs update <span class="psync-count" x-text="counts.update.toLocaleString()"></span>
+        </button>
+        <button type="button" role="tab" :aria-selected="tab === 'missing'" :class="tab === 'missing' && 'is-active'" @click="setTab('missing')" :disabled="busy">
+          Not on Tyrescart <span class="psync-count" x-text="counts.missing.toLocaleString()"></span>
         </button>
       </div>
 
       <input type="search" class="psync-search" placeholder="Search SKU, name or brand" x-model.debounce.250ms="search" aria-label="Search products">
+
+      <label class="psync-toggle" x-show="tab === 'missing'">
+        <input type="checkbox" x-model="missingActiveOnly">
+        <span>Only products active on your site</span>
+        <span class="psync-field-n" x-text="'(' + counts.missingAll.toLocaleString() + ' in total)'"></span>
+      </label>
 
       <div class="psync-fields" x-show="tab === 'update'" @click.outside="fieldsOpen = false">
         <button type="button" class="psync-btn is-ghost" @click="fieldsOpen = !fieldsOpen" :aria-expanded="fieldsOpen">
@@ -117,31 +140,39 @@
       </div>
     </div>
 
+    <p class="psync-note" x-show="tab === 'missing'">
+      These SKUs are in your catalog but Tyrescart no longer lists them: they were deleted, disabled or hidden there.
+      Open a product to edit it, or tick products and use <strong>Delete permanently</strong> to remove them from TyresVision.
+      Before deleting, each SKU is checked against Tyrescart again; products still listed there or used in orders are kept.
+    </p>
+
     <div class="psync-table-wrap">
       <table class="psync-table">
         <thead>
           <tr>
             <th class="psync-col-check">
-              <input type="checkbox" :checked="allFilteredSelected" @change="toggleAllFiltered()" :disabled="!filteredCount || phase === 'importing'"
+              <input type="checkbox" :checked="allFilteredSelected" @change="toggleAllFiltered()" :disabled="!filteredCount || busy"
                 :aria-label="'Select all ' + filteredCount + ' products'"
                 :title="'Select all ' + filteredCount.toLocaleString() + ' products in this list'">
             </th>
-            <th class="psync-col-img" x-show="tab === 'new'"></th>
+            <th class="psync-col-img" x-show="tab !== 'update'"></th>
             <th>Product</th>
-            <th x-show="tab === 'new'">Brand</th>
-            <th x-show="tab === 'new'">Size</th>
-            <th class="psync-num" x-show="tab === 'new'">Price</th>
-            <th x-show="tab === 'new'">Stock</th>
+            <th x-show="tab !== 'update'">Brand</th>
+            <th x-show="tab !== 'update'">Size</th>
+            <th class="psync-num" x-show="tab !== 'update'">Price</th>
+            <th x-show="tab !== 'update'">Stock</th>
+            <th x-show="tab === 'missing'">On your site</th>
+            <th x-show="tab === 'missing'"></th>
             <th x-show="tab === 'update'">Changes: your catalog → Tyrescart</th>
           </tr>
         </thead>
         <tbody>
           <template x-for="row in pageRows" :key="row.id">
-            <tr :class="row.selected && 'is-selected'" @click="phase !== 'importing' && toggleRow(row)">
+            <tr :class="row.selected && 'is-selected'" @click="!busy && toggleRow(row)">
               <td class="psync-col-check" @click.stop>
-                <input type="checkbox" :checked="row.selected" @change="toggleRow(row)" :disabled="phase === 'importing'" :aria-label="'Select ' + row.sku">
+                <input type="checkbox" :checked="row.selected" @change="toggleRow(row)" :disabled="busy" :aria-label="'Select ' + row.sku">
               </td>
-              <td class="psync-col-img" x-show="tab === 'new'">
+              <td class="psync-col-img" x-show="tab !== 'update'">
                 <img x-show="row.image" :src="row.image" alt="" loading="lazy" width="44" height="44">
               </td>
               <td class="psync-product">
@@ -151,11 +182,17 @@
                 <span class="psync-pill is-info" x-show="tab === 'new' && row.imageState === 'download'" title="Not in static/uploads/products yet; it is downloaded from Tyrescart and saved as .webp on import">Image will be downloaded</span>
                 <span class="psync-pill is-muted" x-show="tab === 'new' && row.imageState === 'none'" title="Tyrescart has no image for this product">No image</span>
               </td>
-              <td x-show="tab === 'new'" x-text="row.brand"></td>
-              <td x-show="tab === 'new'" x-text="row.size"></td>
-              <td class="psync-num" x-show="tab === 'new'" x-text="row.price"></td>
-              <td x-show="tab === 'new'">
+              <td x-show="tab !== 'update'" x-text="row.brand"></td>
+              <td x-show="tab !== 'update'" x-text="row.size"></td>
+              <td class="psync-num" x-show="tab !== 'update'" x-text="row.price"></td>
+              <td x-show="tab !== 'update'">
                 <span class="psync-pill" :class="row.inStock ? 'is-ok' : 'is-muted'" x-text="row.inStock ? 'In stock' : 'Out of stock'"></span>
+              </td>
+              <td x-show="tab === 'missing'">
+                <span class="psync-pill" :class="row.activeOnSite ? 'is-warn' : 'is-muted'" x-text="row.activeOnSite ? 'Active' : 'Disabled'"></span>
+              </td>
+              <td x-show="tab === 'missing'" @click.stop>
+                <a class="psync-link" :href="row.editUrl" target="_blank" rel="noopener">Open</a>
               </td>
               <td class="psync-changes" x-show="tab === 'update'">
                 <template x-for="c in (row.expanded ? row.changes : row.changes.slice(0, 3))" :key="c.key">
@@ -178,6 +215,7 @@
         <p x-show="search">No products match “<span x-text="search"></span>”.</p>
         <p x-show="!search && tab === 'new'">No new products. Everything on Tyrescart already exists in your catalog.</p>
         <p x-show="!search && tab === 'update'">No differences in the ticked fields.</p>
+        <p x-show="!search && tab === 'missing'" x-text="missingActiveOnly && counts.missingAll ? 'None of your active products are missing on Tyrescart. Untick the filter to see disabled ones.' : 'Every product in this category is still on Tyrescart.'"></p>
       </div>
     </div>
 
@@ -188,29 +226,59 @@
     </div>
   </div>
 
-  <footer class="psync-foot" x-show="phase === 'review' || phase === 'importing'">
+  <footer class="psync-foot" x-show="phase === 'review' || busy">
     <div class="psync-foot-info">
       <div class="psync-foot-progress" x-show="phase === 'importing'">
         <span>Importing <span x-text="importProgress.done"></span> of <span x-text="importProgress.total"></span>…</span>
         <div class="psync-bar"><div class="psync-bar-fill" :style="`width: ${importProgress.total ? Math.round(importProgress.done / importProgress.total * 100) : 0}%`"></div></div>
       </div>
+      <div class="psync-foot-progress" x-show="phase === 'deleting'">
+        <span>Deleting <span x-text="deleteProgress.done"></span> of <span x-text="deleteProgress.total"></span>…</span>
+        <div class="psync-bar"><div class="psync-bar-fill is-danger" :style="`width: ${deleteProgress.total ? Math.round(deleteProgress.done / deleteProgress.total * 100) : 0}%`"></div></div>
+      </div>
       <span x-show="phase === 'review'">
-        <strong x-text="selectedCount.toLocaleString()"></strong> selected
-        <span class="psync-muted" x-show="selectedCount" x-text="'(' + selectedNew + ' new, ' + selectedUpdate + ' updates)'"></span>
+        <strong x-text="(selectedCount + selectedMissing).toLocaleString()"></strong> selected
+        <span class="psync-muted" x-show="selectedCount || selectedMissing"
+          x-text="'(' + [selectedNew ? selectedNew + ' new' : '', selectedUpdate ? selectedUpdate + ' updates' : '', selectedMissing ? selectedMissing + ' to delete' : ''].filter(Boolean).join(', ') + ')'"></span>
       </span>
+      <span class="psync-reindex" x-show="reindex.state !== 'idle'" :class="'is-' + reindex.state"
+        x-text="reindex.state === 'running' ? 'Updating search index… ' + reindex.done.toLocaleString() + (reindex.total ? ' of ' + reindex.total.toLocaleString() : '') + ' (keep this page open)'
+          : reindex.state === 'done' ? 'Search index updated: ' + reindex.done.toLocaleString() + ' products' + (reindex.removed ? ', ' + reindex.removed.toLocaleString() + ' removed' : '')
+          : 'Search index not updated: ' + reindex.error"></span>
     </div>
     <div class="psync-foot-actions">
-      <button type="button" class="psync-btn is-ghost" @click="discard()" :disabled="phase === 'importing'">Discard sync</button>
-      <select class="psync-select" x-model="category" :disabled="phase === 'importing'" aria-label="Parts category to fetch">
+      <button type="button" class="psync-btn is-ghost" @click="discard()" :disabled="busy">Discard sync</button>
+      <select class="psync-select" x-model="category" :disabled="busy" aria-label="Parts category to fetch">
         <template x-for="c in categories" :key="c.key">
           <option :value="c.key" x-text="c.label" :selected="c.key === category"></option>
         </template>
       </select>
-      <button type="button" class="psync-btn is-ghost" @click="startSync()" :disabled="phase === 'importing'"
+      <button type="button" class="psync-btn is-ghost" @click="startSync()" :disabled="busy"
         x-text="category === syncedCategory ? 'Fetch again' : 'Fetch ' + categoryLabel(category)"></button>
+      <button type="button" class="psync-btn is-ghost" @click="runReindex()" :disabled="busy || reindex.state === 'running'"
+        title="Re-index every product into Elasticsearch so storefront search matches the database">Reindex search</button>
+      <button type="button" class="psync-btn is-danger" x-show="selectedMissing" @click="openDeleteConfirm()" :disabled="busy"
+        x-text="'Delete permanently (' + selectedMissing.toLocaleString() + ')'"></button>
       <button type="button" class="psync-btn is-primary" @click="importSelected()" :disabled="!selectedCount || phase === 'importing'"
         x-text="phase === 'importing' ? 'Importing…' : 'Import selected (' + selectedCount.toLocaleString() + ')'"></button>
     </div>
   </footer>
+  <!-- Permanent delete confirmation -->
+  <div class="psync-confirm" x-show="confirmDeleteOpen" x-cloak @keydown.escape.stop="confirmDeleteOpen = false">
+    <div class="psync-confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="psync-confirm-title">
+      <h3 id="psync-confirm-title" x-text="'Permanently delete ' + selectedMissing.toLocaleString() + ' product' + (selectedMissing === 1 ? '' : 's') + '?'"></h3>
+      <p>They are removed from TyresVision together with their attributes, prices, categories, stock and website links, and from storefront search. <strong>This can't be undone.</strong></p>
+      <p class="psync-muted">Each SKU is checked against Tyrescart first. Products Tyrescart lists again, or that appear in orders, are kept.</p>
+      <label class="psync-cat">
+        <span>Type DELETE to confirm</span>
+        <input id="psync-confirm-input" type="text" class="psync-search" x-model="confirmText" autocomplete="off" @keydown.enter="deleteSelected()">
+      </label>
+      <div class="psync-confirm-actions">
+        <button type="button" class="psync-btn is-ghost" @click="confirmDeleteOpen = false">Cancel</button>
+        <button type="button" class="psync-btn is-danger" @click="deleteSelected()" :disabled="confirmText.trim().toUpperCase() !== 'DELETE'"
+          x-text="'Delete ' + selectedMissing.toLocaleString() + ' permanently'"></button>
+      </div>
+    </div>
+  </div>
 </div>
 </template>

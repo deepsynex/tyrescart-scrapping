@@ -191,9 +191,32 @@ Fill rates are from the first 1,000 products.
 - `templates/visionadmin/partials/product_sync_modal.html`: the full-screen modal
 - `templates/visionadmin/products.html`: the button, the script/style tags, and a product-list refresh after import
 
+## Not on Tyrescart
+After the compare, the browser sends every SKU it fetched to `POST /visionadmin/api/products/sync/missing` as `{category, skus}`. The server returns the live local products in that Parts Category (`products.parts_category` = the dropdown label, `deleted_at IS NULL`) whose SKU Tyrescart didn't return. They're listed in the **Not on Tyrescart** tab and saved with the review in IndexedDB.
+- Tyrescart's GraphQL only lists enabled, visible products, so "missing" means deleted, **disabled or hidden** there; the API can't tell those apart.
+- The check runs only after every page was fetched, because a partial download would wrongly flag products.
+- Each row has an **Open** link to the product's edit page. Nothing changes until an admin deletes.
+- By default the tab shows only products still **active** on your site, with in-stock ones first. Untick "Only products active on your site" to see all of them.
+- Measured 2026-11-17 for Tyres: 10,197 local products aren't on Tyrescart. 9,528 are already disabled locally; **669 are still active**.
+- Products are matched to a category by their local `parts_category`. A product filed under a different category locally than on Tyrescart would be listed as missing. None were found today.
+
+### Permanent delete
+Tick rows in **Not on Tyrescart** and click **Delete permanently (N)**. The confirmation dialog only enables its button once you type `DELETE`. The browser then sends the product IDs in batches of 100 to `POST /visionadmin/api/products/sync/delete` (Admin / Super Admin only, CSRF-protected). For each batch, `delete_products()`:
+1. **Re-checks every SKU with Tyrescart.** A SKU that Tyrescart lists again is kept (`kept_on_tyrescart`), so a stale review can't delete a live product.
+2. **Keeps products that appear in `order_items` or `purchase_order_items`** (`kept_in_orders`), so order history stays intact.
+3. **Deletes the rest in one transaction:** the `products` row plus its rows in `product_attribute_values`, `product_categories`, `product_field_selections`, `product_inventories`, `product_prices`, `product_stores`, `product_websites`, `customer_prices`, `cart_items` and `wishlist_items`. No foreign keys reference `products.id`, so these are removed explicitly.
+4. **Removes each deleted product's Elasticsearch document** and writes a `sync_purge` entry with the SKUs to the activity log.
+
+Image files are not deleted, because several products can share one picture.
+
+### Search reindex
+A full Elasticsearch reindex runs automatically after a delete or an import, and on demand with **Reindex search**. The browser drives it in batches, so no request runs long and it works with several gunicorn workers:
+- `POST /visionadmin/api/products/sync/reindex` with `{after_id}` indexes the next 2,000 live products in place. The index is never dropped, so storefront search keeps working throughout.
+- `POST /visionadmin/api/products/sync/reindex/cleanup` then deletes any search document whose product no longer exists.
+- Locally, 17,003 products take about 15 seconds in 9 batches. The footer shows the progress and the result.
+
 ## Known limitations
 - Existing products don't get new categories on update. Only new products are assigned categories.
 - New products don't get the local "Cars" category, which most existing products carry, because Tyrescart doesn't return it.
 - `attribute_set_id` from Tyrescart (9 or 14) has no label. New products get their set from `parts_category` (Tyres → our Tyres set).
-- Products that exist locally but not on Tyrescart aren't reported.
 

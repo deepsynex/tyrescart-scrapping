@@ -226,3 +226,33 @@
   .psync-foot-actions .is-primary { flex: 1; justify-content: center; }
   .psync-col-check { padding-left: 16px !important; }
 }
+
+/* "Not on Tyrescart" tab */
+.psync-toggle { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ps-ink); cursor: pointer; }
+.psync-toggle input { width: 16px; height: 16px; accent-color: var(--ps-brand); }
+.psync-note { margin: 0; padding: 10px 24px; background: var(--ps-warn-bg); color: var(--ps-warn); font-size: 12.5px; border-bottom: 1px solid var(--ps-line); }
+.psync-link { color: var(--ps-brand); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.psync-link:hover { text-decoration: underline; }
+@media (max-width: 900px) { .psync-note { padding: 8px 16px; } }
+
+/* Permanent delete + reindex */
+.psync-btn.is-danger { border: 0; background: var(--ps-err); color: #fff; }
+.psync-btn.is-danger:hover:not(:disabled) { background: #9f1239; }
+.psync-bar-fill.is-danger { background: var(--ps-err); }
+.psync-reindex { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; }
+.psync-reindex.is-running { color: var(--ps-brand); }
+.psync-reindex.is-done { color: var(--ps-ok); }
+.psync-reindex.is-error { color: var(--ps-err); }
+.psync-confirm {
+  position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(14, 17, 8, .45);
+}
+.psync-confirm-box {
+  width: min(480px, 100%); padding: 24px; border-radius: 18px; background: #fff;
+  box-shadow: 0 24px 64px rgba(14, 17, 8, .25); display: flex; flex-direction: column; gap: 12px;
+}
+.psync-confirm-box h3 { margin: 0; font-size: 17px; font-weight: 900; color: var(--ps-ink); }
+.psync-confirm-box p { margin: 0; line-height: 1.5; }
+.psync-confirm-box .psync-cat { width: 100%; }
+.psync-confirm-box .psync-search { max-width: none; }
+.psync-confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }

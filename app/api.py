@@ -4968,6 +4968,85 @@ def register_visionadmin_api_routes(app):
             app.logger.exception(f"Product sync compare failed: {e}")
             return jsonify({'success': False, 'error': f'Compare failed: {e}'}), 500
 
+    @app.route('/visionadmin/api/products/sync/missing', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_missing():
+        """
+        Body: {"category": "<key>", "skus": [...every SKU fetched from Tyrescart for it]}.
+        Returns live local products in that parts category that Tyrescart no longer lists.
+        """
+        from services import product_sync
+        body = request.get_json(silent=True) or {}
+        skus, category = body.get('skus'), body.get('category') or product_sync.DEFAULT_CATEGORY
+        if not isinstance(skus, list) or not skus:
+            return jsonify({'success': False, 'error': 'Body must include the fetched "skus" list.'}), 400
+        if len(skus) > 100000:
+            return jsonify({'success': False, 'error': 'Too many SKUs.'}), 400
+        try:
+            return jsonify({'success': True, **product_sync.find_missing(category, skus)})
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 400
+        except Exception as e:
+            app.logger.exception(f"Product sync missing-check failed: {e}")
+            return jsonify({'success': False, 'error': f'Check failed: {e}'}), 500
+
+    @app.route('/visionadmin/api/products/sync/delete', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_delete():
+        """
+        Body: {"ids": [...]} (max 100). Permanently deletes products Tyrescart no longer lists,
+        with their related rows. SKUs still on Tyrescart or used in orders are kept.
+        """
+        from services import product_sync
+        if session.get('role') not in ('SuperAdmin', 'Admin'):
+            return jsonify({'success': False, 'error': 'Only Admin and Super Admin users can permanently delete products.'}), 403
+        ids = (request.get_json(silent=True) or {}).get('ids')
+        if not isinstance(ids, list) or not ids:
+            return jsonify({'success': False, 'error': 'Body must be {"ids": [...]} with at least one id.'}), 400
+        if len(ids) > 100:
+            return jsonify({'success': False, 'error': 'Send at most 100 ids per request.'}), 400
+        user_id = session.get('admin_user_id') or session.get('user_id')
+        try:
+            result = product_sync.delete_products(ids, user_id=user_id)
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 502
+        except Exception as e:
+            app.logger.exception(f"Product sync delete failed: {e}")
+            return jsonify({'success': False, 'error': f'Delete failed: {e}'}), 500
+        if result['deleted']:
+            log_activity(entity_type='product', entity_id=0, action='sync_purge',
+                         old_values={'skus': result['deleted']}, user_id=user_id)
+        return jsonify({'success': True, **result})
+
+    @app.route('/visionadmin/api/products/sync/reindex', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_reindex():
+        """Body: {"after_id": N}. Re-indexes the next batch of live products into Elasticsearch."""
+        from services import product_sync
+        after_id = (request.get_json(silent=True) or {}).get('after_id') or 0
+        try:
+            return jsonify({'success': True, **product_sync.reindex_batch(int(after_id))})
+        except (ValueError, TypeError):
+            return jsonify({'success': False, 'error': 'after_id must be a number.'}), 400
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 503
+        except Exception as e:
+            app.logger.exception(f"Elasticsearch reindex batch failed: {e}")
+            return jsonify({'success': False, 'error': f'Reindex failed: {e}'}), 500
+
+    @app.route('/visionadmin/api/products/sync/reindex/cleanup', methods=['POST'])
+    @require_csrf
+    def visionadmin_api_product_sync_reindex_cleanup():
+        """Removes search documents for products that no longer exist."""
+        from services import product_sync
+        try:
+            return jsonify({'success': True, **product_sync.reindex_cleanup()})
+        except product_sync.SyncError as e:
+            return jsonify({'success': False, 'error': str(e)}), 503
+        except Exception as e:
+            app.logger.exception(f"Elasticsearch cleanup failed: {e}")
+            return jsonify({'success': False, 'error': f'Reindex cleanup failed: {e}'}), 500
+
     @app.route('/visionadmin/api/products/sync/import', methods=['POST'])
     @require_csrf
     def visionadmin_api_product_sync_import():

@@ -14,6 +14,7 @@
   const STORE_META = 'sync_meta';
   const COMPARE_CHUNK = 1000;
   const IMPORT_CHUNK = 50;
+  const DELETE_CHUNK = 100;
   const PAGE_SIZE = 50;
   const FIELDS_KEY = 'psync.activeFields';
 
@@ -135,9 +136,9 @@
   function productSyncApp() {
     // Non-reactive working set.
     let remote = {};
-    let diff = { new: [], update: [], unchanged_count: 0 };
+    let diff = { new: [], update: [], unchanged_count: 0, missing: [] };
     let filtered = [];
-    const selected = new Set(); // "n:SKU" | "u:SKU"
+    const selected = new Set(); // "n:SKU" | "u:SKU" | "m:SKU"
     let activeSet = new Set();
     let restorePromise = null;
 
@@ -157,7 +158,8 @@
       fieldCounts: {},
       fieldsOpen: false,
 
-      counts: { new: 0, update: 0, unchanged: 0 },
+      counts: { new: 0, update: 0, unchanged: 0, missing: 0, missingAll: 0 },
+      missingActiveOnly: true,
       tab: 'update',
       search: '',
       pageNo: 1,
@@ -168,12 +170,20 @@
       selectedCount: 0,
       selectedNew: 0,
       selectedUpdate: 0,
+      selectedMissing: 0,
+
+      confirmDeleteOpen: false,
+      confirmText: '',
+      deleteProgress: { done: 0, total: 0 },
+      deleteResult: null,
+      reindex: { state: 'idle', done: 0, total: 0, removed: 0, error: '' },
 
       importProgress: { done: 0, total: 0 },
       importResult: null,
 
       initSync() {
         this.$watch('search', () => { this.pageNo = 1; this.refresh(); });
+        this.$watch('missingActiveOnly', () => { this.pageNo = 1; this.refresh(); });
         restorePromise = Promise.all([this.loadCategories(), this.restoreSaved()]);
       },
 
@@ -201,6 +211,7 @@
         const items = await idb.getAll();
         remote = Object.fromEntries(items.map((it) => [it.sku, it]));
         diff = saved;
+        diff.missing = diff.missing || [];
         this.fields = (await idb.getMeta('fields')) || [];
         this.setActiveFields(loadActiveFields(this.fields));
         this.fetchedAt = await idb.getMeta('fetchedAt');
@@ -214,6 +225,8 @@
         return this.phase === 'review' && (this.counts.new + this.counts.update) > 0;
       },
 
+      get busy() { return this.phase === 'importing' || this.phase === 'deleting'; },
+
       async openModal() {
         this.open = true;
         document.documentElement.style.overflow = 'hidden';
@@ -221,7 +234,7 @@
       },
 
       closeModal() {
-        if (this.phase === 'fetching' || this.phase === 'comparing' || this.phase === 'importing') return;
+        if (this.phase === 'fetching' || this.phase === 'comparing' || this.busy) return;
         this.open = false;
         this.fieldsOpen = false;
         document.documentElement.style.overflow = '';
@@ -229,10 +242,11 @@
 
       resetState() {
         remote = {};
-        diff = { new: [], update: [], unchanged_count: 0 };
+        diff = { new: [], update: [], unchanged_count: 0, missing: [] };
         filtered = [];
         selected.clear();
         this.importResult = null;
+        this.deleteResult = null;
         this.search = '';
         this.pageNo = 1;
         this.refresh();
@@ -267,7 +281,7 @@
 
           this.phase = 'comparing';
           const all = Object.values(remote);
-          const merged = { new: [], update: [], unchanged_count: 0 };
+          const merged = { new: [], update: [], unchanged_count: 0, missing: [] };
           for (let i = 0; i < all.length; i += COMPARE_CHUNK) {
             const part = await postJson('/visionadmin/api/products/sync/compare', { items: all.slice(i, i + COMPARE_CHUNK) });
             merged.new.push(...part.new);
@@ -275,6 +289,9 @@
             merged.unchanged_count += part.unchanged_count;
             this.progress.compared = Math.min(all.length, i + COMPARE_CHUNK);
           }
+          // Only after every page arrived: a partial fetch would flag products as missing wrongly.
+          const gone = await postJson('/visionadmin/api/products/sync/missing', { category: this.category, skus: Object.keys(remote) });
+          merged.missing = gone.items;
           diff = merged;
           this.fetchedAt = Date.now();
           await idb.setMeta('diff', merged);
@@ -301,18 +318,24 @@
         return diff.update.filter((u) => u.in_trash || this.activeChanges(u).length);
       },
 
+      missingRows() {
+        return this.missingActiveOnly ? diff.missing.filter((m) => m.status === 'active') : diff.missing;
+      },
+
       refresh() {
         const updates = this.updateRows();
         this.counts = {
           new: diff.new.length,
           update: updates.length,
           unchanged: diff.unchanged_count + (diff.update.length - updates.length),
+          missing: this.missingRows().length,
+          missingAll: diff.missing.length,
         };
 
         const q = this.search.trim().toLowerCase();
-        const rows = this.tab === 'new' ? diff.new : updates;
+        const rows = this.tab === 'new' ? diff.new : (this.tab === 'missing' ? this.missingRows() : updates);
         filtered = !q ? rows : rows.filter((r) => {
-          const rec = remote[r.sku] || {};
+          const rec = this.tab === 'missing' ? r : (remote[r.sku] || {});
           return r.sku.toLowerCase().includes(q)
             || (rec.name || '').toLowerCase().includes(q)
             || (rec.brand || '').toLowerCase().includes(q);
@@ -321,13 +344,21 @@
         this.totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
         if (this.pageNo > this.totalPages) this.pageNo = this.totalPages;
 
-        const prefix = this.tab === 'new' ? 'n:' : 'u:';
+        const prefix = { new: 'n:', update: 'u:', missing: 'm:' }[this.tab];
         const start = (this.pageNo - 1) * PAGE_SIZE;
         this.pageRows = filtered.slice(start, start + PAGE_SIZE).map((r) => this.viewRow(r, prefix));
         this.syncSelectionState();
       },
 
       viewRow(r, prefix) {
+        if (prefix === 'm:') {
+          return {
+            id: prefix + r.sku, sku: r.sku, name: r.name, brand: r.brand || '—', size: r.size || '—',
+            price: fmt('price', r.price), inStock: r.stock_status === 'in_stock', image: r.image || '',
+            imageState: 'local', activeOnSite: r.status === 'active', editUrl: `/visionadmin/products/${r.id}/edit`,
+            inTrash: false, changes: [], expanded: false, selected: selected.has(prefix + r.sku),
+          };
+        }
         const rec = remote[r.sku] || {};
         const changes = r.changes
           ? this.activeChanges(r).map((k) => ({
@@ -395,12 +426,13 @@
 
       // ---- selection ----------------------------------------------------
       syncSelectionState() {
-        let n = 0; let u = 0;
-        selected.forEach((k) => { if (k.startsWith('n:')) n++; else u++; });
+        let n = 0; let u = 0; let m = 0;
+        selected.forEach((k) => { if (k.startsWith('n:')) n++; else if (k.startsWith('u:')) u++; else m++; });
         this.selectedNew = n;
         this.selectedUpdate = u;
+        this.selectedMissing = m;
         this.selectedCount = n + u;
-        const prefix = this.tab === 'new' ? 'n:' : 'u:';
+        const prefix = { new: 'n:', update: 'u:', missing: 'm:' }[this.tab];
         this.allFilteredSelected = filtered.length > 0 && filtered.every((r) => selected.has(prefix + r.sku));
       },
 
@@ -411,7 +443,7 @@
       },
 
       toggleAllFiltered() {
-        const prefix = this.tab === 'new' ? 'n:' : 'u:';
+        const prefix = { new: 'n:', update: 'u:', missing: 'm:' }[this.tab];
         const select = !this.allFilteredSelected;
         filtered.forEach((r) => { if (select) selected.add(prefix + r.sku); else selected.delete(prefix + r.sku); });
         this.pageRows.forEach((row) => { row.selected = select; });
@@ -420,11 +452,81 @@
 
       fmtDate(ts) { return ts ? new Date(ts).toLocaleString() : ''; },
 
+
+      // ---- permanent delete (Not on Tyrescart) --------------------------
+      openDeleteConfirm() {
+        if (!this.selectedMissing || this.busy) return;
+        this.confirmText = '';
+        this.confirmDeleteOpen = true;
+        this.$nextTick(() => { const el = document.getElementById('psync-confirm-input'); if (el) el.focus(); });
+      },
+
+      async deleteSelected() {
+        if (this.confirmText.trim().toUpperCase() !== 'DELETE') return;
+        this.confirmDeleteOpen = false;
+        const idBySku = Object.fromEntries(diff.missing.map((m) => [m.sku, m.id]));
+        const ids = [...selected].filter((k) => k.startsWith('m:')).map((k) => idBySku[k.slice(2)]).filter(Boolean);
+        if (!ids.length) return;
+
+        this.phase = 'deleting';
+        this.error = '';
+        this.deleteResult = null;
+        this.deleteProgress = { done: 0, total: ids.length };
+        const result = { deleted: [], kept_on_tyrescart: [], kept_in_orders: [] };
+        try {
+          for (let i = 0; i < ids.length; i += DELETE_CHUNK) {
+            const res = await postJson('/visionadmin/api/products/sync/delete', { ids: ids.slice(i, i + DELETE_CHUNK) });
+            result.deleted.push(...res.deleted);
+            result.kept_on_tyrescart.push(...res.kept_on_tyrescart);
+            result.kept_in_orders.push(...res.kept_in_orders);
+            this.deleteProgress.done = Math.min(ids.length, i + DELETE_CHUNK);
+          }
+        } catch (e) {
+          this.error = `Delete stopped: ${e.message} Products deleted before this point are gone.`;
+        }
+
+        const gone = new Set(result.deleted);
+        diff.missing = diff.missing.filter((m) => !gone.has(m.sku));
+        [...selected].forEach((k) => { if (k.startsWith('m:') && gone.has(k.slice(2))) selected.delete(k); });
+        await idb.setMeta('diff', diff);
+        this.deleteResult = result;
+        this.phase = 'review';
+        this.refresh();
+        window.dispatchEvent(new CustomEvent('products-synced'));
+        if (result.deleted.length) {
+          this.toast(`Deleted ${result.deleted.length} product${result.deleted.length === 1 ? '' : 's'} permanently.`, 'success');
+          this.runReindex();
+        }
+      },
+
+      // ---- Elasticsearch reindex (batched so no request runs long) ------
+      async runReindex() {
+        if (this.reindex.state === 'running') return;
+        this.reindex = { state: 'running', done: 0, total: 0, removed: 0, error: '' };
+        try {
+          let afterId = 0;
+          for (;;) {
+            const res = await postJson('/visionadmin/api/products/sync/reindex', { after_id: afterId });
+            this.reindex.done += res.indexed;
+            this.reindex.total = res.total;
+            afterId = res.last_id;
+            if (res.done) break;
+          }
+          const clean = await postJson('/visionadmin/api/products/sync/reindex/cleanup', {});
+          this.reindex.removed = clean.removed;
+          this.reindex.state = 'done';
+        } catch (e) {
+          this.reindex.state = 'error';
+          this.reindex.error = e.message;
+        }
+      },
+
       // ---- import -------------------------------------------------------
       async importSelected() {
-        if (!selected.size) return;
+        const keys = [...selected].filter((k) => !k.startsWith('m:'));
+        if (!keys.length) return;
         const updatesBySku = Object.fromEntries(diff.update.map((u) => [u.sku, u]));
-        const rows = [...selected].map((k) => {
+        const rows = keys.map((k) => {
           const sku = k.slice(2);
           if (k.startsWith('n:')) return { sku };
           const u = updatesBySku[sku];
@@ -467,7 +569,10 @@
         this.refresh();
         window.dispatchEvent(new CustomEvent('products-synced'));
         const ok = result.created + result.updated;
-        if (ok) this.toast(`Imported ${ok} product${ok === 1 ? '' : 's'} from Tyrescart.`, 'success');
+        if (ok) {
+          this.toast(`Imported ${ok} product${ok === 1 ? '' : 's'} from Tyrescart.`, 'success');
+          this.runReindex();
+        }
         if (result.failed.length) this.toast(`${result.failed.length} product(s) failed to import.`, 'error');
       },
 

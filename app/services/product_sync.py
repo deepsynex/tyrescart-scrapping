@@ -68,6 +68,13 @@ def category_filter(key):
 
 def sync_categories():
     return [{'key': k, 'label': label} for k, label, _ in SYNC_CATEGORIES]
+
+
+def category_label(key):
+    for k, label, _ in SYNC_CATEGORIES:
+        if k == key:
+            return label
+    raise SyncError(f'Unknown parts category "{key}".')
 OPTION_CACHE_TTL = 30 * 60
 # Tyrescart's GraphQL price excludes UAE VAT; the local catalog stores ceil(price * 1.05).
 PRICE_MULTIPLIER = float(os.getenv('PRODUCT_SYNC_PRICE_MULTIPLIER', '1.05'))
@@ -593,6 +600,216 @@ def compare(items):
         else:
             unchanged += 1
     return {'new': new, 'update': update, 'unchanged_count': unchanged}
+
+
+def find_missing(category, remote_skus):
+    """
+    Live local products in this parts category whose SKU Tyrescart didn't return.
+    Tyrescart's GraphQL only lists enabled, visible products, so these were deleted,
+    disabled or hidden there. Read-only: nothing is changed here.
+    """
+    label = category_label(category)
+    on_tyrescart = {str(s).strip().upper() for s in remote_skus if s}
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT p.id, p.sku, p.display_name, p.price, p.stock_status, p.status,
+                       p.image_path, p.tire_size_label, p.updated_at, b.name AS brand_name
+                FROM products p
+                LEFT JOIN brands b ON b.id = p.brand_id
+                WHERE p.deleted_at IS NULL AND p.parts_category = %s
+            """, [label])
+            rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    items = []
+    for r in rows:
+        sku = (r.get('sku') or '').strip().upper()
+        if not sku or sku in on_tyrescart:
+            continue
+        items.append({
+            'id': r['id'],
+            'sku': sku,
+            'name': (r.get('display_name') or '').strip() or sku,
+            'brand': r.get('brand_name') or '',
+            'size': r.get('tire_size_label') or '',
+            'price': _num(r.get('price')),
+            'stock_status': r.get('stock_status') or '',
+            'status': r.get('status') or '',
+            'image': _existing_image(r.get('image_path')),
+            'updated_at': r['updated_at'].isoformat() if r.get('updated_at') else None,
+        })
+    items.sort(key=lambda m: (m['status'] != 'active', m['stock_status'] != 'in_stock', m['sku']))
+    return {'items': items, 'active_count': sum(1 for m in items if m['status'] == 'active')}
+
+
+# ---------------------------------------------------------------------------
+# Permanently delete products Tyrescart no longer lists
+# ---------------------------------------------------------------------------
+
+# There are no foreign keys on products.id, so related rows must be removed explicitly.
+_PRODUCT_CHILD_TABLES = (
+    'product_attribute_values', 'product_categories', 'product_field_selections', 'product_inventories',
+    'product_prices', 'product_stores', 'product_websites', 'customer_prices', 'cart_items', 'wishlist_items',
+)
+# Products referenced here are never deleted, so order history keeps its lines.
+_ORDER_TABLES = ('order_items', 'purchase_order_items')
+
+_SKU_QUERY = """query($f: ProductAttributeFilterInput, $s: Int!) {
+  products(filter: $f, pageSize: $s, currentPage: 1) { items { sku } }
+}"""
+
+
+def _skus_on_tyrescart(skus):
+    found = set()
+    for i in range(0, len(skus), 100):
+        batch = skus[i:i + 100]
+        data = _post(_SKU_QUERY, {'f': {'sku': {'in': batch}}, 's': len(batch)})
+        found |= {str(it.get('sku') or '').strip().upper() for it in (data.get('products') or {}).get('items') or []}
+    return found
+
+
+def delete_products(product_ids, user_id=None):
+    """
+    Permanently delete products (and their related rows) that Tyrescart no longer lists.
+    Each SKU is re-checked against Tyrescart first; products still listed there, or used
+    in orders, are kept. Elasticsearch documents of deleted products are removed.
+    """
+    ids = sorted({int(i) for i in product_ids if str(i).strip().isdigit()})
+    result = {'deleted': [], 'kept_on_tyrescart': [], 'kept_in_orders': [], 'not_found': 0}
+    if not ids:
+        return result
+    ph = ', '.join(['%s'] * len(ids))
+
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"SELECT id, sku FROM products WHERE id IN ({ph})", ids)
+            rows = {r['id']: (r.get('sku') or '').strip().upper() for r in cur.fetchall()}
+            cur.execute("SELECT TABLE_NAME AS t FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()")
+            existing_tables = {r['t'] for r in cur.fetchall()}
+            in_orders = set()
+            for t in _ORDER_TABLES:
+                if t in existing_tables:
+                    cur.execute(f"SELECT DISTINCT product_id FROM {t} WHERE product_id IN ({ph})", ids)
+                    in_orders |= {r['product_id'] for r in cur.fetchall()}
+    finally:
+        conn.close()
+
+    result['not_found'] = len(ids) - len(rows)
+    still_listed = _skus_on_tyrescart([s for s in rows.values() if s])
+    to_delete = []
+    for pid, sku in rows.items():
+        if sku and sku in still_listed:
+            result['kept_on_tyrescart'].append(sku)
+        elif pid in in_orders:
+            result['kept_in_orders'].append(sku)
+        else:
+            to_delete.append(pid)
+    if not to_delete:
+        return result
+
+    dph = ', '.join(['%s'] * len(to_delete))
+    conn = get_connection()
+    try:
+        conn.begin()
+        with conn.cursor() as cur:
+            for t in _PRODUCT_CHILD_TABLES:
+                if t in existing_tables:
+                    cur.execute(f"DELETE FROM {t} WHERE product_id IN ({dph})", to_delete)
+            cur.execute(f"DELETE FROM products WHERE id IN ({dph})", to_delete)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+    result['deleted'] = [rows[pid] for pid in to_delete]
+    if es_service:
+        for pid in to_delete:
+            try:
+                es_service.delete_single_product(pid)
+            except Exception as e:
+                logger.warning('Elasticsearch delete failed for product %s: %s', pid, e)
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Elasticsearch reindex, in batches the browser drives (no long request, works
+# across gunicorn workers, and search keeps serving while it runs)
+# ---------------------------------------------------------------------------
+
+REINDEX_BATCH = 2000
+
+
+def _es_client():
+    client = es_service.get_client() if es_service else None
+    if not client:
+        raise SyncError('Elasticsearch is not reachable, so the search index was not updated.')
+    return client
+
+
+def reindex_batch(after_id=0):
+    from elasticsearch import helpers
+
+    client = _es_client()
+    if not after_id:
+        created = es_service.create_active_products_index(recreate=False)
+        if not created.get('success'):
+            raise SyncError(f"Elasticsearch index check failed: {created.get('error')}")
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) AS n FROM products WHERE deleted_at IS NULL")
+            total = cur.fetchone()['n']
+            cur.execute("""
+                SELECT p.*, b.name AS brand_name, b.slug AS brand_slug, c.name AS category_name
+                FROM products p
+                LEFT JOIN brands b ON p.brand_id = b.id
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.deleted_at IS NULL AND p.id > %s
+                ORDER BY p.id ASC
+                LIMIT %s
+            """, [int(after_id), REINDEX_BATCH])
+            rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    actions = [{'_index': es_service.index_name, '_id': str(r['id']),
+                '_source': es_service.transform_db_row_to_doc(r)} for r in rows]
+    ok, failed = (helpers.bulk(client, actions, raise_on_error=False) if actions else (0, []))
+    return {
+        'indexed': ok,
+        'failed': len(failed) if isinstance(failed, list) else 0,
+        'last_id': rows[-1]['id'] if rows else int(after_id),
+        'done': len(rows) < REINDEX_BATCH,
+        'total': total,
+    }
+
+
+def reindex_cleanup():
+    """Remove search documents whose product no longer exists (or is in trash)."""
+    from elasticsearch import helpers
+
+    client = _es_client()
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id FROM products WHERE deleted_at IS NULL")
+            live = {str(r['id']) for r in cur.fetchall()}
+    finally:
+        conn.close()
+    stale = [h['_id'] for h in helpers.scan(client, index=es_service.index_name,
+                                           query={'query': {'match_all': {}}}, _source=False)
+             if h['_id'] not in live]
+    if stale:
+        helpers.bulk(client, ({'_op_type': 'delete', '_index': es_service.index_name, '_id': i} for i in stale),
+                     raise_on_error=False)
+    client.indices.refresh(index=es_service.index_name)
+    return {'removed': len(stale), 'documents': client.count(index=es_service.index_name)['count']}
 
 
 # ---------------------------------------------------------------------------
